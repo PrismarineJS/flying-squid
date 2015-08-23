@@ -215,26 +215,11 @@ World.prototype.packMapChunkBulk = function() {
     metadatas.push(metadata);
   }
   
-  // Deflate/compress the buffers
-  var deflate = zlib.createDeflate();
-  var deflateBuffer = new Buffer(0);
-  deflate.on('data', function(data) {
-    deflateBuffer = Buffer.concat([deflateBuffer, data]);
+  cb(null, {
+    skyLightSent: true,
+    meta: metadatas,
+    data: Buffer.concat(bufs)
   });
-  deflate.on('end', function() {
-    cb(null, {
-      data: {
-      skyLightSent: true,
-      meta: metadatas,
-      compressedChunkData: deflateBuffer
-    }});
-  });
-  deflate.on('error', function(err) {
-    console.log("error");
-    cb(err);
-  });
-  deflate.write(Buffer.concat(bufs));
-  deflate.end();
 }
 
 World.prototype.get = function(x, y, z, key) {
