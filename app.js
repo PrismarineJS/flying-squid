@@ -29,10 +29,10 @@ server.on('login', function(client) {
   });
 
   // send init data so client will start rendering world
-  client.write(0x01, {
+  client.write('chat', {
     entityId: client.id,
     levelType: 'default',
-    gameMode: 1,
+    gameMode: 0,
     dimension: 0,
     difficulty: 0,
     maxPlayers: server.maxPlayers
@@ -42,26 +42,28 @@ server.on('login', function(client) {
       console.log(err);
       return;
     }
-    client.write(0x26, packetData);
-    client.write(0x08, {
+    client.write('map_chunk_bulk', packetData);
+    client.write('position', {
       x: 6,
       y: 53,
       z: 6,
       yaw: 0,
       pitch: 0,
-      onGround: true
+      flags: 0x00
     });
     console.log("Written position, player should spawn");
-    client.write(0x03, {
+
+    client.write('flying', {
       age: [0,0],
       time: [0,1]
     });
-    client.write(0x2B, {
+
+    client.write('game_state_change', {
       reason: 3,
       gameMode: 1
     });
   });
-  client.on([states.PLAY, 0x01], function(data) {
+  client.on([states.PLAY, 'chat'], function(data) {
     var message = '<'+client.username+'>' + ' ' + data.message;
     broadcast(message, client.username);
     console.log(message);
@@ -79,32 +81,52 @@ server.on('listening', function() {
   console.log('Server listening on port', server.socketServer.address().port);
 });
 
-function broadcast(message, username) {
+// function broadcast(message, username) {
+//   var client, translate;
+//   translate = username ? 'chat.type.announcement' : 'chat.type.text';
+//   username = username || 'Server';
+//   for (var clientId in server.clients) {
+//     if (!server.clients.hasOwnProperty(clientId)) continue;
+
+//     client = server.clients[clientId];
+//     var msg = {
+//       translate: translate,
+//       "with": [
+//         username
+//       ]
+//     };
+//     if (typeof message === "string") {
+//       msg["with"].push(message);
+//     } else {
+//       Object.keys(message).forEach(function(key) {
+//         if (key === "text") {
+//           msg["with"].push(message[key]);
+//         } else {
+//           msg[key] = message[key];
+//         }
+//       });
+//     }
+
+//     client.write('success', { message: JSON.stringify(msg) });
+//   }
+
+function broadcast(message, exclude, username) {
   var client, translate;
   translate = username ? 'chat.type.announcement' : 'chat.type.text';
   username = username || 'Server';
-  for (var clientId in server.clients) {
-    if (!server.clients.hasOwnProperty(clientId)) continue;
+  for(var clientId in server.clients) {
+    if(!server.clients.hasOwnProperty(clientId)) continue;
 
     client = server.clients[clientId];
-    var msg = {
-      translate: translate,
-      "with": [
-        username
-      ]
-    };
-    if (typeof message === "string") {
-      msg["with"].push(message);
-    } else {
-      Object.keys(message).forEach(function(key) {
-        if (key === "text") {
-          msg["with"].push(message[key]);
-        } else {
-          msg[key] = message[key];
-        }
-      });
+    if(client !== exclude) {
+      var msg = {
+        translate: translate,
+        "with": [
+         	username,
+         	message
+        ]
+      };
+      client.write('chat', {message: JSON.stringify(msg)});
     }
-
-    client.write(0x02, { message: JSON.stringify(msg) });
   }
 }
