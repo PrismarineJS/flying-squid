@@ -1,6 +1,6 @@
-mc-plain-server
+node-minecraft-server
 ==============
 
-This is mc-plain-server.
+This is a Minecraft server written in node.js for minecraft 1.8
 
 

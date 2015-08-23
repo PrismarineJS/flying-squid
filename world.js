@@ -1,6 +1,6 @@
 var util = require('util')
-  , zlib = require('zlib')
-  , Buffers = require('buffers');
+var zlib = require('zlib')
+var Buffers = require('buffers');
 
 module.exports = World;
 
@@ -141,7 +141,7 @@ ChunkColumn.prototype.unpack_section = function(buff, section, mask) {
 }
 
 ChunkColumn.prototype.pack = function() {
-  var bufs = new Buffers();
+  var bufs = new Buffers[];
   var mask1 = 0;
   for (var i = 0; i < 16; i++) {
     if (this.chunks[i] !== null) {
@@ -155,7 +155,7 @@ ChunkColumn.prototype.pack = function() {
   var mask2 = 0;
   bufs.push(block_data, block_meta, light_block, light_sky);
   return {
-    data: bufs.toBuffer(),
+    data: Buffer.concat(bufs),
     mask1: mask1,
     mask2: mask2,
     skylight: true
@@ -163,12 +163,12 @@ ChunkColumn.prototype.pack = function() {
 }
 
 ChunkColumn.prototype.pack_section = function(section) {
-  var bufs = new Buffers();
+  var bufs = new Buffers[];
   for (var i = 0; i < 16; i++) {
     if (this.chunks[i] !== null)
       bufs.push(this.chunks[i][section].pack());
   }
-  return bufs.toBuffer();
+  return Buffer.concat(bufs);
 }
 
 function World() {
@@ -192,7 +192,7 @@ World.prototype.unpack = function(packetData) {
 }
 
 World.prototype.packMapChunkBulk = function() {
-  var bufs = new Buffers();
+  var bufs = new Buffers[];
   var metadatas = [];
   var cb = arguments[arguments.length - 1];
   
@@ -233,7 +233,7 @@ World.prototype.packMapChunkBulk = function() {
     console.log("error");
     cb(err);
   });
-  deflate.write(bufs.toBuffer());
+  deflate.write(Buffer.concat(bufs));
   deflate.end();
 }
 

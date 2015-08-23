@@ -3,8 +3,8 @@ var states = mc.protocol.states;
 var World = require('./world');
 
 var options = {
-  motd: 'Vox Industries',
-  'max-players': 127,
+  motd: 'Minecraft Server',
+  'max-players': 20,
   port: 25565,
   'online-mode': false,
 };
@@ -19,9 +19,9 @@ for (var x = 0; x < 16;x++) {
 var server = mc.createServer(options);
 
 server.on('login', function(client) {
-  broadcast({ text: client.username+' joined the game.', color: "yellow" });
+  broadcast({ text: client.username + ' joined the game.', color: "yellow" });
   var addr = client.socket.remoteAddress + ':' + client.socket.remotePort;
-  console.log(client.username+' connected', '('+addr+')');
+  console.log(client.username + ' connected', '(' + addr + ')');
 
   client.on('end', function() {
     broadcast({ text: client.username+' left the game.', color: "yellow" });

@@ -1,25 +1,25 @@
 {
-    "name": "mc-plain-server",
-    "description": "",
+    "name": "node-minecraft-server",
+    "description": "A minecraft server written in node.js",
     "version": "0.0.1",
-    "main": "./mc-plain-server.js",
+    "main": "app.js",
     "author": {
         "name": "roblabla",
         "email": "robinlambertz.dev@gmail.com"
     },
     "keywords": [],
     "licenses": {
-        "type": "mit"
+        "type": "MIT"
     },
     "dependencies": {
-        "minecraft-protocol": "git://github.com/roblabla/node-minecraft-protocol.git#feature-mc1.7",
+        "minecraft-protocol": "git://github.com/roblabla/node-minecraft-protocol.git",
         "buffers": "0.1.1"
     },
     "repository": {
         "type": "git",
-        "url": "git://github.com/YOUR_LOGIN/mc-plain-server.git"
+        "url": "git://github.com/mhsjlw/node-minecraft-server.git"
     },
     "bugs": {
-        "url": "http://github.com/YOUR_LOGIN/mc-plain-server/issues"
+        "url": "http://github.com/mhsjlw/node-minecraft-server/issues"
     }
 }
