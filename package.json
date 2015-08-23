@@ -1,25 +1,26 @@
 {
-    "name": "node-minecraft-server",
-    "description": "A minecraft server written in node.js",
-    "version": "0.0.1",
-    "main": "app.js",
-    "author": {
-        "name": "roblabla",
-        "email": "robinlambertz.dev@gmail.com"
-    },
-    "keywords": [],
-    "licenses": {
-        "type": "MIT"
-    },
-    "dependencies": {
-        "minecraft-protocol": "^0.14.0",
-        "buffers": "0.1.1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/mhsjlw/node-minecraft-server.git"
-    },
-    "bugs": {
-        "url": "http://github.com/mhsjlw/node-minecraft-server/issues"
-    }
+  "name": "node-minecraft-server",
+  "description": "A minecraft server written in node.js",
+  "version": "0.0.1",
+  "main": "app.js",
+  "author": {
+    "name": "roblabla",
+    "email": "robinlambertz.dev@gmail.com"
+  },
+  "keywords": [],
+  "licenses": {
+    "type": "MIT"
+  },
+  "dependencies": {
+    "minecraft-protocol": "^0.14.0",
+    "buffers": "0.1.1",
+    "longjohn": "~0.2.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mhsjlw/node-minecraft-server.git"
+  },
+  "bugs": {
+    "url": "http://github.com/mhsjlw/node-minecraft-server/issues"
+  }
 }

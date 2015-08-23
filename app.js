@@ -37,6 +37,7 @@ server.on('login', function(client) {
     gameMode: 0,
     dimension: 0,
     difficulty: 0,
+    reducedDebugInfo: false,
     maxPlayers: server.maxPlayers
   });
 
