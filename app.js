@@ -31,7 +31,7 @@ server.on('login', function(client) {
   });
 
   // send init data so client will start rendering world
-  client.write('chat', {
+  client.write('login', {
     entityId: client.id,
     levelType: 'default',
     gameMode: 0,
@@ -59,7 +59,7 @@ server.on('login', function(client) {
 
     console.log("Written position, player should spawn");
 
-    client.write('flying', {
+    client.write('update_time', {
       age: [0,0],
       time: [0,1]
     });
@@ -82,7 +82,7 @@ server.on('login', function(client) {
 });
 
 server.on('error', function(error) {
-  console.log('Error:', error);
+  console.log('Error:', error.stack);
 });
 
 server.on('listening', function() {
