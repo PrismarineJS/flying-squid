@@ -7,6 +7,7 @@ var options = {
   'max-players': 20,
   port: 25565,
   'online-mode': false,
+  reducedDebugInfo: false
 };
 
 var world = new World();
@@ -19,6 +20,7 @@ for (var x = 0; x < 16;x++) {
 var server = mc.createServer(options);
 
 server.on('login', function(client) {
+  
   broadcast({ text: client.username + ' joined the game.', color: "yellow" });
   var addr = client.socket.remoteAddress + ':' + client.socket.remotePort;
   console.log(client.username + ' connected', '(' + addr + ')');
@@ -37,12 +39,15 @@ server.on('login', function(client) {
     difficulty: 0,
     maxPlayers: server.maxPlayers
   });
+
   var chunkBulk = world.packMapChunkBulk([0,0], function(err, packetData) {
+    
     if (err) {
       console.log(err);
       return;
     }
     client.write('map_chunk_bulk', packetData);
+
     client.write('position', {
       x: 6,
       y: 53,
@@ -51,6 +56,7 @@ server.on('login', function(client) {
       pitch: 0,
       flags: 0x00
     });
+
     console.log("Written position, player should spawn");
 
     client.write('flying', {
@@ -63,11 +69,13 @@ server.on('login', function(client) {
       gameMode: 1
     });
   });
+
   client.on([states.PLAY, 'chat'], function(data) {
     var message = '<'+client.username+'>' + ' ' + data.message;
     broadcast(message, client.username);
     console.log(message);
   });
+
   client.on('packet', function(packet) {
     console.log(packet);
   })
@@ -126,7 +134,7 @@ function broadcast(message, exclude, username) {
          	message
         ]
       };
-      client.write('chat', {message: JSON.stringify(msg)});
+      client.write('chat', { message: JSON.stringify(msg), position: 0 });
     }
   }
 }
