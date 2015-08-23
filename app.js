@@ -1,5 +1,5 @@
 var mc = require('minecraft-protocol');
-var states = mc.protocol.states;
+var states = mc.states;
 var World = require('./world');
 
 var options = {

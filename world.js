@@ -141,7 +141,7 @@ ChunkColumn.prototype.unpack_section = function(buff, section, mask) {
 }
 
 ChunkColumn.prototype.pack = function() {
-  var bufs = new Buffers[];
+  var bufs = new [];
   var mask1 = 0;
   for (var i = 0; i < 16; i++) {
     if (this.chunks[i] !== null) {
@@ -163,7 +163,7 @@ ChunkColumn.prototype.pack = function() {
 }
 
 ChunkColumn.prototype.pack_section = function(section) {
-  var bufs = new Buffers[];
+  var bufs = new [];
   for (var i = 0; i < 16; i++) {
     if (this.chunks[i] !== null)
       bufs.push(this.chunks[i][section].pack());
@@ -192,7 +192,7 @@ World.prototype.unpack = function(packetData) {
 }
 
 World.prototype.packMapChunkBulk = function() {
-  var bufs = new Buffers[];
+  var bufs = new [];
   var metadatas = [];
   var cb = arguments[arguments.length - 1];
   

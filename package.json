@@ -12,7 +12,7 @@
         "type": "MIT"
     },
     "dependencies": {
-        "minecraft-protocol": "git://github.com/roblabla/node-minecraft-protocol.git",
+        "minecraft-protocol": "^0.14.0",
         "buffers": "0.1.1"
     },
     "repository": {
