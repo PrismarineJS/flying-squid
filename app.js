@@ -1,6 +1,6 @@
 var mc = require('minecraft-protocol');
 var states = mc.states;
-var World = require('./world');
+var World = require('./world/world');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
 
