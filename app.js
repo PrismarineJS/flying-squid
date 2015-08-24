@@ -1,7 +1,7 @@
 var mc = require('minecraft-protocol');
 var states = mc.states;
 var settings = require('./config/settings');
-var World = require('./world/world');
+var World = require('prismarine-chunk');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
 
@@ -16,7 +16,10 @@ var options = {
 var world = new World();
 for (var x = 0; x < 16;x++) {
   for (var z = 0; z < 16; z++) {
-    world.put(x, 50, z, "block_data", 2);
+    world.setBlockType(x, 50, z, 2);
+    for (var y = 0; y < 256; y++) {
+      world.setSkyLight(x, y, z, 15);
+    }
   }
 }
 
@@ -55,13 +58,16 @@ server.on('login', function(client) {
     maxPlayers: server.maxPlayers
   });
 
-  var chunkBulk = world.packMapChunkBulk([0,0], function(err, packetData) {
-    
-    if (err) {
-      console.log(err.stack);
-      return;
-    }
-    client.write('map_chunk_bulk', packetData);
+    var packetData = {
+    x: 0,
+    z: 0,
+    groundUp: true,
+    bitMap: 0xffff,
+    chunkData: world.dump()
+  };
+  client.write('map_chunk', packetData);
+
+    //client.write('map_chunk', packetData);
 
     client.write('position', {
       x: 6,
@@ -83,7 +89,6 @@ server.on('login', function(client) {
       reason: 3,
       gameMode: 1
     });
-  });
 
   client.on([states.PLAY, 'chat'], function(data) {
     var message = '<'+client.username+'>' + ' ' + data.message;
@@ -93,8 +98,9 @@ server.on('login', function(client) {
   });
 
   client.on('packet', function(packet) {
-    console.log("[INFO] " + packet);
-    log("[INFO] " + message);
+    // we don't really need to see the server pass an object every 10nth of a second so I will just disable this
+    //console.log("[INFO] " + packet);
+    //log("[INFO] " + packet);
   })
 });
 

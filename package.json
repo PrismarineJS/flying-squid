@@ -18,7 +18,8 @@
     "minecraft-protocol": "^0.14.0",
     "buffers": "0.1.1",
     "mocha": "~2.2.5",
-    "chai": "~3.2.0"
+    "chai": "~3.2.0",
+    "prismarine-chunk": "~0.1.0"
   },
   "repository": {
     "type": "git",
