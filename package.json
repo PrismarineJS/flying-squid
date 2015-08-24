@@ -7,6 +7,9 @@
     "name": "roblabla",
     "email": "robinlambertz.dev@gmail.com"
   },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
   "keywords": [],
   "licenses": {
     "type": "MIT"
@@ -14,7 +17,8 @@
   "dependencies": {
     "minecraft-protocol": "^0.14.0",
     "buffers": "0.1.1",
-    "longjohn": "~0.2.8"
+    "mocha": "~2.2.5",
+    "chai": "~3.2.0"
   },
   "repository": {
     "type": "git",
@@ -22,5 +26,8 @@
   },
   "bugs": {
     "url": "http://github.com/mhsjlw/node-minecraft-server/issues"
+  },
+  "devDependencies": {
+    "longjohn": "~0.2.8"
   }
 }
