@@ -1,5 +1,8 @@
 Minecraft Server
 ================
+[![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
+![Github issues](https://img.shields.io/github/issues/mhsjlw/node-minecraft-server.svg)
+[![Build Status](https://img.shields.io/circleci/project/mhsjlw/node-minecraft-server/master.svg)](https://circleci.com/gh/mhsjlw/node-minecraft-server) [![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
 
 A semi-functional minecraft server in Node.js
 
@@ -15,4 +18,4 @@ Documentation for how to operate and how to customize your server are coming soo
 
  - @roblabla for helping out with the protocols
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
- - [wiki.vg](http://wiki.vg/Protcols) for documenting minecraft protocols
+ - [wiki.vg](http://wiki.vg/Protocols) for documenting minecraft protocols
