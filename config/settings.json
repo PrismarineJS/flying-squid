@@ -1,0 +1,7 @@
+{
+	"motd": "A Minecraft Server",
+	"port": 25565,
+	"maxPlayers": 10,
+	"onlineMode": true,
+	"logging": true
+}

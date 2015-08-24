@@ -7,6 +7,7 @@ Minecraft Server
 A semi-functional minecraft server in Node.js
 
 ## Building / Running
+Before running or building it is recommended that you configure the server in config/settings.json
 
     npm install
     node app.js

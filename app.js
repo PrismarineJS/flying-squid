@@ -1,14 +1,15 @@
 var mc = require('minecraft-protocol');
 var states = mc.states;
+var settings = require('./config/settings');
 var World = require('./world/world');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
 
 var options = {
-  motd: 'Minecraft Server',
-  'max-players': 20,
-  port: 25565,
-  'online-mode': true,
+  motd: settings.motd,
+  'max-players': settings.maxPlayers,
+  port: settings.port,
+  'online-mode': settings.onlineMode,
   reducedDebugInfo: false
 };
 
@@ -21,7 +22,9 @@ for (var x = 0; x < 16;x++) {
 
 var server = mc.createServer(options);
 	
-	createLog();
+  if(settings.logging == true) {
+    createLog();
+  }
 
 server.on('login', function(client) {
   
@@ -141,8 +144,9 @@ function createLog() {
 }
 
 function log(message) {
-	fs.appendFile("logs/" + timeStarted + ".log", message + "\n", function (err) {
-	});
+  if(settings.logging == true) {
+	 fs.appendFile("logs/" + timeStarted + ".log", message + "\n", function (err) { });
+  }
 }
 
 function broadcast(message, exclude, username) {
