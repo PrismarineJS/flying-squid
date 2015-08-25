@@ -35,19 +35,19 @@ server.on('login', function(client) {
 	playersConnected.push(client);
 
 	playersConnected.forEach(function(entry) {
-		// if(entry != client) {
-		// 	client.write('named_entity_spawn', {
-  //   		entityId: entry.id,
-  //   		playerUUID: entry.uuid,
-  //   		x: 0,
-  //   		y: 0,
-  //   		z: 0,
-  //   		yaw: 0,
-  //   		pitch 0,
-  //   		currentItem:
-  //   		metadata: 
-  // 		});
-		// }
+		if(entry != client) {
+			client.write('named_entity_spawn', {
+    		entityId: entry.id,
+    		playerUUID: entry.uuid,
+      	x: 6,
+      	y: 53,
+      	z: 6,
+    		yaw: 0,
+    		pitch: 0,
+    		currentItem: 0,
+    		metadata: []
+  		});
+		}
 	});
 
 		Object.keys(server.clients).forEach(function(clientKey) { 
@@ -67,16 +67,16 @@ server.on('login', function(client) {
   });
 
 	playersConnected.forEach(function(entry) {
-  	entry.write('player_info', {
+  	client.write('player_info', {
     	action: 0,
     	data: [{
-    		UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-    		name: client.username,
+    		UUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		name: entry.username,
     		properties: [],
     		gamemode: 0,
     		ping: 1,
     		hasDisplayName: true,
-    		displayName: client.username
+    		displayName: entry.username
   		}]
   	});
 	});
