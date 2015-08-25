@@ -3,5 +3,5 @@
 	"port": 25565,
 	"maxPlayers": 10,
 	"onlineMode": true,
-	"logging": true
+	"logging": false
 }

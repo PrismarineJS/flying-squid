@@ -4,6 +4,7 @@ var settings = require('./config/settings');
 var World = require('prismarine-chunk');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
+var playersConnected = [];
 
 var options = {
   motd: settings.motd,
@@ -30,14 +31,63 @@ var server = mc.createServer(options);
   }
 
 server.on('login', function(client) {
-  
-  broadcast({ text: client.username + ' joined the game.', color: "yellow" });
+
+	playersConnected.push(client);
+
+	playersConnected.forEach(function(entry) {
+		// if(entry != client) {
+		// 	client.write('named_entity_spawn', {
+  //   		entityId: entry.id,
+  //   		playerUUID: entry.uuid,
+  //   		x: 0,
+  //   		y: 0,
+  //   		z: 0,
+  //   		yaw: 0,
+  //   		pitch 0,
+  //   		currentItem:
+  //   		metadata: 
+  // 		});
+		// }
+	});
+
+		Object.keys(server.clients).forEach(function(clientKey) { 
+		var otherClient=server.clients[clientKey]
+  	otherClient.write('player_info', {
+    	action: 0,
+    	data: [{
+    		UUID: otherClient.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		name: otherClient.username,
+    		properties: [],
+    		gamemode: 0,
+    		ping: 1,
+    		hasDisplayName: true,
+    		displayName: client.username
+  		}]
+  	});
+  });
+
+	playersConnected.forEach(function(entry) {
+  	entry.write('player_info', {
+    	action: 0,
+    	data: [{
+    		UUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		name: entry.username,
+    		properties: [],
+    		gamemode: 0,
+    		ping: 1,
+    		hasDisplayName: true,
+    		displayName: client.username
+  		}]
+  	});
+	});
+
+  broadcast(client.username + ' joined the game.', "yellow");
   var addr = client.socket.remoteAddress + ':' + client.socket.remotePort;
   console.log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
   log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
 
   client.on('end', function() {
-    broadcast({ text: client.username+' left the game.', color: "yellow" });
+    broadcast(client.username + ' joined the game.', "yellow");
     console.log("[INFO]: " + client.username+' disconnected', '('+addr+')');
     log("[INFO]: " + client.username+' disconnected', '('+addr+')');
   });
@@ -58,6 +108,19 @@ server.on('login', function(client) {
     maxPlayers: server.maxPlayers
   });
 
+  // client.write('player_info', {
+  //   action: 0,
+  //   data: [{
+  //   	UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+  //   	name: client.username,
+  //   	properties: [],
+  //   	gamemode: 0,
+  //   	ping: 1,
+  //   	hasDisplayName: false,
+  //   	//displayName: client.username
+  // 	}]
+  // });
+
     var packetData = {
     x: 0,
     z: 0,
@@ -65,6 +128,7 @@ server.on('login', function(client) {
     bitMap: 0xffff,
     chunkData: world.dump()
   };
+
   client.write('map_chunk', packetData);
 
     //client.write('map_chunk', packetData);
@@ -77,6 +141,7 @@ server.on('login', function(client) {
       pitch: 0,
       flags: 0x00
     });
+
     console.log("[INFO]: position written, player spawning...");
     log("[INFO]: position written, player spawning...");
 
@@ -87,12 +152,12 @@ server.on('login', function(client) {
 
     client.write('game_state_change', {
       reason: 3,
-      gameMode: 1
+      gameMode: 0
     });
 
-  client.on([states.PLAY, 'chat'], function(data) {
+  client.on('chat', function(data) {
     var message = '<'+client.username+'>' + ' ' + data.message;
-    broadcast(message, client.username);
+    playerChat(message, client.username);
     console.log("[INFO] " + message);
     log("[INFO] " + message);
   });
@@ -101,7 +166,7 @@ server.on('login', function(client) {
     // we don't really need to see the server pass an object every 10nth of a second so I will just disable this
     //console.log("[INFO] " + packet);
     //log("[INFO] " + packet);
-  })
+  });
 });
 
 server.on('error', function(error) {
@@ -155,23 +220,33 @@ function log(message) {
   }
 }
 
-function broadcast(message, exclude, username) {
-  var client, translate;
-  translate = username ? 'chat.type.announcement' : 'chat.type.text';
-  username = username || 'Server';
+function playerChat(message, exclude, username) {
+  var client;
+  //translate = username ? 'chat.type.text' : 'chat.type.text';
+  username = username  || '';
   for(var clientId in server.clients) {
     if(!server.clients.hasOwnProperty(clientId)) continue;
 
     client = server.clients[clientId];
     if(client !== exclude) {
       var msg = {
-        translate: translate,
-        "with": [
-         	username,
-         	message
-        ]
+        "text": username + message
       };
       client.write('chat', { message: JSON.stringify(msg), position: 0 });
     }
+  }
+}
+
+function broadcast(message, color) {
+  var client;
+  for(var clientId in server.clients) {
+    if(!server.clients.hasOwnProperty(clientId)) continue;
+
+    client = server.clients[clientId];
+      var msg = {
+        "text": message,
+        "color": color
+      };
+      client.write('chat', { message: JSON.stringify(msg), position: 0 });
   }
 }
