@@ -12,8 +12,7 @@ var options = {
   motd: settings.motd,
   'max-players': settings.maxPlayers,
   port: settings.port,
-  'online-mode': settings.onlineMode,
-  reducedDebugInfo: false
+  'online-mode': settings.onlineMode
 };
 
 var world = new World();
@@ -45,100 +44,6 @@ server.on('login', function(client) {
 	playersConnected.push(client);
   uuidToPlayer[client.uuid]=client;
 
-	playersConnected.forEach(function(entry) {
-		if(entry != client) {
-      var pos=uuidToPlayer[entry.uuid].position;
-			client.write('named_entity_spawn', {
-    		entityId: entry.id,
-    		playerUUID: transformUuid(entry.uuid),
-      	x: pos ? pos.x : 6,
-      	y: pos ? pos.y : 52,
-      	z: pos ? pos.z : 6,
-    		yaw: 0,
-    		pitch: 0,
-    		currentItem: 0,
-    		metadata: []
-  		});
-		}
-	});
-
-    playersConnected.forEach(function(otherClient) {
-  	otherClient.write('player_info', {
-    	action: 0,
-    	data: [{
-    		UUID: transformUuid(client.uuid),
-    		name: client.username,
-    		properties: [],
-    		gamemode: 0,
-    		ping: 1,
-    		hasDisplayName: true,
-    		displayName: client.username
-  		}]
-  	});
-  });
-
-	playersConnected.forEach(function(entry) {
-  	client.write('player_info', {
-    	action: 0,
-    	data: [{
-    		UUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-    		name: entry.username,
-    		properties: [],
-    		gamemode: 0,
-    		ping: 1,
-    		hasDisplayName: true,
-    		displayName: entry.username
-  		}]
-  	});
-	});
-
-  broadcast(client.username + ' joined the game.', "yellow");
-  var addr = client.socket.remoteAddress + ':' + client.socket.remotePort;
-  console.log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
-  log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
-
-  client.on('end', function() {
-    broadcast(client.username + ' joined the game.', "yellow");
-    console.log("[INFO]: " + client.username+' disconnected', '('+addr+')');
-    log("[INFO]: " + client.username+' disconnected', '('+addr+')');
-  });
-
-  client.on('position', function(packet) {
-    var position = new vec3(packet.x,packet.y,packet.z);
-    var onGround=packet.onGround;
-    sendRelativePositionChange(client,position,onGround);
-  });
-
-  client.on('position_look', function(packet) {
-    var position = new vec3(packet.x,packet.y,packet.z);
-    var onGround=packet.onGround;
-    sendRelativePositionChange(client,position,onGround);
-  });
-
-  function sendRelativePositionChange(client,newPosition,onGround) {
-    if (uuidToPlayer[client.uuid].position) {
-      var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
-      if(diff.distanceTo(new vec3(0,0,0))>0.1)
-        playersConnected.forEach(function (otherClient) {
-          if (otherClient != client) {
-            otherClient.write('rel_entity_move', {
-              entityId: uuidToPlayer[client.uuid].id,
-              dX: Math.floor(diff.x*32),
-              dY: Math.floor(diff.y*32),
-              dZ: Math.floor(diff.z*32),
-              onGround: onGround
-            });
-          }
-        });
-    }
-    uuidToPlayer[client.uuid].position = newPosition;
-    uuidToPlayer[client.uuid].onGround=onGround;
-  }
-
-  client.on('error', function(error) {
-  	console.log('[ERR] ' + error.stack);
-  	log('[ERR]: Client: ' + error.stack);
-  });
 
   // send init data so client will start rendering world
   client.write('login', {
@@ -160,8 +65,6 @@ server.on('login', function(client) {
   };
 
   client.write('map_chunk', packetData);
-
-    //client.write('map_chunk', packetData);
 
     client.write('position', {
       x: 6,
@@ -197,6 +100,118 @@ server.on('login', function(client) {
     //console.log("[INFO] " + packet);
     //log("[INFO] " + packet);
   });
+
+  function getOtherClients()
+  {
+    return playersConnected.filter(function(otherClient){return otherClient!=client});
+  }
+
+  var otherClients=getOtherClients();
+
+  otherClients.forEach(function(otherClient) {
+    otherClient.write('player_info', {
+      action: 0,
+      data: [{
+        UUID: transformUuid(client.uuid),
+        name: client.username,
+        properties: [],
+        gamemode: 0,
+        ping: 1,
+        hasDisplayName: true,
+        displayName: client.username
+      }]
+    });
+  });
+
+    client.write('player_info', {
+      action: 0,
+      data: otherClients
+        .map(function(otherClient) {
+          return {
+            UUID: transformUuid(otherClient.uuid),
+            name: otherClient.username,
+            properties: [],
+            gamemode: 0,
+            ping: 1,
+            hasDisplayName: true,
+            displayName: otherClient.username
+          };
+        })
+    });
+
+
+  otherClients.forEach(function(otherClient) {
+      var pos=uuidToPlayer[otherClient.uuid].position;
+      client.write('named_entity_spawn', {
+        entityId: otherClient.id,
+        playerUUID: transformUuid(otherClient.uuid),
+        x: pos ? Math.floor(pos.x*32) : 6*32,
+        y: pos ? Math.floor(pos.y*32) : 53*32,
+        z: pos ? Math.floor(pos.z*32) : 6*32,
+        yaw: 0,
+        pitch: 0,
+        currentItem: 0,
+        metadata: []
+      });
+      otherClient.write('named_entity_spawn', {
+        entityId: client.id,
+        playerUUID: transformUuid(client.uuid),
+        x: 6*32,
+        y: 53*32,
+        z: 6*32,
+        yaw: 0,
+        pitch: 0,
+        currentItem: 0,
+        metadata: []
+      });
+  });
+
+  broadcast(client.username + ' joined the game.', "yellow");
+  var addr = client.socket.remoteAddress + ':' + client.socket.remotePort;
+  console.log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
+  log("[INFO]: " + client.username + ' connected', '(' + addr + ')');
+
+  client.on('end', function() {
+    broadcast(client.username + ' joined the game.', "yellow");
+    console.log("[INFO]: " + client.username+' disconnected', '('+addr+')');
+    log("[INFO]: " + client.username+' disconnected', '('+addr+')');
+  });
+
+  client.on('position', function(packet) {
+    var position = new vec3(packet.x,packet.y,packet.z);
+    var onGround=packet.onGround;
+    sendRelativePositionChange(client,position,onGround);
+  });
+
+  client.on('position_look', function(packet) {
+    var position = new vec3(packet.x,packet.y,packet.z);
+    var onGround=packet.onGround;
+    sendRelativePositionChange(client,position,onGround);
+  });
+
+  function sendRelativePositionChange(client,newPosition,onGround) {
+    if (uuidToPlayer[client.uuid].position) {
+      var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
+      if(diff.distanceTo(new vec3(0,0,0))>0.1)
+        getOtherClients().forEach(function (otherClient) {
+          otherClient.write('rel_entity_move', {
+            entityId: uuidToPlayer[client.uuid].id,
+            dX: Math.floor(diff.x*32),
+            dY: Math.floor(diff.y*32),
+            dZ: Math.floor(diff.z*32),
+            onGround: onGround
+          });
+        });
+    }
+    uuidToPlayer[client.uuid].position = newPosition;
+    uuidToPlayer[client.uuid].onGround=onGround;
+  }
+
+  client.on('error', function(error) {
+    console.log('[ERR] ' + error.stack);
+    log('[ERR]: Client: ' + error.stack);
+  });
+
 });
 
 server.on('error', function(error) {
