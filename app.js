@@ -55,8 +55,8 @@ server.on('login', function(client) {
   	otherClient.write('player_info', {
     	action: 0,
     	data: [{
-    		UUID: otherClient.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-    		name: otherClient.username,
+    		UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		name: client.username,
     		properties: [],
     		gamemode: 0,
     		ping: 1,
@@ -70,8 +70,8 @@ server.on('login', function(client) {
   	entry.write('player_info', {
     	action: 0,
     	data: [{
-    		UUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-    		name: entry.username,
+    		UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		name: client.username,
     		properties: [],
     		gamemode: 0,
     		ping: 1,
