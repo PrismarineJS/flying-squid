@@ -197,7 +197,7 @@ server.on('login', function(client) {
   function sendRelativePositionChange(client,newPosition,onGround) {
     if (uuidToPlayer[client.uuid].position) {
       var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
-      if(diff.distanceTo(new vec3(0,0,0))>0.1)
+      if(diff.distanceTo(new vec3(0,0,0))!=0)
         getOtherClients().forEach(function (otherClient) {
           otherClient.write('rel_entity_move', {
             entityId: uuidToPlayer[client.uuid].id,
