@@ -26,6 +26,8 @@ for (var x = 0; x < 16;x++) {
   }
 }
 
+var entityMaxId=0;
+
 var server = mc.createServer(options);
 	
   if(settings.logging == true) {
@@ -33,14 +35,15 @@ var server = mc.createServer(options);
   }
 
 server.on('login', function(client) {
-
+  entityMaxId++;
+  client.id=entityMaxId;
 	playersConnected.push(client);
 
 	playersConnected.forEach(function(entry) {
 		if(entry != client) {
 			client.write('named_entity_spawn', {
     		entityId: entry.id,
-    		playerUUID: entry.uuid,
+    		playerUUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
       	x: playerMoveData[entry.uuid].x,
       	y: playerMoveData[entry.uuid].y,
       	z: playerMoveData[entry.uuid].z,
