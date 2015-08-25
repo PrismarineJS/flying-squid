@@ -39,6 +39,11 @@ function transformUuid(s)
 }
 
 server.on('login', function(client) {
+  if(uuidToPlayer[client.uuid])
+  {
+    client.end("You are already connected");
+    return;
+  }
   entityMaxId++;
   client.id=entityMaxId;
 	playersConnected.push(client);
