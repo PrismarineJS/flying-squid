@@ -8,6 +8,13 @@ var playersConnected = [];
 var uuidToPlayer = {};
 var vec3 = require("vec3");
 
+
+function toFixedPosition(p)
+{
+  return new vec3(Math.floor(p.x*32),Math.floor(p.y*32),Math.floor(p.z*32))
+}
+
+
 var options = {
   motd: settings.motd,
   'max-players': settings.maxPlayers,
@@ -150,9 +157,9 @@ server.on('login', function(client) {
       client.write('named_entity_spawn', {
         entityId: otherClient.id,
         playerUUID: transformUuid(otherClient.uuid),
-        x: pos ? Math.floor(pos.x*32) : 6*32,
-        y: pos ? Math.floor(pos.y*32) : 53*32,
-        z: pos ? Math.floor(pos.z*32) : 6*32,
+        x: pos ? pos.x : 6*32,
+        y: pos ? pos.y : 53*32,
+        z: pos ? pos.z : 6*32,
         yaw: 0,
         pitch: 0,
         currentItem: 0,
@@ -185,13 +192,13 @@ server.on('login', function(client) {
   client.on('position', function(packet) {
     var position = new vec3(packet.x,packet.y,packet.z);
     var onGround=packet.onGround;
-    sendRelativePositionChange(client,position,onGround);
+    sendRelativePositionChange(client,toFixedPosition(position),onGround);
   });
 
   client.on('position_look', function(packet) {
     var position = new vec3(packet.x,packet.y,packet.z);
     var onGround=packet.onGround;
-    sendRelativePositionChange(client,position,onGround);
+    sendRelativePositionChange(client,toFixedPosition(position),onGround);
   });
 
   function sendRelativePositionChange(client,newPosition,onGround) {
@@ -201,9 +208,9 @@ server.on('login', function(client) {
         getOtherClients().forEach(function (otherClient) {
           otherClient.write('rel_entity_move', {
             entityId: uuidToPlayer[client.uuid].id,
-            dX: Math.floor(diff.x*32),
-            dY: Math.floor(diff.y*32),
-            dZ: Math.floor(diff.z*32),
+            dX: diff.x,
+            dY: diff.y,
+            dZ: diff.z,
             onGround: onGround
           });
         });
