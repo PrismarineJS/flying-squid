@@ -125,7 +125,7 @@ server.on('login', function(client) {
 
     client.write('player_info', {
       action: 0,
-      data: otherClients
+      data: playersConnected
         .map(function(otherClient) {
           return {
             UUID: transformUuid(otherClient.uuid),
