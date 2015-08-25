@@ -21,5 +21,6 @@ Documentation for how to operate and how to customize your server are coming soo
 ## Contributors
 
  - @roblabla for helping out with the protocols
+ - @rom1504 for massive contributions to the code
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
  - [wiki.vg](http://wiki.vg/Protocols) for documenting minecraft protocols
