@@ -5,6 +5,8 @@ var World = require('prismarine-chunk');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
 var playersConnected = [];
+var playerMoveData = [];
+var playerLookData = [];
 
 var options = {
   motd: settings.motd,
@@ -39,11 +41,11 @@ server.on('login', function(client) {
 			client.write('named_entity_spawn', {
     		entityId: entry.id,
     		playerUUID: entry.uuid,
-      	x: 6,
-      	y: 53,
-      	z: 6,
-    		yaw: 0,
-    		pitch: 0,
+      	x: playerMoveData[entry.uuid].x,
+      	y: playerMoveData[entry.uuid].y,
+      	z: playerMoveData[entry.uuid].z,
+    		yaw: playerLookData[entry.uuid],
+    		pitch: playerLookData[entry.uuid],
     		currentItem: 0,
     		metadata: []
   		});
@@ -90,6 +92,27 @@ server.on('login', function(client) {
     broadcast(client.username + ' joined the game.', "yellow");
     console.log("[INFO]: " + client.username+' disconnected', '('+addr+')');
     log("[INFO]: " + client.username+' disconnected', '('+addr+')');
+  });
+
+  client.on('position', function(packet) {
+    playerMoveData[client.uuid] = { x: packet.x, y: packet.y, z: packet.z, id: packet.id, onGround: packet.onGround};
+    client.write('rel_entity_move', {
+      entityId: playerMoveData[client.uuid].id,
+      dX: playerMoveData[client.uuid].x,
+      dY: playerMoveData[client.uuid].y,
+      dZ: playerMoveData[client.uuid].z,
+      onGround: playerMoveData[client.uuid].onGround
+    });
+  });
+
+  client.on('position_look', function(packet) {
+    playerLookData[client.uuid] = { x: packet.yaw, y: packet.pitch, id: packet.id, onGround: packet.onGround};
+    client.write('entity_look', {
+      entityId: playerLookData[client.uuid].id,
+      yaw: playerLookData[client.uuid].yaw,
+      pitch: playerLookData[client.uuid].pitch,
+      onGround: playerLookData[client.uuid].onGround
+    });
   });
 
   client.on('error', function(error) {
