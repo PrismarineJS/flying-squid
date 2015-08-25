@@ -1,5 +1,7 @@
 Minecraft Server
 ================
+
+[![Join the chat at https://gitter.im/mhsjlw/node-minecraft-server](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/node-minecraft-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
 [![Github issues](https://img.shields.io/github/issues/mhsjlw/node-minecraft-server.svg)](https://img.shields.io/github/issues/mhsjlw/node-minecraft-server.svg)
 [![Build Status](https://img.shields.io/circleci/project/mhsjlw/node-minecraft-server/master.svg)](https://circleci.com/gh/mhsjlw/node-minecraft-server) [![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
