@@ -5,8 +5,8 @@ var World = require('prismarine-chunk');
 var fs = require('fs');
 var timeStarted = Math.floor(new Date() / 1000).toString();
 var playersConnected = [];
-var playerMoveData = [];
-var playerLookData = [];
+var uuidToPlayer = {};
+var vec3 = require("vec3");
 
 var options = {
   motd: settings.motd,
@@ -34,33 +34,39 @@ var server = mc.createServer(options);
     createLog();
   }
 
+function transformUuid(s)
+{
+  return s.split("-").map(function(item) { return parseInt(item, 16); });
+}
+
 server.on('login', function(client) {
   entityMaxId++;
   client.id=entityMaxId;
 	playersConnected.push(client);
+  uuidToPlayer[client.uuid]=client;
 
 	playersConnected.forEach(function(entry) {
 		if(entry != client) {
+      var pos=uuidToPlayer[entry.uuid].position;
 			client.write('named_entity_spawn', {
     		entityId: entry.id,
-    		playerUUID: entry.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-      	x: playerMoveData[entry.uuid].x,
-      	y: playerMoveData[entry.uuid].y,
-      	z: playerMoveData[entry.uuid].z,
-    		yaw: playerLookData[entry.uuid],
-    		pitch: playerLookData[entry.uuid],
+    		playerUUID: transformUuid(entry.uuid),
+      	x: pos ? pos.x : 6,
+      	y: pos ? pos.y : 52,
+      	z: pos ? pos.z : 6,
+    		yaw: 0,
+    		pitch: 0,
     		currentItem: 0,
     		metadata: []
   		});
 		}
 	});
 
-		Object.keys(server.clients).forEach(function(clientKey) { 
-		var otherClient=server.clients[clientKey]
+    playersConnected.forEach(function(otherClient) {
   	otherClient.write('player_info', {
     	action: 0,
     	data: [{
-    		UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
+    		UUID: transformUuid(client.uuid),
     		name: client.username,
     		properties: [],
     		gamemode: 0,
@@ -98,25 +104,36 @@ server.on('login', function(client) {
   });
 
   client.on('position', function(packet) {
-    playerMoveData[client.uuid] = { x: packet.x, y: packet.y, z: packet.z, id: packet.id, onGround: packet.onGround};
-    client.write('rel_entity_move', {
-      entityId: playerMoveData[client.uuid].id,
-      dX: playerMoveData[client.uuid].x,
-      dY: playerMoveData[client.uuid].y,
-      dZ: playerMoveData[client.uuid].z,
-      onGround: playerMoveData[client.uuid].onGround
-    });
+    var position = new vec3(packet.x,packet.y,packet.z);
+    var onGround=packet.onGround;
+    sendRelativePositionChange(client,position,onGround);
   });
 
   client.on('position_look', function(packet) {
-    playerLookData[client.uuid] = { x: packet.yaw, y: packet.pitch, id: packet.id, onGround: packet.onGround};
-    client.write('entity_look', {
-      entityId: playerLookData[client.uuid].id,
-      yaw: playerLookData[client.uuid].yaw,
-      pitch: playerLookData[client.uuid].pitch,
-      onGround: playerLookData[client.uuid].onGround
-    });
+    var position = new vec3(packet.x,packet.y,packet.z);
+    var onGround=packet.onGround;
+    sendRelativePositionChange(client,position,onGround);
   });
+
+  function sendRelativePositionChange(client,newPosition,onGround) {
+    if (uuidToPlayer[client.uuid].position) {
+      var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
+      if(diff.distanceTo(new vec3(0,0,0))>0.1)
+        playersConnected.forEach(function (otherClient) {
+          if (otherClient != client) {
+            otherClient.write('rel_entity_move', {
+              entityId: uuidToPlayer[client.uuid].id,
+              dX: Math.floor(diff.x*32),
+              dY: Math.floor(diff.y*32),
+              dZ: Math.floor(diff.z*32),
+              onGround: onGround
+            });
+          }
+        });
+    }
+    uuidToPlayer[client.uuid].position = newPosition;
+    uuidToPlayer[client.uuid].onGround=onGround;
+  }
 
   client.on('error', function(error) {
   	console.log('[ERR] ' + error.stack);
@@ -133,19 +150,6 @@ server.on('login', function(client) {
     reducedDebugInfo: false,
     maxPlayers: server.maxPlayers
   });
-
-  // client.write('player_info', {
-  //   action: 0,
-  //   data: [{
-  //   	UUID: client.uuid.split("-").map(function(item) { return parseInt(item, 16); }),
-  //   	name: client.username,
-  //   	properties: [],
-  //   	gamemode: 0,
-  //   	ping: 1,
-  //   	hasDisplayName: false,
-  //   	//displayName: client.username
-  // 	}]
-  // });
 
     var packetData = {
     x: 0,
