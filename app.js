@@ -35,7 +35,7 @@ for (var x = 0; x < 16;x++) {
 var entityMaxId=0;
 
 var server = mc.createServer(options);
-	
+
   if(settings.logging == true) {
     createLog();
   }
@@ -195,25 +195,28 @@ server.on('login', function(client) {
     sendRelativePositionChange(client,toFixedPosition(position),onGround);
   });
 
-  client.on('position_look', function(packet) {
-    var position = new vec3(packet.x,packet.y,packet.z);
-    var onGround=packet.onGround;
-    sendRelativePositionChange(client,toFixedPosition(position),onGround);
-  });
+
+  function writeOthers(packetName,packetFields)
+  {
+    getOtherClients().forEach(function (otherClient) {
+      otherClient.write(packetName, packetFields);
+    });
+  }
+
 
   function sendRelativePositionChange(client,newPosition,onGround) {
     if (uuidToPlayer[client.uuid].position) {
       var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
-      if(diff.distanceTo(new vec3(0,0,0))!=0)
-        getOtherClients().forEach(function (otherClient) {
-          otherClient.write('rel_entity_move', {
-            entityId: uuidToPlayer[client.uuid].id,
-            dX: diff.x,
-            dY: diff.y,
-            dZ: diff.z,
-            onGround: onGround
-          });
+      if (diff.distanceTo(new vec3(0, 0, 0)) != 0) {
+
+        writeOthers('rel_entity_move', {
+          entityId: client.id,
+          dX: diff.x,
+          dY: diff.y,
+          dZ: diff.z,
+          onGround: onGround
         });
+      }
     }
     uuidToPlayer[client.uuid].position = newPosition;
     uuidToPlayer[client.uuid].onGround=onGround;
@@ -268,7 +271,7 @@ server.on('listening', function() {
 function createLog() {
 	fs.writeFile("logs/" + timeStarted + ".log", "[INFO]: Started logging...\n", function(err, data) {
 	if (err) return console.log(err);
-	}); 
+	});
 }
 
 function log(message) {
