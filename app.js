@@ -7,6 +7,7 @@ var timeStarted = Math.floor(new Date() / 1000).toString();
 var playersConnected = [];
 var uuidToPlayer = {};
 var vec3 = require("vec3");
+var conv=require("./lib/convertions");
 
 
 function toFixedPosition(p)
@@ -195,25 +196,43 @@ server.on('login', function(client) {
     sendRelativePositionChange(client,toFixedPosition(position),onGround);
   });
 
-  client.on('position_look', function(packet) {
-    var position = new vec3(packet.x,packet.y,packet.z);
-    var onGround=packet.onGround;
-    sendRelativePositionChange(client,toFixedPosition(position),onGround);
+
+  function writeOthers(packetName,packetFields)
+  {
+    getOtherClients().forEach(function (otherClient) {
+      otherClient.write(packetName, packetFields);
+    });
+  }
+
+  // float (degrees) --> byte (1/256 "degrees")
+  client.on('look', function(packet) {
+    var c={
+      entityId:client.id,
+      yaw:Math.floor(packet.yaw*256 /360 ),
+      pitch:Math.floor(packet.pitch*256 /360 ),
+      onGround:packet.onGround
+    };
+    console.log(packet.yaw);
+    console.log(packet.pitch);
+    console.log(c);
+    writeOthers("entity_look",c);
   });
+
 
   function sendRelativePositionChange(client,newPosition,onGround) {
     if (uuidToPlayer[client.uuid].position) {
       var diff = newPosition.minus(uuidToPlayer[client.uuid].position);
-      if(diff.distanceTo(new vec3(0,0,0))!=0)
-        getOtherClients().forEach(function (otherClient) {
-          otherClient.write('rel_entity_move', {
-            entityId: uuidToPlayer[client.uuid].id,
-            dX: diff.x,
-            dY: diff.y,
-            dZ: diff.z,
-            onGround: onGround
-          });
+      if (diff.distanceTo(new vec3(0, 0, 0)) != 0) {
+
+        writeOthers('rel_entity_move', {
+          entityId: client.id,
+          dX: diff.x,
+          dY: diff.y,
+          dZ: diff.z,
+          onGround: onGround
         });
+       // console.log(diff);
+      }
     }
     uuidToPlayer[client.uuid].position = newPosition;
     uuidToPlayer[client.uuid].onGround=onGround;
