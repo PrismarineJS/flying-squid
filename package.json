@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "main": "app.js",
   "author": "mhsjlw <mhsjlw@aol.com>",
-  "contributors" [{
+  "contributors": [{
     "name": "rom1504",
     "email": "romain.rom1@gmail.com"
   }],
