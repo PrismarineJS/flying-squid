@@ -31,15 +31,26 @@
       - [serv.players](#servplayers)
       - [serv.uuidToPlayer](#servuuidtoplayer)
       - [serv.world](#servworld)
+    - [Events](#events)
+      - ["error" (error)](#error-error)
+      - ["listening" (port)](#listening-port)
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
+      - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
+    - [Events](#events-1)
+      - ["connected"](#connected)
+      - ["spawned"](#spawned)
+      - ["disconnected"](#disconnected)
+      - ["error" (error)](#error-error-1)
+      - ["chat" (message)](#chat-message)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.others()](#playerothers)
+      - [player.chat(message)](#playerchatmessage)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -157,15 +168,29 @@ Object uuid to players
 
 The map
 
+### Events
+
+#### "error" (error)
+
+Fires when there is an error.
+
+#### "listening" (port)
+
+Fires when the server is listening.
+
 ### Methods
 
 #### serv.createLog()
 
-create the log file
+creates the log file
 
 #### serv.log(message)
 
 logs a `message`
+
+#### serv.broadcast(message[,color])
+
+broadcasts `message` to all the players with the optional `color`.
 
 
 ## Player
@@ -176,6 +201,27 @@ logs a `message`
 
 The entity of the player, of type `CraftyJS.Entity`
 
+### Events
+
+#### "connected" 
+
+Fires when the player is connected
+
+#### "spawned"
+
+Fires when the player is spawned
+
+#### "disconnected"
+
+Fires when the player disconnected
+
+#### "error" (error)
+
+Fires when there is an error.
+
+#### "chat" (message)
+
+Fires when the player says `message`.
 
 ### Methods
 
@@ -186,6 +232,10 @@ login
 #### player.others()
 
 return the other players than `player`
+
+#### player.chat(message)
+
+sends `message` to the player
 
 ### Low level properties
 

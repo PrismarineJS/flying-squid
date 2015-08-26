@@ -5,6 +5,8 @@ var path = require('path');
 var requireIndex = require('requireindex');
 var serverPlugins = requireIndex(path.join(__dirname, 'lib', 'serverPlugins'));
 var playerPlugins = requireIndex(path.join(__dirname, 'lib', 'playerPlugins'));
+var Player=require("./lib/player");
+require("longjohn");
 
 module.exports = {
   createMCServer:createMCServer
@@ -36,17 +38,15 @@ MCServer.prototype.connect = function(options) {
   }
 
   self._server.on('error', function(error) {
-    console.log('[ERR] ', error.stack);
-    self.log('[ERR]: Server:', error.stack);
+    self.emit('error',error);
   });
 
   self._server.on('listening', function() {
-    console.log('[INFO]: Server listening on port', self._server.socketServer.address().port);
-    self.log('[INFO]: Server listening on port', self._server.socketServer.address().port);
+    self.emit('listening',self._server.socketServer.address().port);
   });
 
   self._server.on('login', function (client) {
-    var player={};
+    var player=new Player();
     player._client=client;
     for(var pluginName in playerPlugins) {
       playerPlugins[pluginName](self, player, options);
