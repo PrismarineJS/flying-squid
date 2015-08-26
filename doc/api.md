@@ -39,7 +39,7 @@
       - [player.entity](#playerentity)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
-      - [player.others(client)](#playerothersclient)
+      - [player.others()](#playerothers)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -183,7 +183,7 @@ The entity of the player, of type `CraftyJS.Entity`
 
 login
 
-#### player.others(client)
+#### player.others()
 
 return the other players than `player`
 
