@@ -1,12 +1,13 @@
 {
-  "name": "node-minecraft-server",
+  "name": "craftyjs",
   "description": "A minecraft server written in node.js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "app.js",
-  "author": {
-    "name": "roblabla",
-    "email": "robinlambertz.dev@gmail.com"
-  },
+  "author": "mhsjlw <mhsjlw@aol.com>",
+  "contributors" [{
+    "name": "rom1504",
+    "email": "romain.rom1@gmail.com"
+  }],
   "scripts": {
     "test": "mocha --reporter spec"
   },
@@ -25,10 +26,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mhsjlw/node-minecraft-server.git"
+    "url": "git://github.com/mhsjlw/craftyjs.git"
   },
   "bugs": {
-    "url": "http://github.com/mhsjlw/node-minecraft-server/issues"
+    "url": "http://github.com/mhsjlw/craftyjs/issues"
   },
   "devDependencies": {
     "longjohn": "~0.2.8"
