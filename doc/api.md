@@ -41,6 +41,7 @@
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
+      - [player.username](#playerusername)
     - [Events](#events-1)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -200,6 +201,10 @@ broadcasts `message` to all the players with the optional `color`.
 #### player.entity
 
 The entity of the player, of type `CraftyJS.Entity`
+
+#### player.username
+
+The username of the player
 
 ### Events
 
