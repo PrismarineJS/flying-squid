@@ -39,11 +39,11 @@
       - [player.entity](#playerentity)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
-    - [player.others(client)](#playerothersclient)
+      - [player.others(client)](#playerothersclient)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
-    - [player._writeOthers(packetName, packetFields)](#player_writeotherspacketname-packetfields)
+      - [player._writeOthers(packetName, packetFields)](#player_writeotherspacketname-packetfields)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -183,7 +183,7 @@ The entity of the player, of type `CraftyJS.Entity`
 
 login
 
-### player.others(client)
+#### player.others(client)
 
 return the other players than `player`
 
@@ -195,6 +195,6 @@ The internal implementation to communicate with a client
 
 ### Low level methods
 
-### player._writeOthers(packetName, packetFields)
+#### player._writeOthers(packetName, packetFields)
 
 write to other players than `player` the packet `packetName` with fields `packetFields`
