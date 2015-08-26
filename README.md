@@ -1,6 +1,8 @@
 Craftyjs
 ================
 
+[![Join the chat at https://gitter.im/mhsjlw/craftyjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/craftyjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Join the chat at https://gitter.im/mhsjlw/node-minecraft-server](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/node-minecraft-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mhsjlw/node-minecraft-server/blob/master/LICENSE)
 [![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
