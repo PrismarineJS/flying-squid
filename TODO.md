@@ -13,9 +13,9 @@ This is a list that will keep the developers and the community organized!
 
 
 ### To-do
- - [ ] Fix spitting errors in the console
+ - [x] Fix spitting errors in the console
  - [ ] Fix player looking (seriously, it looks ridiculous)
- - [ ] Fix massive lag when players move
+ - [x] Fix massive lag when players move
  - [ ] Dynamic worlds (players can see the when someone makes changes to the world)
  - [ ] Block dropping
  - [ ] Inventories (saving the blocks players get)
