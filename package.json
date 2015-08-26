@@ -20,7 +20,8 @@
     "mocha": "~2.2.5",
     "chai": "~3.2.0",
     "prismarine-chunk": "~0.1.0",
-    "vec3":"0.1.3"
+    "vec3":"0.1.3",
+    "requireindex": "~1.0.0"
   },
   "repository": {
     "type": "git",
