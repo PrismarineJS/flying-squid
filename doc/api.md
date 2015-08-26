@@ -1,3 +1,52 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [API](#api)
+  - [Classes](#classes)
+    - [CraftyJS.Entity](#craftyjsentity)
+      - [entity.id](#entityid)
+      - [entity.type](#entitytype)
+      - [entity.username](#entityusername)
+      - [entity.mobType](#entitymobtype)
+      - [entity.displayName](#entitydisplayname)
+      - [entity.entityType](#entityentitytype)
+      - [entity.kind](#entitykind)
+      - [entity.name](#entityname)
+      - [entity.objectType](#entityobjecttype)
+      - [entity.count](#entitycount)
+      - [entity.position](#entityposition)
+      - [entity.velocity](#entityvelocity)
+      - [entity.yaw](#entityyaw)
+      - [entity.pitch](#entitypitch)
+      - [entity.height](#entityheight)
+      - [entity.onGround](#entityonground)
+      - [entity.equipment[5]](#entityequipment5)
+      - [entity.heldItem](#entityhelditem)
+      - [entity.metadata](#entitymetadata)
+  - [MCServer](#mcserver)
+    - [CraftyJS.createMCServer(options)](#craftyjscreatemcserveroptions)
+    - [Properties](#properties)
+      - [serv.entityMaxId](#serventitymaxid)
+      - [serv.players](#servplayers)
+      - [serv.uuidToPlayer](#servuuidtoplayer)
+      - [serv.world](#servworld)
+    - [Methods](#methods)
+      - [serv.createLog()](#servcreatelog)
+      - [serv.log(message)](#servlogmessage)
+  - [Player](#player)
+    - [Properties](#properties-1)
+      - [player.entity](#playerentity)
+    - [Methods](#methods-1)
+      - [player.login()](#playerlogin)
+    - [player.others(client)](#playerothersclient)
+    - [Low level properties](#low-level-properties)
+      - [player._client](#player_client)
+    - [Low level methods](#low-level-methods)
+    - [player._writeOthers(packetName, packetFields)](#player_writeotherspacketname-packetfields)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # API
 
 ## Classes
