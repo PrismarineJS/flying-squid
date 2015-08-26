@@ -4,7 +4,7 @@ var util = require('util');
 var path = require('path');
 var requireIndex = require('requireindex');
 var serverPlugins = requireIndex(path.join(__dirname, 'lib', 'serverPlugins'));
-var clientPlugins = requireIndex(path.join(__dirname, 'lib', 'clientPlugins'));
+var playerPlugins = requireIndex(path.join(__dirname, 'lib', 'playerPlugins'));
 
 module.exports = {
   createMCServer:createMCServer
@@ -46,9 +46,11 @@ MCServer.prototype.connect = function(options) {
   });
 
   self._server.on('login', function (client) {
-    for(var pluginName in clientPlugins) {
-      clientPlugins[pluginName](self, client, options);
+    var player={};
+    player._client=client;
+    for(var pluginName in playerPlugins) {
+      playerPlugins[pluginName](self, player, options);
     }
-    self.login(client);
+    player.login();
   });
 };
