@@ -4,8 +4,6 @@ var util = require('util');
 var path = require('path');
 var requireIndex = require('requireindex');
 var serverPlugins = requireIndex(path.join(__dirname, 'lib', 'serverPlugins'));
-var playerPlugins = requireIndex(path.join(__dirname, 'lib', 'playerPlugins'));
-var Player=require("./lib/player");
 require("longjohn");
 
 module.exports = {
@@ -43,14 +41,5 @@ MCServer.prototype.connect = function(options) {
 
   self._server.on('listening', function() {
     self.emit('listening',self._server.socketServer.address().port);
-  });
-
-  self._server.on('login', function (client) {
-    var player=new Player();
-    player._client=client;
-    for(var pluginName in playerPlugins) {
-      playerPlugins[pluginName](self, player, options);
-    }
-    player.login();
   });
 };

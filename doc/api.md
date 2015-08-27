@@ -34,14 +34,15 @@
       - [serv.players](#servplayers)
       - [serv.uuidToPlayer](#servuuidtoplayer)
       - [serv.world](#servworld)
+      - [serv.entities](#serventities)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["listening" (port)](#listening-port)
+      - ["newPlayer" (player)](#newplayer-player)
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
-      - [serv.entities](#serventities)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -197,6 +198,10 @@ Fires when there is an error.
 
 Fires when the server is listening.
 
+#### "newPlayer" (player)
+
+Fires when `player` login, allow external player plugins.
+
 ### Methods
 
 #### serv.createLog()
@@ -210,9 +215,6 @@ logs a `message`
 #### serv.broadcast(message[,color])
 
 broadcasts `message` to all the players with the optional `color`.
-
-#### serv.entities
-All of the entities
 
 ## Player
 
