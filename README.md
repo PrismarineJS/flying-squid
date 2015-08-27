@@ -9,9 +9,6 @@ Craftyjs
 
 A semi-functional minecraft server in Node.js
 
-## Docker confirmed
-![Docker](http://i.imgur.com/vvi4jt8.png)
-
 ## Features
 * Support minecraft 1.8
 * Players can see the world
