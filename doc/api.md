@@ -52,6 +52,7 @@
       - [player.login()](#playerlogin)
       - [player.others()](#playerothers)
       - [player.chat(message)](#playerchatmessage)
+      - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -241,6 +242,10 @@ return the other players than `player`
 #### player.chat(message)
 
 sends `message` to the player
+
+#### player.changeBlock(position,blockType)
+
+change the block at position `position` to `blockType`
 
 ### Low level properties
 
