@@ -61,6 +61,7 @@
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.spawn()](#playerspawn)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
+      - [player.handleCommand(command)](#playerhandlecommandcommand)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -282,6 +283,10 @@ tell everybody else that the player spawned
 #### player.setGameMode(gameMode)
 
 set player gameMode to `gameMode`
+
+#### player.handleCommand(command)
+
+handle `command`
 
 ### Low level properties
 
