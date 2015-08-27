@@ -17,6 +17,11 @@ A semi-functional minecraft server in Node.js
 * Placing blocks
 * Player movement
 
+## Test server!
+We created an auto updating test server (see the repository [here](https://github.com/mhsjlw/auto-craftyjs))
+
+Connection address: 45.55.62.8 (Port 25565, default port)
+
 ## Building / Running
 Before running or building it is recommended that you configure the server in config/settings.json
 
