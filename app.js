@@ -6,7 +6,8 @@ var options = {
   motd: settings.motd,
   'max-players': settings.maxPlayers,
   port: settings.port,
-  'online-mode': settings.onlineMode
+  'online-mode': settings.onlineMode,
+  gameMode:settings.gameMode
 };
 
 mcServer.createMCServer(options);
