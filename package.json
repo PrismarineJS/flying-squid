@@ -2,7 +2,7 @@
   "name": "craftyjs",
   "description": "A minecraft server written in node.js",
   "version": "0.1.0",
-  "main": "app.js",
+  "main": "index.js",
   "author": "mhsjlw <mhsjlw@aol.com>",
   "contributors": [
     {
