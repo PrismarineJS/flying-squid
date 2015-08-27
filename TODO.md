@@ -16,7 +16,7 @@ This is a list that will keep the developers and the community organized!
  - [x] Fix spitting errors in the console
  - [ ] Fix player looking (seriously, it looks ridiculous)
  - [x] Fix massive lag when players move
- - [ ] Dynamic worlds (players can see the when someone makes changes to the world)
+ - [x] Dynamic worlds (players can see the when someone makes changes to the world)
  - [ ] Block dropping
  - [ ] Inventories (saving the blocks players get)
  - [ ] Crafting and Smelting
