@@ -24,6 +24,9 @@
       - [entity.equipment[5]](#entityequipment5)
       - [entity.heldItem](#entityhelditem)
       - [entity.metadata](#entitymetadata)
+      - [entity.healt](#entityhealt)
+      - [entity.food](#entityfood)
+      - [entity.player](#entityplayer)
   - [MCServer](#mcserver)
     - [CraftyJS.createMCServer(options)](#craftyjscreatemcserveroptions)
     - [Properties](#properties)
@@ -143,6 +146,15 @@ Equivalent to `entity.equipment[0]`.
 #### entity.metadata
 
 See http://wiki.vg/Entities#Entity_Metadata_Format for more details.
+
+#### entity.healt
+The health of the player, default: 20
+
+#### entity.food
+The food of the player, default: 20
+
+#### entity.player
+The player
 
 ## MCServer
 
