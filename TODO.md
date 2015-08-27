@@ -21,7 +21,7 @@ This is a list that will keep the developers and the community organized!
  - [ ] Inventories (saving the blocks players get)
  - [ ] Crafting and Smelting
  - [x] Basic PvP
- - [ ] Player animations (hurting, flinching, etc.)
+ - [x] Player animations (hurting, flinching, etc.)
  - [ ] Add in cluster functionality
 
 ### Ridiculous aspirations (not going to get done anytime soon)
