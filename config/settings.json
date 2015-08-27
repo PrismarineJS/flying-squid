@@ -4,5 +4,5 @@
 	"maxPlayers": 10,
 	"onlineMode": true,
 	"logging": false,
-    "gameMode":1
+  "gameMode": 0
 }
