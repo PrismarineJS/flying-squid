@@ -23,6 +23,8 @@ Before running or building it is recommended that you configure the server in co
     npm install
     node app.js
 
+Or try our autoupdating craftyjs server [auto-craftyjs](https://github.com/mhsjlw/auto-craftyjs)
+
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
 
