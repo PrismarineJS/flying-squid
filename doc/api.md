@@ -60,6 +60,7 @@
       - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.spawn()](#playerspawn)
+      - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -278,6 +279,9 @@ send its initial position to the player
 
 tell everybody else that the player spawned
 
+#### player.setGameMode(gameMode)
+
+set player gameMode to `gameMode`
 
 ### Low level properties
 
