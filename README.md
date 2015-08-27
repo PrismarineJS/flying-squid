@@ -9,6 +9,14 @@ Craftyjs
 
 A semi-functional minecraft server in Node.js
 
+## Features
+* Support minecraft 1.8
+* Players can see the world
+* Players see each other in-game and in tab
+* Digging
+* Placing blocks
+* Player movement
+
 ## Building / Running
 Before running or building it is recommended that you configure the server in config/settings.json
 
