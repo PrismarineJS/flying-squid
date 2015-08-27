@@ -183,6 +183,10 @@ Object uuid to players
 
 The map
 
+#### serv.entities
+
+All of the entities
+
 ### Events
 
 #### "error" (error)
