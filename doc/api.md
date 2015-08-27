@@ -58,6 +58,8 @@
       - [player.others()](#playerothers)
       - [player.chat(message)](#playerchatmessage)
       - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
+      - [player.sendInitialPosition()](#playersendinitialposition)
+      - [player.spawn()](#playerspawn)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -267,6 +269,15 @@ sends `message` to the player
 #### player.changeBlock(position,blockType)
 
 change the block at position `position` to `blockType`
+
+#### player.sendInitialPosition()
+
+send its initial position to the player
+
+#### player.spawn()
+
+tell everybody else that the player spawned
+
 
 ### Low level properties
 
