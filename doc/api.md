@@ -24,7 +24,7 @@
       - [entity.equipment[5]](#entityequipment5)
       - [entity.heldItem](#entityhelditem)
       - [entity.metadata](#entitymetadata)
-      - [entity.healt](#entityhealt)
+      - [entity.health](#entityhealth)
       - [entity.food](#entityfood)
       - [entity.player](#entityplayer)
   - [MCServer](#mcserver)
@@ -41,6 +41,7 @@
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
+      - [serv.entities](#serventities)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -147,7 +148,7 @@ Equivalent to `entity.equipment[0]`.
 
 See http://wiki.vg/Entities#Entity_Metadata_Format for more details.
 
-#### entity.healt
+#### entity.health
 The health of the player, default: 20
 
 #### entity.food
@@ -206,6 +207,8 @@ logs a `message`
 
 broadcasts `message` to all the players with the optional `color`.
 
+#### serv.entities
+All of the entities
 
 ## Player
 
