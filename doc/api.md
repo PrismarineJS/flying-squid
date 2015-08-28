@@ -62,6 +62,7 @@
       - [player.spawn()](#playerspawn)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
+      - [player.updateHealth(health)](#playerupdatehealthhealth)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -287,6 +288,10 @@ set player gameMode to `gameMode`
 #### player.handleCommand(command)
 
 handle `command`
+
+#### player.updateHealth(health)
+
+update the player health.
 
 ### Low level properties
 
