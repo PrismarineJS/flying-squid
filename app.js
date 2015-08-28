@@ -9,8 +9,8 @@ var options = {
   port: settings.port,
   'online-mode': settings.onlineMode,
   gameMode:settings.gameMode,
-  logging: settings.logging,
-  commands: commands
+  commands: commands,
+  logging:settings.logging
 };
 
 mcServer.createMCServer(options);
