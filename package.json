@@ -25,7 +25,8 @@
     "prismarine-chunk": "~0.1.0",
     "vec3": "0.1.3",
     "requireindex": "~1.0.0",
-    "prismarine-block": "0.1.0"
+    "prismarine-block": "0.1.0",
+    "minecraft-data": "0.7.0"
   },
   "repository": {
     "type": "git",
