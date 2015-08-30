@@ -30,7 +30,8 @@
     "requireindex": "~1.0.0",
     "prismarine-block": "0.1.0",
     "minecraft-data": "0.7.0",
-    "mkdirp":"0.5.1"
+    "mkdirp":"0.5.1",
+    "prismarine-entity": "0.1.0"
   },
   "repository": {
     "type": "git",
