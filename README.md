@@ -36,6 +36,26 @@ Documentation for how to operate and how to customize your server are coming soo
 ## Dev Documentation
 For development see [api.md](doc/api.md) and [contribute.md](doc/contribute.md)
 
+## Using as a lib
+
+Flying-squid is also a server lib. Here is a basic example of usage :
+
+```js
+var mcServer=require("flying-squid");
+
+mcServer.createMCServer({
+  motd: "Basic craftyjs server",
+  'max-players': 10,
+  port: 25565,
+  'online-mode': true,
+  gameMode:0,
+  commands: {},
+  logging:false
+});
+```
+
+You can add server plugins and player plugins in your package, following [contribute.md](doc/contribute.md).
+
 ## Contributors
 
  - @roblabla for helping out with the protocols
