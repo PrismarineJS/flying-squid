@@ -4,7 +4,9 @@ var util = require('util');
 var path = require('path');
 var requireIndex = require('requireindex');
 var serverPlugins = requireIndex(path.join(__dirname, 'lib', 'serverPlugins'));
-require("longjohn");
+if (process.env.NODE_ENV === 'dev'){
+  require('longjohn');
+}
 
 module.exports = {
   createMCServer:createMCServer
