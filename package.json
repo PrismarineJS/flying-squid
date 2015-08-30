@@ -1,5 +1,5 @@
 {
-  "name": "craftyjs",
+  "name": "flying-squid",
   "description": "A minecraft server written in node.js",
   "version": "0.1.0",
   "main": "index.js",
@@ -11,7 +11,7 @@
     }
   ],
   "bin": {
-    "craftyjs": "./app.js"
+    "flying-squid": "./app.js"
   },
   "scripts": {
     "test": "mocha --reporter spec"
@@ -34,10 +34,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mhsjlw/craftyjs.git"
+    "url": "git://github.com/mhsjlw/flying-squid.git"
   },
   "bugs": {
-    "url": "http://github.com/mhsjlw/craftyjs/issues"
+    "url": "http://github.com/mhsjlw/flying-squid/issues"
   },
   "devDependencies": {
     "doctoc": "^0.15.0",

@@ -4,7 +4,7 @@
 
 - [API](#api)
   - [Classes](#classes)
-    - [CraftyJS.Entity](#craftyjsentity)
+    - [Flying-squid.Entity](#flying-squidentity)
       - [entity.id](#entityid)
       - [entity.type](#entitytype)
       - [entity.username](#entityusername)
@@ -28,7 +28,7 @@
       - [entity.food](#entityfood)
       - [entity.player](#entityplayer)
   - [MCServer](#mcserver)
-    - [CraftyJS.createMCServer(options)](#craftyjscreatemcserveroptions)
+    - [Flying-squid.createMCServer(options)](#flying-squidcreatemcserveroptions)
     - [Properties](#properties)
       - [serv.entityMaxId](#serventitymaxid)
       - [serv.players](#servplayers)
@@ -74,7 +74,7 @@
 
 ## Classes
 
-### CraftyJS.Entity
+### Flying-squid.Entity
 
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
@@ -165,7 +165,7 @@ The player
 
 ## MCServer
 
-### CraftyJS.createMCServer(options)
+### Flying-squid.createMCServer(options)
 
 Create and return an instance of the class MCServer.
 
@@ -227,7 +227,7 @@ broadcasts `message` to all the players with the optional `color`.
 
 #### player.entity
 
-The entity of the player, of type `CraftyJS.Entity`
+The entity of the player, of type `Flying-squid.Entity`
 
 #### player.username
 

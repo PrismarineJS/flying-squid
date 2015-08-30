@@ -1,11 +1,11 @@
-Craftyjs
+Flying-squid
 ================
 
-[![Join the chat at https://gitter.im/mhsjlw/craftyjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/craftyjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mhsjlw/craftyjs/blob/master/LICENSE)
+[![Join the chat at https://gitter.im/mhsjlw/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
-[![Github issues](https://img.shields.io/github/issues/mhsjlw/craftyjs.svg)](https://img.shields.io/github/issues/mhsjlw/craftyjs.svg)
-[![Build Status](https://img.shields.io/circleci/project/mhsjlw/craftyjs/master.svg)](https://circleci.com/gh/mhsjlw/craftyjs) [![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
+[![Github issues](https://img.shields.io/github/issues/mhsjlw/flying-squid.svg)](https://img.shields.io/github/issues/mhsjlw/flying-squid.svg)
+[![Build Status](https://img.shields.io/circleci/project/mhsjlw/flying-squid/master.svg)](https://circleci.com/gh/mhsjlw/flying-squid) [![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
 
 A semi-functional minecraft server in Node.js
 
@@ -18,7 +18,7 @@ A semi-functional minecraft server in Node.js
 * Player movement
 
 ## Test server!
-We created an auto updating test server (see the repository [here](https://github.com/mhsjlw/auto-craftyjs))
+We created an auto updating test server (see the repository [here](https://github.com/mhsjlw/autonomous-squid))
 
 Connection address: 45.55.62.8 (Port 25565, default port)
 
@@ -28,7 +28,7 @@ Before running or building it is recommended that you configure the server in co
     npm install
     node app.js
 
-Or try our autoupdating craftyjs server [auto-craftyjs](https://github.com/mhsjlw/auto-craftyjs)
+Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
