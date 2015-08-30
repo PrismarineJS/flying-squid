@@ -31,6 +31,9 @@ Before running or building it is recommended that you configure the server in co
 
 Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
+You can also install flying-squid globally with `sudo npm install -g flying-squid`
+and then run it with `flying-squid` command.
+
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
 
