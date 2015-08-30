@@ -35,7 +35,7 @@ Or try our autoupdating flying-squid server [autonomous-squid](https://github.co
 Documentation for how to operate and how to customize your server are coming soon!
 
 ## Dev Documentation
-For development see [api.md](doc/api.md) and [contribute.md](doc/contribute.md)
+For development see [api.md](doc/api.md), [contribute.md](doc/contribute.md) and [history.md](doc/history.md)
 
 ## Using as a lib
 
