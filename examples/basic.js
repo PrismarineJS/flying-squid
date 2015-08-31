@@ -1,7 +1,7 @@
 var mcServer=require("..");
 
 mcServer.createMCServer({
-  motd: "Basic craftyjs server",
+  motd: "Basic flying-squid server",
   'max-players': 10,
   port: 25565,
   'online-mode': true,
