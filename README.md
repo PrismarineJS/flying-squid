@@ -53,7 +53,7 @@ Flying-squid is also a server lib. Here is a basic example of usage :
 var mcServer=require("flying-squid");
 
 mcServer.createMCServer({
-  motd: "Basic craftyjs server",
+  motd: "Basic flying-squid server",
   'max-players': 10,
   port: 25565,
   'online-mode': true,
