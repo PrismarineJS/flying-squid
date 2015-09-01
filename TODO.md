@@ -23,10 +23,11 @@ This is a list that will keep the developers and the community organized!
  - [x] Basic PvP
  - [x] Player animations (hurting, flinching, etc.)
  - [ ] Add in cluster functionality
+ - [ ] Banning and kicking
 
 ### Ridiculous aspirations (not going to get done anytime soon)
  - [ ] World generation
- - [ ] Mobs / Animals
+ - [x] Mobs / Animals (we spawned some squids)
  - [ ] Plant growing (pretty much ticking)
  - [ ] Other dimensions
  - [ ] Vehicles
