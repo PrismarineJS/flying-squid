@@ -24,6 +24,7 @@ This is a list that will keep the developers and the community organized!
  - [x] Player animations (hurting, flinching, etc.)
  - [ ] Add in cluster functionality
  - [ ] Banning and kicking
+ - [ ] Randomized weather
 
 ### Ridiculous aspirations (not going to get done anytime soon)
  - [ ] World generation
