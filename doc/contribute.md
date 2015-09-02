@@ -34,3 +34,57 @@ function inject(serv,player)
   // you can use serv, but you shouldn't add things to it here
 }
 ```
+
+## Creating external plugins
+
+Create a new repo, which will be published to npm when ready to be used.
+
+Create a file in which you put an inject function like this :
+
+```js
+module.exports=init;
+
+function init(craftyjs) {
+  return inject;
+}
+
+function inject(serv)
+{
+  // add methods and properties to serv
+}
+```
+
+In the init function, you can use anything craftyjs provide (see [index.js](https://github.com/mhsjlw/flying-squid/blob/master/index.js#L11)).
+
+In the inject function you can use everything documented in the [api.md](api.md) to add functionnalities to the serv object.
+
+Let's say you called your module flying-horses and you published it to npm.
+
+Now people can use your plugin that way : 
+
+```js
+var flyingSquid = require('flying-squid');
+var flyingHorses = require('flying-horses')(flyingSquid);
+var serv = flyingSquid.createMCServer(/* your options there */);
+// install the plugin
+flyingHorses(serv);
+```
+
+As explained in the first part of this file, flying-squid has 2 kinds of plugins : server plugins, and player plugins.
+We've explained until now how to create a server plugin and to use it with flying-squid.
+
+Within the same module, you can also create a player plugin. Here is the code you need to add to do that :
+
+```js
+serv.on("newPlayer",function(player){
+  injectPlayer(serv,player);
+});
+
+function injectPlayer(serv,player)
+{
+  // add methods and properties to player
+  // you can use serv, but you shouldn't add things to it here
+}
+```
+
+In this document, we explained how to create a simple plugin with just one file, but you can cut your code in several files by having several inject function and putting them in different files, just like flying-squid does for its internal plugins.
