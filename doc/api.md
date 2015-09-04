@@ -21,6 +21,7 @@
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
+      - [serv.setBlock(position,blockType)](#servsetblockpositionblocktype)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -36,6 +37,7 @@
       - [player.others()](#playerothers)
       - [player.chat(message)](#playerchatmessage)
       - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
+      - [player.sendBlock(position,blockType)](#playersendblockpositionblocktype)
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.spawn()](#playerspawn)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
@@ -113,6 +115,10 @@ logs a `message`
 
 broadcasts `message` to all the players with the optional `color`.
 
+#### serv.setBlock(position,blockType)
+
+Saves block in world and sends block update to all players.
+
 ## Player
 
 ### Properties
@@ -164,6 +170,14 @@ sends `message` to the player
 #### player.changeBlock(position,blockType)
 
 change the block at position `position` to `blockType`
+
+this will not change the block for the user themself. It is mainly useful when a user places a block and only needs to send it to other players on the server
+
+#### player.sendBlock(position,blockType)
+
+change the block at position `position` to `blockType`
+
+this will not make any changes on the server's world and only sends it to the user as a "fake" or "local" block
 
 #### player.sendInitialPosition()
 
