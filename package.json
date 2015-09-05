@@ -14,7 +14,8 @@
     "flying-squid": "./app.js"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "postinstall": "babel -d node_modules/prismarine-world/dist/ node_modules/prismarine-world/src/ && babel -d node_modules/prismarine-chunk/dist/ node_modules/prismarine-chunk/src/ "
   },
   "keywords": [],
   "licenses": {
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "doctoc": "^0.15.0",
-    "longjohn": "~0.2.8"
+    "longjohn": "~0.2.8",
+    "babel":"5.8.23"
   }
 }
