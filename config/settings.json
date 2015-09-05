@@ -1,5 +1,5 @@
 {
-	"motd": "A Minecraft Server",
+	"motd": "Flying-squid : a server built in Node.js",
 	"port": 25565,
 	"maxPlayers": 10,
 	"onlineMode": true,
