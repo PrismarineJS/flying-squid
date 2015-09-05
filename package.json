@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "mocha --reporter spec",
-    "postinstall": "babel -d node_modules/prismarine-world/dist/ node_modules/prismarine-world/src/ && babel -d node_modules/prismarine-chunk/dist/ node_modules/prismarine-chunk/src/ "
+    "postinstall": "wget -O node_modules/prismarine-world/dist/world.js https://gist.githubusercontent.com/Creeplays/adee50c5897f0d1127b8/raw/be392c93e08a87e1c08123acaba2579b6ea53de0/world.js&&wget -O node_modules/prismarine-chunk/dist/chunk.js https://gist.githubusercontent.com/Creeplays/adee50c5897f0d1127b8/raw/be392c93e08a87e1c08123acaba2579b6ea53de0/chunk.js"
   },
   "keywords": [],
   "licenses": {
@@ -44,7 +44,6 @@
   },
   "devDependencies": {
     "doctoc": "^0.15.0",
-    "longjohn": "~0.2.8",
-    "babel":"5.8.23"
+    "longjohn": "~0.2.8"
   }
 }
