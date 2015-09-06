@@ -29,6 +29,7 @@
     "mkdirp": "0.5.1",
     "mocha": "~2.2.5",
     "moment": "^2.10.6",
+    "node-uuid": "^1.4.3",
     "prismarine-block": "0.1.0",
     "prismarine-chunk": "git://github.com/rom1504/prismarine-chunk.git#use-prismarine-block",
     "prismarine-entity": "0.1.0",
