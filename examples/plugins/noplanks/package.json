@@ -1,0 +1,11 @@
+{
+  "name": "flying-squid-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DemiPixel <luke5227@gmail.com>",
+  "license": "ISC"
+}
