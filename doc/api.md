@@ -18,6 +18,7 @@
       - ["error" (error)](#error-error)
       - ["listening" (port)](#listening-port)
       - ["newPlayer" (player)](#newplayer-player)
+      - ["banned" (banner,bannedUsername,reason)](#banned-bannerbannedusernamereason)
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
@@ -39,6 +40,7 @@
       - ["disconnected"](#disconnected)
       - ["error" (error)](#error-error-1)
       - ["chat" (message)](#chat-message)
+      - ["kicked" (kicker,reason)](#kicked-kickerreason)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -122,6 +124,10 @@ Fires when the server is listening.
 
 Fires when `player` login, allow external player plugins.
 
+#### "banned" (banner,bannedUsername,reason)
+
+`banner` banned `bannedUsername` with `reason`
+
 ### Methods
 
 #### serv.createLog()
@@ -199,6 +205,10 @@ Fires when there is an error.
 #### "chat" (message)
 
 Fires when the player says `message`.
+
+#### "kicked" (kicker,reason)
+
+`kicker` kick the player with `reason`
 
 ### Methods
 
