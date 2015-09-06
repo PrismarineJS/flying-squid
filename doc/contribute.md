@@ -35,6 +35,12 @@ function inject(serv,player)
 }
 ```
 
+## Logs and event
+
+In order to keep logging independent from the rest of the server and to let people react in other ways than logging,
+server and player events should be emitting and the logging should only take place in response to these events
+in log.js of playerPlugins or serverPlugins.
+
 ## Creating external plugins
 
 Create a new repo, which will be published to npm when ready to be used.
@@ -54,7 +60,8 @@ function inject(serv)
 }
 ```
 
-In the init function, you can use anything craftyjs provide (see [index.js](https://github.com/mhsjlw/flying-squid/blob/master/index.js#L11)).
+In the init function, you can use anything craftyjs provide 
+(see [index.js](https://github.com/mhsjlw/flying-squid/blob/master/index.js#L11)).
 
 In the inject function you can use everything documented in the [api.md](api.md) to add functionnalities to the serv object.
 
@@ -87,4 +94,6 @@ function injectPlayer(serv,player)
 }
 ```
 
-In this document, we explained how to create a simple plugin with just one file, but you can cut your code in several files by having several inject function and putting them in different files, just like flying-squid does for its internal plugins.
+In this document, we explained how to create a simple plugin with just one file, but you can cut your code
+ in several files by having several inject function and putting them in different files, just like flying-squid does 
+ for its internal plugins.

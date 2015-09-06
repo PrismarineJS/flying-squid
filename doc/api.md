@@ -41,6 +41,8 @@
       - ["chat" (message)](#chat-message)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
+      - [player.ban(reason)](#playerbanreason)
+      - [player.kick(reason)](#playerkickreason)
       - [player.getOthers()](#playergetothers)
       - [player.chat(message)](#playerchatmessage)
       - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
@@ -50,8 +52,6 @@
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
-      - [player.kick(reason)](#playerkickreason)
-      - [player.ban(banReason,kickReason)](#playerbanbanreasonkickreason)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -148,8 +148,6 @@ Returns player object with that username or, if no such player is on the server,
 
 Bans players given a username. Mainly used if player is not online, otherwise use `player.ban()`.
 
-Callback first argument returns `true` if there is a UUID for that username, `false` otherwise.
-
 #### server.ban(uuid,reason)
 
 Ban player given a uuid. If the player is online, using `player.ban()`. Bans with reason or `You are banned!`.
@@ -157,8 +155,6 @@ Ban player given a uuid. If the player is online, using `player.ban()`. Bans wit
 #### server.pardonUsername(username,callback)
 
 Pardons a player given a username.
-
-Callback returns `false` if UUID does not exist or player is not banned. It returns `true` otherwise.
 
 #### server.pardon(uuid)
 
@@ -210,6 +206,14 @@ Fires when the player says `message`.
 
 login
 
+#### player.ban(reason)
+
+bans player with `reason`
+
+#### player.kick(reason)
+
+kicks player with `reason`
+
 #### player.getOthers()
 
 return the other players than `player`
@@ -222,7 +226,8 @@ sends `message` to the player
 
 change the block at position `position` to `blockType`
 
-this will not change the block for the user themself. It is mainly useful when a user places a block and only needs to send it to other players on the server
+this will not change the block for the user themself. It is mainly useful when a user places a block 
+and only needs to send it to other players on the server
 
 #### player.sendBlock(position,blockType)
 
@@ -249,14 +254,6 @@ handle `command`
 #### player.updateHealth(health)
 
 update the player health.
-
-#### player.kick(reason)
-
-Kicks a player with the reason given or `You were kicked!`.
-
-#### player.ban(banReason,kickReason)
-
-Kicks the player with `kickReason`, then bans them with reason `banReason`.
 
 ### Low level properties
 
