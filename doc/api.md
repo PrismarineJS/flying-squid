@@ -13,6 +13,7 @@
       - [serv.uuidToPlayer](#servuuidtoplayer)
       - [serv.world](#servworld)
       - [serv.entities](#serventities)
+      - [serv.bannedPlayers](#servbannedplayers)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["listening" (port)](#listening-port)
@@ -22,6 +23,12 @@
       - [serv.log(message)](#servlogmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.setBlock(position,blockType)](#servsetblockpositionblocktype)
+      - [serv.getPlayer(username)](#servgetplayerusername)
+      - [server.banUsername(username,reason,callback)](#serverbanusernameusernamereasoncallback)
+      - [server.ban(uuid,reason)](#serverbanuuidreason)
+      - [server.pardonUsername(username,callback)](#serverpardonusernameusernamecallback)
+      - [server.pardon(uuid)](#serverpardonuuid)
+      - [server.getUUIDFromUsername(username,callback)](#servergetuuidfromusernameusernamecallback)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -43,6 +50,8 @@
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
+      - [player.kick(reason)](#playerkickreason)
+      - [player.ban(banReason,kickReason)](#playerbanbanreasonkickreason)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -87,6 +96,18 @@ The map
 
 All of the entities
 
+#### serv.bannedPlayers
+
+Object of players that are banned, key is their uuid. Use `serv.getUUIDFromUsername()` if you only have their username.
+
+Example player:
+```
+{
+    time: <time in epoch>,
+    reason: <reason given>
+}
+```
+
 ### Events
 
 #### "error" (error)
@@ -118,6 +139,36 @@ broadcasts `message` to all the players with the optional `color`.
 #### serv.setBlock(position,blockType)
 
 Saves block in world and sends block update to all players.
+
+#### serv.getPlayer(username)
+
+Returns player object with that username or, if no such player is on the server, null.
+
+#### server.banUsername(username,reason,callback)
+
+Bans players given a username. Mainly used if player is not online, otherwise use `player.ban()`.
+
+Callback first argument returns `true` if there is a UUID for that username, `false` otherwise.
+
+#### server.ban(uuid,reason)
+
+Ban player given a uuid. If the player is online, using `player.ban()`. Bans with reason or `You are banned!`.
+
+#### server.pardonUsername(username,callback)
+
+Pardons a player given a username.
+
+Callback returns `false` if UUID does not exist or player is not banned. It returns `true` otherwise.
+
+#### server.pardon(uuid)
+
+Pardons a player given their uuid. Returns `false` if they are not banned.
+
+#### server.getUUIDFromUsername(username,callback)
+
+Gets UUID from username. Since it needs to fetch from mojang servers, it is not immediate.
+
+Arguments in format: `callback(uuid)`. `uuid` is null if no such username exists.
 
 ## Player
 
@@ -198,6 +249,14 @@ handle `command`
 #### player.updateHealth(health)
 
 update the player health.
+
+#### player.kick(reason)
+
+Kicks a player with the reason given or `You were kicked!`.
+
+#### player.ban(banReason,kickReason)
+
+Kicks the player with `kickReason`, then bans them with reason `banReason`.
 
 ### Low level properties
 
