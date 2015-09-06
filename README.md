@@ -26,7 +26,7 @@ A semi-functional minecraft server in Node.js
 ## Test servers
 
 * rom1504.fr (Port 25565) using [auto-squid](https://github.com/rom1504/auto-squid)
-* 45.55.62.8 (Port 25565) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
+* 45.55.46.77 (Port 25565) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 ## Building / Running
 Before running or building it is recommended that you configure the server in config/settings.json
