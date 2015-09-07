@@ -22,11 +22,21 @@ A semi-functional minecraft server in Node.js
 * Digging
 * Placing blocks
 * Player movement
+* Modpe plugin support
+
+## ModPE Support
+
+To add ModPE script as plugin, change extension of script from .js to .modpe and then push script into <SERVER DIR>/modpePlugins
+
+To test ModPE support you can use https://raw.githubusercontent.com/mhsjlw/flying-squid/e7095a00a977a2fee3ee1698536ff5b28d451cf5/lib/modpePlugins/we.js
+
+A source of ModPE support is located here: https://github.com/Creeplays/modpe-squid
 
 ## Test servers
 
 * rom1504.fr (Port 25565) using [auto-squid](https://github.com/rom1504/auto-squid)
 * 45.55.46.77 (Port 25565) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
+* 52.88.57.17 (Port 25552) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 ## Building / Running
 Before running or building it is recommended that you configure the server in config/settings.json
@@ -50,9 +60,10 @@ For development see [api.md](doc/api.md), [contribute.md](doc/contribute.md) and
 Flying-squid is also a server lib. Here is a basic example of usage :
 
 ```js
-var mcServer=require("flying-squid");
+var mcServer = require("flying-squid");
+var modpeWrap = require('modpe-squid')(mcServer);
 
-mcServer.createMCServer({
+var serv = mcServer.createMCServer({
   motd: "Basic flying-squid server",
   'max-players': 10,
   port: 25565,
@@ -61,7 +72,11 @@ mcServer.createMCServer({
   commands: {},
   logging:false
 });
+
+modpeWrap(serv);
 ```
+
+ModPE wrapping can be disabed by commenting "modpeWrap(serv)" line. 
 
 You can add server plugins and player plugins in your package, following [contribute.md](doc/contribute.md).
 

@@ -1,6 +1,7 @@
 var mcServer=require("..");
+var modpeWrap = require('modpe-squid')(mcServer);
 
-mcServer.createMCServer({
+var serv = mcServer.createMCServer({
   motd: "Basic flying-squid server",
   'max-players': 10,
   port: 25565,
@@ -9,3 +10,5 @@ mcServer.createMCServer({
   commands: {},
   logging:false
 });
+
+modpeWrap(serv);
