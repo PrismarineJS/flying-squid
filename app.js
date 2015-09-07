@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var mcServer=require("./index");
+var modpeWrap = require('modpe-squid')(mcServer);
 
 var settings = require('./config/settings');
 var commands = require('./config/commands');
@@ -15,6 +16,8 @@ var options = {
   logging:settings.logging
 };
 
-mcServer.createMCServer(options);
+var serv = mcServer.createMCServer(options);
+
+modpeWrap(serv);
 
 
