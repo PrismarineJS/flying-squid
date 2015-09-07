@@ -43,6 +43,31 @@ in log.js of playerPlugins or serverPlugins.
 
 ## Creating external plugins
 
+When you're making an external plugin, create a repo and publish to NPM your code so others can use it.
+
+However, if you simply want to fool around, create a folder, use `npm init`, and drag it into the "plugins" folder.
+
+Your file's base should look like this:
+
+```js
+module.exports = inject;
+
+function inject(serv, player, self, opt) {
+    
+}
+```
+
+- serv is the Server object. Use this to broadcast messages, set blocks, etc
+- player is a Player object. You can make changes to the player or check for events from them.
+- self is your plugin. You may need your plugin id, so you'll use `self.id`.
+- opt is any options the server has while running.
+
+Since the plugin is its own node module, you can install any other modules inside of it!
+
+Checks the API.md for information about what events you can check for on the server or player!
+
+## Creating external plugins OLD
+
 Create a new repo, which will be published to npm when ready to be used.
 
 Create a file in which you put an inject function like this :
