@@ -50,9 +50,10 @@ For development see [api.md](doc/api.md), [contribute.md](doc/contribute.md) and
 Flying-squid is also a server lib. Here is a basic example of usage :
 
 ```js
-var mcServer=require("flying-squid");
+var mcServer = require("flying-squid");
+var modpeWrap = require('modpe-squid')(mcServer);
 
-mcServer.createMCServer({
+var serv = mcServer.createMCServer({
   motd: "Basic flying-squid server",
   'max-players': 10,
   port: 25565,
@@ -61,7 +62,11 @@ mcServer.createMCServer({
   commands: {},
   logging:false
 });
+
+modpeWrap(serv);
 ```
+
+ModPE wrapping can be disabed by commenting "modpeWrap(serv)" line. 
 
 You can add server plugins and player plugins in your package, following [contribute.md](doc/contribute.md).
 
