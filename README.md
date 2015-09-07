@@ -26,6 +26,10 @@ A semi-functional minecraft server in Node.js
 
 ## ModPE Support
 
+To add ModPE script as plugin, change extension of script from .js to .modpe and then push script into <SERVER DIR>/modpePlugins
+
+To test ModPE support you can use https://raw.githubusercontent.com/mhsjlw/flying-squid/e7095a00a977a2fee3ee1698536ff5b28d451cf5/lib/modpePlugins/we.js
+
 A source of ModPE support is located here: https://github.com/Creeplays/modpe-squid
 
 ## Test servers
