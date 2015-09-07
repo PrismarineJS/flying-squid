@@ -27,6 +27,7 @@ A semi-functional minecraft server in Node.js
 
 * rom1504.fr (Port 25565) using [auto-squid](https://github.com/rom1504/auto-squid)
 * 45.55.46.77 (Port 25565) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
+* 52.88.57.17 (Port 25552) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 ## Building / Running
 Before running or building it is recommended that you configure the server in config/settings.json
@@ -74,5 +75,6 @@ You can add server plugins and player plugins in your package, following [contri
 
  - @roblabla for helping out with the protocols
  - @rom1504 for massive contributions to the code
+ - @Creeplays for adding ModPE support
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
