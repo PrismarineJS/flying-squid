@@ -28,7 +28,7 @@
     "minecraft-protocol": "^0.14.0",
     "mkdirp": "0.5.1",
     "mocha": "~2.2.5",
-    "modpe-squid": "git://github.com/Creeplays/modpe-squid.git"
+    "modpe-squid": "git://github.com/Creeplays/modpe-squid.git",
     "moment": "^2.10.6",
     "node-uuid": "^1.4.3",
     "prismarine-block": "0.1.0",
