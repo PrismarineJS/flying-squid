@@ -22,6 +22,11 @@ A semi-functional minecraft server in Node.js
 * Digging
 * Placing blocks
 * Player movement
+* Modpe plugin support
+
+## ModPE Support
+
+A source of ModPE support is located here: https://github.com/Creeplays/modpe-squid
 
 ## Test servers
 
@@ -75,6 +80,5 @@ You can add server plugins and player plugins in your package, following [contri
 
  - @roblabla for helping out with the protocols
  - @rom1504 for massive contributions to the code
- - @Creeplays for adding ModPE support
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
