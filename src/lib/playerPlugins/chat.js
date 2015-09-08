@@ -16,6 +16,10 @@ function inject(serv, player)
   function chat(message) {
     player._client.write('chat', { message: JSON.stringify(message), position: 0 });
   }
-
+  function system(message) {
+    player._client.write('chat', { message: JSON.stringify(message), position: 2 });
+  }
+  
   player.chat=chat;
+  player.system=system;
 }

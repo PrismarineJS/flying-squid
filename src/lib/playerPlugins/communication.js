@@ -10,7 +10,13 @@ function inject(serv,player)
 
   player.getOthers = function() {
     return serv.players.filter(function (otherPlayer) {
-      return otherPlayer != player
+      return otherPlayer != player;
+    });
+  };
+  
+  player._writeAll=function(packetName, packetFields) {
+    serv.players.forEach(function (player) {
+      player._client.write(packetName, packetFields);
     });
   };
 }

@@ -9,7 +9,19 @@ function inject(serv,player)
     var referencePosition=new vec3(packet.location.x,packet.location.y,packet.location.z);
     var directionVector=directionToVector[packet.direction];
     var placedPosition=referencePosition.plus(directionVector);
-    player.changeBlock(placedPosition,packet.heldItem.blockId);
+    if(packet.heldItem.blockId!=323){
+        player.changeBlock(placedPosition,packet.heldItem.blockId);
+    }else if(packet.direction==1){
+        serv.setBlock(placedPosition, 63);
+        player._client.write('open_sign_entity', {
+            location:placedPosition
+        });
+    }else{
+        serv.setBlock(placedPosition, 68);
+        player._client.write('open_sign_entity', {
+            location:placedPosition
+        });
+    }
   });
 }
 
