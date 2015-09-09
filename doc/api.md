@@ -40,7 +40,7 @@
       - ["disconnected"](#disconnected)
       - ["error" (error)](#error-error-1)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
-    - [Cancelable Events](#cancelable-events)
+    - [Cancelable Behaviors](#cancelable-behaviors)
       - ["chatMessage"](#chatmessage)
       - ["chat"](#chat)
       - ["command"](#command)
@@ -215,7 +215,7 @@ Fires when there is an error.
 
 `kicker` kick the player with `reason`
 
-### Cancelable Events
+### Cancelable Behaviors
 
 This type of event is emitted by the the player with the option to cancel a default. It is primarily used by external plugins.
 This type of event is emitted twice. For example, if a player digs a block, both digBlock\_cancel and digBlock are emitted.
