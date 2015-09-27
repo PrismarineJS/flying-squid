@@ -29,6 +29,8 @@ A semi-functional minecraft server in Node.js
 * 45.55.46.77 (Port 25565) using [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 ## Building / Running
+It requires gulp so if you don't have it installed do so by running : 
+    `npm install gulp -g`
 Before running or building it is recommended that you configure the server in config/settings.json
 
     npm install
