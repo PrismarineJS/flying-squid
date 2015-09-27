@@ -4,15 +4,14 @@
 
 Directory architecture :
 
-* app.js : specific settings and actually start the server
-* index.js : contain the generic server implementation
-* lib/ : contain the classes and functions used in the plugins
-  * serverPlugins/ : server plugins that do things general to the server, 
+* app.js: specific settings and actually start the server
+* index.js: contain the generic server implementation
+* lib/: contain the classes and functions used in the plugins
+  * serverPlugins/: server plugins that do things general to the server, 
   properties and method are added to the server object in them
-  * playerPlugins/ : player plugins that do things for each player, 
-  properties and method are added to the player object in them
+  * playerPlugins/: player plugins that do things for each player, properties and method are added to the player object in them
   
-Structure of a server plugin :
+Structure of a server plugin:
 
 ```js
 module.exports=inject;
@@ -75,7 +74,7 @@ Create a file in which you put an inject function like this :
 ```js
 module.exports=init;
 
-function init(craftyjs) {
+function init(flying-squid) {
   return inject;
 }
 
@@ -85,10 +84,10 @@ function inject(serv)
 }
 ```
 
-In the init function, you can use anything craftyjs provide 
+In the init function, you can use anything flying-squid provide 
 (see [index.js](https://github.com/mhsjlw/flying-squid/blob/master/index.js#L11)).
 
-In the inject function you can use everything documented in the [api.md](api.md) to add functionnalities to the serv object.
+In the inject function you can use everything documented in the [api.md](api.md) to add functionalities to the serv object.
 
 Let's say you called your module flying-horses and you published it to npm.
 
@@ -102,10 +101,10 @@ var serv = flyingSquid.createMCServer(/* your options there */);
 flyingHorses(serv);
 ```
 
-As explained in the first part of this file, flying-squid has 2 kinds of plugins : server plugins, and player plugins.
+As explained in the first part of this file, flying-squid has 2 kinds of plugins: server plugins, and player plugins.
 We've explained until now how to create a server plugin and to use it with flying-squid.
 
-Within the same module, you can also create a player plugin. Here is the code you need to add to do that :
+Within the same module, you can also create a player plugin. Here is the code you need to add to do that:
 
 ```js
 serv.on("newPlayer",function(player){
@@ -120,5 +119,4 @@ function injectPlayer(serv,player)
 ```
 
 In this document, we explained how to create a simple plugin with just one file, but you can cut your code
- in several files by having several inject function and putting them in different files, just like flying-squid does 
- for its internal plugins.
+in several files by having several inject function and putting them in different files, just like flying-squid does for its internal plugins.
