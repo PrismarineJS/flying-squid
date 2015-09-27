@@ -39,17 +39,8 @@
       - ["spawned"](#spawned)
       - ["disconnected"](#disconnected)
       - ["error" (error)](#error-error-1)
+      - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
-    - [Cancelable Behaviors](#cancelable-behaviors)
-      - ["chatMessage"](#chatmessage)
-      - ["chat"](#chat)
-      - ["command"](#command)
-      - ["startDig"](#startdig)
-      - ["stopDig"](#stopdig)
-      - ["finishDig"](#finishdig)
-      - ["placeBlock"](#placeblock)
-      - ["attackPlayer"](#attackplayer)
-      - ["animation_arm"](#animation_arm)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -211,95 +202,13 @@ Fires when the player disconnected
 
 Fires when there is an error.
 
+#### "chat" (message)
+
+Fires when the player says `message`.
+
 #### "kicked" (kicker,reason)
 
 `kicker` kick the player with `reason`
-
-### Cancelable Behaviors
-
-This type of event is emitted by the the player with the option to cancel a default. It is primarily used by external plugins.
-This type of event is emitted twice. For example, if a player digs a block, both digBlock\_cancel and digBlock are emitted.
-digBlock\_cancel has the ability to cancel the default action. digBlock allows plugins to check if the default has been cancelled before it runs. An example with finishDig:
-
-```js
-player.on("finishDig_cancel", function(event, cancel) {
-    if (event.block.id == 1) { // If player mined stone (id == 1)
-        cancel(); // Do not break the block in the world, do not send block change to others
-    }
-});
-```
-
-```js
-player.on("finishDig", function(event, cancelled) {
-    if (!cancelled) { // Make sure another plugin has not cancelled the default response
-        if (event.block.id == 1) player.chat("You broke stone!");
-    }
-});
-```
-
-For these, the cancel event is always originalName_cancel with arguments (event, cancel)
-
-The "check cancel" event is always originalName with arguments (event, cancelled)
-
-#### "chatMessage"
-
-Fires when a user sends any message to the server (even a command)
-
-- message: String sent by player
-
-#### "chat"
-
-Fires when a user sends a message that does not start with a `/` (i.e. not a command).
-
-- message: String sent by the player
-
-#### "command"
-
-Fires when a user starts a message with a `/`.
-
-- message: String sent by player but without the `/`
-
-#### "startDig"
-
-Fires when a player begins to break a blog (even in creative)
-
-- position: Position block is being mined in the world
-- block: Block at that position in world
-
-#### "stopDig"
-
-Fires when a player choses to stop breaking a block
-
-- position: Position block is being mined in the world
-- block: Block at that position in world
-
-#### "finishDig"
-
-Fires when a player has finished mining a block. If the player is in creative, this will be called immediately after `startDig`.
-
-- time: Time it took to mine block (0 if player is in creative)
-- position: Position block is being mined in the world
-- block: Block at that position in world
-
-#### "placeBlock"
-
-Fires when a user places a block
-
-- reference: Position that the player right-clicked on to place the block
-- position: Position the user wishes to place the block
-- id: Id of the block they are placing
-
-`position` and `id` will soon be replaced by `block` which will contain a Block object.
-
-#### "attackPlayer"
-
-Fires when one player attacks another
-
-- attacked: Player who was attacked
-
-#### "animation_arm"
-
-Fires when a player wants to "punch" (including anything they're holding).
 
 ### Methods
 
