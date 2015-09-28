@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "mocha --reporter spec",
-    "postinstall": "babel -d node_modules/prismarine-world/dist/ node_modules/prismarine-world/src/ && babel -d node_modules/prismarine-chunk/dist/ node_modules/prismarine-chunk/src/ "
+    "postinstall": "node_modules/.bin/babel -d node_modules/prismarine-world/dist/ node_modules/prismarine-world/src/ && node_modules/.bin/babel -d node_modules/prismarine-chunk/dist/ node_modules/prismarine-chunk/src/ "
   },
   "keywords": [],
   "licenses": {
