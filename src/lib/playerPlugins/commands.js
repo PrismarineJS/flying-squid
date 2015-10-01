@@ -61,15 +61,12 @@ function inject(serv, player, options) {
           serv.emit("banned",player,username,reason);
         }
         else {
-          serv.banUsername(username, reason, function (err) {
-            if(err) {
-              player.chat(results[1] + " is not a valid player!");
-            }
-            else {
+          serv.banUsername(username, reason)
+            .then(()=>{
               serv.emit("banned",player,username,reason);
               player.chat(results[1] + " was banned");
-            }
-          });
+            })
+            .catch(err => player.chat(results[1] + " is not a valid player!"));
         }
       }
     }
@@ -79,14 +76,9 @@ function inject(serv, player, options) {
         player.chat("Usage: /pardon <player>");
       }
       else {
-        serv.pardonUsername(results[1], function (err) {
-          if(err) {
-            player.chat(results[1] + " is not banned");
-          }
-          else {
-            player.chat(results[1] + " is unbanned");
-          }
-        });
+        serv.pardonUsername(results[1])
+          .then(()=> player.chat(results[1] + " is unbanned"))
+          .catch(err => player.chat(results[1] + " is not banned"));
       }
     }
     else

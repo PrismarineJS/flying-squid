@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var mcServer=require("./index");
+var mcServer=require("./");
 
 var settings = require('./config/settings');
 var commands = require('./config/commands');

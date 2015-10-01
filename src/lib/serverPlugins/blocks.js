@@ -7,7 +7,7 @@ function inject(serv)
     serv.players.forEach(function(player){
       player.sendBlock(position, blockType);
     });
-    serv.world.setBlockType(position,blockType);
+    return serv.world.setBlockType(position,blockType);
   }
   
   serv.setBlock = setBlock;

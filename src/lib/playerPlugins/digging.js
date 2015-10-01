@@ -6,16 +6,19 @@ function inject(serv,player)
 {
   player._client.on("block_dig",function(packet){
     var pos=new Vec3(packet.location);
-    currentlyDugBlock=serv.world.getBlock(pos);
-    if(currentlyDugBlock.type==0) return;
-    if(packet.status==0 && player.gameMode!=1)
-      startDigging(pos);
-    else if(packet.status==2)
-      completeDigging(pos);
-    else if(packet.status==1)
-      cancelDigging(pos);
-    else if(packet.status==0 && player.gameMode==1)
-      creativeDigging(pos);
+    serv.world.getBlock(pos)
+      .then(block => {
+        currentlyDugBlock=block;
+        if(currentlyDugBlock.type==0) return;
+        if(packet.status==0 && player.gameMode!=1)
+          startDigging(pos);
+        else if(packet.status==2)
+          completeDigging(pos);
+        else if(packet.status==1)
+          cancelDigging(pos);
+        else if(packet.status==0 && player.gameMode==1)
+          creativeDigging(pos);
+      });
   });
 
   function diggingTime(location)
@@ -84,7 +87,7 @@ function inject(serv,player)
 
   function creativeDigging(location)
   {
-    player.changeBlock(location,0);
+    return player.changeBlock(location,0);
   }
 
 }
