@@ -7,5 +7,6 @@ mcServer.createMCServer({
   'online-mode': true,
   gameMode:0,
   commands: {},
-  logging:false
+  logging:false,
+  modpe:false
 });
