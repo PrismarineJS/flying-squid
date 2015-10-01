@@ -7,7 +7,7 @@ function inject(serv,player)
     player.getOthers().forEach(function(player) {
       player.sendBlock(position, blockType);
     });
-    serv.world.setBlockType(position,blockType);
+    return serv.world.setBlockType(position,blockType);
   }
   
   function sendBlock(position, blockType) { // Call from serv.setBlock unless you want "local" fake blocks

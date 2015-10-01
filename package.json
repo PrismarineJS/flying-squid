@@ -14,14 +14,15 @@
     "flying-squid": "./app.js"
   },
   "scripts": {
-    "test": "mocha --reporter spec",
-    "postinstall": "node_modules/.bin/babel -d node_modules/prismarine-world/dist/ node_modules/prismarine-world/src/ && node_modules/.bin/babel -d node_modules/prismarine-chunk/dist/ node_modules/prismarine-chunk/src/ "
+    "prepublish": "gulp",
+    "test": "mocha --reporter spec"
   },
   "keywords": [],
   "licenses": {
     "type": "MIT"
   },
   "dependencies": {
+    "babel-runtime": "^5.4.4",
     "buffers": "0.1.1",
     "chai": "~3.2.0",
     "minecraft-data": "0.7.0",
@@ -31,10 +32,10 @@
     "moment": "^2.10.6",
     "node-uuid": "^1.4.3",
     "prismarine-block": "0.1.0",
-    "prismarine-chunk": "git://github.com/rom1504/prismarine-chunk.git#use-prismarine-block",
+    "prismarine-chunk": "0.2.1",
     "prismarine-entity": "0.1.0",
-    "prismarine-world": "git://github.com/rom1504/prismarine-world.git#implementation",
-    "request": "^2.61.0",
+    "prismarine-world": "0.1.0",
+    "request-promise": "^0.4.3",
     "requireindex": "~1.0.0",
     "vec3": "0.1.3"
   },
@@ -48,6 +49,10 @@
   "devDependencies": {
     "doctoc": "^0.15.0",
     "longjohn": "~0.2.8",
-    "babel": "5.8.23"
+    "babel": "5.8.23",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sourcemaps": "^1.3.0"
   }
 }

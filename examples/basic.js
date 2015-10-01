@@ -1,4 +1,4 @@
-var mcServer=require("..");
+var mcServer=require("../");
 
 mcServer.createMCServer({
   motd: "Basic flying-squid server",
