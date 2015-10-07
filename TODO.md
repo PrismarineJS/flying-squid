@@ -18,7 +18,7 @@ This is a list that will keep the developers and the community organized!
  - [x] Fix massive lag when players move
  - [x] Dynamic worlds (players can see the when someone makes changes to the world)
  - [ ] Block dropping
- - [ ] Inventories (saving the blocks players get)
+ - [x] Inventories (Players can see other players armor and handheld items)
  - [ ] Crafting and Smelting
  - [x] Basic PvP
  - [x] Player animations (hurting, flinching, etc.)
