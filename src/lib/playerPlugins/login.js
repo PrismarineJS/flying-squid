@@ -1,4 +1,6 @@
 var Entity=require("prismarine-entity");
+var spiralloop = require('spiralloop');
+var Vec3=require("vec3");
 
 module.exports=inject;
 
@@ -17,9 +19,11 @@ function inject(serv,player)
     player.entity.player=player;
     player.entity.health = 20;
     player.entity.food = 20;
+    player.view=8;
     player.username=player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
+    player.loadedChunks={};
   }
 
   function sendLogin()
@@ -34,19 +38,77 @@ function inject(serv,player)
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
+    player.entity.position=player.spawnPoint.scaled(32);
   }
+
+  function spiral(arr)
+  {
+    var t=[];
+    spiralloop(arr,function(x,z){
+      t.push([x,z]);
+    });
+    return t;
+  }
+
+
+  function sendChunk(chunkX,chunkZ,column)
+  {
+    player._client.write('map_chunk', {
+      x: chunkX,
+      z: chunkZ,
+      groundUp: true,
+      bitMap: 0xffff,
+      chunkData: column.dump()
+    });
+    return Promise.resolve();
+  }
+
+  function sendChunksAroundPlayer(view)
+  {
+    player.lastPositionChunkUpdated=player.entity.position;
+    var playerChunkX=Math.floor(player.entity.position.x/16/32);
+    var playerChunkZ=Math.floor(player.entity.position.z/16/32);
+    return spiral([view*2,view*2])
+      .map(t => ({
+        chunkX:playerChunkX+t[0]-view,
+        chunkZ:playerChunkZ+t[1]-view
+      }))
+      .filter(({chunkX,chunkZ}) => {
+        var key=chunkX+","+chunkZ;
+        var loaded=player.loadedChunks[key];
+        if(!loaded) player.loadedChunks[key]=1;
+        return !loaded;
+      })
+      .reduce((acc,{chunkX,chunkZ})=>
+         acc
+          //.then(() => sleep(10))
+          .then(() => serv.world.getColumn(chunkX,chunkZ))
+          .then((column) => sendChunk(chunkX,chunkZ,column))
+      ,Promise.resolve());
+  }
+
   function sendMap()
   {
-    serv.world.getColumns().forEach(function(column){
-      player._client.write('map_chunk', {
-        x: column.chunkX,
-        z: column.chunkZ,
-        groundUp: true,
-        bitMap: 0xffff,
-        chunkData: column.column.dump()
-      });
+    var initialChunks=sendChunksAroundPlayer(2);
+    player.sendingChunks=true;
+    sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
+
+    player.on("positionChanged",function(){
+      if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
+      {
+        player.sendingChunks=true;
+        sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
+      }
     });
+    return initialChunks;
   }
+
+
+  function sleep(ms = 0) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+
 
   function sendSpawnPosition()
   {
@@ -161,7 +223,7 @@ function inject(serv,player)
     player.emit("connected");
   }
 
-  function login()
+  async function login()
   { 
     if (serv.uuidToPlayer[player._client.uuid]) {
       player._client.end("You are already connected");
@@ -174,7 +236,7 @@ function inject(serv,player)
 
     addPlayer();
     sendLogin();
-    sendMap();
+    await sendMap();
     sendSpawnPosition();
     sendInitialPosition();
 
@@ -188,7 +250,6 @@ function inject(serv,player)
 
     announceJoin();
   }
-
 
   player.setGameMode=setGameMode;
   player.login=login;

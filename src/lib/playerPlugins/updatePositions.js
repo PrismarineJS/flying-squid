@@ -4,7 +4,7 @@ module.exports=inject;
 
 function toFixedPosition(p)
 {
-  return new vec3(Math.floor(p.x*32),Math.floor(p.y*32),Math.floor(p.z*32))
+  return p.scaled(32);
 }
 
 function inject(serv,player)
@@ -80,5 +80,6 @@ function inject(serv,player)
     }
     player.entity.position = newPosition;
     player.entity.onGround = onGround;
+    player.emit("positionChanged");
   }
 }
