@@ -34,6 +34,7 @@
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
       - [player.username](#playerusername)
+      - [player.view](#playerview)
     - [Events](#events-1)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -41,6 +42,7 @@
       - ["error" (error)](#error-error-1)
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
+      - ["positionChanged"](#positionchanged)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -184,6 +186,10 @@ The entity of the player, of type `Flying-squid.Entity`
 
 The username of the player
 
+#### player.view
+
+The view size of the player, for example 8 for 16x16
+
 ### Events
 
 #### "connected" 
@@ -209,6 +215,10 @@ Fires when the player says `message`.
 #### "kicked" (kicker,reason)
 
 `kicker` kick the player with `reason`
+
+#### "positionChanged"
+
+fires when the position changed
 
 ### Methods
 
