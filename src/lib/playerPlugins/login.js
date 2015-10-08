@@ -81,7 +81,7 @@ function inject(serv,player)
       })
       .reduce((acc,{chunkX,chunkZ})=>
          acc
-          .then(() => sleep(10))
+          .then(() => sleep(100))
           .then(() => serv.world.getColumn(chunkX,chunkZ))
           .then((column) => sendChunk(chunkX,chunkZ,column))
       ,Promise.resolve());
