@@ -1,10 +1,5 @@
 module.exports=inject;
 
-function transformUuid(s)
-{
-  return s.split("-").map(function(item) { return parseInt(item, 16); });
-}
-
 function inject(serv,player)
 {
   player._client.on('end', function () {
@@ -13,7 +8,7 @@ function inject(serv,player)
       player._writeOthers('player_info', {
         action: 4,
         data: [{
-          UUID: transformUuid(player._client.uuid)
+          UUID: player._client.uuid
         }]
       });
       player._writeOthers('entity_destroy', {'entityIds': [player.entity.id]});

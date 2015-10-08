@@ -4,11 +4,6 @@ var Vec3=require("vec3");
 
 module.exports=inject;
 
-function transformUuid(s)
-{
-  return s.split("-").map(function(item) { return parseInt(item, 16); });
-}
-
 function inject(serv,player)
 {
   function addPlayer()
@@ -155,7 +150,7 @@ function inject(serv,player)
     player._writeOthers('player_info',{
         action: 0,
         data: [{
-          UUID: transformUuid(player._client.uuid),
+          UUID: player._client.uuid,
           name: player.username,
           properties: [],
           gamemode: player.gameMode,
@@ -170,7 +165,7 @@ function inject(serv,player)
       data: serv.players
         .map(function (otherPlayer) {
           return {
-            UUID: transformUuid(otherPlayer._client.uuid),
+            UUID: otherPlayer._client.uuid,
             name: otherPlayer.username,
             properties: [],
             gamemode: otherPlayer.gameMode,
@@ -188,7 +183,7 @@ function inject(serv,player)
     player.getOthers().forEach(function (otherPlayer) {
       player._client.write('named_entity_spawn', {
         entityId: otherPlayer.entity.id,
-        playerUUID: transformUuid(otherPlayer._client.uuid),
+        playerUUID: otherPlayer._client.uuid,
         x: otherPlayer.entity.position.x,
         y: otherPlayer.entity.position.y,
         z: otherPlayer.entity.position.z,
@@ -205,7 +200,7 @@ function inject(serv,player)
   {
     player._writeOthers('named_entity_spawn',{
       entityId: player.entity.id,
-      playerUUID: transformUuid(player._client.uuid),
+      playerUUID: player._client.uuid,
       x: player.entity.position.x,
       y: player.entity.position.y,
       z: player.entity.position.z,
