@@ -12,7 +12,8 @@ var options = {
   'online-mode': settings.onlineMode,
   gameMode:settings.gameMode,
   commands: commands,
-  logging:settings.logging
+  logging:settings.logging,
+  kickTimeout:10*60*1000
 };
 
 mcServer.createMCServer(options);
