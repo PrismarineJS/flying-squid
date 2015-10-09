@@ -10,5 +10,7 @@ var generations={
 module.exports = inject;
 
 function inject(serv,options) {
-  serv.world = new World(generations[options["generation"].name](options["generation"].options));
+  var seed=options.seed || Math.random()*Math.pow(2, 32);
+  serv.emit("seed",seed);
+  serv.world = new World(generations[options["generation"].name](seed,options["generation"].options));
 }

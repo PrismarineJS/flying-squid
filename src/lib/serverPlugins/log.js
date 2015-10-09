@@ -20,6 +20,10 @@ function inject(serv,settings)
     serv.log(banner.username + " banned " + bannedUsername + (reason ? " (" + reason + ")" : ""));
   });
 
+  serv.on("seed",function(seed){
+    serv.log("seed: "+seed);
+  });
+
   var logFile=path.join("logs",timeStarted + ".log");
 
   function log(message) {

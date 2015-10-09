@@ -5,7 +5,7 @@ function DiamondSquare(size, roughness, seed) {
   // public fields
   this.size = size;
   this.roughness = roughness;
-  this.seed = (seed ? seed : Math.random());
+  this.seed = seed;
   var opCount = 0;
 
   // private field
@@ -93,11 +93,11 @@ function DiamondSquare(size, roughness, seed) {
   }
 }
 
-function generation(options) {
+function generation(seed, options) {
   var worldHeight=options.worldHeight || 80;
 // Selected empirically
   var size = 10000000;
-  var space = new DiamondSquare(size, size / 1000, Math.random() * 10000);
+  var space = new DiamondSquare(size, size / 1000, seed);
 
   function generateSimpleChunk(chunkX, chunkZ) {
     var chunk = new Chunk();
