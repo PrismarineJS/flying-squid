@@ -97,6 +97,7 @@ function generation({seed,worldHeight=80}={}) {
 // Selected empirically
   var size = 10000000;
   var space = new DiamondSquare(size, size / 1000, seed);
+  var waterline = 20;
 
   function generateSimpleChunk(chunkX, chunkZ) {
     var chunk = new Chunk();
@@ -107,15 +108,19 @@ function generation({seed,worldHeight=80}={}) {
     for (var x = 0; x < 16; x++) {
       for (var z = 0; z < 16; z++) {
         var level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight);
+        var dirtheight = level - 4 + Math.round(Math.random()*2);
+        var bedrockheight = 1 + Math.round(Math.random()*3)
         for (var y = 0; y < 256; y++) {
           let block;
 
-          if (y == 0) block = 7;
-          else if (y < level) block = 3;
-          else if (y == level) block = 2;
-          else if (y < 20) block = 9;
+          var surfaceblock = level < waterline ? 12 : 2; // Sand below water, grass
+          var belowblock = level < waterline ? 12 : 3; // 3-5 blocks below surface
 
-          if (block) chunk.setBlockType(new Vec3(x, y, z), block);
+          if (y < bedrockheight) block = 7; // Solid bedrock at bottom
+          else if (y < level && y >= dirtheight) block = belowblock; // Dirt/sand below surface
+          else if (y < level) block = 1; // Set stone inbetween
+          else if (y == level) block = surfaceblock; // Set surface sand/grass
+          else if (y <= waterline) block = 9; // Set the water
 
           chunk.setSkyLight(new Vec3(x, y, z), 15);
         }
