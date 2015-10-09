@@ -178,7 +178,9 @@ function inject(serv,settings)
 
         player._client.on("block_place", function (packet) {
             if (packet.location.y < 0) return;
-            useItem(packet.location.x, packet.location.y, packet.location.z, packet.heldItem.blockId, serv.world.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
+            useItem(packet.location.x, packet.location.y, packet.location.z,
+              packet.heldItem.blockId,
+              serv.world.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
         });
 
         player._client.on('chat', function (packet) {
