@@ -4,7 +4,7 @@ module.exports=inject;
 
 function toFixedPosition(p)
 {
-  return p.scaled(32);
+  return p.scaled(32).floored();
 }
 
 function inject(serv,player)

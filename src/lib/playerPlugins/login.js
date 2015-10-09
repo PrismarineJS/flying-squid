@@ -21,6 +21,10 @@ function inject(serv,player)
     player.loadedChunks={};
   }
 
+  function toFixedPosition(p)
+  {
+    return p.scaled(32).floored();
+  }
   function sendLogin()
   {
     // send init data so client will start rendering world
@@ -33,7 +37,7 @@ function inject(serv,player)
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
-    player.entity.position=player.spawnPoint.scaled(32);
+    player.entity.position=toFixedPosition(player.spawnPoint);
   }
 
   function spiral(arr)
@@ -115,13 +119,13 @@ function inject(serv,player)
 
   function sendInitialPosition()
   {
-    player.entity.position=player.spawnPoint;
+    player.entity.position=toFixedPosition(player.spawnPoint);
     player.entity.yaw=0;
     player.entity.pitch=0;
     player._client.write('position', {
-      x: player.entity.position.x,
-      y: player.entity.position.y,
-      z: player.entity.position.z,
+      x: player.entity.position.x/32,
+      y: player.entity.position.y/32,
+      z: player.entity.position.z/32,
       yaw: player.entity.yaw,
       pitch: player.entity.pitch,
       flags: 0x00
@@ -160,20 +164,19 @@ function inject(serv,player)
         }]
       });
 
-    player._client.write('player_info', {
-      action: 0,
-      data: serv.players
-        .map(function (otherPlayer) {
-          return {
-            UUID: otherPlayer._client.uuid,
-            name: otherPlayer.username,
-            properties: [],
-            gamemode: otherPlayer.gameMode,
-            ping: 1,
-            hasDisplayName: true,
-            displayName: otherPlayer.username
-          };
-        })
+    serv.players.map((otherPlayer) => {
+      player._client.write('player_info', {
+        action: 0,
+        data: [{
+          UUID: otherPlayer._client.uuid,
+          name: otherPlayer.username,
+          properties: [],
+          gamemode: otherPlayer.gameMode,
+          ping: 1,
+          hasDisplayName: true,
+          displayName: otherPlayer.username
+        }]
+      });
     });
   }
 
@@ -201,9 +204,9 @@ function inject(serv,player)
     player._writeOthers('named_entity_spawn',{
       entityId: player.entity.id,
       playerUUID: player._client.uuid,
-      x: player.entity.position.x,
-      y: player.entity.position.y,
-      z: player.entity.position.z,
+      x: player.entity.position.x/32,
+      y: player.entity.position.y/32,
+      z: player.entity.position.z/32,
       yaw: player.entity.yaw,
       pitch: player.entity.pitch,
       currentItem: 0,
