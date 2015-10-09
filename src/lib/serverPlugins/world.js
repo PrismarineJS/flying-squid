@@ -10,5 +10,5 @@ var generations={
 module.exports = inject;
 
 function inject(serv,options) {
-  serv.world = new World(generations[options["generation"]]);
+  serv.world = new World(generations[options["generation"].name](options["generation"].options));
 }

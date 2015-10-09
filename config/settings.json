@@ -5,5 +5,10 @@
   "onlineMode": true,
   "logging": true,
   "gameMode": 1,
-  "generation":"diamond_square"
+  "generation": {
+    "name":"diamond_square",
+    "options":{
+        "worldHeight":80
+    }
+  }
 }

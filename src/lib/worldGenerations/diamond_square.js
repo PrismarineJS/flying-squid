@@ -93,35 +93,39 @@ function DiamondSquare(size, roughness, seed) {
   }
 }
 
+function generation(options) {
+  var worldHeight=options.worldHeight || 80;
 // Selected empirically
-var size = 10000000;
-var space = new DiamondSquare(size, size/1000, Math.random() * 10000);
+  var size = 10000000;
+  var space = new DiamondSquare(size, size / 1000, Math.random() * 10000);
 
-function generateSimpleChunk(chunkX, chunkZ) {
-  var chunk = new Chunk();
+  function generateSimpleChunk(chunkX, chunkZ) {
+    var chunk = new Chunk();
 
-  var worldX = chunkX * 16 + size/2;
-  var worldZ = chunkZ * 16 + size/2;
+    var worldX = chunkX * 16 + size / 2;
+    var worldZ = chunkZ * 16 + size / 2;
 
-  for (var x = 0; x < 16;x++) {
-    for (var z = 0; z < 16; z++) {
-      var level = Math.floor(space.value(worldX + x, worldZ + z) * 138);
-      for (var y = 0; y < 256; y++) {
-        let block;
+    for (var x = 0; x < 16; x++) {
+      for (var z = 0; z < 16; z++) {
+        var level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight);
+        for (var y = 0; y < 256; y++) {
+          let block;
 
-        if(y == 0) block = 7;
-        else if(y < level) block = 3;
-        else if (y == level) block = 2;
-        else if (y < 20) block = 9;
+          if (y == 0) block = 7;
+          else if (y < level) block = 3;
+          else if (y == level) block = 2;
+          else if (y < 20) block = 9;
 
-        if(block) chunk.setBlockType(new Vec3(x, y, z), block);
+          if (block) chunk.setBlockType(new Vec3(x, y, z), block);
 
-        chunk.setSkyLight(new Vec3(x, y, z), 15);
+          chunk.setSkyLight(new Vec3(x, y, z), 15);
+        }
       }
     }
-  }
 
-  return chunk;
+    return chunk;
+  }
+  return generateSimpleChunk;
 }
 
-module.exports=generateSimpleChunk;
+module.exports=generation;
