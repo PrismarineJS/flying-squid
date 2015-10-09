@@ -126,7 +126,7 @@ function inject(serv,settings)
         return;
     }
     log("Modpe injection start...");
-    var modPePluginsDir = "./lib/modpePlugins";
+    var modPePluginsDir = __dirname+"/../../../modpePlugins";
     log("Place your scripts in " + modPePluginsDir);
     var modCount = 0;
     var mods = [];
