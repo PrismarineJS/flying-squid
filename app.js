@@ -14,8 +14,7 @@ var options = {
   commands: commands,
   logging:settings.logging,
   kickTimeout:10*60*1000,
-  generation:settings.generation,
-  seed:settings.seed
+  generation:settings.generation
 };
 
 mcServer.createMCServer(options);

@@ -93,8 +93,7 @@ function DiamondSquare(size, roughness, seed) {
   }
 }
 
-function generation(seed, options) {
-  var worldHeight=options.worldHeight || 80;
+function generation({seed,worldHeight=80}={}) {
 // Selected empirically
   var size = 10000000;
   var space = new DiamondSquare(size, size / 1000, seed);
