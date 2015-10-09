@@ -4,5 +4,6 @@
   "maxPlayers": 10,
   "onlineMode": true,
   "logging": true,
-  "gameMode": 1
+  "gameMode": 1,
+  "generation":"diamond_square"
 }

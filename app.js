@@ -13,7 +13,8 @@ var options = {
   gameMode:settings.gameMode,
   commands: commands,
   logging:settings.logging,
-  kickTimeout:10*60*1000
+  kickTimeout:10*60*1000,
+  generation:settings.generation
 };
 
 mcServer.createMCServer(options);
