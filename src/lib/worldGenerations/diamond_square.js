@@ -105,7 +105,7 @@ function generateSimpleChunk(chunkX, chunkZ) {
 
   for (var x = 0; x < 16;x++) {
     for (var z = 0; z < 16; z++) {
-      var level = space.value(worldX + x, worldZ + z) * 138;
+      var level = Math.floor(space.value(worldX + x, worldZ + z) * 138);
       for (var y = 0; y < 256; y++) {
         let block;
 
