@@ -2,7 +2,15 @@
 
 var mcServer=require("./");
 
-var settings = require('./config/settings');
+var settings;
+
+try {
+  settings = require('./config/settings');
+}
+catch(err) {
+  settings = require('./config/default-settings');
+}
+
 var commands = require('./config/commands');
 
 var options = {
