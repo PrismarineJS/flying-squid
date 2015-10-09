@@ -93,11 +93,10 @@ function DiamondSquare(size, roughness, seed) {
   }
 }
 
-function generation({seed,worldHeight=80}={}) {
+function generation({seed,worldHeight=80,waterline=20}={}) {
   // Selected empirically
   var size = 10000000;
   var space = new DiamondSquare(size, size / 1000, seed);
-  var waterline = 20;
 
   function generateSimpleChunk(chunkX, chunkZ) {
     var chunk = new Chunk();
