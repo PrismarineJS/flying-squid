@@ -94,9 +94,10 @@ function DiamondSquare(size, roughness, seed) {
 }
 
 function generation({seed,worldHeight=80}={}) {
-// Selected empirically
+  // Selected empirically
   var size = 10000000;
   var space = new DiamondSquare(size, size / 1000, seed);
+  var waterline = 20;
 
   function generateSimpleChunk(chunkX, chunkZ) {
     var chunk = new Chunk();
@@ -112,8 +113,9 @@ function generation({seed,worldHeight=80}={}) {
 
           if (y == 0) block = 7;
           else if (y < level) block = 3;
+          else if (y == level && y < waterline) block = 3;
           else if (y == level) block = 2;
-          else if (y < 20) block = 9;
+          else if (y < waterline) block = 9;
 
           if (block) chunk.setBlockType(new Vec3(x, y, z), block);
 
