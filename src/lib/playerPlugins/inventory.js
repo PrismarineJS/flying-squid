@@ -8,16 +8,16 @@ function inject(serv, player)
   
   player._client.on("held_item_slot", function (packet) {
     player.heldItemSlot = packet.slotId;
-    if(player.inventory[36+heldItemSlot]===undefined){
-      player.inventory[36+heldItemSlot]={
+    if(player.inventory[36+player.heldItemSlot]===undefined){
+      player.inventory[36+player.heldItemSlot]={
             blockId:-1
         };
     }
-    player.heldItem = player.inventory[36+heldItemSlot];
+    player.heldItem = player.inventory[36+player.heldItemSlot];
     player._writeOthers("entity_equipment",{
         entityId:player.entity.id,
         slot:0,
-        item:heldItem
+        item:player.heldItem
     });
   });
   

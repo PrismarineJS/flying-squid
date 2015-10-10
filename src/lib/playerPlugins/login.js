@@ -136,7 +136,7 @@ function inject(serv,player)
   {
     player._client.write('update_time', {
       age: [0, 0],
-      time: [0, 1]
+      time: [0, serv.time]
     });
   }
 

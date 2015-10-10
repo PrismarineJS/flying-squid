@@ -4,16 +4,23 @@ module.exports=inject;
 
 function inject(serv, player)
 {
-  player._client.on('block_place', function (packet) {
+  player._client.on('block_place', async function (packet) {
     var referencePosition=new vec3(packet.location.x,packet.location.y,packet.location.z);
-    var id = serv.world.getBlock(referencePosition).type;
-    if(id==54)
+    if (player.entity.crouching) return;
+    var id = await serv.world.getBlockType(referencePosition);
+    var blockAbove = await serv.world.getBlockType(referencePosition.clone().add(new vec3(0, 1, 0)));
+
+    if(id==54) {
+      if (blockAbove) {
+        return;
+      }
       player._client.write("open_window",{
           windowId:165,
           inventoryType:"minecraft:chest",
           windowTitle:JSON.stringify("Chest"),
-          slotCount:26
+          slotCount:9*3 + 8 // 3 rows, make nicer later
       });
+    }
     
   });
 }

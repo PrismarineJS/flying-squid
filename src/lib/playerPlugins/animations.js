@@ -19,13 +19,16 @@ function inject(serv, player)
   }
 
   player._client.on("entity_action", function(packet) {
-    if(packet.actionId == 3)
+    if(packet.actionId == 3) {
       setMetadata([{"key":0,"type":0,"value": 0x08}]);
-    if(packet.actionId == 4)
+    } else if(packet.actionId == 4) {
       setMetadata([{"key":0,"type":0,"value": 0x00}]);
-    if(packet.actionId == 0)
+    } else if(packet.actionId == 0) {
       setMetadata([{"key":0,"type":0,"value": 0x02}]);
-    if(packet.actionId == 1)
+      player.entity.crouching = true;
+    } else if(packet.actionId == 1) {
       setMetadata([{"key":0,"type":0,"value": 0x00}]);
+      player.entity.crouching = false;
+    }
   });
 }

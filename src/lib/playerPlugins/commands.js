@@ -5,8 +5,6 @@ module.exports = inject;
 function inject(serv, player, options) {
   function handleCommand(command) {
     var results;
-    if (options.modpe)
-      player.chat("§1######## VANILLA ########");
     if (options.commands[command])
       player.chat("" + options.commands[command]);
     else if (results = command.match(/^gamemode ([0-3])$/)) {
@@ -80,6 +78,23 @@ function inject(serv, player, options) {
           .then(()=> player.chat(results[1] + " is unbanned"))
           .catch(err => player.chat(results[1] + " is not banned"));
       }
+    }
+    else if(results = command.match(/^time (add|query|set)(?: ([0-9]+))?/)) {
+      var action=results[1];
+      var value=results[2]!==undefined ? parseInt(results[2]) : null;
+      if(action=="query")
+        player.chat("It is "+serv.time);
+      else if(action=="set") {
+        player.chat("Time was changed from "+serv.time+" to "+value);
+        serv.setTime(value);
+      }
+      else if(action=="add") {
+        player.chat("Time was changed from "+serv.time+" to "+(value + serv.time));
+        serv.setTime(value + serv.time);
+      }
+    }
+    else if(results = command.match(/^modpe (.+)$/)) {
+      player.emit("modpe",results[1]);
     }
     else
       player.chat("Invalid command.");
