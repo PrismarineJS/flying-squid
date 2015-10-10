@@ -56,7 +56,7 @@ function modpeApi() {
     }
 
     function getTile(x, y, z) {
-        server.world.getBlockType(new vec3(x, y, z));
+        return server._worldSync.getBlockType(new vec3(x, y, z));
     }
 
     function preventDefault() {
@@ -161,7 +161,6 @@ function inject(serv,settings)
 
         player._client.on("block_dig", function (packet) {
             var pos = new vec3(packet.location);
-            var currentlyDugBlock = serv.world.getBlock(pos);
             if (packet.status == 0 && player.gameMode != 1)
                 startDestroyBlock(pos.x, pos.y, pos.z, 0);
             else if (packet.status == 2)
@@ -180,7 +179,7 @@ function inject(serv,settings)
             if (packet.location.y < 0) return;
             useItem(packet.location.x, packet.location.y, packet.location.z,
               packet.heldItem.blockId,
-              serv.world.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
+              serv._worldSync.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
         });
 
         player.on('modpe', function (command) {
