@@ -184,7 +184,12 @@ function inject(serv,settings)
 
         player.on('modpe', function (command) {
           console.log(command);
-          procCmd(command);
+          try {
+            procCmd(command);
+          }
+          catch(err) {
+            console.log("MODPE error: "+err.stack);
+          }
         });
 
         function newLevel() {
