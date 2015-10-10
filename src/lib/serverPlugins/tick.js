@@ -11,7 +11,7 @@ function inject(serv, settings) {
 
 function setTickInterval(ticksPerSecond) {
 	var serv = this;
-	stopTickInterval();
+	serv.stopTickInterval();
 
 	serv.tickInterval = setInterval(function() {
 		serv.tickCount++;
@@ -20,6 +20,6 @@ function setTickInterval(ticksPerSecond) {
 }
 
 function stopTickInterval() {
-	if (serv.tickInterval) clearInterval(serv.tickInterval);
-	serv.tickInterval = null;
+	if (this.tickInterval) clearInterval(serv.tickInterval);
+	this.tickInterval = null;
 }
