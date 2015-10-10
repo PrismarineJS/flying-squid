@@ -16,6 +16,8 @@ function inject(serv, settings) {
 
 	serv.on('tick', function(count) {
 		if (!serv.doDaylightCycle) return;
-		if (count % 20 == 0) serv.setTime((serv.time + 20) % 24000); // Vanilla only does it every second
+		if (count % 20 == 0) {
+      serv.setTime((serv.time + 20) % 24000); // Vanilla only does it every second
+		 }
 	})
 }

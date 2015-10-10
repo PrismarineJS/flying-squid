@@ -183,11 +183,9 @@ function inject(serv,settings)
               serv.world.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
         });
 
-        player._client.on('chat', function (packet) {
-            if(packet.message[0]=="/") {
-                var command = packet.message.slice(1);
-                procCmd(command);
-            }
+        player.on('modpe', function (command) {
+          console.log(command);
+          procCmd(command);
         });
 
         function newLevel() {
@@ -216,7 +214,6 @@ function inject(serv,settings)
         }
 
         function procCmd(command) {
-            player.chat("§2######### MODPE #########");
             mods.forEach(function (element, index, array) {
                 element.procCmd(command);
             });
