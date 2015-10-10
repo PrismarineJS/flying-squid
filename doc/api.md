@@ -14,11 +14,15 @@
       - [serv.world](#servworld)
       - [serv.entities](#serventities)
       - [serv.bannedPlayers](#servbannedplayers)
+      - [serv.time](#servtime)
+      - [serv.tickCount](#servtickcount)
+      - [serv.doDaylightCycle](#servdodaylightcycle)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["listening" (port)](#listening-port)
       - ["newPlayer" (player)](#newplayer-player)
       - ["banned" (banner,bannedUsername,reason)](#banned-bannerbannedusernamereason)
+      - ["tick" (count)](#tick-count)
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
@@ -30,6 +34,8 @@
       - [server.pardonUsername(username,callback)](#serverpardonusernameusernamecallback)
       - [server.pardon(uuid)](#serverpardonuuid)
       - [server.getUUIDFromUsername(username,callback)](#servergetuuidfromusernameusernamecallback)
+      - [server.setTime(time)](#serversettimetime)
+      - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -112,6 +118,20 @@ Example player:
 }
 ```
 
+#### serv.time
+
+Current daylight cycle time in ticks. Morning is 0, noon is 6000, evening is 12000, and night is 18000.
+Resets to 0 at 24000. Use `serv.setTime(time)` to set the time.
+
+#### serv.tickCount
+
+Total number of ticks that have passed since the start of the world.
+Best to use with modulo (e.g. Something every 10 seconds is `serv.tickCount % 20*10 == 0`)
+
+#### serv.doDaylightCycle
+
+Default `true`. If false, time will not automatically pass.
+
 ### Events
 
 #### "error" (error)
@@ -129,6 +149,10 @@ Fires when `player` login, allow external player plugins.
 #### "banned" (banner,bannedUsername,reason)
 
 `banner` banned `bannedUsername` with `reason`
+
+#### "tick" (count)
+
+Fires when one tick has passed (default is 50ms). count is the total world ticks (same as serv.tickCount)
 
 ### Methods
 
@@ -173,6 +197,16 @@ Pardons a player given their uuid. Returns `false` if they are not banned.
 Gets UUID from username. Since it needs to fetch from mojang servers, it is not immediate.
 
 Arguments in format: `callback(uuid)`. `uuid` is null if no such username exists.
+
+#### server.setTime(time)
+
+Set daylight cycle time in ticks. See `serv.time` for more info.
+
+#### server.setTickInterval(ticksPerSecond)
+
+Resets tick interval to occur `ticksPerSecond` times per second.
+
+Use `server.stopTickInterval()` if you want but this method already calls that and you can use `serv.doDaylightCycle` to stop it anyway.
 
 ## Player
 
