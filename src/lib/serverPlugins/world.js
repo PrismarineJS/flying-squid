@@ -12,9 +12,9 @@ var generations={
 
 module.exports = inject;
 
-function inject(serv,options) {
-  options["generation"].options.seed=options["generation"].options.seed || Math.random()*Math.pow(2, 32);
-  serv.emit("seed",options["generation"].options.seed);
-  serv.world = new World(generations[options["generation"].name](options["generation"].options));
+function inject(serv,{generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
+  generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
+  serv.emit("seed",generation.options.seed);
+  serv.world = new World(generations[generation.name](generation.options));
   serv._worldSync=new WorldSync(serv.world);
 }

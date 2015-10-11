@@ -2,3 +2,4 @@ node_modules
 dist/
 modpePlugins/
 config/settings.json
+logs/
