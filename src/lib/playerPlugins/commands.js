@@ -1,92 +1,88 @@
 var Vec3 = require('vec3');
 module.exports = inject;
 
-function inject(serv, player, options) {
-  var hash = {};
+class Command {
+  constructor(params, parent, hash) {
+    this.params = params;
+    this.parent = parent;
+    this.hash = parent ? parent.hash : {};
 
-  class Command {
-    constructor(params, parent) {
-      this.params = params;
-      this.parent = parent;
-      this.child = [];
+    this.updateHistory();
+  }
 
-      this.updateHistory();
-    }
+  find(command) {
+    var res;
+    for(var key in this.hash) {
+      var space = this.hash[key].space(true);
+      if(space) space += '?';
 
-    static find(command) {
-      var res;
-      for(var key in hash) {
-        var space = hash[key].space(true);
-        if(space) space += '?';
+      var ended = space + '(.*)';
 
-        var ended = space + '(.*)';
-
-        var finded = command.match(new RegExp('^' + key + ended));
-        if(finded) {
-          res = [hash[key], finded];
-        }
+      var finded = command.match(new RegExp('^' + key + ended));
+      if(finded) {
+        res = [this.hash[key], finded];
       }
-
-      return res;
     }
 
-    static use(command) {
-      var res = this.find(command);
+    return res;
+  }
 
-      if(res) {
-        var parse = res[0].params.parse;
-        if(parse) {
-          if(typeof parse == 'function') {
-            res[1] = parse(res[1][1]);
-            if(res[1] === false) {
-              player.chat(res[0].params.usage ? 'Usage: ' + res[0].params.usage : 'Bad syntax');
-              return;
-            }
-          } else {
-            res[1] = res[1][1].match(parse);
+  use(command) {
+    var res = this.find(command);
+
+    if(res) {
+      var parse = res[0].params.parse;
+      if(parse) {
+        if(typeof parse == 'function') {
+          res[1] = parse(res[1][1]);
+          if(res[1] === false) {
+            return res[0].params.usage ? 'Usage: ' + res[0].params.usage : 'Bad syntax';
           }
         } else {
-          res[1].shift();
+          res[1] = res[1][1].match(parse);
         }
-
-        res = res[0].params.action(res[1]);
-        if(res) player.chat('' + res);
       } else {
-        player.chat('Command not found');
-      }
-    }
-
-    updateHistory() {
-      var all = '(.+?)';
-
-      var list = [this.params.base];
-      if(this.params.aliases && this.params.aliases.length) {
-        this.params.aliases.forEach(al => list.unshift(al));
+        res[1].shift();
       }
 
-      list.forEach((command) => {
-        var parentBase = this.parent ? (this.parent.path || '') : '';
-        this.path = parentBase + this.space() + (command || all);
-        if(this.path == all && !this.parent) this.path = '';
-
-        if(this.path) hash[this.path] = this;
-      });
-    }
-
-    add(params) {
-      var command = new Command(params, this);
-      this.child.push(command);
-
-      return command;
-    }
-
-    space(end) {
-      var first = !(this.parent && this.parent.parent);
-      return this.params.merged || (!end && first) ? '' : ' ';
+      res = res[0].params.action(res[1]);
+      if(res) return '' + res;
+    } else {
+      return 'Command not found';
     }
   }
 
-  var base = new Command({ basic: true });
+  updateHistory() {
+    var all = '(.+?)';
+
+    var list = [this.params.base];
+    if(this.params.aliases && this.params.aliases.length) {
+      this.params.aliases.forEach(al => list.unshift(al));
+    }
+
+    list.forEach((command) => {
+      var parentBase = this.parent ? (this.parent.path || '') : '';
+      this.path = parentBase + this.space() + (command || all);
+      if(this.path == all && !this.parent) this.path = '';
+
+      if(this.path) this.hash[this.path] = this;
+    });
+  }
+
+  add(params) {
+    var command = new Command(params, this);
+
+    return command;
+  }
+
+  space(end) {
+    var first = !(this.parent && this.parent.parent);
+    return this.params.merged || (!end && first) ? '' : ' ';
+  }
+}
+
+function inject(serv, player, options) {
+  var base = new Command({});
 
   base.add({
     base: 'help',
@@ -94,9 +90,10 @@ function inject(serv, player, options) {
     usage: '/help [command]',
     action(params) {
       var c = params[0];
+      var hash = base.hash;
 
       if(c) {
-        var res = Command.find(params[0])[0];
+        var res = base.find(params[0])[0];
 
         var help = res.params.help && res.params.help(params);
         return help ? '' + help : 'Information not found';
@@ -340,5 +337,8 @@ function inject(serv, player, options) {
 
   serv.commands = base;
 
-  player.handleCommand = Command.use.bind(Command);
+  player.handleCommand = function(str) {
+    var res = base.use(str);
+    if(res) player.chat('' + res);
+  };
 }
