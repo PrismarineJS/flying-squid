@@ -3,7 +3,7 @@ var Vec3 = require('vec3');
 module.exports = inject;
 
 function inject(serv, player, options) {
-  function handleCommand(command) {
+  /*function handleCommand(command) {
     var results;
     if (options.commands[command])
       player.chat("" + options.commands[command]);
@@ -98,6 +98,15 @@ function inject(serv, player, options) {
     }
     else
       player.chat("Invalid command.");
+  }*/
+
+  function handleCommand(command) {
+    var answer = serv.runCommand(command, player);
+    if (answer.success) {
+      player.chat(answer.message);
+    } else {
+      player.chat('§r' + answer.message);
+    }
   }
 
   player.handleCommand = handleCommand;
