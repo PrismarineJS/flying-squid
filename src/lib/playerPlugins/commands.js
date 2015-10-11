@@ -289,6 +289,20 @@ base.add({
 });
 
 base.add({
+  base: 'ping',
+  info: 'for pong!',
+  usage: '/ping [number]',
+  action(params, serv, player) {
+    var num = params[0] * 1 + 1;
+
+    var str = 'pong';
+    if(!isNaN(num)) str += ' [' + num + ']';
+
+    player.chat(str + '!');
+  }
+});
+
+base.add({
   base: 'night',
   info: 'for change a time to night',
   usage: '/night',
