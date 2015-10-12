@@ -88,7 +88,11 @@ function inject(serv,player)
 
   function sendMap()
   {
-    var initialChunks=sendChunksAroundPlayer(2);
+    return sendChunksAroundPlayer(3);
+  }
+
+  function sendRestMap()
+  {
     player.sendingChunks=true;
     sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
 
@@ -99,7 +103,6 @@ function inject(serv,player)
         sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
       }
     });
-    return initialChunks;
   }
 
 
@@ -247,6 +250,8 @@ function inject(serv,player)
     spawn();
 
     announceJoin();
+
+    setTimeout(sendRestMap,100);
   }
 
   player.setGameMode=setGameMode;
