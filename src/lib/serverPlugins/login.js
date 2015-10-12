@@ -14,6 +14,8 @@ function inject(serv,options)
         namespace: UUID.namespace.dns,
         name: client.username
       });
+    client.write('set_compression', { threshold: 256 }); // Default threshold is 256
+    client.compressionThreshold = 256;
     var player=new Player();
     player._client=client;
     for(var pluginName in playerPlugins) {
