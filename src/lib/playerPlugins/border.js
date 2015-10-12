@@ -3,7 +3,7 @@ module.exports=inject;
 function inject(serv, player)
 {
   //WIP: Does't work
-  player._client.write('world_border', {
+ /* player._client.write('world_border', {
         action: 3,
         x: 0,
         z: 0,
@@ -17,5 +17,5 @@ function inject(serv, player)
     player._client.write('world_border', {
         action: 0,
         radius: 15
-  });
+  });*/
 }
