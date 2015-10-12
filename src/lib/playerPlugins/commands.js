@@ -1,92 +1,14 @@
 var Vec3 = require('vec3');
 module.exports = inject;
 
-class Command {
-  constructor(params, parent, hash) {
-    this.params = params;
-    this.parent = parent;
-    this.hash = parent ? parent.hash : {};
+var Command = require('../command');
 
-    this.updateHistory();
-  }
-
-  find(command) {
-    var res;
-    for(var key in this.hash) {
-      var space = this.hash[key].space(true);
-      if(space) space += '?';
-
-      var ended = space + '(.*)';
-
-      var finded = command.match(new RegExp('^' + key + ended));
-      if(finded) {
-        res = [this.hash[key], finded];
-      }
-    }
-
-    return res;
-  }
-
-  use(command) {
-    var res = this.find(command);
-
-    if(res) {
-      var parse = res[0].params.parse;
-      if(parse) {
-        if(typeof parse == 'function') {
-          res[1] = parse(res[1][1]);
-          if(res[1] === false) {
-            return res[0].params.usage ? 'Usage: ' + res[0].params.usage : 'Bad syntax';
-          }
-        } else {
-          res[1] = res[1][1].match(parse);
-        }
-      } else {
-        res[1].shift();
-      }
-
-      res = res[0].params.action(res[1]);
-      if(res) return '' + res;
-    } else {
-      return 'Command not found';
-    }
-  }
-
-  updateHistory() {
-    var all = '(.+?)';
-
-    var list = [this.params.base];
-    if(this.params.aliases && this.params.aliases.length) {
-      this.params.aliases.forEach(al => list.unshift(al));
-    }
-
-    list.forEach((command) => {
-      var parentBase = this.parent ? (this.parent.path || '') : '';
-      this.path = parentBase + this.space() + (command || all);
-      if(this.path == all && !this.parent) this.path = '';
-
-      if(this.path) this.hash[this.path] = this;
-    });
-  }
-
-  add(params) {
-    var command = new Command(params, this);
-
-    return command;
-  }
-
-  space(end) {
-    var first = !(this.parent && this.parent.parent);
-    return this.params.merged || (!end && first) ? '' : ' ';
-  }
-}
-
-function inject(serv, player, options) {
+function inject(serv, player) {
   var base = new Command({});
 
   base.add({
     base: 'help',
-    info: 'for show all commands',
+    info: 'to show all commands',
     usage: '/help [command]',
     action(params) {
       var c = params[0];
@@ -104,7 +26,7 @@ function inject(serv, player, options) {
           used.push(hash[key]);
 
           if(hash[key].params.info) {
-            var str = '/' + hash[key].path + ' ' + hash[key].params.info;
+            var str = hash[key].params.usage + ' ' + hash[key].params.info;
             if(hash[key].params.aliases && hash[key].params.aliases.length) {
               str += ' (aliases: ' + hash[key].params.aliases.join(', ') + ')';
             }
@@ -119,12 +41,13 @@ function inject(serv, player, options) {
   base.add({
     base: 'gamemode',
     aliases: ['gm'],
-    info: 'for change game mode',
+    info: 'to change game mode',
     usage: '/gamemode <0-3>',
-    parse() {
-      var mode = parseInt(params[0]);
-      if(mode < 0 || mode > 3) return false;
-      else return mode;
+    parse(str) {
+      var results;
+      if(!(results = str.match(/^([0-3])$/)))
+        return false;
+      return parseInt(str);
     },
     action(mode) {
       player.setGameMode(mode);
@@ -133,7 +56,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'setblock',
-    info: 'for put block',
+    info: 'to put a block',
     usage: '/setblock <x> <y> <z> <id>',
     parse(str) {
       var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3})/);
@@ -156,7 +79,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'kick',
-    info: 'for kick a player',
+    info: 'to kick a player',
     usage: '/kick <player> [reason]',
     parse(str) {
       var res = false;
@@ -187,7 +110,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'ban',
-    info: 'for ban a player',
+    info: 'to ban a player',
     usage: '/ban <player> [reason]',
     parse(str) {
       var res = false;
@@ -224,7 +147,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'pardon',
-    info: 'for pardon a player',
+    info: 'to pardon a player',
     usage: '/pardon <player>',
     parse(str) {
       var res = false;
@@ -244,15 +167,18 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'time',
-    info: 'for change a time',
+    info: 'to change a time',
     usage: '/time <add|query|set> <value>',
     parse(str) {
       var res = false;
 
       var data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/);
+      if(!data) return false;
 
-      if(data[2] == 'day') data[2] = 1000;
-      if(data[2] == 'night') data[2] = 13000;
+      if(data.length ==3) {
+        if (data[2] == 'day') data[2] = 1000;
+        if (data[2] == 'night') data[2] = 13000;
+      }
 
       return [data[1], data[2]];
     },
@@ -279,7 +205,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'day',
-    info: 'for change a time to day',
+    info: 'to change a time to day',
     usage: '/day',
     action(params) {
       player.handleCommand('time set day');
@@ -288,7 +214,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'ping',
-    info: 'for pong!',
+    info: 'to pong!',
     usage: '/ping [number]',
     action(params) {
       var num = params[0] * 1 + 1;
@@ -302,7 +228,7 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'night',
-    info: 'for change a time to night',
+    info: 'to change a time to night',
     usage: '/night',
     action(params) {
       player.handleCommand('time set night');
@@ -321,7 +247,8 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'version',
-    info: 'for get version of the server',
+    info: 'to get version of the server',
+    usage: '/version',
     action() {
       return 'This server is running flying-squid version 0.1.0';
     }
@@ -329,7 +256,8 @@ function inject(serv, player, options) {
 
   base.add({
     base: 'bug',
-    info: 'for bug report',
+    info: 'to bug report',
+    usage: '/bug',
     action() {
       return 'Report bugs / issues here: https://github.com/mhsjlw/flying-squid/issues';
     }
