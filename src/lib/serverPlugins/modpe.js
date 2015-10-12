@@ -183,7 +183,6 @@ function inject(serv,settings)
         });
 
         player.on('modpe', function (command) {
-          console.log(command);
           try {
             procCmd(command);
           }

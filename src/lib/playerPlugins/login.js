@@ -207,9 +207,9 @@ function inject(serv,player)
     player._writeOthers('named_entity_spawn',{
       entityId: player.entity.id,
       playerUUID: player._client.uuid,
-      x: player.entity.position.x/32,
-      y: player.entity.position.y/32,
-      z: player.entity.position.z/32,
+      x: player.entity.position.x,
+      y: player.entity.position.y,
+      z: player.entity.position.z,
       yaw: player.entity.yaw,
       pitch: player.entity.pitch,
       currentItem: 0,
@@ -240,6 +240,7 @@ function inject(serv,player)
     await sendMap();
     sendSpawnPosition();
     sendInitialPosition();
+    player.updateHealth(player.entity.health);
 
     player.emit("spawned");
 
