@@ -2,8 +2,16 @@ var vec3=require("vec3");
 
 module.exports=inject;
 
+
+function randomInt (low, high) {
+  return Math.floor(Math.random() * (high - low) + low);
+}
+
 function inject(serv,settings)
 {
   serv.gameMode=settings.gameMode;
-  serv.spawnPoints=[new vec3(6,81,6),new vec3(3,81,6),new vec3(8,81,6)];
+
+  serv.getSpawnPoint = function() {
+    return new vec3(randomInt(5,20),81,randomInt(5,20));
+  }
 }
