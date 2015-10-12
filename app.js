@@ -22,7 +22,8 @@ var options = {
   commands: commands,
   logging:settings.logging,
   generation:settings.generation,
-  'modpe': settings.modpe
+  'modpe': settings.modpe,
+  kickTimeout: settings.kickTimeout ? settings.kickTimeout : 10*1000
 };
 
 mcServer.createMCServer(options);
