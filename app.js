@@ -21,7 +21,6 @@ var options = {
   gameMode:settings.gameMode,
   commands: commands,
   logging:settings.logging,
-  kickTimeout:10*60*1000,
   generation:settings.generation,
   'modpe': settings.modpe
 };
