@@ -163,7 +163,7 @@ function inject(serv,player)
           gamemode: player.gameMode,
           ping: 1,
           hasDisplayName: true,
-          displayName: player.username
+          displayName: {'text':player.username}
         }]
       });
 
@@ -177,7 +177,7 @@ function inject(serv,player)
           gamemode: otherPlayer.gameMode,
           ping: 1,
           hasDisplayName: true,
-          displayName: otherPlayer.username
+          displayName: {'text':player.username}
         }]
       });
     });
