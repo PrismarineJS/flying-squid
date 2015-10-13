@@ -52,13 +52,19 @@ Flying-squid is also a server lib. Here is a basic example of usage :
 var mcServer=require("flying-squid");
 
 mcServer.createMCServer({
-  motd: "Basic flying-squid server",
-  'max-players': 10,
-  port: 25565,
-  'online-mode': true,
-  gameMode:0,
-  commands: {},
-  logging:false
+  "motd": "A Minecraft Server \nRunning flying-squid",
+  "port": 25565,
+  "maxPlayers": 10,
+  "onlineMode": true,
+  "logging": true,
+  "gameMode": 1,
+  "generation": {
+    "name":"diamond_square",
+    "options":{
+      "worldHeight":80
+    }
+  },
+  "modpe": false
 });
 ```
 
