@@ -10,7 +10,6 @@ function inject(serv, player)
     try {
       var id = await player.world.getBlockType(referencePosition);
       var blockAbove = await player.world.getBlockType(referencePosition.clone().add(new vec3(0, 1, 0)));
-
       if (id == 54) {
         if (blockAbove) {
           return;

@@ -98,15 +98,15 @@ function inject(serv,player)
   function fillTabList()
   {
     player._writeOthers('player_info',{
-        action: 0,
-        data: [{
-          UUID: player._client.uuid,
-          name: player.username,
-          properties: [],
-          gamemode: player.gameMode,
-          ping: 1
-        }]
-      });
+      action: 0,
+      data: [{
+        UUID: player._client.uuid,
+        name: player.username,
+        properties: [],
+        gamemode: player.gameMode,
+        ping: 1
+      }]
+    });
 
     player._client.write('player_info', {
       action: 0,
@@ -118,7 +118,6 @@ function inject(serv,player)
         ping: 1
       }))
     });
-
   }
 
   function announceJoin()
