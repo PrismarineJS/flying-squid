@@ -82,4 +82,24 @@ function inject(serv,player)
     player.entity.onGround = onGround;
     player.emit("positionChanged");
   }
+
+  function setPosition(pos, opt) {
+    opt = opt || {};
+    if (pos) player.entity.position = toFixedPosition(pos);
+    if (typeof opt.yaw != 'undefined') player.entity.yaw=opt.yaw;
+    if (typeof opt.pitch != 'undefined') player.entity.pitch=opt.pitch;
+    
+    player._client.write('position', {
+      x: player.entity.position.x/32,
+      y: player.entity.position.y/32,
+      z: player.entity.position.z/32,
+      yaw: player.entity.yaw,
+      pitch: player.entity.pitch,
+      flags: 0x00
+    });
+    player.spawnForOthers();
+    player.getNearbyPlayers();
+    player.emit('teleport');
+  }
+  player.setPosition = setPosition;
 }

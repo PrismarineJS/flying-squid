@@ -8,8 +8,8 @@ function inject(serv, player)
     var referencePosition=new vec3(packet.location.x,packet.location.y,packet.location.z);
     if (player.entity.crouching) return;
     try {
-      var id = await serv.world.getBlockType(referencePosition);
-      var blockAbove = await serv.world.getBlockType(referencePosition.clone().add(new vec3(0, 1, 0)));
+      var id = await player.world.getBlockType(referencePosition);
+      var blockAbove = await player.world.getBlockType(referencePosition.clone().add(new vec3(0, 1, 0)));
 
       if (id == 54) {
         if (blockAbove) {

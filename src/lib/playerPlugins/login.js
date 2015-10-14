@@ -1,5 +1,4 @@
 var Entity=require("prismarine-entity");
-var spiralloop = require('spiralloop');
 var Vec3=require("vec3");
 
 module.exports=inject;
@@ -15,6 +14,7 @@ function inject(serv,player)
     player.entity.health = 20;
     player.entity.food = 20;
     player.view=8;
+    player.world=serv.overworld;
     player.username=player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
@@ -40,61 +40,16 @@ function inject(serv,player)
     player.entity.position=toFixedPosition(player.spawnPoint);
   }
 
-  function spiral(arr)
-  {
-    var t=[];
-    spiralloop(arr,function(x,z){
-      t.push([x,z]);
-    });
-    return t;
-  }
-
-
-  function sendChunk(chunkX,chunkZ,column)
-  {
-    player._client.write('map_chunk', {
-      x: chunkX,
-      z: chunkZ,
-      groundUp: true,
-      bitMap: 0xffff,
-      chunkData: column.dump()
-    });
-    return Promise.resolve();
-  }
-
-  function sendChunksAroundPlayer(view)
-  {
-    player.lastPositionChunkUpdated=player.entity.position;
-    var playerChunkX=Math.floor(player.entity.position.x/16/32);
-    var playerChunkZ=Math.floor(player.entity.position.z/16/32);
-    return spiral([view*2,view*2])
-      .map(t => ({
-        chunkX:playerChunkX+t[0]-view,
-        chunkZ:playerChunkZ+t[1]-view
-      }))
-      .filter(({chunkX,chunkZ}) => {
-        var key=chunkX+","+chunkZ;
-        var loaded=player.loadedChunks[key];
-        if(!loaded) player.loadedChunks[key]=1;
-        return !loaded;
-      })
-      .reduce((acc,{chunkX,chunkZ})=>
-         acc
-          //.then(() => sleep(100))
-          .then(() => serv.world.getColumn(chunkX,chunkZ))
-          .then((column) => sendChunk(chunkX,chunkZ,column))
-      ,Promise.resolve());
-  }
-
   function sendMap()
   {
-    return sendChunksAroundPlayer(3);
+    return player.sendNearbyChunks(3)
+      .catch((err) => setTimeout(function() { throw err; }), 0);
   }
 
   function sendRestMap()
   {
     player.sendingChunks=true;
-    sendChunksAroundPlayer(player.view)
+    player.sendNearbyChunks(player.view)
       .then(() => player.sendingChunks=false)
       .catch((err)=> setTimeout(function(){throw err;},0));
 
@@ -102,40 +57,24 @@ function inject(serv,player)
       if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
       {
         player.sendingChunks=true;
-        sendChunksAroundPlayer(player.view)
+        player.sendNearbyChunks(player.view)
           .then(() => player.sendingChunks=false)
           .catch((err)=> setTimeout(function(){throw err;},0));
       }
     });
+    player.on("teleport", function() {
+      player.sendingChunks=true;
+      player.sendNearbyChunks(player.view)
+        .then(() => player.sendingChunks=false)
+        .catch((err)=> setTimeout(function(){throw err;},0));
+    });
   }
-
-
-  function sleep(ms = 0) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
-
 
   function sendSpawnPosition()
   {
     console.log("setting spawn at "+player.spawnPoint);
     player._client.write('spawn_position',{
       "location":player.spawnPoint
-    });
-  }
-
-  function sendInitialPosition()
-  {
-    player.entity.position=toFixedPosition(player.spawnPoint);
-    player.entity.yaw=0;
-    player.entity.pitch=0;
-    player._client.write('position', {
-      x: player.entity.position.x/32,
-      y: player.entity.position.y/32,
-      z: player.entity.position.z/32,
-      yaw: player.entity.yaw,
-      pitch: player.entity.pitch,
-      flags: 0x00
     });
   }
 
@@ -182,41 +121,6 @@ function inject(serv,player)
 
   }
 
-
-  function spawnOthers()
-  {
-    player.getOthers().forEach(function (otherPlayer) {
-      player._client.write('named_entity_spawn', {
-        entityId: otherPlayer.entity.id,
-        playerUUID: otherPlayer._client.uuid,
-        x: otherPlayer.entity.position.x,
-        y: otherPlayer.entity.position.y,
-        z: otherPlayer.entity.position.z,
-        yaw: otherPlayer.entity.yaw,
-        pitch: otherPlayer.entity.pitch,
-        currentItem: 0,
-        metadata: otherPlayer.entity.metadata
-      });
-    });
-
-  }
-
-  function spawn()
-  {
-    player._writeOthers('named_entity_spawn',{
-      entityId: player.entity.id,
-      playerUUID: player._client.uuid,
-      x: player.entity.position.x,
-      y: player.entity.position.y,
-      z: player.entity.position.z,
-      yaw: player.entity.yaw,
-      pitch: player.entity.pitch,
-      currentItem: 0,
-      metadata: player.entity.metadata
-    });
-  }
-
-
   function announceJoin()
   {
     serv.broadcast(player.username + ' joined the game.', "yellow");
@@ -238,7 +142,6 @@ function inject(serv,player)
     sendLogin();
     await sendMap();
     sendSpawnPosition();
-    sendInitialPosition();
     player.updateHealth(player.entity.health);
 
     player.emit("spawned");
@@ -246,9 +149,8 @@ function inject(serv,player)
     updateTime();
     setGameMode(player.gameMode);
     fillTabList();
-    spawnOthers();
-    spawn();
 
+    player.spawn();
     announceJoin();
 
     setTimeout(sendRestMap,100);
@@ -256,6 +158,4 @@ function inject(serv,player)
 
   player.setGameMode=setGameMode;
   player.login=login;
-  player.sendInitialPosition=sendInitialPosition;
-  player.spawn=spawn;
 }

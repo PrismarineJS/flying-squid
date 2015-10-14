@@ -11,7 +11,7 @@
       - [serv.entityMaxId](#serventitymaxid)
       - [serv.players](#servplayers)
       - [serv.uuidToPlayer](#servuuidtoplayer)
-      - [serv.world](#servworld)
+      - [serv.worlds](#servworlds)
       - [serv.entities](#serventities)
       - [serv.bannedPlayers](#servbannedplayers)
       - [serv.time](#servtime)
@@ -41,6 +41,7 @@
       - [player.entity](#playerentity)
       - [player.username](#playerusername)
       - [player.view](#playerview)
+      - [player.world](#playerworld)
     - [Events](#events-1)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -49,6 +50,7 @@
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
       - ["positionChanged"](#positionchanged)
+      - ["teleport"](#teleport)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -62,6 +64,8 @@
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
+      - [player.sendPosition(position, opt)](#playersendpositionposition-opt)
+      - [player.changeWorld(worldNumber, opt)](#playerchangeworldworldnumber-opt)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -98,9 +102,9 @@ Array of connected players
 
 Object uuid to players
 
-#### serv.world
+#### serv.worlds
 
-The map
+Array of all worlds. By default, 0 is Overworld, 1 is Nether, and 2 is the End, however any plugin may push more worlds (`serv.worlds.push(new World(...))`) and the player can be sent there with `player.changeWorld(worldNumber, opt)`.
 
 #### serv.entities
 
@@ -224,6 +228,10 @@ The username of the player
 
 The view size of the player, for example 8 for 16x16
 
+#### player.world
+
+Which world the player is in. Get it by using `serv.worlds[player.world]`.
+
 ### Events
 
 #### "connected" 
@@ -252,7 +260,11 @@ Fires when the player says `message`.
 
 #### "positionChanged"
 
-fires when the position changed
+fires when the position changes in small amounts (walking, running, or flying)
+
+#### "teleport"
+
+fires when the position changes in larger amounts (player's position set by `player.sendPosition()`)
 
 ### Methods
 
@@ -308,6 +320,24 @@ handle `command`
 #### player.updateHealth(health)
 
 update the player health.
+
+#### player.sendPosition(position, opt)
+
+Teleport the player to any `position` in the same world. Use `player.changeWorld` to teleport to any world. Options:
+
+- yaw: Set the yaw, default is the current yaw of the player
+- pitch: Set the pitch, default is the current pitch of the player
+
+#### player.changeWorld(worldNumber, opt)
+
+Change which world the player is in (Overworld, Nether, End, or any other world added to `serv.worlds`). Options:
+
+- gamemode: Gamemode of the world (Default is player gamemode)
+- difficulty: Difficulty of world. Default is 0 (easiest)
+- dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)
+- position: Position player spawns, default is their default spawn point
+- yaw: Yaw in which they spawn, default is 0
+- pitch: Pitch in which they spawn, default is 0
 
 ### Low level properties
 

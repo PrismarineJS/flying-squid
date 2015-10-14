@@ -2,12 +2,13 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  function changeBlock(position,blockType)
+  async function changeBlock(position,blockType)
   {
-    player.getOthers().forEach(function(player) {
-      player.sendBlock(position, blockType);
+    player.getOthers().forEach(function(p) {
+      if (p.world != player.world) return;
+      p.sendBlock(position, blockType);
     });
-    return serv.world.setBlockType(position,blockType);
+    return await player.world.setBlockType(position,blockType);
   }
   
   function sendBlock(position, blockType) { // Call from serv.setBlock unless you want "local" fake blocks

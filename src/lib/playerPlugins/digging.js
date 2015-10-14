@@ -6,7 +6,7 @@ function inject(serv,player)
 {
   player._client.on("block_dig",function(packet){
     var pos=new Vec3(packet.location);
-    serv.world.getBlock(pos)
+    player.world.getBlock(pos)
       .then(block => {
         currentlyDugBlock=block;
         if(currentlyDugBlock.type==0) return;
