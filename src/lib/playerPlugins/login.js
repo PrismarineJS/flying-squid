@@ -165,18 +165,17 @@ function inject(serv,player)
         }]
       });
 
-    serv.players.map((otherPlayer) => {
-      player._client.write('player_info', {
-        action: 0,
-        data: [{
-          UUID: otherPlayer._client.uuid,
-          name: otherPlayer.username,
-          properties: [],
-          gamemode: otherPlayer.gameMode,
-          ping: 1
-        }]
-      });
+    player._client.write('player_info', {
+      action: 0,
+      data: serv.players.map((otherPlayer) => ({
+        UUID: otherPlayer._client.uuid,
+        name: otherPlayer.username,
+        properties: [],
+        gamemode: otherPlayer.gameMode,
+        ping: 1
+      }))
     });
+
   }
 
 
