@@ -20,7 +20,8 @@ var options = {
   logging:settings.logging,
   generation:settings.generation,
   'modpe': settings.modpe,
-  kickTimeout: settings.kickTimeout ? settings.kickTimeout : 10*1000
+  kickTimeout: settings.kickTimeout ? settings.kickTimeout : 10*1000,
+  regionFolder: settings.regionFolder
 };
 
 mcServer.createMCServer(options);

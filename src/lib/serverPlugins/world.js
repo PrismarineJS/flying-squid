@@ -12,9 +12,9 @@ var generations={
 
 module.exports = inject;
 
-function inject(serv,{generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
+function inject(serv,{regionFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
   serv.emit("seed",generation.options.seed);
-  serv.world = new World(generations[generation.name](generation.options));
+  serv.world = new World(generations[generation.name](generation.options),regionFolder);
   serv._worldSync=new WorldSync(serv.world);
 }
