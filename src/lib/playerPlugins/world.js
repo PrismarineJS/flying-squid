@@ -102,8 +102,8 @@ function inject(serv, player) {
       gamemode: opt.gamemode || player.gameMode,
       levelType:'default'
     });
-    player.emit('change_world');
     player.setPosition(opt.position || player.spawnPoint, { yaw: opt.yaw || 0, pitch: opt.pitch || 0 }); // Automatically sends chunks around players
+    player.emit('change_world');
   }
 
   player.spawn = spawn;
