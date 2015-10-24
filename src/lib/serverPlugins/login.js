@@ -8,7 +8,7 @@ module.exports = inject;
 
 function inject(serv,options)
 {
-  serv._server.on('login', function (client) {
+  serv._server.on('login', async function (client) {
     if(!options["online-mode"])
       client.uuid=UUID.v3({
         namespace: UUID.namespace.dns,
@@ -22,6 +22,11 @@ function inject(serv,options)
       playerPlugins[pluginName](serv, player, options);
     }
     serv.emit("newPlayer",player);
-    player.login();
+    try {
+      await player.login();
+    }
+    catch(err){
+      setTimeout(function(){throw err;},0)
+    }
   });
 }
