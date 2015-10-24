@@ -94,13 +94,17 @@ function inject(serv,player)
   function sendRestMap()
   {
     player.sendingChunks=true;
-    sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
+    sendChunksAroundPlayer(player.view)
+      .then(() => player.sendingChunks=false)
+      .catch((err)=> setTimeout(function(){throw err;},0));
 
     player.on("positionChanged",function(){
       if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
       {
         player.sendingChunks=true;
-        sendChunksAroundPlayer(player.view).then(() => player.sendingChunks=false);
+        sendChunksAroundPlayer(player.view)
+          .then(() => player.sendingChunks=false)
+          .catch((err)=> setTimeout(function(){throw err;},0));
       }
     });
   }
