@@ -98,7 +98,7 @@ function inject(serv,player)
       flags: 0x00
     });
     player.spawnForOthers();
-    player.getNearbyPlayers();
+    player.sendNearbyPlayers();
     player.emit('teleport');
   }
   player.setPosition = setPosition;

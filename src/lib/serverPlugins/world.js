@@ -20,7 +20,7 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
   serv.netherworld = new World(generations["nether"]({}));
   //serv.endworld = new World(generations["end"]({}));
 
-  //serv._worldSync=new WorldSync(serv.worlds[0]);
+  serv._worldSync=new WorldSync(serv.overworld);
 
   function pregenWorld(world, size=10) {
     for (var x = -size; x < size; x++) {

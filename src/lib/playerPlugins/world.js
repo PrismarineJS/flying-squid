@@ -22,7 +22,7 @@ function inject(serv, player) {
     });
   }
 
-  function getNearbyPlayers() {
+  function sendNearbyPlayers() {
     player.getOthers().forEach(function (otherPlayer) {
       if (otherPlayer.world != player.world) return; // Also check distance from player?
       player._client.write('named_entity_spawn', {
@@ -108,7 +108,7 @@ function inject(serv, player) {
 
   player.spawn = spawn;
   player.spawnForOthers = spawnForOthers;
-  player.getNearbyPlayers = getNearbyPlayers;
+  player.sendNearbyPlayers = sendNearbyPlayers;
   player.sendNearbyChunks = sendNearbyChunks;
   player.changeWorld = changeWorld;
   player.sendChunk = sendChunk;

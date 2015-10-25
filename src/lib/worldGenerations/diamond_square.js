@@ -1,5 +1,6 @@
 var Chunk = require('prismarine-chunk')(require("../version"));
 var Vec3 = require('vec3');
+var rand = require('random-seed');
 
 function DiamondSquare(size, roughness, seed) {
   // public fields
@@ -100,6 +101,7 @@ function generation({seed,worldHeight=80,waterline=20}={}) {
 
   function generateSimpleChunk(chunkX, chunkZ) {
     var chunk = new Chunk();
+    var seedRand = rand.create(seed+':'+chunkX+':'+chunkZ);
 
     var worldX = chunkX * 16 + size / 2;
     var worldZ = chunkZ * 16 + size / 2;
@@ -107,8 +109,8 @@ function generation({seed,worldHeight=80,waterline=20}={}) {
     for (var x = 0; x < 16; x++) {
       for (var z = 0; z < 16; z++) {
         var level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight);
-        var dirtheight = level - 4 + Math.round(Math.random()*2);
-        var bedrockheight = 1 + Math.round(Math.random()*3)
+        var dirtheight = level - 4 + seedRand(3);
+        var bedrockheight = 1 + seedRand(4);
         for (var y = 0; y < 256; y++) {
           let block;
           let data;
@@ -121,7 +123,7 @@ function generation({seed,worldHeight=80,waterline=20}={}) {
           else if (y < level) block = 1; // Set stone inbetween
           else if (y == level) block = surfaceblock; // Set surface sand/grass
           else if (y <= waterline) block = 9; // Set the water
-          else if (y == level+1 && level >= waterline && Math.random() < 0.1) { // 1/10 chance of grass
+          else if (y == level+1 && level >= waterline && seedRand.rand(1) < 0.1) { // 1/10 chance of grass
             block = 31;
             data = 1;
           }
