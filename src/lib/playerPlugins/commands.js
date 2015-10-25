@@ -263,6 +263,16 @@ function inject(serv, player) {
     }
   });
 
+  base.add({
+    base: 'changeworld',
+    info: 'to change world',
+    usage: '/changeworld overworld|nether',
+    action(world) {
+      if(world=="nether") player.changeWorld(serv.netherworld, {dimension: -1});
+      if(world=="overworld") player.changeWorld(serv.overworld, {dimension: 0});
+    }
+  });
+
   serv.commands = base;
 
   player.handleCommand = function(str) {

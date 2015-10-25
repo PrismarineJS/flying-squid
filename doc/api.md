@@ -363,10 +363,6 @@ The world object which the player is in (use serv.overworld, serv.netherworld, s
 - gamemode: Gamemode of the world (Default is player gamemode)
 - difficulty: Difficulty of world. Default is 0 (easiest)
 - dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)
-- position: Position player spawns, default is their default spawn point
-- yaw: Yaw in which they spawn, default is 0
-- pitch: Pitch in which they spawn, default is 0
-
 
 #### player.spawnAPlayer(spawnedPlayer)
 

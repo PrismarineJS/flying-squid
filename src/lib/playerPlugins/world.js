@@ -92,7 +92,7 @@ function inject(serv, player) {
   }
 
   async function changeWorld(world, opt) {
-
+    if(player.world == world) return Promise.resolve();
     opt = opt || {};
     player.world = world;
     player.loadedChunks={};
@@ -121,13 +121,4 @@ function inject(serv, player) {
   player.sendRestMap = sendRestMap;
   player.sendSpawnPosition = sendSpawnPosition;
   player.spawnAPlayer = spawnAPlayer;
-
-  player.on('chat', function(message) {
-    if (message == 'world') {
-      player.changeWorld(serv.netherworld, {
-        position: new vec3(0, 60, 0),
-        dimension: -1
-      });
-    }
-  });
 }
