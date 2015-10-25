@@ -31,6 +31,7 @@
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.setBlock(position,blockType)](#servsetblockpositionblocktype)
       - [serv.getPlayer(username)](#servgetplayerusername)
+      - [serv.getNearby(loc)](#servgetnearbyloc)
       - [server.banUsername(username,reason,callback)](#serverbanusernameusernamereasoncallback)
       - [server.ban(uuid,reason)](#serverbanuuidreason)
       - [server.pardonUsername(username,callback)](#serverpardonusernameusernamecallback)
@@ -38,6 +39,10 @@
       - [server.getUUIDFromUsername(username,callback)](#servergetuuidfromusernameusernamecallback)
       - [server.setTime(time)](#serversettimetime)
       - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
+    - [Low level methods](#low-level-methods)
+      - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
+      - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
+      - [server._writeNearby(packetName, packetFields, loc)](#server_writenearbypacketname-packetfields-loc)
   - [Player](#player)
     - [Properties](#properties-1)
       - [player.entity](#playerentity)
@@ -70,8 +75,9 @@
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
-    - [Low level methods](#low-level-methods)
+    - [Low level methods](#low-level-methods-1)
       - [player._writeOthers(packetName, packetFields)](#player_writeotherspacketname-packetfields)
+      - [player._writeOthersNearby(packetName, packetFields)](#player_writeothersnearbypacketname-packetfields)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -190,6 +196,14 @@ Saves block in world and sends block update to all players.
 
 Returns player object with that username or, if no such player is on the server, null.
 
+#### serv.getNearby(loc)
+
+Returns array of players within loc. loc is a required paramater. The object contains:
+
+* world: World position is in
+* position: Center position
+* radius: Distance from position
+
 #### server.banUsername(username,reason,callback)
 
 Bans players given a username. Mainly used if player is not online, otherwise use `player.ban()`.
@@ -221,6 +235,20 @@ Set daylight cycle time in ticks. See `serv.time` for more info.
 Resets tick interval to occur `ticksPerSecond` times per second.
 
 Use `server.stopTickInterval()` if you want but this method already calls that and you can use `serv.doDaylightCycle` to stop it anyway.
+
+### Low level methods
+
+#### server._writeAll(packetName, packetFields)
+
+Writes packet to every player on the server
+
+#### server._writeArray(packetName, packetFields, playerArray)
+
+Writes packet to every player in playerArray
+
+#### server._writeNearby(packetName, packetFields, loc)
+
+Writes packet to all players within distance of loc. loc has the same paramater as loc in server.getNearby()
 
 ## Player
 
@@ -360,3 +388,7 @@ The internal implementation to communicate with a client
 #### player._writeOthers(packetName, packetFields)
 
 write to other players than `player` the packet `packetName` with fields `packetFields`
+
+#### player._writeOthersNearby(packetName, packetFields)
+
+write to other players in same world that are within 150 blocks (see player.getNearby())

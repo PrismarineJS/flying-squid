@@ -7,4 +7,20 @@ function inject(serv,settings)
       player._client.write(packetName, packetFields);
     });
   };
+
+  serv._writeArray=function(packetName, packetFields, players) {
+    players.forEach(function(player) {
+      player._client.write(packetName, packetFields);
+    });
+  }
+
+  serv._writeNearby=function(packetName, packetFields, loc) {
+    serv._writeArray(packetName, packetFields, serv.getNearby(loc));
+  }
+
+  serv.getNearby=function(loc) {
+    serv.players.filter(function(player) {
+      return player.world == loc.world && player.entity.position.distanceTo(loc.position) <= loc.radius;
+    })
+  }
 }

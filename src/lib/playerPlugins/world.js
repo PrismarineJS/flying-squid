@@ -9,7 +9,7 @@ function inject(serv, player) {
   }
 
   function spawnForOthers() {
-    player._writeOthers('named_entity_spawn',{ // _writeOthersWithinDistance?
+    player._writeOthersNearby('named_entity_spawn',{
       entityId: player.entity.id,
       playerUUID: player._client.uuid,
       x: player.entity.position.x,
@@ -23,8 +23,7 @@ function inject(serv, player) {
   }
 
   function sendNearbyPlayers() {
-    player.getOthers().forEach(function (otherPlayer) {
-      if (otherPlayer.world != player.world) return; // Also check distance from player?
+    player.getNearby().forEach(function (otherPlayer) {
       player._client.write('named_entity_spawn', {
         entityId: otherPlayer.entity.id,
         playerUUID: otherPlayer._client.uuid,

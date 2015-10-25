@@ -27,18 +27,19 @@
     "minecraft-protocol": "^0.15.0",
     "mkdirp": "0.5.1",
     "moment": "^2.10.6",
+    "node-dir": "~0.1.9",
     "node-uuid": "^1.4.3",
     "prismarine-block": "0.1.0",
     "prismarine-chunk": "0.2.1",
     "prismarine-entity": "0.1.0",
     "prismarine-world": "0.3.0",
+    "prismarine-world-sync": "0.1.0",
+    "random-seed": "^0.2.0",
     "request-promise": "^0.4.3",
     "requireindex": "~1.0.0",
-    "vec3": "0.1.3",
     "spiralloop": "1.0.2",
-    "node-dir": "~0.1.9",
     "uuid-1345": "~0.99.6",
-    "prismarine-world-sync": "0.1.0"
+    "vec3": "0.1.3"
   },
   "repository": {
     "type": "git",
