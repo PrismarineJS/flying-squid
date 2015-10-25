@@ -19,7 +19,7 @@ function inject(serv,player)
 
   function setBlock(position,blockType)
   {
-    player.getNearby().forEach(function(player){
+    serv.players.filter(p => p.world==player.world).forEach(function(player){
       player.sendBlock(position, blockType);
     });
     return player.world.setBlockType(position,blockType);

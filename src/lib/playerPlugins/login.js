@@ -20,6 +20,33 @@ function inject(serv,player)
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
     player.loadedChunks={};
+    player.nearbyPlayers=[];
+  }
+
+  function updateAndSpawnNearbyPlayers()
+  {
+    player.lastPositionPlayersUpdated=player.entity.position;
+    var updatedPlayers=player.getNearby();
+    var playersToAdd=updatedPlayers.filter(p => player.nearbyPlayers.indexOf(p)==-1);
+    var playersToRemove=player.nearbyPlayers.filter(p => updatedPlayers.indexOf(p)==-1);
+    player.despawnPlayers(playersToRemove);
+    playersToAdd.forEach(player.spawnAPlayer);
+
+    playersToRemove.forEach(p => p.despawnPlayers([player]));
+    playersToRemove.forEach(p => p.nearbyPlayers=p.getNearby());
+    playersToAdd.forEach(p => p.spawnAPlayer(player));
+    playersToAdd.forEach(p => p.nearbyPlayers=p.getNearby());
+
+    player.nearbyPlayers=updatedPlayers;
+
+  }
+
+  function sendPlayersWhenMove()
+  {
+    player.on("positionChanged",function(){
+      if(player.entity.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
+        player.updateAndSpawnNearbyPlayers();
+    });
   }
 
   function sendLogin()
@@ -41,7 +68,7 @@ function inject(serv,player)
   {
     player.on("positionChanged",function(){
       if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
-        player.sendMap();
+        player.sendRestMap();
     });
   }
 
@@ -108,22 +135,23 @@ function inject(serv,player)
     sendLogin();
     await player.sendMap();
     player.sendSpawnPosition();
+    player.sendPosition();
     player.updateHealth(player.entity.health);
 
 
     updateTime();
     setGameMode(player.gameMode);
     fillTabList();
-    player.spawnForOthers();
-    player.sendNearbyPlayers();
+    player.updateAndSpawnNearbyPlayers();
 
-    player.spawn();
     announceJoin();
     player.emit("spawned");
+    sendPlayersWhenMove();
 
     setTimeout(function(){player.sendRestMap();sendChunkWhenMove();},100);
   }
 
   player.setGameMode=setGameMode;
   player.login=login;
+  player.updateAndSpawnNearbyPlayers=updateAndSpawnNearbyPlayers;
 }

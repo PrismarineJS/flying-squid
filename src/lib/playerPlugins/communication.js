@@ -9,7 +9,7 @@ function inject(serv,player)
   };
 
   player._writeOthersNearby = function(packetName, packetFields) {
-    serv._writeArray(packetName, packetFields, player.getNearby());
+    serv._writeArray(packetName, packetFields, player.nearbyPlayers);
   };
 
   player.getOthers = function() {

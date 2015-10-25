@@ -2,6 +2,12 @@ module.exports=inject;
 
 function inject(serv,player)
 {
+  function despawnPlayers(despawnedPlayers) {
+    player._client.write('entity_destroy', {
+      'entityIds': despawnedPlayers.map(p => p.entity.id)
+    });
+  }
+
   player._client.on('end', function () {
     if(player.entity) {
       serv.broadcast(player.username + ' quit the game.', "yellow");
@@ -11,7 +17,7 @@ function inject(serv,player)
           UUID: player._client.uuid
         }]
       });
-      player._writeOthersNearby('entity_destroy', {'entityIds': [player.entity.id]});
+      player.nearbyPlayers.forEach(otherPlayer => otherPlayer.despawnPlayers([player]));
       delete serv.entities[player.entity.id];
       player.emit('disconnected');
       var index = serv.players.indexOf(player);
@@ -26,4 +32,6 @@ function inject(serv,player)
   player._client.on('error', function (error) {
     player.emit('error',error);
   });
+
+  player.despawnPlayers=despawnPlayers;
 }

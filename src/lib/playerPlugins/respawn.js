@@ -10,9 +10,9 @@ function inject(serv, player)
         gamemode:player.gameMode,
         levelType:'default'
       });
-      player.sendInitialPosition();
+      player.sendPosition();
       player.updateHealth(20);
-      player.spawn();
+      player.updateAndSpawnNearbyPlayers();
     }
   });
 }
