@@ -9,7 +9,7 @@ function inject(serv,player)
   };
 
   player._writeOthersNearby = function(packetName, packetFields) {
-    serv._writeArray(packetName, packetFields, player.getNearby();
+    serv._writeArray(packetName, packetFields, player.getNearby());
   }
 
   player.getOthers = function() {
@@ -22,7 +22,7 @@ function inject(serv,player)
     return serv.getNearby({
       world: player.world,
       position: player.entity.position,
-      radius: 150
-    }).filter((p => p != player));
+      radius: 150*32
+    }).filter((p) => p != player);
   }
 }

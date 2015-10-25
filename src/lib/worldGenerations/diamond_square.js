@@ -123,7 +123,7 @@ function generation({seed,worldHeight=80,waterline=20}={}) {
           else if (y < level) block = 1; // Set stone inbetween
           else if (y == level) block = surfaceblock; // Set surface sand/grass
           else if (y <= waterline) block = 9; // Set the water
-          else if (y == level+1 && level >= waterline && seedRand.rand(1) < 0.1) { // 1/10 chance of grass
+          else if (y == level+1 && level >= waterline && seedRand(1) < 0.1) { // 1/10 chance of grass
             block = 31;
             data = 1;
           }

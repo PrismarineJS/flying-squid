@@ -19,8 +19,8 @@ function inject(serv,settings)
   }
 
   serv.getNearby=function(loc) {
-    serv.players.filter(function(player) {
+    return serv.players.filter(function(player) {
       return player.world == loc.world && player.entity.position.distanceTo(loc.position) <= loc.radius;
-    })
+    });
   }
 }
