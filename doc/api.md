@@ -11,7 +11,9 @@
       - [serv.entityMaxId](#serventitymaxid)
       - [serv.players](#servplayers)
       - [serv.uuidToPlayer](#servuuidtoplayer)
-      - [serv.worlds](#servworlds)
+      - [serv.overworld](#servoverworld)
+      - [serv.netherworld](#servnetherworld)
+      - [serv.endworld](#servendworld)
       - [serv.entities](#serventities)
       - [serv.bannedPlayers](#servbannedplayers)
       - [serv.time](#servtime)
@@ -65,7 +67,7 @@
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
       - [player.sendPosition(position, opt)](#playersendpositionposition-opt)
-      - [player.changeWorld(worldNumber, opt)](#playerchangeworldworldnumber-opt)
+      - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods)
@@ -102,9 +104,17 @@ Array of connected players
 
 Object uuid to players
 
-#### serv.worlds
+#### serv.overworld
 
-Array of all worlds. By default, 0 is Overworld, 1 is Nether, and 2 is the End, however any plugin may push more worlds (`serv.worlds.push(new World(...))`) and the player can be sent there with `player.changeWorld(worldNumber, opt)`.
+Contains the overworld world. This is where the default spoint is and where peope will play survival and such.
+
+#### serv.netherworld
+
+Contains the nether world. This WILL be used when a player travels through a portal if they are in the overworld.
+
+#### serv.endworld
+
+WILL contain the end world. *NOT YET IMPLEMENTED!*
 
 #### serv.entities
 
@@ -230,7 +240,7 @@ The view size of the player, for example 8 for 16x16
 
 #### player.world
 
-Which world the player is in. Get it by using `serv.worlds[player.world]`.
+The world which the player is in.
 
 ### Events
 
@@ -328,9 +338,9 @@ Teleport the player to any `position` in the same world. Use `player.changeWorld
 - yaw: Set the yaw, default is the current yaw of the player
 - pitch: Set the pitch, default is the current pitch of the player
 
-#### player.changeWorld(worldNumber, opt)
+#### player.changeWorld(world, opt)
 
-Change which world the player is in (Overworld, Nether, End, or any other world added to `serv.worlds`). Options:
+The world object which the player is in (use serv.overworld, serv.netherworld, serv.endworld, or a custom world). Options:
 
 - gamemode: Gamemode of the world (Default is player gamemode)
 - difficulty: Difficulty of world. Default is 0 (easiest)

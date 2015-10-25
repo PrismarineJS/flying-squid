@@ -16,7 +16,7 @@ module.exports = inject;
 function inject(serv,{generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
   serv.emit("seed",generation.options.seed);
-  serv.overworld = new World(generations[generation.name](generation.options));
+  serv.overworld = new World(generations[generation.name](generation.options), regionFolder);
   serv.netherworld = new World(generations["nether"]({}));
   //serv.endworld = new World(generations["end"]({}));
 
