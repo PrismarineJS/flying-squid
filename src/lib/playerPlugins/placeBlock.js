@@ -12,12 +12,12 @@ function inject(serv,player)
     if(packet.heldItem.blockId!=323){
         player.changeBlock(placedPosition,packet.heldItem.blockId);
     }else if(packet.direction==1){
-        serv.setBlock(placedPosition, 63);
+      player.setBlock(placedPosition, 63);
         player._client.write('open_sign_entity', {
             location:placedPosition
         });
     }else{
-        serv.setBlock(placedPosition, 68);
+      player.setBlock(placedPosition, 68);
         player._client.write('open_sign_entity', {
             location:placedPosition
         });

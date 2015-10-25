@@ -22,5 +22,5 @@ function inject(serv,settings)
     return serv.players.filter(function(player) {
       return player.world == loc.world && player.entity.position.distanceTo(loc.position) <= loc.radius;
     });
-  }
+  };
 }

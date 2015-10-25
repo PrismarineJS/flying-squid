@@ -186,10 +186,6 @@ logs a `message`
 
 broadcasts `message` to all the players with the optional `color`.
 
-#### serv.setBlock(position,blockType)
-
-Saves block in world and sends block update to all players.
-
 #### serv.getPlayer(username)
 
 Returns player object with that username or, if no such player is on the server, null.
@@ -348,6 +344,10 @@ set player gameMode to `gameMode`
 #### player.handleCommand(command)
 
 handle `command`
+
+#### player.setBlock(position,blockType)
+
+Saves block in world and sends block update to all players of the same world.
 
 #### player.updateHealth(health)
 

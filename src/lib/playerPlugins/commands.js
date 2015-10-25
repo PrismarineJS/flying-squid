@@ -73,7 +73,7 @@ function inject(serv, player) {
         }
       });
 
-      serv.setBlock(new Vec3(res[1], res[2], res[3]), res[4]);
+      player.setBlock(new Vec3(res[1], res[2], res[3]), res[4]);
     }
   });
 

@@ -52,7 +52,7 @@ function modpeApi() {
     }
 
     function setTile(x, y, z, id, damage) {
-        server.setBlock(new vec3(x, y, z), id);
+      player.setBlock(new vec3(x, y, z), id);
     }
 
     function getTile(x, y, z) {
