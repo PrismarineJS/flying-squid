@@ -57,7 +57,6 @@
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
       - ["positionChanged"](#positionchanged)
-      - ["teleport"](#teleport)
     - [Methods](#methods-1)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -71,7 +70,6 @@
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
-      - [player.sendPosition(position, opt)](#playersendpositionposition-opt)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
@@ -300,10 +298,6 @@ Fires when the player says `message`.
 
 fires when the position changes in small amounts (walking, running, or flying)
 
-#### "teleport"
-
-fires when the position changes in larger amounts (player's position set by `player.sendPosition()`)
-
 ### Methods
 
 #### player.login()
@@ -358,13 +352,6 @@ handle `command`
 #### player.updateHealth(health)
 
 update the player health.
-
-#### player.sendPosition(position, opt)
-
-Teleport the player to any `position` in the same world. Use `player.changeWorld` to teleport to any world. Options:
-
-- yaw: Set the yaw, default is the current yaw of the player
-- pitch: Set the pitch, default is the current pitch of the player
 
 #### player.changeWorld(world, opt)
 

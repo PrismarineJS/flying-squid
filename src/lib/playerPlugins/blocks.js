@@ -4,8 +4,7 @@ function inject(serv,player)
 {
   async function changeBlock(position,blockType)
   {
-    player.getOthers().forEach(function(p) {
-      if (p.world != player.world) return;
+    player.getNearby().forEach(function(p) {
       p.sendBlock(position, blockType);
     });
     return await player.world.setBlockType(position,blockType);

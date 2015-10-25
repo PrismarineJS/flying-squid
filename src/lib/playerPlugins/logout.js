@@ -11,7 +11,7 @@ function inject(serv,player)
           UUID: player._client.uuid
         }]
       });
-      player._writeOthers('entity_destroy', {'entityIds': [player.entity.id]});
+      player._writeOthersNearby('entity_destroy', {'entityIds': [player.entity.id]});
       delete serv.entities[player.entity.id];
       player.emit('disconnected');
       var index = serv.players.indexOf(player);

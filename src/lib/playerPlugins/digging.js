@@ -51,7 +51,7 @@ function inject(serv,player)
       if(newDestroyState!=lastDestroyState)
       {
         lastDestroyState=newDestroyState;
-        player._writeOthers("block_break_animation",{
+        player._writeOthersNearby("block_break_animation",{
           "entityId":currentAnimationId,
           "location":location,
           "destroyStage":newDestroyState
@@ -63,7 +63,7 @@ function inject(serv,player)
   function cancelDigging(location)
   {
     clearInterval(animationInterval);
-    player._writeOthers("block_break_animation",{
+    player._writeOthersNearby("block_break_animation",{
       "entityId":currentAnimationId,
       "location":location,
       "destroyStage":-1

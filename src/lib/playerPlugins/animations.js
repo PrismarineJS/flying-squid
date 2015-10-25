@@ -3,7 +3,7 @@ module.exports=inject;
 function inject(serv, player) 
 {
   player._client.on("arm_animation", function(packet) {
-    player._writeOthers("animation", {
+    player._writeOthersNearby("animation", {
       entityId: player.entity.id,
       animation: 0
     });
@@ -12,7 +12,7 @@ function inject(serv, player)
   function setMetadata(metadata)
   {
     player.entity.metadata = metadata;
-    player._writeOthers("entity_metadata", {
+    player._writeOthersNearby("entity_metadata", {
       entityId: player.entity.id,
       metadata: player.entity.metadata
     });

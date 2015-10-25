@@ -13,6 +13,7 @@ function inject(serv,player)
     player.entity.player=player;
     player.entity.health = 20;
     player.entity.food = 20;
+    player.playerViewDistance = 150;
     player.view=8;
     player.world=serv.overworld;
     player.username=player._client.username;
@@ -21,10 +22,6 @@ function inject(serv,player)
     player.loadedChunks={};
   }
 
-  function toFixedPosition(p)
-  {
-    return p.scaled(32).floored();
-  }
   function sendLogin()
   {
     // send init data so client will start rendering world
@@ -37,44 +34,14 @@ function inject(serv,player)
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
-    player.entity.position=toFixedPosition(player.spawnPoint);
+    player.entity.position=player.spawnPoint.toFixedPosition();
   }
 
-  function sendMap()
+  function sendChunkWhenMove()
   {
-    return player.sendNearbyChunks(3)
-      .catch((err) => setTimeout(function() { throw err; }), 0);
-  }
-
-  function sendRestMap()
-  {
-    player.sendingChunks=true;
-    player.sendNearbyChunks(player.view)
-      .then(() => player.sendingChunks=false)
-      .catch((err)=> setTimeout(function(){throw err;},0));
-
     player.on("positionChanged",function(){
       if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
-      {
-        player.sendingChunks=true;
-        player.sendNearbyChunks(player.view)
-          .then(() => player.sendingChunks=false)
-          .catch((err)=> setTimeout(function(){throw err;},0));
-      }
-    });
-    player.on("teleport", function() {
-      player.sendingChunks=true;
-      player.sendNearbyChunks(player.view)
-        .then(() => player.sendingChunks=false)
-        .catch((err)=> setTimeout(function(){throw err;},0));
-    });
-  }
-
-  function sendSpawnPosition()
-  {
-    console.log("setting spawn at "+player.spawnPoint);
-    player._client.write('spawn_position',{
-      "location":player.spawnPoint
+        player.sendMap();
     });
   }
 
@@ -139,20 +106,22 @@ function inject(serv,player)
 
     addPlayer();
     sendLogin();
-    await sendMap();
-    sendSpawnPosition();
+    await player.sendMap();
+    player.sendSpawnPosition();
     player.updateHealth(player.entity.health);
 
-    player.emit("spawned");
 
     updateTime();
     setGameMode(player.gameMode);
     fillTabList();
+    player.spawnForOthers();
+    player.sendNearbyPlayers();
 
     player.spawn();
     announceJoin();
+    player.emit("spawned");
 
-    setTimeout(sendRestMap,100);
+    setTimeout(function(){player.sendRestMap();sendChunkWhenMove();},100);
   }
 
   player.setGameMode=setGameMode;

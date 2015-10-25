@@ -5,7 +5,7 @@ module.exports = inject;
 
 function inject(serv, player) {
   function spawn() {
-    player.setPosition(player.spawnPoint, { yaw: 0, pitch: 0, exact: true });
+    player.sendPosition();
   }
 
   function spawnForOthers() {
@@ -89,7 +89,30 @@ function inject(serv, player) {
     return new Promise(r => setTimeout(r, ms));
   }
 
-  function changeWorld(world, opt) {
+  function sendMap()
+  {
+    return player.sendNearbyChunks(3)
+      .catch((err) => setTimeout(function() { throw err; }), 0);
+  }
+
+  function sendRestMap()
+  {
+    player.sendingChunks=true;
+    player.sendNearbyChunks(player.view)
+      .then(() => player.sendingChunks=false)
+      .catch((err)=> setTimeout(function(){throw err;},0));
+  }
+
+  function sendSpawnPosition()
+  {
+    console.log("setting spawn at "+player.spawnPoint);
+    player._client.write('spawn_position',{
+      "location":player.spawnPoint
+    });
+  }
+
+  async function changeWorld(world, opt) {
+    player._writeOthersNearby('entity_destroy', {'entityIds': [player.entity.id]});
 
     opt = opt || {};
     player.world = world;
@@ -101,7 +124,15 @@ function inject(serv, player) {
       gamemode: opt.gamemode || player.gameMode,
       levelType:'default'
     });
-    player.setPosition(opt.position || player.spawnPoint, { yaw: opt.yaw || 0, pitch: opt.pitch || 0 }); // Automatically sends chunks around players
+    player.entity.position=player.spawnPoint.toFixedPosition();
+    player.sendSpawnPosition();
+
+    player.spawnForOthers();
+    player.sendNearbyPlayers();
+    await player.sendMap();
+    setTimeout(player.sendRestMap,100);
+    player.sendPosition();
+
     player.emit('change_world');
   }
 
@@ -111,6 +142,9 @@ function inject(serv, player) {
   player.sendNearbyChunks = sendNearbyChunks;
   player.changeWorld = changeWorld;
   player.sendChunk = sendChunk;
+  player.sendMap = sendMap;
+  player.sendRestMap = sendRestMap;
+  player.sendSpawnPosition = sendSpawnPosition;
 
   player.on('chat', function(message) {
     if (message == 'world') {

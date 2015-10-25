@@ -2,10 +2,9 @@ var vec3 = require("vec3");
 
 module.exports=inject;
 
-function toFixedPosition(p)
-{
-  return p.scaled(32).floored();
-}
+vec3.Vec3.prototype.toFixedPosition=function() {
+  return this.scaled(32).floored();
+};
 
 function inject(serv,player)
 {
@@ -25,7 +24,7 @@ function inject(serv,player)
     var convYaw=conv(yaw);
     var convPitch=conv(pitch);
     if (convYaw == player.entity.yaw && convPitch == player.entity.pitch) return;
-    player._writeOthers("entity_look", {
+    player._writeOthersNearby("entity_look", {
       entityId: player.entity.id,
       yaw: convYaw,
       pitch: convPitch,
@@ -34,7 +33,7 @@ function inject(serv,player)
     player.entity.yaw = convYaw;
     player.entity.pitch = convPitch;
     player.entity.onGround = onGround;
-    player._writeOthers("entity_head_rotation", {
+    player._writeOthersNearby("entity_head_rotation", {
       entityId: player.entity.id,
       headYaw: convYaw
     });
@@ -43,13 +42,13 @@ function inject(serv,player)
   player._client.on('position', function (packet) {
     var position = new vec3(packet.x, packet.y, packet.z);
     var onGround = packet.onGround;
-    sendRelativePositionChange(toFixedPosition(position), onGround);
+    sendRelativePositionChange(position.toFixedPosition(), onGround);
   });
 
   player._client.on('position_look', function (packet) {
     var position = new vec3(packet.x, packet.y, packet.z);
     var onGround = packet.onGround;
-    sendRelativePositionChange(toFixedPosition(position), onGround);
+    sendRelativePositionChange(position.toFixedPosition(), onGround);
     sendLook(packet.yaw,packet.pitch,packet.onGround);
   });
 
@@ -58,7 +57,7 @@ function inject(serv,player)
       var diff = newPosition.minus(player.entity.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
       {
-        player._writeOthers('entity_teleport', {
+        player._writeOthersNearby('entity_teleport', {
           entityId:player.entity.id,
           x: newPosition.x,
           y: newPosition.y,
@@ -69,7 +68,7 @@ function inject(serv,player)
         });
       }
       else if (diff.distanceTo(new vec3(0, 0, 0)) != 0) {
-        player._writeOthers('rel_entity_move', {
+        player._writeOthersNearby('rel_entity_move', {
           entityId: player.entity.id,
           dX: diff.x,
           dY: diff.y,
@@ -83,12 +82,7 @@ function inject(serv,player)
     player.emit("positionChanged");
   }
 
-  function setPosition(pos, opt) {
-    opt = opt || {};
-    if (pos) player.entity.position = toFixedPosition(pos);
-    if (typeof opt.yaw != 'undefined') player.entity.yaw=opt.yaw;
-    if (typeof opt.pitch != 'undefined') player.entity.pitch=opt.pitch;
-    
+  function sendPosition() {
     player._client.write('position', {
       x: player.entity.position.x/32,
       y: player.entity.position.y/32,
@@ -97,9 +91,6 @@ function inject(serv,player)
       pitch: player.entity.pitch,
       flags: 0x00
     });
-    player.spawnForOthers();
-    player.sendNearbyPlayers();
-    player.emit('teleport');
   }
-  player.setPosition = setPosition;
+  player.sendPosition = sendPosition;
 }
