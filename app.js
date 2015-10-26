@@ -24,6 +24,6 @@ var options = {
   regionFolder: settings.regionFolder
 };
 
-mcServer.createMCServer(options);
+module.exports=mcServer.createMCServer(options);
 
 
