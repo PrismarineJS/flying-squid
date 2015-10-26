@@ -1,6 +1,5 @@
 var mc = require('minecraft-protocol');
 var EventEmitter = require('events').EventEmitter;
-var util = require('util');
 var path = require('path');
 var requireIndex = require('requireindex');
 var serverPlugins = requireIndex(path.join(__dirname, 'lib', 'serverPlugins'));

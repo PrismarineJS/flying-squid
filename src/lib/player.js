@@ -1,12 +1,13 @@
-var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
-module.exports = Player;
 
-function Player()
+class Player extends EventEmitter
 {
-  EventEmitter.call(this);
-  this._client=null;
-  this._entity=null;
+  constructor() {
+    super();
+    this._client=null;
+    this.entity=null;
+  }
 }
-util.inherits(Player, EventEmitter);
+
+module.exports = Player;
