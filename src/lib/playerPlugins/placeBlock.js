@@ -10,14 +10,14 @@ function inject(serv,player)
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
     if(heldItem.blockId!=323){
-        player.changeBlock(placedPosition,heldItem.blockId);
+        player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
     }else if(direction==1){
-      player.setBlock(placedPosition, 63);
+      player.setBlock(placedPosition, 63, 0);
         player._client.write('open_sign_entity', {
             location:placedPosition
         });
     }else{
-      player.setBlock(placedPosition, 68);
+      player.setBlock(placedPosition, 68, 0);
         player._client.write('open_sign_entity', {
             location:placedPosition
         });

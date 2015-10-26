@@ -64,12 +64,12 @@
       - [player.kick(reason)](#playerkickreason)
       - [player.getOthers()](#playergetothers)
       - [player.chat(message)](#playerchatmessage)
-      - [player.changeBlock(position,blockType)](#playerchangeblockpositionblocktype)
-      - [player.sendBlock(position,blockType)](#playersendblockpositionblocktype)
+      - [player.changeBlock(position,blockType,blockData)](#playerchangeblockpositionblocktypeblockdata)
+      - [player.sendBlock(position,blockType,blockData)](#playersendblockpositionblocktypeblockdata)
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
-      - [player.setBlock(position,blockType)](#playersetblockpositionblocktype)
+      - [player.setBlock(position,blockType,blockData)](#playersetblockpositionblocktypeblockdata)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
@@ -328,16 +328,16 @@ return the other players than `player`
 
 sends `message` to the player
 
-#### player.changeBlock(position,blockType)
+#### player.changeBlock(position,blockType,blockData)
 
-change the block at position `position` to `blockType`
+change the block at position `position` to `blockType` and `blockData`
 
 this will not change the block for the user themself. It is mainly useful when a user places a block 
 and only needs to send it to other players on the server
 
-#### player.sendBlock(position,blockType)
+#### player.sendBlock(position,blockType,blockData)
 
-change the block at position `position` to `blockType`
+change the block at position `position` to `blockType` and `blockData`
 
 this will not make any changes on the server's world and only sends it to the user as a "fake" or "local" block
 
@@ -353,7 +353,7 @@ set player gameMode to `gameMode`
 
 handle `command`
 
-#### player.setBlock(position,blockType)
+#### player.setBlock(position,blockType,blockData)
 
 Saves block in world and sends block update to all players of the same world.
 

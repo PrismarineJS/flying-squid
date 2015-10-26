@@ -57,9 +57,9 @@ function inject(serv, player) {
   base.add({
     base: 'setblock',
     info: 'to put a block',
-    usage: '/setblock <x> <y> <z> <id>',
+    usage: '/setblock <x> <y> <z> <id> <data>',
     parse(str) {
-      var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3})/);
+      var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3}) ([0-9]{1,3})/);
 
       if(!results) return false;
       else return results;
@@ -73,7 +73,7 @@ function inject(serv, player) {
         }
       });
 
-      player.setBlock(new Vec3(res[1], res[2], res[3]), res[4]);
+      player.setBlock(new Vec3(res[1], res[2], res[3]), res[4],res[5]);
     }
   });
 

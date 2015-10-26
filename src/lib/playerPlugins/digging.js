@@ -75,7 +75,7 @@ function inject(serv,player)
     clearInterval(animationInterval);
     var diggingTime=new Date()-startDiggingTime;
     if(expectedDiggingTime-diggingTime<100)
-      player.changeBlock(location,0);
+      player.changeBlock(location,0,0);
     else
     {
       player._client.write("block_change",{
@@ -88,7 +88,7 @@ function inject(serv,player)
 
   function creativeDigging(location)
   {
-    return player.changeBlock(location,0);
+    return player.changeBlock(location,0,0);
   }
 
 }

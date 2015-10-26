@@ -52,7 +52,7 @@ function modpeApi() {
     }
 
     function setTile(x, y, z, id, damage) {
-      player.setBlock(new vec3(x, y, z), id);
+      server.setBlock(server.overworld,new vec3(x, y, z), id, damage);
     }
 
     function getTile(x, y, z) {

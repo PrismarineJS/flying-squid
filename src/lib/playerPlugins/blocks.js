@@ -2,20 +2,21 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  player.changeBlock=async (position,blockType) =>
+  player.changeBlock=async (position,blockType,blockData) =>
   {
     serv.players
-      .filter(p => p.world==player.world)
-      .forEach(p => p.sendBlock(position, blockType));
+      .filter(p => p.world==player.world && player!=p)
+      .forEach(p => p.sendBlock(position, blockType, blockData));
 
-    return await player.world.setBlockType(position,blockType);
+    await player.world.setBlockType(position,blockType);
+    await player.world.setBlockData(position,blockData);
   };
   
-  player.sendBlock = (position, blockType) =>  // Call from player.setBlock unless you want "local" fake blocks
+  player.sendBlock = (position, blockType, blockData) =>  // Call from player.setBlock unless you want "local" fake blocks
     player._client.write("block_change",{
         location:position,
-        type:blockType<<4
+        type:blockType<<4 | blockData
     });
 
-  player.setBlock = (position,blockType) => serv.setBlock(player.world,position,blockType);
+  player.setBlock = (position,blockType,blockData) => serv.setBlock(player.world,position,blockType,blockData);
 }

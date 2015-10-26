@@ -32,13 +32,14 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
     return Promise.all(promises);
   };
 
-  serv.setBlock = (world,position,blockType) =>
+  serv.setBlock = async (world,position,blockType,blockData) =>
   {
     serv.players
       .filter(p => p.world==world)
-      .forEach(player => player.sendBlock(position, blockType));
+      .forEach(player => player.sendBlock(position, blockType, blockData));
 
-    return world.setBlockType(position,blockType);
+    await world.setBlockType(position,blockType);
+    await world.setBlockData(position,blockData);
   };
 
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
