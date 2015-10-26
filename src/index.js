@@ -19,29 +19,17 @@ function createMCServer(options) {
   return mcServer;
 }
 
-function MCServer() {
-  EventEmitter.call(this);
-  this._server = null;
+class MCServer extends EventEmitter {
+  constructor() {
+    super();
+    this._server = null;
+  }
+
+  connect(options) {
+    this._server = mc.createServer(options);
+    Object.keys(serverPlugins).forEach(pluginName => serverPlugins[pluginName](this, options));
+    if(options.logging == true) this.createLog();
+    this._server.on('error', error => this.emit('error',error));
+    this._server.on('listening', () => this.emit('listening',this._server.socketServer.address().port));
+  }
 }
-util.inherits(MCServer, EventEmitter);
-
-MCServer.prototype.connect = function(options) {
-  var self = this;
-  self._server = mc.createServer(options);
-
-  for(var pluginName in serverPlugins) {
-    serverPlugins[pluginName](self, options);
-  }
-
-  if(options.logging == true) {
-    self.createLog();
-  }
-
-  self._server.on('error', function(error) {
-    self.emit('error',error);
-  });
-
-  self._server.on('listening', function() {
-    self.emit('listening',self._server.socketServer.address().port);
-  });
-};
