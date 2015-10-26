@@ -8,7 +8,7 @@ function inject(serv, settings) {
   serv.setTickInterval = ticksPerSecond => {
     serv.stopTickInterval();
 
-    serv.tickInterval = setInterval(function() {
+    serv.tickInterval = setInterval(() => {
       serv.tickCount++;
       serv.emit('tick', serv.tickCount);
     }, 1000/ticksPerSecond);

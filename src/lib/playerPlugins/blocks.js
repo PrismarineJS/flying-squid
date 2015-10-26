@@ -19,9 +19,10 @@ function inject(serv,player)
 
   player.setBlock = (position,blockType) =>
   {
-    serv.players.filter(p => p.world==player.world).forEach(function(player){
-      player.sendBlock(position, blockType);
-    });
+    serv.players
+      .filter(p => p.world==player.world)
+      .forEach(player => player.sendBlock(position, blockType));
+
     return player.world.setBlockType(position,blockType);
   };
 }

@@ -4,14 +4,14 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  player._client.on("block_place",function(packet){
-    if(packet.direction==-1 || packet.heldItem.blockId==-1) return;
-    var referencePosition=new vec3(packet.location.x,packet.location.y,packet.location.z);
-    var directionVector=directionToVector[packet.direction];
+  player._client.on("block_place",({direction,heldItem,location} = {}) => {
+    if(direction==-1 || heldItem.blockId==-1) return;
+    var referencePosition=new vec3(location.x,location.y,location.z);
+    var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
-    if(packet.heldItem.blockId!=323){
-        player.changeBlock(placedPosition,packet.heldItem.blockId);
-    }else if(packet.direction==1){
+    if(heldItem.blockId!=323){
+        player.changeBlock(placedPosition,heldItem.blockId);
+    }else if(direction==1){
       player.setBlock(placedPosition, 63);
         player._client.write('open_sign_entity', {
             location:placedPosition

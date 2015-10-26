@@ -8,7 +8,7 @@ function inject(serv,player)
     });
   };
 
-  player._client.on('end', function () {
+  player._client.on('end', () => {
     if(player.entity) {
       serv.broadcast(player.username + ' quit the game.', "yellow");
       player._writeOthers('player_info', {
@@ -29,7 +29,5 @@ function inject(serv,player)
   });
 
 
-  player._client.on('error', function (error) {
-    player.emit('error',error);
-  });
+  player._client.on('error', error => player.emit('error',error));
 }

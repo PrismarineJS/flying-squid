@@ -67,9 +67,7 @@ class Command {
   }
 
   add(params) {
-    var command = new Command(params, this);
-
-    return command;
+    return new Command(params, this);
   }
 
   space(end) {

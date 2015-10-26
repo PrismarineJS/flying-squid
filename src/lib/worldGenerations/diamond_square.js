@@ -10,7 +10,7 @@ function DiamondSquare(size, roughness, seed) {
   var opCount = 0;
 
   // private field
-  var data = new Array();
+  var data = [];
 
   // public methods
   this.value = function(x, y, v) {
@@ -20,16 +20,16 @@ function DiamondSquare(size, roughness, seed) {
       val(x, y, v);
     else
       return val(x, y);
-  }
+  };
   this.clear = function() {
-    data = new Array();
-  }
+    data = [];
+  };
   this.opCount = function(v) {
     if (typeof(v) != 'undefined')
       opCount = v;
     else
       return opCount;
-  }
+  };
 
   // private methods
   function val(x, y, v) {

@@ -2,14 +2,14 @@ module.exports=inject;
 
 function inject(serv, player)
 {
-  player._client.on('chat', function (packet) {
-    if(packet.message[0]=="/") {
-      var command = packet.message.slice(1);
+  player._client.on('chat', ({message} = {}) => {
+    if(message[0]=="/") {
+      var command = message.slice(1);
       player.handleCommand(command);
     }
     else {
-      serv.broadcast('<' + player.username + '>' + ' ' + packet.message);
-      player.emit("chat",packet.message);
+      serv.broadcast('<' + player.username + '>' + ' ' + message);
+      player.emit("chat",message);
     }
   });
 

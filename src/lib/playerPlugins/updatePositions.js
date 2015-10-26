@@ -8,9 +8,7 @@ vec3.Vec3.prototype.toFixedPosition=function() {
 
 function inject(serv,player)
 {
-  player._client.on('look', function(packet) {
-    sendLook(packet.yaw,packet.pitch,packet.onGround)
-  });
+  player._client.on('look', ({yaw,pitch,onGround} = {}) => sendLook(yaw,pitch,onGround));
 
   // float (degrees) --> byte (1/256 "degrees")
   function conv(f){
@@ -39,17 +37,12 @@ function inject(serv,player)
     });
   }
 
-  player._client.on('position', function (packet) {
-    var position = new vec3(packet.x, packet.y, packet.z);
-    var onGround = packet.onGround;
-    sendRelativePositionChange(position.toFixedPosition(), onGround);
-  });
+  player._client.on('position', ({x,y,z,onGround} = {}) =>
+    sendRelativePositionChange((new vec3(x, y, z)).toFixedPosition(), onGround));
 
-  player._client.on('position_look', function (packet) {
-    var position = new vec3(packet.x, packet.y, packet.z);
-    var onGround = packet.onGround;
-    sendRelativePositionChange(position.toFixedPosition(), onGround);
-    sendLook(packet.yaw,packet.pitch,packet.onGround);
+  player._client.on('position_look', ({x,y,z,onGround,yaw,pitch} = {}) => {
+    sendRelativePositionChange((new vec3(x, y, z)).toFixedPosition(), onGround);
+    sendLook(yaw,pitch,onGround);
   });
 
   function sendRelativePositionChange(newPosition, onGround) {

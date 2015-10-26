@@ -18,8 +18,5 @@ function inject(serv,player)
     serv.ban(uuid, reason);
   };
 
-  player.pardon = () => {
-    var uuid=player._client.uuid;
-    return serv.pardon(uuid);
-  };
+  player.pardon = () => serv.pardon(player._client.uuid);
 }

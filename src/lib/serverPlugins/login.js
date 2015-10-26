@@ -8,7 +8,7 @@ module.exports = inject;
 
 function inject(serv,options)
 {
-  serv._server.on('login', async function (client) {
+  serv._server.on('login', async (client) => {
     if(!options["online-mode"])
       client.uuid=UUID.v3({
         namespace: UUID.namespace.dns,
@@ -18,15 +18,15 @@ function inject(serv,options)
     client.compressionThreshold = 256;
     var player=new Player();
     player._client=client;
-    for(var pluginName in playerPlugins) {
-      playerPlugins[pluginName](serv, player, options);
-    }
+    Object.keys(playerPlugins)
+      .forEach(pluginName => playerPlugins[pluginName](serv, player, options));
+
     serv.emit("newPlayer",player);
     try {
       await player.login();
     }
     catch(err){
-      setTimeout(function(){throw err;},0)
+      setTimeout(() => {throw err;},0)
     }
   });
 }

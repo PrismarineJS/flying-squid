@@ -6,8 +6,8 @@ function inject(serv, player)
   player.heldItem=0;
   player.inventory=new Array(44);
   
-  player._client.on("held_item_slot", function (packet) {
-    player.heldItemSlot = packet.slotId;
+  player._client.on("held_item_slot", ({slotId} = {}) => {
+    player.heldItemSlot = slotId;
     if(player.inventory[36+player.heldItemSlot]===undefined){
       player.inventory[36+player.heldItemSlot]={
             blockId:-1
@@ -21,37 +21,37 @@ function inject(serv, player)
     });
   });
   
-  player._client.on("set_creative_slot", function (packet) {
-    player.inventory[packet.slot]=packet.item;
-    if (packet.slot==36)
+  player._client.on("set_creative_slot", ({slot,item} ={}) => {
+    player.inventory[slot]=item;
+    if (slot==36)
       player._writeOthersNearby("entity_equipment",{
         entityId:player.entity.id,
         slot:0,
-        item:packet.item
+        item:item
       });
-    if (packet.slot==5)
+    if (slot==5)
             player._writeOthersNearby("entity_equipment",{
                 entityId:player.entity.id,
                 slot:4,
-                item:packet.item
+                item:item
             });
-    if (packet.slot==6)
+    if (slot==6)
             player._writeOthersNearby("entity_equipment",{
                 entityId:player.entity.id,
                 slot:3,
-                item:packet.item
+                item:item
             });
-    if (packet.slot==7)
+    if (slot==7)
             player._writeOthersNearby("entity_equipment",{
                 entityId:player.entity.id,
                 slot:2,
-                item:packet.item
+                item:item
             });
-    if (packet.slot==8)
+    if (slot==8)
             player._writeOthersNearby("entity_equipment",{
                 entityId:player.entity.id,
                 slot:1,
-                item:packet.item
+                item:item
             });
 
   });

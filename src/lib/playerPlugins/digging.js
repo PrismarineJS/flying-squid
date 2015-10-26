@@ -4,19 +4,19 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  player._client.on("block_dig",function(packet){
-    var pos=new Vec3(packet.location);
+  player._client.on("block_dig",({location,status} = {}) => {
+    var pos=new Vec3(location);
     player.world.getBlock(pos)
       .then(block => {
         currentlyDugBlock=block;
         if(currentlyDugBlock.type==0) return;
-        if(packet.status==0 && player.gameMode!=1)
+        if(status==0 && player.gameMode!=1)
           startDigging(pos);
-        else if(packet.status==2)
+        else if(status==2)
           completeDigging(pos);
-        else if(packet.status==1)
+        else if(status==1)
           cancelDigging(pos);
-        else if(packet.status==0 && player.gameMode==1)
+        else if(status==0 && player.gameMode==1)
           creativeDigging(pos);
       })
     .catch((err)=> setTimeout(function(){throw err;},0));

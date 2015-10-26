@@ -4,8 +4,8 @@ module.exports=inject;
 
 function inject(serv, player)
 {
-  player._client.on('block_place', async function (packet) {
-    var referencePosition=new vec3(packet.location.x,packet.location.y,packet.location.z);
+  player._client.on('block_place', async ({location} = {}) => {
+    var referencePosition=new vec3(location.x,location.y,location.z);
     if (player.entity.crouching) return;
     try {
       var id = await player.world.getBlockType(referencePosition);

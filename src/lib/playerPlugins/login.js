@@ -43,7 +43,7 @@ function inject(serv,player)
 
   function sendPlayersWhenMove()
   {
-    player.on("positionChanged",function(){
+    player.on("positionChanged",() => {
       if(player.entity.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
         player.updateAndSpawnNearbyPlayers();
     });
@@ -66,7 +66,7 @@ function inject(serv,player)
 
   function sendChunkWhenMove()
   {
-    player.on("positionChanged",function(){
+    player.on("positionChanged", () => {
       if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
         player.sendRestMap();
     });

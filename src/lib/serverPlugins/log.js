@@ -8,21 +8,14 @@ module.exports=inject;
 
 function inject(serv,settings)
 {
-  serv.on("error",function(error){
-    serv.log('[ERR]: Server: '+error.stack);
-  });
+  serv.on("error", error => serv.log('[ERR]: Server: '+error.stack));
 
-  serv.on("listening",function(port){
-    serv.log('[INFO]: Server listening on port '+port);
-  });
+  serv.on("listening", port => serv.log('[INFO]: Server listening on port '+port));
 
-  serv.on("banned",function(banner,bannedUsername,reason){
-    serv.log(banner.username + " banned " + bannedUsername + (reason ? " (" + reason + ")" : ""));
-  });
+  serv.on("banned", (banner,bannedUsername,reason) =>
+    serv.log(banner.username + " banned " + bannedUsername + (reason ? " (" + reason + ")" : "")));
 
-  serv.on("seed",function(seed){
-    serv.log("seed: "+seed);
-  });
+  serv.on("seed", (seed) => serv.log("seed: "+seed));
 
   var logFile=path.join("logs",timeStarted + ".log");
 
@@ -30,14 +23,14 @@ function inject(serv,settings)
     message=moment().format('MMMM Do YYYY, HH:mm:ss')+" "+message;
     console.log(message);
     if (!settings.logging) return;
-    fs.appendFile(logFile, message + "\n",function(err){
+    fs.appendFile(logFile, message + "\n", (err) => {
       if (err) console.log(err);
     });
   };
 
   serv.createLog = () => {
     if (!settings.logging) return;
-    mkdirp("logs", function(err) {
+    mkdirp("logs", (err) => {
       if(err)
       {
         console.log(err);
@@ -45,7 +38,7 @@ function inject(serv,settings)
       }
 
       fs.writeFile(logFile, "[INFO]: Started logging...\n",
-        function (err) {
+        (err) => {
           if (err) console.log(err);
         });
     });

@@ -17,7 +17,7 @@ function inject(serv, player) {
       currentItem: 0,
       metadata: spawnedPlayer.entity.metadata
     });
-  }
+  };
 
   player.sendChunk = (chunkX,chunkZ,column) =>
   {

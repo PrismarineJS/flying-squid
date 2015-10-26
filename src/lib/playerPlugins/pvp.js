@@ -30,10 +30,9 @@ function inject(serv, player)
     });
   }
 
-  player._client.on("use_entity", function(packet) {
-    if(packet.mouse == 1) {
-      attackEntity(packet.target);
-    }
+  player._client.on("use_entity", ({mouse,target} = {}) => {
+    if(mouse == 1)
+      attackEntity(target);
   });
 
 }
