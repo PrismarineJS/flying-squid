@@ -275,7 +275,7 @@ function inject(serv, player) {
 
   serv.commands = base;
 
-  player.handleCommand = function(str) {
+  player.handleCommand = (str) => {
     var res = base.use(str);
     if(res) player.chat('' + res);
   };

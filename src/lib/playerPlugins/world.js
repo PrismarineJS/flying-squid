@@ -5,7 +5,7 @@ module.exports = inject;
 
 function inject(serv, player) {
 
-  function spawnAPlayer(spawnedPlayer) {
+  player.spawnAPlayer = spawnedPlayer => {
     player._client.write('named_entity_spawn', {
       entityId: spawnedPlayer.entity.id,
       playerUUID: spawnedPlayer._client.uuid,
@@ -19,7 +19,7 @@ function inject(serv, player) {
     });
   }
 
-  function sendChunk(chunkX,chunkZ,column)
+  player.sendChunk = (chunkX,chunkZ,column) =>
   {
     player._client.write('map_chunk', {
       x: chunkX,
@@ -29,7 +29,7 @@ function inject(serv, player) {
       chunkData: column.dump()
     });
     return Promise.resolve();
-  }
+  };
 
   function spiral(arr)
   {
@@ -40,7 +40,7 @@ function inject(serv, player) {
     return t;
   }
 
-  function sendNearbyChunks(view)
+  player.sendNearbyChunks = view =>
   {
     player.lastPositionChunkUpdated=player.entity.position;
     var playerChunkX=Math.floor(player.entity.position.x/16/32);
@@ -63,35 +63,35 @@ function inject(serv, player) {
           .then(() => player.world.getColumn(chunkX,chunkZ))
           .then((column) => player.sendChunk(chunkX,chunkZ,column))
       ,Promise.resolve());
-  }
+  };
 
   function sleep(ms = 0) {
     return new Promise(r => setTimeout(r, ms));
   }
 
-  function sendMap()
+  player.sendMap = () =>
   {
     return player.sendNearbyChunks(3)
       .catch((err) => setTimeout(function() { throw err; }), 0);
-  }
+  };
 
-  function sendRestMap()
+  player.sendRestMap = () =>
   {
     player.sendingChunks=true;
     player.sendNearbyChunks(player.view)
       .then(() => player.sendingChunks=false)
       .catch((err)=> setTimeout(function(){throw err;},0));
-  }
+  };
 
-  function sendSpawnPosition()
+  player.sendSpawnPosition = () =>
   {
     console.log("setting spawn at "+player.spawnPoint);
     player._client.write('spawn_position',{
       "location":player.spawnPoint
     });
-  }
+  };
 
-  async function changeWorld(world, opt) {
+  player.changeWorld = async (world, opt) => {
     if(player.world == world) return Promise.resolve();
     opt = opt || {};
     player.world = world;
@@ -112,13 +112,5 @@ function inject(serv, player) {
     player.sendPosition();
 
     player.emit('change_world');
-  }
-
-  player.sendNearbyChunks = sendNearbyChunks;
-  player.changeWorld = changeWorld;
-  player.sendChunk = sendChunk;
-  player.sendMap = sendMap;
-  player.sendRestMap = sendRestMap;
-  player.sendSpawnPosition = sendSpawnPosition;
-  player.spawnAPlayer = spawnAPlayer;
+  };
 }

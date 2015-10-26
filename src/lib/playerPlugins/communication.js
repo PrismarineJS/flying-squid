@@ -2,23 +2,23 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  player._writeOthers=function(packetName, packetFields) {
+  player._writeOthers= (packetName, packetFields) => {
     player.getOthers().forEach(function (otherPlayer) {
       otherPlayer._client.write(packetName, packetFields);
     });
   };
 
-  player._writeOthersNearby = function(packetName, packetFields) {
+  player._writeOthersNearby = (packetName, packetFields) => {
     serv._writeArray(packetName, packetFields, player.nearbyPlayers);
   };
 
-  player.getOthers = function() {
+  player.getOthers = () => {
     return serv.players.filter(function (otherPlayer) {
       return otherPlayer != player;
     });
   };
 
-  player.getNearby = function() {
+  player.getNearby = () => {
     return serv.getNearby({
       world: player.world,
       position: player.entity.position,

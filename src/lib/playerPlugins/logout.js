@@ -2,11 +2,11 @@ module.exports=inject;
 
 function inject(serv,player)
 {
-  function despawnPlayers(despawnedPlayers) {
+  player.despawnPlayers = despawnedPlayers => {
     player._client.write('entity_destroy', {
       'entityIds': despawnedPlayers.map(p => p.entity.id)
     });
-  }
+  };
 
   player._client.on('end', function () {
     if(player.entity) {
@@ -32,6 +32,4 @@ function inject(serv,player)
   player._client.on('error', function (error) {
     player.emit('error',error);
   });
-
-  player.despawnPlayers=despawnPlayers;
 }

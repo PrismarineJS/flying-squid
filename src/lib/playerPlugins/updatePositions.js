@@ -82,7 +82,7 @@ function inject(serv,player)
     player.emit("positionChanged");
   }
 
-  function sendPosition() {
+  player.sendPosition = () => {
     player._client.write('position', {
       x: player.entity.position.x/32,
       y: player.entity.position.y/32,
@@ -91,6 +91,5 @@ function inject(serv,player)
       pitch: player.entity.pitch,
       flags: 0x00
     });
-  }
-  player.sendPosition = sendPosition;
+  };
 }

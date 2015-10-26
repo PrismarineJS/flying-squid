@@ -7,12 +7,10 @@ function inject(serv)
   serv.uuidToPlayer={};
   serv.entities={};
 
-  function getPlayer(username) {
+  serv.getPlayer = username => {
     for (var p in serv.players) {
       if (serv.players[p].username == username) return serv.players[p]
     }
     return null;
-  }
-  
-  serv.getPlayer = getPlayer;
+  };
 }

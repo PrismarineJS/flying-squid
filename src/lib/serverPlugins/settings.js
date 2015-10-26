@@ -11,7 +11,7 @@ function inject(serv,settings)
 {
   serv.gameMode=settings.gameMode;
 
-  serv.getSpawnPoint = function() {
+  serv.getSpawnPoint = () => {
     return new vec3(randomInt(5,20),81,randomInt(5,20));
-  }
+  };
 }

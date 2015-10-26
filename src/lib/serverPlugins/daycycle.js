@@ -2,13 +2,13 @@
 module.exports = inject;
 
 function inject(serv, settings) {
-  serv.setTime = function(time) {
+  serv.setTime = (time) => {
     serv.time = time;
     serv._writeAll('update_time', {
       age: [0, 0], // TODO
       time: [0, serv.time]
     });
-  }
+  };
 
   serv.doDaylightCycle = true;
 

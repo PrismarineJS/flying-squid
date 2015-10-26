@@ -9,11 +9,11 @@ module.exports=inject;
 function inject(serv,settings)
 {
   serv.on("error",function(error){
-    log('[ERR]: Server: '+error.stack);
+    serv.log('[ERR]: Server: '+error.stack);
   });
 
   serv.on("listening",function(port){
-    log('[INFO]: Server listening on port '+port);
+    serv.log('[INFO]: Server listening on port '+port);
   });
 
   serv.on("banned",function(banner,bannedUsername,reason){
@@ -26,16 +26,16 @@ function inject(serv,settings)
 
   var logFile=path.join("logs",timeStarted + ".log");
 
-  function log(message) {
+  serv.log = message => {
     message=moment().format('MMMM Do YYYY, HH:mm:ss')+" "+message;
     console.log(message);
     if (!settings.logging) return;
     fs.appendFile(logFile, message + "\n",function(err){
       if (err) console.log(err);
     });
-  }
+  };
 
-  function createLog() {
+  serv.createLog = () => {
     if (!settings.logging) return;
     mkdirp("logs", function(err) {
       if(err)
@@ -49,8 +49,5 @@ function inject(serv,settings)
           if (err) console.log(err);
         });
     });
-  }
-
-  serv.log=log;
-  serv.createLog=createLog;
+  };
 }

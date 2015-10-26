@@ -22,7 +22,7 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
 
   serv._worldSync=new WorldSync(serv.overworld);
 
-  function pregenWorld(world, size=10) {
+  serv.pregenWorld = (world, size=10) => {
     var promises = [];
     for (var x = -size; x < size; x++) {
       for (var z = -size; z < size; z++) {
@@ -30,8 +30,7 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
       }
     }
     return Promise.all(promises);
-  }
-  serv.pregenWorld = pregenWorld;
+  };
 
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));

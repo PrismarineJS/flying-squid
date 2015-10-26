@@ -23,7 +23,7 @@ function inject(serv,player)
     player.nearbyPlayers=[];
   }
 
-  function updateAndSpawnNearbyPlayers()
+  player.updateAndSpawnNearbyPlayers = () =>
   {
     player.lastPositionPlayersUpdated=player.entity.position;
     var updatedPlayers=player.getNearby();
@@ -39,7 +39,7 @@ function inject(serv,player)
 
     player.nearbyPlayers=updatedPlayers;
 
-  }
+  };
 
   function sendPlayersWhenMove()
   {
@@ -80,14 +80,14 @@ function inject(serv,player)
     });
   }
 
-  function setGameMode(gameMode)
+  player.setGameMode = gameMode =>
   {
     player._client.write('game_state_change', {
       reason: 3,
       gameMode: gameMode
     });
     player.gameMode=gameMode;
-  }
+  };
 
   function fillTabList()
   {
@@ -120,7 +120,7 @@ function inject(serv,player)
     player.emit("connected");
   }
 
-  async function login()
+  player.login = async () =>
   { 
     if (serv.uuidToPlayer[player._client.uuid]) {
       player._client.end("You are already connected");
@@ -140,7 +140,7 @@ function inject(serv,player)
 
 
     updateTime();
-    setGameMode(player.gameMode);
+    player.setGameMode(player.gameMode);
     fillTabList();
     player.updateAndSpawnNearbyPlayers();
 
@@ -149,9 +149,5 @@ function inject(serv,player)
     sendPlayersWhenMove();
 
     setTimeout(function(){player.sendRestMap();sendChunkWhenMove();},100);
-  }
-
-  player.setGameMode=setGameMode;
-  player.login=login;
-  player.updateAndSpawnNearbyPlayers=updateAndSpawnNearbyPlayers;
+  };
 }

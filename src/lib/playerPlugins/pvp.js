@@ -3,14 +3,14 @@ module.exports=inject;
 function inject(serv, player) 
 {
 
-  function updateHealth(health) {
+  player.updateHealth = (health) => {
     player.entity.health = health;
     player._client.write('update_health', {
       food: player.entity.food,
       foodSaturation: 0.0,
       health: player.entity.health
     });
-  }
+  };
 
   function attackEntity(entityId) 
   {
@@ -35,7 +35,5 @@ function inject(serv, player)
       attackEntity(packet.target);
     }
   });
-
-  player.updateHealth = updateHealth;
 
 }

@@ -2,7 +2,7 @@ module.exports=inject;
 
 function inject(serv)
 {
-  function broadcast(message, color) {
+  serv.broadcast = (message, color) => {
     serv.players.forEach(function(player){
       var msg = {
         "text": message,
@@ -10,7 +10,5 @@ function inject(serv)
       };
       player.chat(msg);
     });
-  }
-
-  serv.broadcast=broadcast;
+  };
 }
