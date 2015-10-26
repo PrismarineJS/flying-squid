@@ -21,6 +21,7 @@
       - [serv.doDaylightCycle](#servdodaylightcycle)
     - [Events](#events)
       - ["error" (error)](#error-error)
+      - ["clientError" (client,error)](#clienterror-clienterror)
       - ["listening" (port)](#listening-port)
       - ["newPlayer" (player)](#newplayer-player)
       - ["banned" (banner,bannedUsername,reason)](#banned-bannerbannedusernamereason)
@@ -54,7 +55,6 @@
       - ["connected"](#connected)
       - ["spawned"](#spawned)
       - ["disconnected"](#disconnected)
-      - ["error" (error)](#error-error-1)
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
       - ["positionChanged"](#positionchanged)
@@ -159,6 +159,10 @@ Default `true`. If false, time will not automatically pass.
 #### "error" (error)
 
 Fires when there is an error.
+
+#### "clientError" (client,error)
+
+Fires when `client` has an error.
 
 #### "listening" (port)
 
@@ -289,10 +293,6 @@ Fires when the player is spawned
 #### "disconnected"
 
 Fires when the player disconnected
-
-#### "error" (error)
-
-Fires when there is an error.
 
 #### "chat" (message)
 

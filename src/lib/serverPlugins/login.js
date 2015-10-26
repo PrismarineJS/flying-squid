@@ -8,6 +8,9 @@ module.exports = inject;
 
 function inject(serv,options)
 {
+  serv._server.on('connection', client =>
+    client.on('error',error => serv.emit('clientError',client,error)));
+
   serv._server.on('login', async (client) => {
     if(!options["online-mode"])
       client.uuid=UUID.v3({

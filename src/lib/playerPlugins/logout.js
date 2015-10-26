@@ -27,7 +27,4 @@ function inject(serv,player)
       delete serv.uuidToPlayer[player._client.uuid];
     }
   });
-
-
-  player._client.on('error', error => player.emit('error',error));
 }

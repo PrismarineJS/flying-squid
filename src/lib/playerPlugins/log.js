@@ -9,8 +9,6 @@ function inject(serv,player)
 
   player.on("disconnected",() => serv.log("[INFO]: " + player.username + ' disconnected'));
 
-  player.on("error", error => serv.log('[ERR]: Client: ' + error.stack));
-
   player.on("chat", message => serv.log("[INFO] " + '<' + player.username + '>' + ' ' + message));
 
   player.on("kicked",(kicker,reason) =>

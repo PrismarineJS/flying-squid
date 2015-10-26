@@ -9,6 +9,7 @@ module.exports=inject;
 function inject(serv,settings)
 {
   serv.on("error", error => serv.log('[ERR]: Server: '+error.stack));
+  serv.on("clientError", (client,error) => serv.log('[ERR]: Client '+client.socket.remoteAddress + ':' + client.socket.remotePort+' : '+error.stack));
 
   serv.on("listening", port => serv.log('[INFO]: Server listening on port '+port));
 
