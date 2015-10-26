@@ -148,6 +148,6 @@ function inject(serv,player)
     player.emit("spawned");
     sendPlayersWhenMove();
 
-    setTimeout(function(){player.sendRestMap();sendChunkWhenMove();},100);
+    setTimeout(() => {player.sendRestMap();sendChunkWhenMove();},100);
   };
 }

@@ -23,7 +23,7 @@ function inject(serv, player)
       }
     }
     catch(err) {
-      setTimeout(function(){throw err;},0);
+      setTimeout(() =>{throw err;},0);
     }
     
   });

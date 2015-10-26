@@ -65,7 +65,7 @@ function inject(serv, player) {
       else return results;
     },
     action(params) {
-      var res = params.map(function (num, i) { // parseInt paramaters
+      var res = params.map((num, i) => { // parseInt paramaters
         if (num.indexOf('~') == 0) {
           return (player.entity.position[['', 'x', 'y', 'z'][i]] >> 5) + parseInt(num.slice(1) || 0);
         } else {

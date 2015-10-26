@@ -19,7 +19,7 @@ function inject(serv,player)
         else if(status==0 && player.gameMode==1)
           creativeDigging(pos);
       })
-    .catch((err)=> setTimeout(function(){throw err;},0));
+    .catch((err)=> setTimeout(() => {throw err;},0));
   });
 
   function diggingTime(location)

@@ -34,7 +34,7 @@ function inject(serv, player) {
   function spiral(arr)
   {
     var t=[];
-    spiralloop(arr,function(x,z){
+    spiralloop(arr,(x,z) => {
       t.push([x,z]);
     });
     return t;
@@ -72,7 +72,7 @@ function inject(serv, player) {
   player.sendMap = () =>
   {
     return player.sendNearbyChunks(3)
-      .catch((err) => setTimeout(function() { throw err; }), 0);
+      .catch((err) => setTimeout(() => { throw err; }), 0);
   };
 
   player.sendRestMap = () =>
@@ -80,7 +80,7 @@ function inject(serv, player) {
     player.sendingChunks=true;
     player.sendNearbyChunks(player.view)
       .then(() => player.sendingChunks=false)
-      .catch((err)=> setTimeout(function(){throw err;},0));
+      .catch((err)=> setTimeout(() => {throw err;},0));
   };
 
   player.sendSpawnPosition = () =>
