@@ -27,10 +27,9 @@ This is a list that will keep the developers and the community organized!
  - [ ] Randomized weather
 
 ### Ridiculous aspirations (not going to get done anytime soon)
- - [ ] World generation
+ - [x] World generation
  - [x] Mobs / Animals (we spawned some squids)
  - [ ] Plant growing (pretty much ticking)
- - [ ] Other dimensions
+ - [x] Other dimensions
  - [ ] Vehicles
  - [ ] Fishing
- - [ ] Advanced API
