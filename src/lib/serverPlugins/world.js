@@ -32,6 +32,15 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
     return Promise.all(promises);
   };
 
+  serv.setBlock = (world,position,blockType) =>
+  {
+    serv.players
+      .filter(p => p.world==world)
+      .forEach(player => player.sendBlock(position, blockType));
+
+    return world.setBlockType(position,blockType);
+  };
+
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
 }

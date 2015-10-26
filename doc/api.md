@@ -38,6 +38,7 @@
       - [server.getUUIDFromUsername(username,callback)](#servergetuuidfromusernameusernamecallback)
       - [server.setTime(time)](#serversettimetime)
       - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
+      - [server.setBlock(world, position, blockType)](#serversetblockworld-position-blocktype)
     - [Low level methods](#low-level-methods)
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
@@ -232,6 +233,10 @@ Set daylight cycle time in ticks. See `serv.time` for more info.
 Resets tick interval to occur `ticksPerSecond` times per second.
 
 Use `server.stopTickInterval()` if you want but this method already calls that and you can use `serv.doDaylightCycle` to stop it anyway.
+
+#### server.setBlock(world, position, blockType)
+
+Saves block in world and sends block update to all players of the same world.
 
 ### Low level methods
 
