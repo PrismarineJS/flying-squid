@@ -22,6 +22,9 @@ A semi-functional minecraft server in Node.js
 * Digging
 * Placing blocks
 * Player movement
+* World generation
+* Anvil loading
+* Multi-world
 
 ## Test server
 
