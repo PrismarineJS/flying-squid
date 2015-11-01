@@ -32,7 +32,7 @@
     "prismarine-block": "0.1.0",
     "prismarine-chunk": "0.2.1",
     "prismarine-entity": "0.1.0",
-    "prismarine-world": "0.3.0",
+    "prismarine-world": "0.3.1",
     "prismarine-world-sync": "0.1.0",
     "random-seed": "^0.2.0",
     "request-promise": "^0.4.3",
