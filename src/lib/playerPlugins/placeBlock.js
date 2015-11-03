@@ -9,6 +9,7 @@ function inject(serv,player)
     var referencePosition=new vec3(location.x,location.y,location.z);
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
+    serv.playSound('random.click', player.world, placedPosition.clone().add(vec3(0.5, 0.5, 0.5)));
     if(heldItem.blockId!=323){
         player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
     }else if(direction==1){

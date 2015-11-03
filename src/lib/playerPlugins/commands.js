@@ -273,6 +273,26 @@ function inject(serv, player) {
     }
   });
 
+  base.add({
+    base: 'playsound',
+    info: 'to play sound for yourself',
+    usage: '/playsound <sound_name> [volume] [pitch]',
+    parse(str) {
+      return str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+    },
+    action(sound) {
+      if (!sound) {
+        player.chat('Usage: /playsound <sound_name> [volume] [pitch]');
+        return;
+      }
+      player.chat('Playing "'+sound[1]+'" (volume: ' + parseFloat((sound[2] || 1.0)) + ', pitch: ' + parseFloat((sound[3] || 1.0)) + ')');
+      player.playSound(sound[1], {
+        volume: parseFloat(sound[2]) || 1.0,
+        pitch: parseFloat(sound[3]) || 1.0
+      });
+    }
+  })
+
   serv.commands = base;
 
   player.handleCommand = (str) => {
