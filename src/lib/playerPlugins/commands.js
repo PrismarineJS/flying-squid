@@ -278,18 +278,17 @@ function inject(serv, player) {
     info: 'to play sound for yourself',
     usage: '/playsound <sound_name> [volume] [pitch]',
     parse(str) {
-      return str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      if(!results) return false;
+      return {
+        sound_name:results[1],
+        volume:results[2] ? parseFloat(results[2]) : 1.0,
+        pitch:results[3] ? parseFloat(results[3]) : 1.0
+      };
     },
-    action(sound) {
-      if (!sound) {
-        player.chat('Usage: /playsound <sound_name> [volume] [pitch]');
-        return;
-      }
-      player.chat('Playing "'+sound[1]+'" (volume: ' + parseFloat((sound[2] || 1.0)) + ', pitch: ' + parseFloat((sound[3] || 1.0)) + ')');
-      player.playSound(sound[1], {
-        volume: parseFloat(sound[2]) || 1.0,
-        pitch: parseFloat(sound[3]) || 1.0
-      });
+    action({sound_name,volume,pitch}) {
+      player.chat('Playing "'+sound_name+'" (volume: ' + volume + ', pitch: ' + pitch + ')');
+      player.playSound(sound_name, {volume: volume,pitch: pitch});
     }
   });
 
@@ -298,46 +297,42 @@ function inject(serv, player) {
     info: 'to play sound for everyone',
     usage: '/playsoundforall <sound_name> [volume] [pitch]',
     parse(str) {
-      return str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      if(!results) return false;
+      return {
+        sound_name:results[1],
+        volume:results[2] ? parseFloat(results[2]) : 1.0,
+        pitch:results[3] ? parseFloat(results[3]) : 1.0
+      };
     },
-    action(sound) {
-      if (!sound) {
-        player.chat('Usage: /playsoundforall <sound_name> [volume] [pitch]');
-        return;
-      }
-      player.chat('Playing "'+sound[1]+'" (volume: ' + parseFloat((sound[2] || 1.0)) + ', pitch: ' + parseFloat((sound[3] || 1.0)) + ')');
-      serv.playSound(sound[1], player.world, player.entity.position.scaled(1/32), {
-        volume: parseFloat(sound[2]) || 1.0,
-        pitch: parseFloat(sound[3]) || 1.0
-      });
+    action({sound_name,volume,pitch}) {
+      player.chat('Playing "'+sound_name+'" (volume: ' + volume + ', pitch: ' + pitch + ')');
+      serv.playSound(sound_name, player.world, player.entity.position.scaled(1/32), {volume: volume,pitch: pitch});
     }
-  })
+  });
 
   base.add({
     base: 'particle',
     info: 'emit a particle at a position',
     usage: '/particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]',
     parse(str) {
-      return str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/);
+      var results=str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/);
+      if(!results) return false;
+      return {
+        particle:parseInt(results[1]),
+        amount:results[2] ? parseInt(results[2]) : 1,
+        size:results[5] ? new Vec3(parseInt(results[3]), parseInt(results[4]), parseInt(results[5])) : new Vec3(1, 1, 1)
+      };
     },
-    action(data) {
-      if (!data) {
-        player.chat('Usage: /particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]')
+    action({particle,amount,size}) {
+      if (amount >= 100000) {
+        player.chat('You cannot emit more than 100,000 particles!');
         return;
       }
-      var particle = parseInt(data[1]);
-      var amount = data[2] || 1;
-      if (amount >= 100000) {
-        chat('You cannot emit more than 100,000 particles!')
-      }
-      var size = data[5] ? Vec3(parseInt(data[3]), parseInt(data[4]), parseInt(data[5])) : Vec3(1, 1, 1);
-      player.chat('Emitting "' + data[1] + '" (count: ' + amount + ', size: ' + size.x + ',' + size.y + ',' + size.z + ')');
-      serv.emitParticle(particle, player.world, player.entity.position.scaled(1/32), {
-        count: amount,
-        size: size
-      });
+      player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')');
+      serv.emitParticle(particle, player.world, player.entity.position.scaled(1/32), {count: amount,size: size});
     }
-  })
+  });
 
   serv.commands = base;
 
