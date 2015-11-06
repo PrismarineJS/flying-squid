@@ -92,12 +92,23 @@ function inject(serv,player)
 
   function fillTabList()
   {
+    if(player._client.profile)
+      player.profileProperties=player._client.profile.properties
+        .map(property => ({
+          name:property.name,
+          value:property.value,
+          isSigned:true,
+          signature:property.signature
+        }));
+    else
+      player.profileProperties=[];
+
     player._writeOthers('player_info',{
       action: 0,
       data: [{
         UUID: player._client.uuid,
         name: player.username,
-        properties: [],
+        properties: player.profileProperties,
         gamemode: player.gameMode,
         ping: 1
       }]
@@ -108,7 +119,7 @@ function inject(serv,player)
       data: serv.players.map((otherPlayer) => ({
         UUID: otherPlayer._client.uuid,
         name: otherPlayer.username,
-        properties: [],
+        properties: otherPlayer.profileProperties,
         gamemode: otherPlayer.gameMode,
         ping: 1
       }))
