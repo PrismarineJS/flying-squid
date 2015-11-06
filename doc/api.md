@@ -40,6 +40,10 @@
       - [server.setTime(time)](#serversettimetime)
       - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
       - [server.setBlock(world, position, blockType, blockData)](#serversetblockworld-position-blocktype-blockdata)
+      - [server.playSound(sound, world, position, opt)](#serverplaysoundsound-world-position-opt)
+      - [server.playNoteBlock(world, position, pitch)](#serverplaynoteblockworld-position-pitch)
+      - [server.getNote(note)](#servergetnotenote)
+      - [server.emitParticle(particle, world, position, opt)](#serveremitparticleparticle-world-position-opt)
     - [Low level methods](#low-level-methods)
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
@@ -75,6 +79,7 @@
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
       - [player.despawnPlayers(despawnedPlayers)](#playerdespawnplayersdespawnedplayers)
       - [player.updateAndSpawnNearbyPlayers()](#playerupdateandspawnnearbyplayers)
+      - [player.playSound(sound, opt)](#playerplaysoundsound-opt)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods-1)
@@ -242,6 +247,38 @@ Use `server.stopTickInterval()` if you want but this method already calls that a
 
 Saves block in world and sends block update to all players of the same world.
 
+#### server.playSound(sound, world, position, opt)
+
+Plays `sound` (string, google "minecraft sound list") to all players in `opt.radius`. 
+If position is null, will play at the location of every player (taking into account whitelist and blacklist).
+
+Opt:
+- whitelist: Array of players that can hear the sound (can be a player object)
+- blacklist: Array of players who cannot hear the sound
+- radius: Radius that sound can be heard (in fixed position so remember to multiply by 32, default 32*32)
+- volume: float from 0-1 (default 1.0)
+- pitch: float from 0.5 to 2 (default 1.0)
+
+#### server.playNoteBlock(world, position, pitch)
+
+Plays noteblock in world at position. `pitch` is from 0-24
+
+#### server.getNote(note)
+
+Get pitch. `note` should be between 0-24 and your output is from 0.5 to 2.0
+
+#### server.emitParticle(particle, world, position, opt)
+
+Emits particle (see [id list](http://wiki.vg/Protocol#Particle)) at `position` in `world`.
+
+Opt:
+- whitelist: Array of players that can see the particle (can be a player object)
+- blacklist: Array of players who cannot see the particle
+- radius: Radius that the particle can be seen from
+- longDistance: I don't know what this is. I think this is pointless with our implenetation of radius, not sure though...
+- size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense)
+- count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)
+
 ### Low level methods
 
 #### server._writeAll(packetName, packetFields)
@@ -380,6 +417,10 @@ Despawn `despawnedPlayers` for `player`.
 #### player.updateAndSpawnNearbyPlayers()
 
 Spawn and despawn the correct players depending on distance for `player`.
+
+#### player.playSound(sound, opt)
+
+Easy way to only play a sound for one player. Same opt as serv.playSound except no `whitelist`.
 
 ### Low level properties
 
