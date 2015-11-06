@@ -291,6 +291,52 @@ function inject(serv, player) {
         pitch: parseFloat(sound[3]) || 1.0
       });
     }
+  });
+
+  base.add({
+    base: 'playsoundforall',
+    info: 'to play sound for everyone',
+    usage: '/playsoundforall <sound_name> [volume] [pitch]',
+    parse(str) {
+      return str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+    },
+    action(sound) {
+      if (!sound) {
+        player.chat('Usage: /playsoundforall <sound_name> [volume] [pitch]');
+        return;
+      }
+      player.chat('Playing "'+sound[1]+'" (volume: ' + parseFloat((sound[2] || 1.0)) + ', pitch: ' + parseFloat((sound[3] || 1.0)) + ')');
+      serv.playSound(sound[1], player.world, player.entity.position.scaled(1/32), {
+        volume: parseFloat(sound[2]) || 1.0,
+        pitch: parseFloat(sound[3]) || 1.0
+      });
+    }
+  })
+
+  base.add({
+    base: 'particle',
+    info: 'emit a particle at a position',
+    usage: '/particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]',
+    parse(str) {
+      return str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/);
+    },
+    action(data) {
+      if (!data) {
+        player.chat('Usage: /particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]')
+        return;
+      }
+      var particle = parseInt(data[1]);
+      var amount = data[2] || 1;
+      if (amount >= 100000) {
+        chat('You cannot emit more than 100,000 particles!')
+      }
+      var size = data[5] ? Vec3(parseInt(data[3]), parseInt(data[4]), parseInt(data[5])) : Vec3(1, 1, 1);
+      player.chat('Emitting "' + data[1] + '" (count: ' + amount + ', size: ' + size.x + ',' + size.y + ',' + size.z + ')');
+      serv.emitParticle(particle, player.world, player.entity.position.scaled(1/32), {
+        count: amount,
+        size: size
+      });
+    }
   })
 
   serv.commands = base;

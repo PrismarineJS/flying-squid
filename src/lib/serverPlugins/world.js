@@ -22,7 +22,12 @@ function inject(serv,{regionFolder,generation={"name":"diamond_square","options"
 
   serv._worldSync=new WorldSync(serv.overworld);
 
-  serv.pregenWorld = (world, size=10) => {
+  // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
+  serv.overworld.blockEntityData = {};
+  serv.netherworld.blockEntityData = {};
+  //////////////
+
+  serv.pregenWorld = (world, size=3) => {
     var promises = [];
     for (var x = -size; x < size; x++) {
       for (var z = -size; z < size; z++) {

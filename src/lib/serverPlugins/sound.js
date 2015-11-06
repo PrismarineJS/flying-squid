@@ -1,3 +1,5 @@
+var vec3 = require('vec3');
+
 module.exports = inject;
 
 function inject(serv) {
@@ -10,7 +12,6 @@ function inject(serv) {
     players.filter(player => blacklist.indexOf(player) == -1)
       .forEach(player => {
         var pos = (position || player.entity.position.scaled(1/32)).scaled(8).floored();
-        console.log('Data',sound, pos, volume, Math.round(pitch*63));
         player._client.write('named_sound_effect', {
           soundName: sound,
           x: pos.x,
@@ -21,4 +22,14 @@ function inject(serv) {
         });
       });
   }
+
+  serv.playNoteBlock = (world, position, pitch) => {
+    serv.emitParticle(23, world, position.clone().add(vec3(0.5, 1.5, 0.5)), {
+      count: 1,
+      size: vec3(0, 0, 0)
+    });
+    serv.playSound('note.harp', world, position, { pitch: serv.getNote(pitch) });
+  }
+
+  serv.getNote = note => 0.5 * Math.pow(Math.pow(2, 1/12), note);
 }

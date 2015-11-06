@@ -13,6 +13,7 @@ function inject(serv,player)
     player.entity.player=player;
     player.entity.health = 20;
     player.entity.food = 20;
+    player.entity.crouching = false; // Needs added in prismarine-entity later
     player.playerViewDistance = 150;
     player.view=8;
     player.world=serv.overworld;
