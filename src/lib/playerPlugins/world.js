@@ -40,7 +40,7 @@ function inject(serv, player) {
     return t;
   }
 
-  player.sendNearbyChunks = view =>
+  player.sendNearbyChunks = (view,group) =>
   {
     player.lastPositionChunkUpdated=player.entity.position;
     var playerChunkX=Math.floor(player.entity.position.x/16/32);
@@ -57,11 +57,12 @@ function inject(serv, player) {
         if(!loaded) player.loadedChunks[key]=1;
         return !loaded;
       })
-      .reduce((acc,{chunkX,chunkZ})=>
-         acc
-          .then(() => player.world.getColumn(chunkX,chunkZ))
-          .then((column) => player.sendChunk(chunkX,chunkZ,column))
-          .then(() => sleep(5))
+      .reduce((acc,{chunkX,chunkZ},i)=> {
+          var p=acc
+            .then(() => player.world.getColumn(chunkX, chunkZ))
+            .then((column) => player.sendChunk(chunkX, chunkZ, column));
+           return group ? p.then(() => sleep(5)) : p;
+        }
       ,Promise.resolve());
   };
 
@@ -78,7 +79,7 @@ function inject(serv, player) {
   player.sendRestMap = () =>
   {
     player.sendingChunks=true;
-    player.sendNearbyChunks(player.view)
+    player.sendNearbyChunks(player.view,true)
       .then(() => player.sendingChunks=false)
       .catch((err)=> setTimeout(() => {throw err;},0));
   };
