@@ -60,9 +60,8 @@ function inject(serv, player) {
     usage: '/setblock <x> <y> <z> <id> <data>',
     parse(str) {
       var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3}) ([0-9]{1,3})/);
-
       if(!results) return false;
-      else return results;
+      return results;
     },
     action(params) {
       var res = params.map((num, i) => { // parseInt paramaters
@@ -82,22 +81,15 @@ function inject(serv, player) {
     info: 'to kick a player',
     usage: '/kick <player> [reason]',
     parse(str) {
-      var res = false;
-
-      if(str.match(/([a-zA-Z0-9_]+)(?: (.*))/)) {
-        str = str.split(' ');
-        var nick = str.shift();
-        var reason = str.join(' ');
-
-        res = [nick, reason];
-      }
-
-      return res;
+      if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
+        return false;
+      var parts = str.split(' ');
+      return {
+        username:parts.shift(),
+        reason:parts.join(' ')
+      };
     },
-    action(params) {
-      var username = params[0];
-      var reason = params[1];
-
+    action({username,reason}) {
       var kickPlayer = serv.getPlayer(username);
       if (!kickPlayer) {
         player.chat(username + " is not on this server!");
@@ -113,22 +105,15 @@ function inject(serv, player) {
     info: 'to ban a player',
     usage: '/ban <player> [reason]',
     parse(str) {
-      var res = false;
-
-      if(str.match(/([a-zA-Z0-9_]+)(?: (.*))/)) {
-        str = str.split(' ');
-        var nick = str.shift();
-        var reason = str.join(' ');
-
-        res = [nick, reason];
-      }
-
-      return res;
+      if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
+        return false;
+      var parts = str.split(' ');
+      return {
+        username:parts.shift(),
+        reason:parts.join(' ')
+      };
     },
-    action(params) {
-      var username = params[0];
-      var reason = params[1];
-
+    action({username,reason}) {
       var banPlayer = serv.getPlayer(username);
 
       if (!banPlayer) {
@@ -150,13 +135,9 @@ function inject(serv, player) {
     info: 'to pardon a player',
     usage: '/pardon <player>',
     parse(str) {
-      var res = false;
-
-      if(str.match(/([a-zA-Z0-9_]+)/)) {
-        res = str;
-      }
-
-      return res;
+      if(!str.match(/([a-zA-Z0-9_]+)/))
+        return false;
+      return str;
     },
     action(nick) {
       serv.pardonUsername(nick)
@@ -170,22 +151,14 @@ function inject(serv, player) {
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
     parse(str) {
-      var res = false;
-
       var data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/);
       if(!data) return false;
-
-      if(data.length ==3) {
-        if (data[2] == 'day') data[2] = 1000;
-        if (data[2] == 'night') data[2] = 13000;
-      }
-
-      return [data[1], data[2]];
+      return {
+        action: data[1],
+        value: data[2] == 'day' ? 1000 : (data[2] == 'night' ? 13000 : parseInt(data[2]))
+      };
     },
-    action(params) {
-      var action = params[0];
-      var value = params[1] !== undefined ? parseInt(params[1]) : null;
-
+    action({action,value}) {
       if(action == "query") {
         player.chat("It is "+serv.time);
       } else {
