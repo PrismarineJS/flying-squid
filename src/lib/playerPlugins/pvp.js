@@ -17,6 +17,7 @@ function inject(serv, player)
     var attackedPlayer = serv.entities[entityId].player;
     if(attackedPlayer.gameMode!=0)  return;
     attackedPlayer.updateHealth(attackedPlayer.entity.health - 1);
+    serv.playSound('game.player.hurt', player.world, attackedPlayer.entity.position.scaled(1/32));
 
     if(attackedPlayer.entity.health==0)
       attackedPlayer._writeOthers('entity_status',{

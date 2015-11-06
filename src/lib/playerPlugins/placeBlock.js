@@ -9,19 +9,23 @@ function inject(serv,player)
     var referencePosition=new vec3(location.x,location.y,location.z);
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
-    if(heldItem.blockId!=323){
-        player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
-    }else if(direction==1){
-      player.setBlock(placedPosition, 63, 0);
-        player._client.write('open_sign_entity', {
-            location:placedPosition
-        });
-    }else{
-      player.setBlock(placedPosition, 68, 0);
-        player._client.write('open_sign_entity', {
-            location:placedPosition
-        });
-    }
+    player.world.getBlockType(referencePosition).then((id) => {
+      if([25].indexOf(id) != -1) return;
+      serv.playSound('random.click', player.world, placedPosition.clone().add(vec3(0.5, 0.5, 0.5)));
+      if(heldItem.blockId!=323){
+          player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
+      }else if(direction==1){
+        player.setBlock(placedPosition, 63, 0);
+          player._client.write('open_sign_entity', {
+              location:placedPosition
+          });
+      }else{
+        player.setBlock(placedPosition, 68, 0);
+          player._client.write('open_sign_entity', {
+              location:placedPosition
+          });
+      }
+    }).catch((err)=> setTimeout(() => {throw err;},0));
   });
 }
 
