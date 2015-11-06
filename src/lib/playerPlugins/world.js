@@ -59,9 +59,9 @@ function inject(serv, player) {
       })
       .reduce((acc,{chunkX,chunkZ})=>
          acc
-          //.then(() => sleep(100))
           .then(() => player.world.getColumn(chunkX,chunkZ))
           .then((column) => player.sendChunk(chunkX,chunkZ,column))
+          .then(() => sleep(5))
       ,Promise.resolve());
   };
 
@@ -108,9 +108,12 @@ function inject(serv, player) {
     player.updateAndSpawnNearbyPlayers();
 
     await player.sendMap();
-    setTimeout(player.sendRestMap,100);
-    player.sendPosition();
 
+    player.sendPosition();
     player.emit('change_world');
+
+    await player.waitPlayerLogin();
+    player.sendRestMap();
+
   };
 }

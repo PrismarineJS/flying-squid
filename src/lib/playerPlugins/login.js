@@ -15,7 +15,7 @@ function inject(serv,player)
     player.entity.food = 20;
     player.entity.crouching = false; // Needs added in prismarine-entity later
     player.playerViewDistance = 150;
-    player.view=8;
+    player.view=10;
     player.world=serv.overworld;
     player.username=player._client.username;
     serv.players.push(player);
@@ -121,6 +121,19 @@ function inject(serv,player)
     player.emit("connected");
   }
 
+  player.waitPlayerLogin = () => {
+    var events=["flying","look"];
+    return new Promise(function(resolve){
+
+      var listener=()=> {
+        events.map(event => player._client.removeListener(event,listener));
+        resolve();
+      };
+      events.map(event =>player._client.on(event,listener));
+    });
+  };
+
+
   player.login = async () =>
   { 
     if (serv.uuidToPlayer[player._client.uuid]) {
@@ -149,6 +162,8 @@ function inject(serv,player)
     player.emit("spawned");
     sendPlayersWhenMove();
 
-    setTimeout(() => {player.sendRestMap();sendChunkWhenMove();},100);
+    await player.waitPlayerLogin();
+    player.sendRestMap();
+    sendChunkWhenMove();
   };
 }
