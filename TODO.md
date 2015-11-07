@@ -27,6 +27,7 @@ This is a list that will keep the developers and the community organized!
  - [ ] Block dropping
  - [ ] Entity basics
  - [ ] Add in cluster functionality
+ 
 #### Stuff we'll have to do eventually
  - [ ] World border
  - [ ] Achievements
