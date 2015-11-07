@@ -20,14 +20,14 @@ This is a list that will keep the developers and the community organized!
  - [x] Other dimensions
 
 ### To-do
-## Priority
+#### Priority
  - [ ] Inventories (saving the blocks players get)
  - [ ] Plugin System
  - [ ] Crafting and Smelting
  - [ ] Block dropping
  - [ ] Entity basics
  - [ ] Add in cluster functionality
-## Stuff we'll have to do eventually
+#### Stuff we'll have to do eventually
  - [ ] World border
  - [ ] Achievements
  - [ ] Block physics (water and lava)
