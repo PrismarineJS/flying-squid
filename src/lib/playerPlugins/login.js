@@ -83,11 +83,18 @@ function inject(serv,player)
 
   player.setGameMode = gameMode =>
   {
+    player.gameMode=gameMode;
     player._client.write('game_state_change', {
       reason: 3,
-      gameMode: gameMode
+      gameMode: player.gameMode
     });
-    player.gameMode=gameMode;
+    serv._writeAll('player_info',{
+      action: 1,
+      data: [{
+        UUID: player._client.uuid,
+        gamemode: player.gameMode
+      }]
+    });
   };
 
   function fillTabList()
@@ -165,7 +172,6 @@ function inject(serv,player)
 
 
     updateTime();
-    player.setGameMode(player.gameMode);
     fillTabList();
     player.updateAndSpawnNearbyPlayers();
 
