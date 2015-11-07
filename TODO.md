@@ -10,26 +10,33 @@ This is a list that will keep the developers and the community organized!
  - [x] Allow players to chat
  - [x] Players see each other and in-game and in tab
  - [x] Basic API
-
-
-### To-do
+ - [x] Basic PvP
+ - [x] Player animations (hurting, flinching, etc.)
+ - [x] Banning and kicking
  - [x] Fix spitting errors in the console
  - [x] Fix player looking (seriously, it looks ridiculous)
  - [x] Fix massive lag when players move
  - [x] Dynamic worlds (players can see the when someone makes changes to the world)
- - [ ] Block dropping
+ - [x] Other dimensions
+
+### To-do
+#### Priority
  - [ ] Inventories (saving the blocks players get)
+ - [ ] Plugin System
  - [ ] Crafting and Smelting
- - [x] Basic PvP
- - [x] Player animations (hurting, flinching, etc.)
+ - [ ] Block dropping
+ - [ ] Entity basics
  - [ ] Add in cluster functionality
- - [x] Banning and kicking
- - [ ] Randomized weather
+ 
+#### Stuff we'll have to do eventually
+ - [ ] World border
+ - [ ] Achievements
+ - [ ] Block physics (water and lava)
+ - [ ] More advanced PvP (armor, weapons, damage types, potions)
+ - [ ] Random ticks
 
 ### Ridiculous aspirations (not going to get done anytime soon)
- - [x] World generation
- - [x] Mobs / Animals (we spawned some squids)
- - [ ] Plant growing (pretty much ticking)
- - [x] Other dimensions
- - [ ] Vehicles
+ - [ ] Vanilla-like world generation (overworld, nether, and end)
+ - [ ] Redstone (everything about it)
+ - [ ] Entities (Mob spawning, mob ai, vehicles, etc)
  - [ ] Fishing
