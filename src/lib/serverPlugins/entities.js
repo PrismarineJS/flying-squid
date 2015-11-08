@@ -44,9 +44,6 @@ function inject(serv) {
       var yVec = entity.position.offset(0, entity.velocity.y*delta + sizeSigned.y/2, 0).scaled(1/32).floored();
       var zVec = entity.position.offset(0, 0, entity.velocity.z*delta + sizeSigned.z/2).scaled(1/32).floored();
 
-      //console.log(xVec, yVec, zVec);
-      //console.log(entity.velocity);
-
       // Get block for each (x/y/z)Vec, check to avoid duplicate getBlockTypes
       var xBlock = blocks[await entity.world.getBlockType(xVec)].boundingBox == 'block';
       var yBlock = yVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(yVec)].boundingBox == 'block';
@@ -59,17 +56,13 @@ function inject(serv) {
         entity.velocity.z = getFriction(entity.velocity.x, entity.friction.x, delta);
       }
 
-      //console.log('afterfric',entity.velocity);
-
       var oldPos = entity.position.clone();
 
       entity.position.x += getMoveAmount('x', xBlock, entity, delta, sizeSigned.x);
       entity.position.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
       entity.position.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z);
 
-      //console.log(entity.position, old);
-
-      serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: vec3(0, 0, 0) });
+      //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: vec3(0, 0, 0) });
       return { oldPos: oldPos, onGround: yBlock}
     }
 

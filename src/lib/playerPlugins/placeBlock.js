@@ -1,4 +1,15 @@
+var blocks=require("minecraft-data")(require("../version")).blocks;
 var vec3 = require("vec3");
+
+var materialToSound = {
+  undefined: 'stone',
+  'rock': 'stone',
+  'dirt': 'grass',
+  'plant': 'grass',
+  'wool': 'cloth',
+  'web': 'cloth',
+  'wood': 'wood'
+}
 
 module.exports=inject;
 
@@ -11,7 +22,10 @@ function inject(serv,player)
     var placedPosition=referencePosition.plus(directionVector);
     player.world.getBlockType(referencePosition).then((id) => {
       if([25].indexOf(id) != -1) return;
-      serv.playSound('random.click', player.world, placedPosition.clone().add(vec3(0.5, 0.5, 0.5)));
+      var sound = 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone');
+      serv.playSound(sound, player.world, placedPosition.clone().add(vec3(0.5, 0.5, 0.5)), {
+        pitch: 0.8
+      });
       if(heldItem.blockId!=323){
           player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
       }else if(direction==1){
