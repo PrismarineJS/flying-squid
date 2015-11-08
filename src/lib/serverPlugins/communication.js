@@ -11,8 +11,8 @@ function inject(serv,settings)
   serv._writeNearby= (packetName, packetFields, loc) =>
     serv._writeArray(packetName, packetFields, serv.getNearby(loc));
 
-  serv.getNearby= loc => serv.players.filter( player =>
-      player.world == loc.world &&
-      player.entity.position.distanceTo(loc.position) <= loc.radius
+  serv.getNearby= ({world,position,radius=8*16*32}) => serv.players.filter( player =>
+      player.world == world &&
+      player.entity.position.distanceTo(position) <= radius
   );
 }

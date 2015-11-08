@@ -86,8 +86,14 @@ function inject(serv,player)
   }
 
 
-  function creativeDigging(location)
+  async function creativeDigging(location)
   {
+    var vec = Vec3(location.x, location.y, location.z);
+    var id = await player.world.getBlockType(vec);
+    serv.spawnObject(2, player.world, vec.clone().add(Vec3(0.5, 0.5, 0.5)), {
+      data: 0,
+      velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2)
+    });
     return player.changeBlock(location,0,0);
   }
 
