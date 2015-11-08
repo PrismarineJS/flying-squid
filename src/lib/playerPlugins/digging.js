@@ -91,9 +91,8 @@ function inject(serv,player)
     var vec = Vec3(location.x, location.y, location.z);
     var id = await player.world.getBlockType(vec);
     var damage = await player.world.getBlockData(vec);
-    console.log('meh',id,damage);
     serv.spawnObject(2, player.world, vec.clone().add(Vec3(0.5, 0.5, 0.5)), {
-      velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2 + 20, Math.random()*4 - 2),
+      velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
       itemId: id,
       itemDamage: damage
     });

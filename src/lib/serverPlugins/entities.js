@@ -10,7 +10,6 @@ function inject(serv) {
   serv.initEntity = (type, entityType, world, position) => {
     serv.entityMaxId++;
     var entity = new Entity(serv.entityMaxId);
-    console.log('Spawn entity',entity.id);
     entity.type = type;
     entity.entityType = entityType;
     entity.world = world;
@@ -121,7 +120,6 @@ function inject(serv) {
     }, object);
 
     if (typeof itemId != 'undefined') {
-      console.log(itemId, itemDamage);
       object.setMetadata([{
         "key": 10,
         "type": 5,
