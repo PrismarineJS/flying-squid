@@ -47,7 +47,7 @@ function inject(serv,player)
 
   function sendRelativePositionChange(newPosition, onGround) {
     if (player.entity.position.distanceTo(new vec3(0, 0, 0)) != 0) {
-      var diff = newPosition.minus(player.entity.position);
+      var diff = newPosition.scaled(1/32).scaled(32).minus(player.entity.position.scaled(1/32).scaled(32));
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
       {
         player._writeOthersNearby('entity_teleport', {
