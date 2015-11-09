@@ -11,23 +11,30 @@ function inject(serv) {
     serv.entityMaxId++;
     var entity = new Entity(serv.entityMaxId);
     entity.type = type;
+    entity.spawnPacketName = '';
     entity.entityType = entityType;
     entity.world = world;
     entity.position = position;
+    entity.nearbyEntities = [];
+    entity.viewDistance = 15;
 
     entity.bornTime = Date.now();
     serv.entities[entity.id] = entity;
+
+    if (entity.type == 'player') entity.spawnPacketName = 'named_entity_spawn';
+    else if (entity.type == 'object') entity.spawnPacketName = 'spawn_entity';
+    else if (entity.type == 'mob') entity.spawnPacketName = 'spawn_entity_living';
 
     entity.setMetadata = (data) => {
       serv._writeNearby('entity_metadata', {
         entityId: entity.id,
         metadata: data
       }, entity);
-    }
+    };
 
     entity.destroy = () => {
       serv.destroyEntity(entity);
-    }
+    };
 
     entity.calculatePhysics = async (delta) => {
       if (entity.gravity) {
@@ -63,7 +70,7 @@ function inject(serv) {
 
       //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: vec3(0, 0, 0) });
       return { oldPos: oldPos, onGround: yBlock}
-    }
+    };
 
     entity.sendPosition = ({oldPos,onGround}) => {
       var diff = entity.position.minus(oldPos);
@@ -86,6 +93,85 @@ function inject(serv) {
         }, entity);
     }
 
+    entity.getSpawnPacket = () => {
+      var scaledVelocity = entity.velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+      if (entity.type == 'player') {
+        return {
+          entityId: entity.id,
+          playerUUID: entity.player._client.uuid,
+          x: entity.position.x,
+          y: entity.position.y,
+          z: entity.position.z,
+          yaw: entity.yaw,
+          pitch: entity.pitch,
+          currentItem: 0,
+          metadata: entity.metadata
+        }
+      } else if (entity.type == 'object') {
+        return {
+          entityId: entity.id,
+          type: entity.entityType,
+          x: entity.position.x,
+          y: entity.position.y,
+          z: entity.position.z,
+          pitch: entity.pitch,
+          yaw: entity.yaw,
+          objectData: {
+            intField: entity.data,
+            velocityX: scaledVelocity.x,
+            velocityY: scaledVelocity.y,
+            velocityZ: scaledVelocity.z
+          }
+        }
+      } else if (entity.type == 'mob') {
+        return {
+          entityId: entity.id,
+          type: entity.entityType,
+          x: entity.position.x,
+          y: entity.position.y,
+          z: entity.position.z,
+          yaw: entity.yaw,
+          pitch: entity.pitch,
+          headPitch: entity.headPitch,
+          velocityX: scaledVelocity.x,
+          velocityY: scaledVelocity.y,
+          velocityZ: scaledVelocity.z,
+          metadata: entity.metadata
+        }
+      }
+    };
+
+    entity.getNearby = () => serv
+      .getNearbyEntities({
+        world: entity.world,
+        position: entity.position,
+        radius: entity.viewDistance*32
+      })
+      .filter((e) => e != entity);
+
+    entity.updateAndSpawn = () => {
+      var updatedEntities=entity.getNearby();
+      var entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
+      var entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
+      if (entity.type == 'player') {
+        entity.player.despawnEntities(entitiesToRemove);
+        entitiesToAdd.forEach(entity.player.spawnEntity);
+        entity.player.lastPositionPlayersUpdated=entity.position;
+      }
+
+      var playersToAdd = entitiesToAdd.filter(e => e.type == 'player').map(e => e.player);
+      var playersToRemove = entitiesToRemove.filter(e => e.type == 'player').map(e => e.player);
+
+      console.log('players',playersToAdd.length,playersToRemove.length,'ents',entitiesToAdd.length,entitiesToRemove.length);
+
+      playersToRemove.forEach(p => p.despawnEntities([entity]));
+      playersToRemove.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+      playersToAdd.forEach(p => p.spawnEntity(entity));
+      playersToAdd.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+
+      entity.nearbyEntities=updatedEntities;
+    };
+
     return entity;
   }
 
@@ -101,23 +187,7 @@ function inject(serv) {
     object.size = vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
     object.deathTime = 60*1000; // 60 seconds
 
-    var scaledVelocity = object.velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
-
-    serv._writeNearby('spawn_entity', {
-      entityId: object.id,
-      type: object.entityType,
-      x: object.position.x,
-      y: object.position.y,
-      z: object.position.z,
-      pitch: object.pitch,
-      yaw: object.yaw,
-      objectData: {
-        intField: data,
-        velocityX: scaledVelocity.x,
-        velocityY: scaledVelocity.y,
-        velocityZ: scaledVelocity.z
-      }
-    }, object);
+    object.updateAndSpawn();
 
     if (typeof itemId != 'undefined') {
       object.setMetadata([{
@@ -128,7 +198,7 @@ function inject(serv) {
           itemDamage: itemDamage
         }
       }]);
-    }
+    }    
   }
 
   serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=vec3(0,0,0),metadata=[]}={}) => {
@@ -143,22 +213,7 @@ function inject(serv) {
     mob.size = vec3(0.75, 1.75, 0.75);
     mob.metadata = metadata;
 
-    var scaledVelocity = mob.velocity.scaled(8000/32/20).floored();
-
-    serv._writeNearby('spawn_entity_living', {
-      entityId: mob.id,
-      type: mob.entityType,
-      x: mob.position.x,
-      y: mob.position.y,
-      z: mob.position.z,
-      yaw: mob.yaw,
-      pitch: mob.pitch,
-      headPitch: mob.headPitch,
-      velocityX: scaledVelocity.x,
-      velocityY: scaledVelocity.y,
-      velocityZ: scaledVelocity.z,
-      metadata: mob.metadata
-    }, mob);
+    mob.updateAndSpawn();
   }
 
   serv.on('tick', function(delta) {

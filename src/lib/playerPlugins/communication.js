@@ -8,15 +8,17 @@ function inject(serv,player)
       .forEach((otherPlayer) => otherPlayer._client.write(packetName, packetFields));
 
   player._writeOthersNearby = (packetName, packetFields) =>
-    serv._writeArray(packetName, packetFields, player.nearbyPlayers);
+    serv._writeArray(packetName, packetFields, player.nearbyPlayers());
 
   player.getOthers = () => serv.players.filter((otherPlayer) => otherPlayer != player);
 
-  player.getNearby = () => serv
-    .getNearby({
-      world: player.world,
-      position: player.entity.position,
-      radius: player.playerViewDistance*32
-    })
-    .filter((p) => p != player);
+  player.getNearbyPlayers = (radius=player.entity.viewDistance*32) => serv.getNearby({
+    world: player.world,
+    position: player.position,
+    radius: radius
+  });
+
+  player.nearbyPlayers = (radius=player.entity.viewDistance*32) => player.entity.nearbyEntities
+    .filter(e => e.type == 'player')
+    .map(e => e.player);
 }

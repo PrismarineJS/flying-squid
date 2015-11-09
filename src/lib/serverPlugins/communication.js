@@ -15,4 +15,11 @@ function inject(serv,settings)
       player.world == world &&
       player.entity.position.distanceTo(position) <= radius
   );
+
+  serv.getNearbyEntities= ({world,position,radius=8*16*32}) => Object.keys(serv.entities)
+    .map(eId => serv.entities[eId])
+    .filter(entity =>
+      entity.world == world &&
+      entity.position.distanceTo(position) <= radius
+  );
 }
