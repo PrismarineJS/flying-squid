@@ -77,13 +77,10 @@ function inject(serv,player)
     if(expectedDiggingTime-diggingTime<100) {
       player.changeBlock(location,0,0);
       // Drop block
-      var vec = Vec3(location.x, location.y, location.z);
-      var id = await player.world.getBlockType(vec);
-      var damage = await player.world.getBlockData(vec);
-      serv.spawnObject(2, player.world, vec.clone().add(Vec3(0.5, 0.5, 0.5)), {
+      serv.spawnObject(2, player.world, location.offset(0.5, 0.5, 0.5), {
         velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
-        itemId: id,
-        itemDamage: damage
+        itemId: currentlyDugBlock.type,
+        itemDamage: currentlyDugBlock.metadata
       });
     }
     else
