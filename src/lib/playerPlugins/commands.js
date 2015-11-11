@@ -320,7 +320,7 @@ function inject(serv, player) {
     },
     action({id}) {
       serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
-        velocity: Vec3((Math.random() - 0.5) * 5 + 5, Math.random()*10 + 10, (Math.random() - 0.5) * 5 + 5)
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
   })

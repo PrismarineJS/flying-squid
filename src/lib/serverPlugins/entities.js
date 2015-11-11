@@ -2,21 +2,27 @@ var Entity=require("prismarine-entity");
 var blocks=require("minecraft-data")(require("../version")).blocks;
 var mobs=require("minecraft-data")(require("../version")).entitiesByName;
 var vec3 = require("vec3");
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 
 module.exports = inject;
 
 function inject(serv) {
 
+  util.inherits(Entity, EventEmitter);
+
   serv.initEntity = (type, entityType, world, position) => {
     serv.entityMaxId++;
     var entity = new Entity(serv.entityMaxId);
+    EventEmitter.call(entity);
     entity.type = type;
     entity.spawnPacketName = '';
     entity.entityType = entityType;
     entity.world = world;
     entity.position = position;
+    entity.lastPositionPlayersUpdated = entity.position.clone();
     entity.nearbyEntities = [];
-    entity.viewDistance = 15;
+    entity.viewDistance = 150;
 
     entity.bornTime = Date.now();
     serv.entities[entity.id] = entity;
@@ -24,6 +30,11 @@ function inject(serv) {
     if (entity.type == 'player') entity.spawnPacketName = 'named_entity_spawn';
     else if (entity.type == 'object') entity.spawnPacketName = 'spawn_entity';
     else if (entity.type == 'mob') entity.spawnPacketName = 'spawn_entity_living';
+
+    entity.on("positionChanged",() => {
+      if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
+        entity.updateAndSpawn();
+    });
 
     entity.setMetadata = (data) => {
       serv._writeNearby('entity_metadata', {
@@ -74,6 +85,7 @@ function inject(serv) {
 
     entity.sendPosition = ({oldPos,onGround}) => {
       var diff = entity.position.minus(oldPos);
+
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127) 
         serv._writeNearby('entity_teleport', {
           entityId: entity.id,
@@ -83,7 +95,7 @@ function inject(serv) {
           yaw: entity.yaw,
           pitch: entity.pitch,
           onGround: onGround
-        });
+        }, entity);
       else serv._writeNearby('rel_entity_move', {
           entityId: entity.id,
           dX: diff.x,
@@ -91,6 +103,8 @@ function inject(serv) {
           dZ: diff.z,
           onGround: onGround
         }, entity);
+
+      entity.emit('positionChanged', oldPos);
     }
 
     entity.getSpawnPacket = () => {
@@ -156,13 +170,13 @@ function inject(serv) {
       if (entity.type == 'player') {
         entity.player.despawnEntities(entitiesToRemove);
         entitiesToAdd.forEach(entity.player.spawnEntity);
-        entity.player.lastPositionPlayersUpdated=entity.position;
+        entity.player.lastPositionPlayersUpdated=entity.position.clone();
+      } else {
+        entity.lastPositionPlayersUpdated=entity.position.clone();
       }
 
       var playersToAdd = entitiesToAdd.filter(e => e.type == 'player').map(e => e.player);
       var playersToRemove = entitiesToRemove.filter(e => e.type == 'player').map(e => e.player);
-
-      console.log('players',playersToAdd.length,playersToRemove.length,'ents',entitiesToAdd.length,entitiesToRemove.length);
 
       playersToRemove.forEach(p => p.despawnEntities([entity]));
       playersToRemove.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
@@ -186,19 +200,10 @@ function inject(serv) {
     object.friction = vec3(10*32, 0, 10*32).floored();
     object.size = vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
     object.deathTime = 60*1000; // 60 seconds
+    object.itemId = itemId;
+    object.itemDamage = itemDamage;
 
     object.updateAndSpawn();
-
-    if (typeof itemId != 'undefined') {
-      object.setMetadata([{
-        "key": 10,
-        "type": 5,
-        "value": {
-          blockId: itemId,
-          itemDamage: itemDamage
-        }
-      }]);
-    }    
   }
 
   serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=vec3(0,0,0),metadata=[]}={}) => {
@@ -226,7 +231,8 @@ function inject(serv) {
         }
         if (!entity.velocity || !entity.size) return;
         var oldPosAndOnGround = await entity.calculatePhysics(delta);
-        if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
+        if (!oldPosAndOnGround.oldPos.equals(vec3(0,0,0)))
+          if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
       })
     ).catch((err)=> setTimeout(() => {throw err;},0));
   });

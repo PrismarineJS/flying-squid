@@ -7,6 +7,16 @@ function inject(serv, player) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
+    if (typeof entity.itemId != 'undefined') {
+      entity.setMetadata([{
+        "key": 10,
+        "type": 5,
+        "value": {
+          blockId: entity.itemId,
+          itemDamage: entity.itemDamage
+        }
+      }]);
+    }
   };
 
   player.sendChunk = (chunkX,chunkZ,column) =>

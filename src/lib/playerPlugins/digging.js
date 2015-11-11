@@ -70,12 +70,22 @@ function inject(serv,player)
     });
   }
 
-  function completeDigging(location)
+  async function completeDigging(location)
   {
     clearInterval(animationInterval);
     var diggingTime=new Date()-startDiggingTime;
-    if(expectedDiggingTime-diggingTime<100)
+    if(expectedDiggingTime-diggingTime<100) {
       player.changeBlock(location,0,0);
+      // Drop block
+      var vec = Vec3(location.x, location.y, location.z);
+      var id = await player.world.getBlockType(vec);
+      var damage = await player.world.getBlockData(vec);
+      serv.spawnObject(2, player.world, vec.clone().add(Vec3(0.5, 0.5, 0.5)), {
+        velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
+        itemId: id,
+        itemDamage: damage
+      });
+    }
     else
     {
       player._client.write("block_change",{
@@ -86,16 +96,8 @@ function inject(serv,player)
   }
 
 
-  async function creativeDigging(location)
+  function creativeDigging(location)
   {
-    var vec = Vec3(location.x, location.y, location.z);
-    var id = await player.world.getBlockType(vec);
-    var damage = await player.world.getBlockData(vec);
-    serv.spawnObject(2, player.world, vec.clone().add(Vec3(0.5, 0.5, 0.5)), {
-      velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
-      itemId: id,
-      itemDamage: damage
-    });
     return player.changeBlock(location,0,0);
   }
 
