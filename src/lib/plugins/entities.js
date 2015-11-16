@@ -73,7 +73,7 @@ module.exports.server=function(serv,options) {
 module.exports.player=function(player,serv){
   player.commands.add({
     base: 'spawn',
-    info: 'Spawn an entity',
+    info: 'Spawn a mob',
     usage: '/spawn <entity_id>',
     parse(str) {
       var results=str.match(/(\d+)/);
@@ -84,6 +84,24 @@ module.exports.player=function(player,serv){
     },
     action({id}) {
       serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      });
+    }
+  });
+
+  player.commands.add({
+    base: 'spawnObject',
+    info: 'Spawn an object',
+    usage: '/spawnObject <entity_id>',
+    parse(str) {
+      var results=str.match(/(\d+)/);
+      if (!results) return false;
+      return {
+        id: parseInt(results[1])
+      }
+    },
+    action({id}) {
+      serv.spawnObject(id, player.world, player.entity.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
