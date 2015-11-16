@@ -1,6 +1,6 @@
-var vec3 = require("vec3");
+var Vec3 = require("vec3").Vec3
 
-vec3.Vec3.prototype.toFixedPosition=function() {
+Vec3.prototype.toFixedPosition=function() {
   return this.scaled(32).floored();
 };
 
@@ -36,15 +36,15 @@ module.exports.player=function(player)
   }
 
   player._client.on('position', ({x,y,z,onGround} = {}) =>
-    sendRelativePositionChange((new vec3(x, y, z)).toFixedPosition(), onGround));
+    sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround));
 
   player._client.on('position_look', ({x,y,z,onGround,yaw,pitch} = {}) => {
-    sendRelativePositionChange((new vec3(x, y, z)).toFixedPosition(), onGround);
+    sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround);
     sendLook(yaw,pitch,onGround);
   });
 
   function sendRelativePositionChange(newPosition, onGround) {
-    if (player.entity.position.distanceTo(new vec3(0, 0, 0)) != 0) {
+    if (player.entity.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
       var diff = newPosition.minus(player.entity.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
       {
@@ -58,7 +58,7 @@ module.exports.player=function(player)
           onGround: onGround
         });
       }
-      else if (diff.distanceTo(new vec3(0, 0, 0)) != 0) {
+      else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) {
         player._writeOthersNearby('rel_entity_move', {
           entityId: player.entity.id,
           dX: diff.x,

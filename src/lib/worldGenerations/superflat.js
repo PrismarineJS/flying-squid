@@ -1,5 +1,5 @@
 var Chunk = require('prismarine-chunk')(require("../version"));
-var Vec3 = require('vec3');
+var Vec3 = require('vec3').Vec3;
 
 function generation({opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thickness=3,debug=false}={}) {
   function generateChunk(chunkX,chunkZ) {

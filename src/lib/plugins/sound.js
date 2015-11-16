@@ -1,5 +1,4 @@
-var vec3 = require('vec3');
-
+var Vec3 = require('vec3').Vec3;
 
 module.exports.server=function(serv) {
   serv.playSound = (sound, world, position, {whitelist,blacklist=[],radius=32*32,volume=1.0,pitch=1.0}={}) => {
@@ -23,9 +22,9 @@ module.exports.server=function(serv) {
   };
 
   serv.playNoteBlock = (world, position, pitch) => {
-    serv.emitParticle(23, world, position.clone().add(vec3(0.5, 1.5, 0.5)), {
+    serv.emitParticle(23, world, position.clone().add(new Vec3(0.5, 1.5, 0.5)), {
       count: 1,
-      size: vec3(0, 0, 0)
+      size: new Vec3(0, 0, 0)
     });
     serv.playSound('note.harp', world, position, { pitch: serv.getNote(pitch) });
   };
@@ -41,7 +40,7 @@ module.exports.player=function(player,serv) {
 
   player._client.on('block_place', ({location}={}) => {
     if (player.entity.crouching) return;
-    var pos=new vec3(location.x,location.y,location.z);
+    var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlockType(pos).then((id) => {
       if (id != 25) return;
       if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
@@ -55,7 +54,7 @@ module.exports.player=function(player,serv) {
 
   player._client.on('block_dig', ({location,status} = {}) => {
     if (status != 0 || player.gameMode == 1) return;
-    var pos=new vec3(location.x,location.y,location.z);
+    var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlockType(pos).then((id) => {
       if (id != 25) return;
       if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
@@ -63,5 +62,44 @@ module.exports.player=function(player,serv) {
       if (typeof data.note == 'undefined') data.note = 0;
       serv.playNoteBlock(player.world, pos, data.note);
     }).catch((err)=> setTimeout(() => {throw err;},0));
+  });
+
+
+  player.commands.add({
+    base: 'playsound',
+    info: 'to play sound for yourself',
+    usage: '/playsound <sound_name> [volume] [pitch]',
+    parse(str) {
+      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      if(!results) return false;
+      return {
+        sound_name:results[1],
+        volume:results[2] ? parseFloat(results[2]) : 1.0,
+        pitch:results[3] ? parseFloat(results[3]) : 1.0
+      };
+    },
+    action({sound_name,volume,pitch}) {
+      player.chat('Playing "'+sound_name+'" (volume: ' + volume + ', pitch: ' + pitch + ')');
+      player.playSound(sound_name, {volume: volume,pitch: pitch});
+    }
+  });
+
+  player.commands.add({
+    base: 'playsoundforall',
+    info: 'to play sound for everyone',
+    usage: '/playsoundforall <sound_name> [volume] [pitch]',
+    parse(str) {
+      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      if(!results) return false;
+      return {
+        sound_name:results[1],
+        volume:results[2] ? parseFloat(results[2]) : 1.0,
+        pitch:results[3] ? parseFloat(results[3]) : 1.0
+      };
+    },
+    action({sound_name,volume,pitch}) {
+      player.chat('Playing "'+sound_name+'" (volume: ' + volume + ', pitch: ' + pitch + ')');
+      serv.playSound(sound_name, player.world, player.entity.position.scaled(1/32), {volume: volume,pitch: pitch});
+    }
   });
 };

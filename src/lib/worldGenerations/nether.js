@@ -1,5 +1,5 @@
 var Chunk = require('prismarine-chunk')(require("../version"));
-var Vec3 = require('vec3');
+var Vec3 = require('vec3').Vec3;
 var rand = require('random-seed');
 
 function generation({seed,level=50}={}) {

@@ -1,10 +1,11 @@
 var Entity=require("prismarine-entity");
-var Vec3=require("vec3");
+var Vec3 = require("vec3").Vec3
 
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
 var Player=require("../player");
+var Command = require('../command');
 
 module.exports.server=function(serv,options)
 {
@@ -14,6 +15,7 @@ module.exports.server=function(serv,options)
   serv._server.on('login', async (client) => {
     var player=new Player();
     player._client=client;
+    player.commands = new Command({});
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].player!=undefined)
       .forEach(pluginName => plugins[pluginName].player(player, serv, options));
@@ -32,7 +34,7 @@ module.exports.player=function(player,serv)
 {
   function addPlayer()
   {
-    player.entity=serv.initEntity('player', null, serv.overworld, Vec3(0,0,0));
+    player.entity=serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
     player.entity.type = 'player';
     player.entity.player=player;
     player.entity.health = 20;

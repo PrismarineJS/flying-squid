@@ -12,3 +12,21 @@ module.exports.server=function(serv)
     return null;
   };
 };
+
+module.exports.player=function(player){
+  player.commands.add({
+    base: 'gamemode',
+    aliases: ['gm'],
+    info: 'to change game mode',
+    usage: '/gamemode <0-3>',
+    parse(str) {
+      var results;
+      if(!(results = str.match(/^([0-3])$/)))
+        return false;
+      return parseInt(str);
+    },
+    action(mode) {
+      player.setGameMode(mode);
+    }
+  });
+};

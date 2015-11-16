@@ -1,4 +1,4 @@
-var vec3=require("vec3");
+var Vec3 = require("vec3").Vec3;
 
 
 function randomInt (low, high) {
@@ -9,7 +9,7 @@ module.exports.server=function(serv,settings)
 {
   serv.gameMode=settings.gameMode;
 
-  serv.getSpawnPoint = () =>  new vec3(randomInt(5,20),81,randomInt(5,20));
+  serv.getSpawnPoint = () =>  new Vec3(randomInt(5,20),81,randomInt(5,20));
 };
 
 

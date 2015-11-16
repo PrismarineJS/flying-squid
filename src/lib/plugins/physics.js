@@ -1,5 +1,5 @@
 var blocks=require("minecraft-data")(require("../version")).blocks;
-var vec3 = require("vec3");
+var Vec3 = require("vec3").Vec3
 
 module.exports.entity=function(entity){
   entity.calculatePhysics = async (delta) => {
@@ -10,7 +10,7 @@ module.exports.entity=function(entity){
     }
 
     var vSign = getSign(entity.velocity);
-    var sizeSigned = vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z);
+    var sizeSigned = new Vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z);
 
     var xVec = entity.position.offset(entity.velocity.x*delta + sizeSigned.x/2, 0, 0).scaled(1/32).floored();
     var yVec = entity.position.offset(0, entity.velocity.y*delta + sizeSigned.y/2, 0).scaled(1/32).floored();
@@ -34,7 +34,7 @@ module.exports.entity=function(entity){
     entity.position.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
     entity.position.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z);
 
-    //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: vec3(0, 0, 0) });
+    //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: new Vec3(0, 0, 0) });
     return { oldPos: oldPos, onGround: yBlock}
   };
 
@@ -49,7 +49,7 @@ module.exports.entity=function(entity){
   }
 
   function getSign(vec) {
-    return vec3(Math.sign(vec.x), Math.sign(vec.y), Math.sign(vec.z));
+    return new Vec3(Math.sign(vec.x), Math.sign(vec.y), Math.sign(vec.z));
   }
 
 

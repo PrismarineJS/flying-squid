@@ -1,9 +1,8 @@
-var vec3=require("vec3");
+var Vec3 = require("vec3").Vec3
 var spiralloop = require('spiralloop');
 
 var Chunk = require('prismarine-chunk')(require("../version"));
 var World = require('prismarine-world');
-var Vec3 = require('vec3');
 var WorldSync = require("prismarine-world-sync");
 
 var generations={
@@ -52,7 +51,7 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
 };
 
-module.exports.player=function(player) {
+module.exports.player=function(player,serv) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
@@ -167,4 +166,14 @@ module.exports.player=function(player) {
     player.sendRestMap();
 
   };
+
+  player.commands.add({
+    base: 'changeworld',
+    info: 'to change world',
+    usage: '/changeworld overworld|nether',
+    action(world) {
+      if(world=="nether") player.changeWorld(serv.netherworld, {dimension: -1});
+      if(world=="overworld") player.changeWorld(serv.overworld, {dimension: 0});
+    }
+  });
 };

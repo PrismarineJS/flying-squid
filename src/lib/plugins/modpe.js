@@ -1,4 +1,4 @@
-var vec3 = require("vec3");
+var Vec3 = require("vec3").Vec3
 var dir = require("node-dir");
 var fs = require("fs");
 
@@ -50,11 +50,11 @@ function modpeApi() {
   }
 
   function setTile(x, y, z, id, damage) {
-    server.setBlock(server.overworld,new vec3(x, y, z), id, damage);
+    server.setBlock(server.overworld,new Vec3(x, y, z), id, damage);
   }
 
   function getTile(x, y, z) {
-    return server._worldSync.getBlockType(new vec3(x, y, z));
+    return server._worldSync.getBlockType(new Vec3(x, y, z));
   }
 
   function preventDefault() {
@@ -158,7 +158,7 @@ module.exports.server=function(serv,settings)
     newLevel();
 
     player._client.on("block_dig", function (packet) {
-      var pos = new vec3(packet.location);
+      var pos = new Vec3(packet.location);
       if (packet.status == 0 && player.gameMode != 1)
         startDestroyBlock(pos.x, pos.y, pos.z, 0);
       else if (packet.status == 2)
@@ -177,7 +177,7 @@ module.exports.server=function(serv,settings)
       if (packet.location.y < 0) return;
       useItem(packet.location.x, packet.location.y, packet.location.z,
         packet.heldItem.blockId,
-        serv._worldSync.getBlockType(new vec3(packet.location.x, packet.location.y, packet.location.z)));
+        serv._worldSync.getBlockType(new Vec3(packet.location.x, packet.location.y, packet.location.z)));
     });
 
     player.on('modpe', function (command) {

@@ -2,7 +2,7 @@ var Entity=require("prismarine-entity");
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 util.inherits(Entity, EventEmitter);
-var vec3 = require("vec3");
+var Vec3 = require("vec3").Vec3;
 
 var path = require('path');
 var requireIndex = require('requireindex');
@@ -26,16 +26,16 @@ module.exports.server=function(serv,options) {
     return entity;
   };
 
-  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=vec3(0,0,0),data=1,itemId,itemDamage=0}={}) => {
+  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0}={}) => {
     var object = serv.initEntity('object', type, world, position.scaled(32).floored());
     object.data = data;
     object.velocity = velocity.scaled(32).floored();
     object.pitch = pitch;
     object.yaw = yaw;
-    object.gravity = vec3(0, -20*32, 0);
-    object.terminalvelocity = vec3(27*32, 27*32, 27*32);
-    object.friction = vec3(10*32, 0, 10*32).floored();
-    object.size = vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
+    object.gravity = new Vec3(0, -20*32, 0);
+    object.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
+    object.friction = (new Vec3(10*32, 0, 10*32)).floored();
+    object.size = new Vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
     object.deathTime = 60*1000; // 60 seconds
     object.itemId = itemId;
     object.itemDamage = itemDamage;
@@ -43,16 +43,16 @@ module.exports.server=function(serv,options) {
     object.updateAndSpawn();
   };
 
-  serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=vec3(0,0,0),metadata=[]}={}) => {
+  serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=new Vec3(0,0,0),metadata=[]}={}) => {
     var mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
     mob.velocity = velocity.scaled(32).floored();
     mob.pitch = pitch;
     mob.headPitch = headPitch;
     mob.yaw = yaw;
-    mob.gravity = vec3(0, -20*32, 0);
-    mob.terminalvelocity = vec3(27*32, 27*32, 27*32);
-    mob.friction = vec3(10*32, 0, 10*32);
-    mob.size = vec3(0.75, 1.75, 0.75);
+    mob.gravity = new Vec3(0, -20*32, 0);
+    mob.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
+    mob.friction = new Vec3(10*32, 0, 10*32);
+    mob.size = new Vec3(0.75, 1.75, 0.75);
     mob.metadata = metadata;
 
     mob.updateAndSpawn();
@@ -67,6 +67,26 @@ module.exports.server=function(serv,options) {
     });
     delete serv.entities[entity.id];
   }
+};
+
+module.exports.player=function(player,serv){
+  player.commands.add({
+    base: 'spawn',
+    info: 'Spawn an entity',
+    usage: '/spawn <entity_id>',
+    parse(str) {
+      var results=str.match(/(\d+)/);
+      if (!results) return false;
+      return {
+        id: parseInt(results[1])
+      }
+    },
+    action({id}) {
+      serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      });
+    }
+  });
 };
 
 module.exports.entity=function(entity,serv){
@@ -103,7 +123,7 @@ module.exports.entity=function(entity,serv){
     catch(err){
       setTimeout(() => {throw err;},0)
     }
-    if (!oldPosAndOnGround.oldPos.equals(vec3(0,0,0)))
+    if (!oldPosAndOnGround.oldPos.equals(new Vec3(0,0,0)))
       if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
   });
 
