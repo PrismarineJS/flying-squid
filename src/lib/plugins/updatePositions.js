@@ -84,3 +84,31 @@ module.exports.player=function(serv,player)
     });
   };
 };
+
+module.exports.entity=function(serv,entity){
+
+
+  entity.sendPosition = ({oldPos,onGround}) => {
+    var diff = entity.position.minus(oldPos);
+
+    if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
+      serv._writeNearby('entity_teleport', {
+        entityId: entity.id,
+        x: entity.position.x,
+        y: entity.position.y,
+        z: entity.position.z,
+        yaw: entity.yaw,
+        pitch: entity.pitch,
+        onGround: onGround
+      }, entity);
+    else serv._writeNearby('rel_entity_move', {
+      entityId: entity.id,
+      dX: diff.x,
+      dY: diff.y,
+      dZ: diff.z,
+      onGround: onGround
+    }, entity);
+
+    entity.emit('positionChanged', oldPos);
+  };
+};
