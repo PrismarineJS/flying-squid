@@ -10,8 +10,8 @@ module.exports.player=function(player)
       });
       player.sendPosition();
       player.updateHealth(20);
-      player.nearbyPlayers=[];
-      player.updateAndSpawnNearbyPlayers();
+      player.entity.nearbyEntities=[];
+      player.entity.updateAndSpawn();
     }
   });
 };
