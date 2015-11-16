@@ -70,12 +70,19 @@ function inject(serv,player)
     });
   }
 
-  function completeDigging(location)
+  async function completeDigging(location)
   {
     clearInterval(animationInterval);
     var diggingTime=new Date()-startDiggingTime;
-    if(expectedDiggingTime-diggingTime<100)
+    if(expectedDiggingTime-diggingTime<100) {
       player.changeBlock(location,0,0);
+      // Drop block
+      serv.spawnObject(2, player.world, location.offset(0.5, 0.5, 0.5), {
+        velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
+        itemId: currentlyDugBlock.type,
+        itemDamage: currentlyDugBlock.metadata
+      });
+    }
     else
     {
       player._client.write("block_change",{

@@ -12,10 +12,10 @@ function inject(serv,player)
 
   // float (degrees) --> byte (1/256 "degrees")
   function conv(f){
-    var b = (f % 360) * 256 / 360;
+    var b = Math.floor((f % 360) * 256 / 360);
     if (b < -128) b += 256;
     else if (b > 127) b -= 256;
-    return Math.floor(b);
+    return b;
   }
   function sendLook(yaw,pitch,onGround)
   {

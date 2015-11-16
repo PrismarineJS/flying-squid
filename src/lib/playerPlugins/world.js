@@ -5,18 +5,18 @@ module.exports = inject;
 
 function inject(serv, player) {
 
-  player.spawnAPlayer = spawnedPlayer => {
-    player._client.write('named_entity_spawn', {
-      entityId: spawnedPlayer.entity.id,
-      playerUUID: spawnedPlayer._client.uuid,
-      x: spawnedPlayer.entity.position.x,
-      y: spawnedPlayer.entity.position.y,
-      z: spawnedPlayer.entity.position.z,
-      yaw: spawnedPlayer.entity.yaw,
-      pitch: spawnedPlayer.entity.pitch,
-      currentItem: 0,
-      metadata: spawnedPlayer.entity.metadata
-    });
+  player.spawnEntity = entity => {
+    player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
+    if (typeof entity.itemId != 'undefined') {
+      entity.setMetadata([{
+        "key": 10,
+        "type": 5,
+        "value": {
+          blockId: entity.itemId,
+          itemDamage: entity.itemDamage
+        }
+      }]);
+    }
   };
 
   player.sendChunk = (chunkX,chunkZ,column) =>
@@ -96,6 +96,7 @@ function inject(serv, player) {
     if(player.world == world) return Promise.resolve();
     opt = opt || {};
     player.world = world;
+    player.entity.world = world;
     player.loadedChunks={};
     if (typeof opt.gamemode != 'undefined') player.gameMode = opt.gamemode;
     player._client.write("respawn",{
@@ -106,7 +107,7 @@ function inject(serv, player) {
     });
     player.entity.position=player.spawnPoint.toFixedPosition();
     player.sendSpawnPosition();
-    player.updateAndSpawnNearbyPlayers();
+    player.entity.updateAndSpawn();
 
     await player.sendMap();
 

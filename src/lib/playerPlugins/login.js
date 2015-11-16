@@ -7,46 +7,25 @@ function inject(serv,player)
 {
   function addPlayer()
   {
-    serv.entityMaxId++;
-    player.entity=new Entity(serv.entityMaxId);
-    serv.entities[player.entity.id]=player.entity;
+    player.entity=serv.initEntity('player', null, serv.overworld, Vec3(0,0,0));
+    player.entity.type = 'player';
     player.entity.player=player;
     player.entity.health = 20;
     player.entity.food = 20;
     player.entity.crouching = false; // Needs added in prismarine-entity later
-    player.playerViewDistance = 150;
     player.view=10;
     player.world=serv.overworld;
     player.username=player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
     player.loadedChunks={};
-    player.nearbyPlayers=[];
   }
-
-  player.updateAndSpawnNearbyPlayers = () =>
-  {
-    player.lastPositionPlayersUpdated=player.entity.position;
-    var updatedPlayers=player.getNearby();
-    var playersToAdd=updatedPlayers.filter(p => player.nearbyPlayers.indexOf(p)==-1);
-    var playersToRemove=player.nearbyPlayers.filter(p => updatedPlayers.indexOf(p)==-1);
-    player.despawnPlayers(playersToRemove);
-    playersToAdd.forEach(player.spawnAPlayer);
-
-    playersToRemove.forEach(p => p.despawnPlayers([player]));
-    playersToRemove.forEach(p => p.nearbyPlayers=p.getNearby());
-    playersToAdd.forEach(p => p.spawnAPlayer(player));
-    playersToAdd.forEach(p => p.nearbyPlayers=p.getNearby());
-
-    player.nearbyPlayers=updatedPlayers;
-
-  };
 
   function sendPlayersWhenMove()
   {
     player.on("positionChanged",() => {
       if(player.entity.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
-        player.updateAndSpawnNearbyPlayers();
+        player.entity.updateAndSpawn();
     });
   }
 
@@ -173,7 +152,7 @@ function inject(serv,player)
 
     updateTime();
     fillTabList();
-    player.updateAndSpawnNearbyPlayers();
+    player.entity.updateAndSpawn();
 
     announceJoin();
     player.emit("spawned");

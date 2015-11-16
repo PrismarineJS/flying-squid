@@ -8,6 +8,10 @@ function inject(serv,player)
     });
   };
 
+  player.despawnEntities = entities => player._client.write('entity_destroy', {
+    'entityIds': entities.map(e => e.id)
+  });
+
   player._client.on('end', () => {
     if(player.entity) {
       serv.broadcast(player.username + ' quit the game.', "yellow");
@@ -17,7 +21,7 @@ function inject(serv,player)
           UUID: player._client.uuid
         }]
       });
-      player.nearbyPlayers.forEach(otherPlayer => otherPlayer.despawnPlayers([player]));
+      player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnPlayers([player]));
       delete serv.entities[player.entity.id];
       player.emit('disconnected');
       var index = serv.players.indexOf(player);
