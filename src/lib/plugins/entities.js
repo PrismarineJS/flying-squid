@@ -3,6 +3,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 util.inherits(Entity, EventEmitter);
 var Vec3 = require("vec3").Vec3;
+var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
 
 var path = require('path');
 var requireIndex = require('requireindex');
@@ -83,6 +84,22 @@ module.exports.player=function(player,serv){
     },
     action({id}) {
       serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      });
+    }
+  });
+
+  player.commands.add({
+    base: 'summon',
+    info: 'Summon an entity',
+    usage: '/summon <entity_name>',
+    action(name) {
+      var entity=entitiesByName[name];
+      if(!entity) {
+        player.chat("No entity named "+name);
+        return;
+      }
+      serv.spawnMob(entity.id, player.world, player.entity.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
