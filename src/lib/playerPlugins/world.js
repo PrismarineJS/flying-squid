@@ -107,7 +107,7 @@ function inject(serv, player) {
     });
     player.entity.position=player.spawnPoint.toFixedPosition();
     player.sendSpawnPosition();
-    player.updateAndSpawnNearbyPlayers();
+    player.entity.updateAndSpawn();
 
     await player.sendMap();
 
