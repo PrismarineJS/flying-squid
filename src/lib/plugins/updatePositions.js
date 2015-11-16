@@ -99,7 +99,7 @@ module.exports.entity=function(entity,serv){
         pitch: entity.pitch,
         onGround: onGround
       }, entity);
-    else serv._writeNearby('rel_entity_move', {
+    else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeNearby('rel_entity_move', {
       entityId: entity.id,
       dX: diff.x,
       dY: diff.y,
