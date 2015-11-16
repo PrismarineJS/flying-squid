@@ -67,7 +67,23 @@ module.exports.server=function(serv,options) {
       world: entity.world
     });
     delete serv.entities[entity.id];
-  }
+  };
+
+  serv.on('tick', function(delta) {
+    Promise.all(
+      Object.keys(serv.entities).map(async (id) => {
+        var entity = serv.entities[id];
+        if (entity.deathTime && Date.now() - entity.bornTime >= entity.deathTime) {
+          entity.destroy();
+          return;
+        }
+        if (!entity.velocity || !entity.size) return;
+        var oldPosAndOnGround = await entity.calculatePhysics(delta);
+        if (!oldPosAndOnGround.oldPos.equals(new Vec3(0,0,0)))
+          if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
+      })
+    ).catch((err)=> setTimeout(() => {throw err;},0));
+  });
 };
 
 module.exports.player=function(player,serv){
@@ -143,24 +159,6 @@ module.exports.entity=function(entity,serv){
     else if (entity.type == 'object') entity.spawnPacketName = 'spawn_entity';
     else if (entity.type == 'mob') entity.spawnPacketName = 'spawn_entity_living';
   };
-
-
-  serv.on('tick', async function(delta) {
-    if (entity.deathTime && Date.now() - entity.bornTime >= entity.deathTime) {
-      entity.destroy();
-      return;
-    }
-    if (!entity.velocity || !entity.size) return;
-    var oldPosAndOnGround;
-    try {
-      oldPosAndOnGround = await entity.calculatePhysics(delta);
-    }
-    catch(err){
-      setTimeout(() => {throw err;},0)
-    }
-    if (!oldPosAndOnGround.oldPos.equals(new Vec3(0,0,0)))
-      if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
-  });
 
 
   entity.on("positionChanged",() => {
