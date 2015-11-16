@@ -1,4 +1,4 @@
-module.exports.server=function(serv, settings) {
+module.exports.server=function(serv) {
   serv.setTime = (time) => {
     serv.time = time;
     serv._writeAll('update_time', {

@@ -4,7 +4,7 @@ vec3.Vec3.prototype.toFixedPosition=function() {
   return this.scaled(32).floored();
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player)
 {
   player._client.on('look', ({yaw,pitch,onGround} = {}) => sendLook(yaw,pitch,onGround));
 
@@ -85,9 +85,7 @@ module.exports.player=function(serv,player)
   };
 };
 
-module.exports.entity=function(serv,entity){
-
-
+module.exports.entity=function(entity,serv){
   entity.sendPosition = ({oldPos,onGround}) => {
     var diff = entity.position.minus(oldPos);
 

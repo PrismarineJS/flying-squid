@@ -17,7 +17,7 @@ module.exports.server=function(serv,options) {
 
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].entity!=undefined)
-      .forEach(pluginName => plugins[pluginName].entity(serv, entity, options));
+      .forEach(pluginName => plugins[pluginName].entity(entity, serv, options));
 
     entity.initEntity(type, entityType, world, position);
 
@@ -69,7 +69,7 @@ module.exports.server=function(serv,options) {
   }
 };
 
-module.exports.entity=function(serv,entity){
+module.exports.entity=function(entity,serv){
 
   entity.initEntity=(type, entityType, world, position)=>{
     entity.type = type;

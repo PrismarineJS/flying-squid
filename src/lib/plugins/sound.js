@@ -33,7 +33,7 @@ module.exports.server=function(serv) {
   serv.getNote = note => 0.5 * Math.pow(Math.pow(2, 1/12), note);
 };
 
-module.exports.player=function(serv, player) {
+module.exports.player=function(player,serv) {
   player.playSound = (sound, opt={}) => {
     opt.whitelist = player;
     serv.playSound(sound, player.world, null, opt);

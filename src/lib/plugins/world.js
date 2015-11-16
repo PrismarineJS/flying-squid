@@ -52,7 +52,7 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
 };
 
-module.exports.player=function(serv, player) {
+module.exports.player=function(player) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());

@@ -1,4 +1,4 @@
-module.exports.server=function(serv,settings)
+module.exports.server=function(serv)
 {
   serv._writeAll= (packetName, packetFields) =>
     serv.players.forEach((player) => player._client.write(packetName, packetFields));
@@ -22,7 +22,7 @@ module.exports.server=function(serv,settings)
     );
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   player._writeOthers= (packetName, packetFields) =>
     player

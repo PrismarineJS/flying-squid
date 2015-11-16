@@ -3,7 +3,7 @@ var Vec3=require("vec3");
 
 var path = require('path');
 var requireIndex = require('requireindex');
-var playerPlugins = requireIndex(path.join(__dirname,'..', 'plugins'));
+var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
 var Player=require("../player");
 
 module.exports.server=function(serv,options)
@@ -14,9 +14,9 @@ module.exports.server=function(serv,options)
   serv._server.on('login', async (client) => {
     var player=new Player();
     player._client=client;
-    Object.keys(playerPlugins)
-      .filter(pluginName => playerPlugins[pluginName].player!=undefined)
-      .forEach(pluginName => playerPlugins[pluginName].player(serv, player, options));
+    Object.keys(plugins)
+      .filter(pluginName => plugins[pluginName].player!=undefined)
+      .forEach(pluginName => plugins[pluginName].player(player, serv, options));
 
     serv.emit("newPlayer",player);
     try {
@@ -28,7 +28,7 @@ module.exports.server=function(serv,options)
   });
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   function addPlayer()
   {

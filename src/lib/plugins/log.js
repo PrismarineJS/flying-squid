@@ -44,7 +44,7 @@ module.exports.server=function(serv,settings)
   };
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
 
   player.on("connected",() => serv.log("[INFO]: " + player.username + ' connected'));

@@ -1,7 +1,7 @@
 var blocks=require("minecraft-data")(require("../version")).blocks;
 var vec3 = require("vec3");
 
-module.exports.entity=function(serv,entity){
+module.exports.entity=function(entity){
   entity.calculatePhysics = async (delta) => {
     if (entity.gravity) {
       addGravity(entity, 'x', delta);

@@ -1,4 +1,4 @@
-module.exports.player=function(serv, player)
+module.exports.player=function(player,serv)
 {
 
   player.updateHealth = (health) => {

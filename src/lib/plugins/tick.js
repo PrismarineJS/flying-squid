@@ -1,4 +1,4 @@
-module.exports.server=function(serv, settings) {
+module.exports.server=function(serv) {
   serv.tickCount = 0;
   serv.lastTickTime = 0;
 

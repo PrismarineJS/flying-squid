@@ -1,4 +1,4 @@
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   player._client.on("arm_animation", () =>
     player._writeOthersNearby("animation", {

@@ -1,4 +1,4 @@
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   player.despawnPlayers = despawnedPlayers => {
     player._client.write('entity_destroy', {

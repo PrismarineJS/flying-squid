@@ -1,6 +1,6 @@
 var vec3 = require("vec3");
 
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   player._client.on('block_place', async ({location} = {}) => {
     var referencePosition=new vec3(location.x,location.y,location.z);

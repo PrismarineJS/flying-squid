@@ -11,7 +11,7 @@ var materialToSound = {
   'wood': 'wood'
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   player._client.on("block_place",({direction,heldItem,location} = {}) => {
     if(direction==-1 || heldItem.blockId==-1) return;

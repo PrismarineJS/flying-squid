@@ -1,4 +1,4 @@
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   player.playerlistUpdateText = (header, footer) =>
     player._client.write('playerlist_header', {

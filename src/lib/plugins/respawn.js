@@ -1,4 +1,4 @@
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   player._client.on("client_command", ({payload}) => {
     if(payload == 0) {

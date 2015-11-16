@@ -1,4 +1,4 @@
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   //WIP: Does't work
  /* player._client.write('world_border', {

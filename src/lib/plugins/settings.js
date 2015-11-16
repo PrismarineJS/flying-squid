@@ -13,7 +13,7 @@ module.exports.server=function(serv,settings)
 };
 
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   player.gameMode=serv.gameMode;
   player.spawnPoint=serv.getSpawnPoint();

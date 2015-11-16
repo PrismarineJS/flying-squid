@@ -7,7 +7,7 @@ module.exports.server=function(serv)
     }));
 };
 
-module.exports.player=function(serv, player)
+module.exports.player=function(player)
 {
   player._client.on('chat', ({message} = {}) => {
     if(message[0]=="/") {

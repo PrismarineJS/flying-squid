@@ -47,7 +47,7 @@ module.exports.server=function(serv)
   serv.bannedPlayers = {};
 };
 
-module.exports.player=function(serv,player)
+module.exports.player=function(player,serv)
 {
   player.kick = reason =>
   {

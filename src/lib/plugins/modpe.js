@@ -148,10 +148,10 @@ module.exports.server=function(serv,settings)
     });
 
   serv.on("newPlayer", function (player) {
-    injectPlayer(serv, player);
+    injectPlayer(player,serv);
   });
 
-  function injectPlayer(serv, player) {
+  function injectPlayer(player,serv) {
     log("Injected into player");
 
     initSquid(player, serv, vec3);

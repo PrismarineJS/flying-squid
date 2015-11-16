@@ -2,7 +2,7 @@ var Vec3 = require('vec3');
 
 var Command = require('../command');
 
-module.exports.player=function(serv, player) {
+module.exports.player=function(player, serv) {
   var base = new Command({});
 
   base.add({
