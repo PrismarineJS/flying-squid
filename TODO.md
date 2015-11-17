@@ -18,14 +18,14 @@ This is a list that will keep the developers and the community organized!
  - [x] Fix massive lag when players move
  - [x] Dynamic worlds (players can see the when someone makes changes to the world)
  - [x] Other dimensions
+ - [x] Block dropping
+ - [x] Entity basics
 
 ### To-do
 #### Priority
  - [ ] Inventories (saving the blocks players get)
  - [ ] Plugin System
  - [ ] Crafting and Smelting
- - [ ] Block dropping
- - [ ] Entity basics
  - [ ] Add in cluster functionality
  
 #### Stuff we'll have to do eventually
