@@ -3,7 +3,7 @@ var Vec3 = require("vec3").Vec3
 module.exports.player=function(player,serv)
 {
   player._client.on("block_dig",({location,status} = {}) => {
-    var pos=new Vec3(location);
+    var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlock(pos)
       .then(block => {
         currentlyDugBlock=block;

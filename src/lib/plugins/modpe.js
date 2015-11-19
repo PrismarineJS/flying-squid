@@ -158,7 +158,7 @@ module.exports.server=function(serv,settings)
     newLevel();
 
     player._client.on("block_dig", function (packet) {
-      var pos = new Vec3(packet.location);
+      var pos = new Vec3(packet.location.x,packet.location.y,packet.location.z);
       if (packet.status == 0 && player.gameMode != 1)
         startDestroyBlock(pos.x, pos.y, pos.z, 0);
       else if (packet.status == 2)
