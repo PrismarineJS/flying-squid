@@ -9,10 +9,9 @@ module.exports.player=function(player) {
       var hash = player.commands.hash;
 
       if(c) {
-        var res = player.commands.find(params[0])[0];
-
-        var help = res.params.help && res.params.help(params);
-        return help ? '' + help : 'Information not found';
+        var f=player.commands.find(c);
+        if(f==undefined || f.length==0) return 'Command '+c+' not found';
+        return f[0].params.usage + ' ' + f[0].params.info;
       } else {
         var used = [];
         for(var key in hash) {
