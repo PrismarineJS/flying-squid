@@ -14,7 +14,7 @@ var materialToSound = {
 module.exports.player=function(player,serv)
 {
   player._client.on("block_place",({direction,heldItem,location} = {}) => {
-    if(direction==-1 || heldItem.blockId==-1) return;
+    if(direction==-1 || heldItem.blockId==-1 || !blocks[heldItem.blockId]) return;
     var referencePosition=new Vec3(location.x,location.y,location.z);
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
