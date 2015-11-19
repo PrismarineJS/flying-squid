@@ -61,7 +61,8 @@ module.exports.player=function(player,serv) {
         "type": 5,
         "value": {
           blockId: entity.itemId,
-          itemDamage: entity.itemDamage
+          itemDamage: entity.itemDamage,
+          itemCount:1
         }
       }]);
     }
