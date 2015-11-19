@@ -105,16 +105,7 @@ module.exports.player=function(player,serv)
 
   function fillTabList()
   {
-    if(player._client.profile)
-      player.profileProperties=player._client.profile.properties
-        .map(property => ({
-          name:property.name,
-          value:property.value,
-          isSigned:true,
-          signature:property.signature
-        }));
-    else
-      player.profileProperties=[];
+    player.profileProperties=player._client.profile ? player._client.profile.properties : [];
 
     player._writeOthers('player_info',{
       action: 0,
