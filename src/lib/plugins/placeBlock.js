@@ -1,5 +1,5 @@
 var blocks=require("minecraft-data")(require("../version")).blocks;
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 var materialToSound = {
   undefined: 'stone',
