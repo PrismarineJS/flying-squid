@@ -1,7 +1,4 @@
-var Entity=require("prismarine-entity");
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
-util.inherits(Entity, EventEmitter);
+var Entity=require("../entity");
 var Vec3 = require("vec3").Vec3;
 var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
 
@@ -14,7 +11,6 @@ module.exports.server=function(serv,options) {
   serv.initEntity = (type, entityType, world, position) => {
     serv.entityMaxId++;
     var entity = new Entity(serv.entityMaxId);
-    EventEmitter.call(entity);
 
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].entity!=undefined)
@@ -99,7 +95,7 @@ module.exports.player=function(player,serv){
       }
     },
     action({id}) {
-      serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnMob(id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -117,7 +113,7 @@ module.exports.player=function(player,serv){
       }
     },
     action({id}) {
-      serv.spawnObject(id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnObject(id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -133,7 +129,7 @@ module.exports.player=function(player,serv){
         player.chat("No entity named "+name);
         return;
       }
-      serv.spawnMob(entity.id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -171,6 +167,7 @@ module.exports.entity=function(entity,serv){
       entityId: entity.id,
       metadata: data
     }, entity);
+    entity.metadata = data;
   };
 
   entity.destroy = () => {
@@ -182,7 +179,7 @@ module.exports.entity=function(entity,serv){
     if (entity.type == 'player') {
       return {
         entityId: entity.id,
-        playerUUID: entity.player._client.uuid,
+        playerUUID: entity._client.uuid,
         x: entity.position.x,
         y: entity.position.y,
         z: entity.position.z,
@@ -238,9 +235,9 @@ module.exports.entity=function(entity,serv){
     var entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
     var entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
     if (entity.type == 'player') {
-      entity.player.despawnEntities(entitiesToRemove);
-      entitiesToAdd.forEach(entity.player.spawnEntity);
-      entity.player.lastPositionPlayersUpdated=entity.position.clone();
+      entity.despawnEntities(entitiesToRemove);
+      entitiesToAdd.forEach(entity.spawnEntity);
+      entity.lastPositionPlayersUpdated=entity.position.clone();
     } else {
       entity.lastPositionPlayersUpdated=entity.position.clone();
     }

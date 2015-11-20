@@ -11,7 +11,7 @@ module.exports.player=function(player,serv)
   });
 
   player._client.on('end', () => {
-    if(player.entity) {
+    if(player) {
       serv.broadcast(player.username + ' quit the game.', "yellow");
       player._writeOthers('player_info', {
         action: 4,
@@ -20,7 +20,7 @@ module.exports.player=function(player,serv)
         }]
       });
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnPlayers([player]));
-      delete serv.entities[player.entity.id];
+      delete serv.entities[player.id];
       player.emit('disconnected');
       var index = serv.players.indexOf(player);
       if (index > -1) {

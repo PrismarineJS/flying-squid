@@ -11,7 +11,7 @@ module.exports.server=function(serv)
 
   serv.getNearby= ({world,position,radius=8*16*32}) => serv.players.filter( player =>
     player.world == world &&
-    player.entity.position.distanceTo(position) <= radius
+    player.position.distanceTo(position) <= radius
   );
 
   serv.getNearbyEntities= ({world,position,radius=8*16*32}) => Object.keys(serv.entities)
@@ -34,13 +34,12 @@ module.exports.player=function(player,serv)
 
   player.getOthers = () => serv.players.filter((otherPlayer) => otherPlayer != player);
 
-  player.getNearbyPlayers = (radius=player.entity.viewDistance*32) => serv.getNearby({
+  player.getNearbyPlayers = (radius=player.viewDistance*32) => serv.getNearby({
     world: player.world,
     position: player.position,
     radius: radius
   });
 
-  player.nearbyPlayers = (radius=player.entity.viewDistance*32) => player.entity.nearbyEntities
-    .filter(e => e.type == 'player')
-    .map(e => e.player);
+  player.nearbyPlayers = (radius=player.viewDistance*32) => player.nearbyEntities
+    .filter(e => e.type == 'player');
 };

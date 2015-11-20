@@ -2,11 +2,11 @@ module.exports.player=function(player,serv)
 {
 
   player.updateHealth = (health) => {
-    player.entity.health = health;
+    player.health = health;
     player._client.write('update_health', {
-      food: player.entity.food,
+      food: player.food,
       foodSaturation: 0.0,
-      health: player.entity.health
+      health: player.health
     });
   };
 
@@ -15,17 +15,17 @@ module.exports.player=function(player,serv)
     if (!serv.entities[entityId]) return; // ?????
     var attackedPlayer = serv.entities[entityId].player;
     if(!attackedPlayer || attackedPlayer.gameMode!=0)  return;
-    attackedPlayer.updateHealth(attackedPlayer.entity.health - 1);
-    serv.playSound('game.player.hurt', player.world, attackedPlayer.entity.position.scaled(1/32));
+    attackedPlayer.updateHealth(attackedplayer.health - 1);
+    serv.playSound('game.player.hurt', player.world, attackedplayer.position.scaled(1/32));
 
-    if(attackedPlayer.entity.health==0)
+    if(attackedplayer.health==0)
       attackedPlayer._writeOthers('entity_status',{
-        entityId:attackedPlayer.entity.id,
+        entityId:attackedplayer.id,
         entityStatus:3
       });
     else
       attackedPlayer._writeOthers('animation',{
-      entityId:attackedPlayer.entity.id,
+      entityId:attackedplayer.id,
       animation:1
     });
   }

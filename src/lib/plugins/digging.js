@@ -93,6 +93,7 @@ module.exports.player=function(player,serv)
 
   function creativeDigging(location)
   {
+    console.log('creative');
     return player.changeBlock(location,0,0);
   }
 

@@ -9,7 +9,7 @@ module.exports.server=function(serv) {
     }));
     players.filter(player => blacklist.indexOf(player) == -1)
       .forEach(player => {
-        var pos = (position || player.entity.position.scaled(1/32)).scaled(8).floored();
+        var pos = (position || player.position.scaled(1/32)).scaled(8).floored();
         player._client.write('named_sound_effect', {
           soundName: sound,
           x: pos.x,
@@ -39,7 +39,7 @@ module.exports.player=function(player,serv) {
   };
 
   player._client.on('block_place', ({location}={}) => {
-    if (player.entity.crouching) return;
+    if (player.crouching) return;
     var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlockType(pos).then((id) => {
       if (id != 25) return;
@@ -99,7 +99,7 @@ module.exports.player=function(player,serv) {
     },
     action({sound_name,volume,pitch}) {
       player.chat('Playing "'+sound_name+'" (volume: ' + volume + ', pitch: ' + pitch + ')');
-      serv.playSound(sound_name, player.world, player.entity.position.scaled(1/32), {volume: volume,pitch: pitch});
+      serv.playSound(sound_name, player.world, player.position.scaled(1/32), {volume: volume,pitch: pitch});
     }
   });
 };

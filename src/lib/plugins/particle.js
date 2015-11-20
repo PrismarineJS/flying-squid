@@ -47,7 +47,7 @@ module.exports.player=function(player,serv){
         return;
       }
       player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')');
-      serv.emitParticle(particle, player.world, player.entity.position.scaled(1/32), {count: amount,size: size});
+      serv.emitParticle(particle, player.world, player.position.scaled(1/32), {count: amount,size: size});
     }
   });
 };

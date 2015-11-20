@@ -13,7 +13,7 @@ module.exports.player=function(player)
     }
     player.heldItem = player.inventory[36+player.heldItemSlot];
     player._writeOthersNearby("entity_equipment",{
-        entityId:player.entity.id,
+        entityId:player.id,
         slot:0,
         item:player.heldItem
     });
@@ -23,31 +23,31 @@ module.exports.player=function(player)
     player.inventory[slot]=item;
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
-        entityId:player.entity.id,
+        entityId:player.id,
         slot:0,
         item:item
       });
     if (slot==5)
             player._writeOthersNearby("entity_equipment",{
-                entityId:player.entity.id,
+                entityId:player.id,
                 slot:4,
                 item:item
             });
     if (slot==6)
             player._writeOthersNearby("entity_equipment",{
-                entityId:player.entity.id,
+                entityId:player.id,
                 slot:3,
                 item:item
             });
     if (slot==7)
             player._writeOthersNearby("entity_equipment",{
-                entityId:player.entity.id,
+                entityId:player.id,
                 slot:2,
                 item:item
             });
     if (slot==8)
             player._writeOthersNearby("entity_equipment",{
-                entityId:player.entity.id,
+                entityId:player.id,
                 slot:1,
                 item:item
             });
