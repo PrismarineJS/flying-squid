@@ -162,13 +162,17 @@ module.exports.entity=function(entity,serv){
       entity.updateAndSpawn();
   });
 
-  entity.setMetadata = (data) => {
+  entity.sendMetadata = (data) => {
     serv._writeNearby('entity_metadata', {
       entityId: entity.id,
       metadata: data
     }, entity);
-    entity.metadata = data;
   };
+
+  entity.setAndUpdateMetadata = (data) => {
+    entity.metadata = data;
+    entity.sendMetadata(data);
+  }
 
   entity.destroy = () => {
     serv.destroyEntity(entity);

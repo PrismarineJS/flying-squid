@@ -56,7 +56,7 @@ module.exports.player=function(player,serv) {
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
     if (typeof entity.itemId != 'undefined') {
-      entity.setMetadata([{
+      entity.sendMetadata([{
         "key": 10,
         "type": 5,
         "value": {
