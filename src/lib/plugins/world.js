@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 var spiralloop = require('spiralloop');
 
 var Chunk = require('prismarine-chunk')(require("../version"));

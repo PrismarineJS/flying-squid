@@ -1,5 +1,5 @@
 var Entity=require("prismarine-entity");
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 var path = require('path');
 var requireIndex = require('requireindex');

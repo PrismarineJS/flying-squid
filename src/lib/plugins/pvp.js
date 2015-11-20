@@ -1,3 +1,5 @@
+var Vec3 = require("vec3").Vec3;
+
 module.exports.player=function(player,serv)
 {
 
@@ -12,20 +14,23 @@ module.exports.player=function(player,serv)
 
   function attackEntity(entityId) 
   {
-    if (!serv.entities[entityId]) return; // ?????
-    var attackedPlayer = serv.entities[entityId].player;
-    if(!attackedPlayer || attackedPlayer.gameMode!=0)  return;
-    attackedPlayer.updateHealth(attackedplayer.health - 1);
-    serv.playSound('game.player.hurt', player.world, attackedplayer.position.scaled(1/32));
+    var attackedEntity = serv.entities[entityId];
+    if(!attackedEntity || (attackedEntity.gameMode != 0 && attackedEntity.type == 'player')) return;
 
-    if(attackedplayer.health==0)
-      attackedPlayer._writeOthers('entity_status',{
-        entityId:attackedplayer.id,
+    attackedEntity.updateHealth(attackedEntity.health - 1);
+    serv.playSound('game.player.hurt', player.world, attackedEntity.position.scaled(1/32));
+
+    var attackVelocity = attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5/32);
+    attackedEntity.sendVelocity(attackVelocity, new Vec3(4, 4, 4));
+
+    if(attackedEntity.health<=0)
+      attackedEntity._writeOthers('entity_status',{
+        entityId:attackedEntity.id,
         entityStatus:3
       });
     else
-      attackedPlayer._writeOthers('animation',{
-      entityId:attackedplayer.id,
+      attackedEntity._writeOthers('animation',{
+      entityId:attackedEntity.id,
       animation:1
     });
   }
@@ -36,3 +41,12 @@ module.exports.player=function(player,serv)
   });
 
 };
+
+module.exports.entity=function(entity,serv)
+{
+  if (entity.type != 'player') {
+    entity.updateHealth = (health) => {
+      entity.health = health;
+    }
+  }
+}

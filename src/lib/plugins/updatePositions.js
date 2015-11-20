@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 Vec3.prototype.toFixedPosition=function() {
   return this.scaled(32).floored();
@@ -90,7 +90,7 @@ module.exports.entity=function(entity,serv){
     var diff = entity.position.minus(oldPos);
 
     if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
-      serv._writeNearby('entity_teleport', {
+      entity._writeOthersNearby('entity_teleport', {
         entityId: entity.id,
         x: entity.position.x,
         y: entity.position.y,
@@ -98,7 +98,7 @@ module.exports.entity=function(entity,serv){
         yaw: entity.yaw,
         pitch: entity.pitch,
         onGround: onGround
-      }, entity);
+      });
     else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeNearby('rel_entity_move', {
       entityId: entity.id,
       dX: diff.x,
