@@ -34,6 +34,7 @@ module.exports.server=function(serv,options) {
     object.friction = (new Vec3(10*32, 0, 10*32)).floored();
     object.size = new Vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
     object.deathTime = 60*1000; // 60 seconds
+    object.pickupTime = 200;
     object.itemId = itemId;
     object.itemDamage = itemDamage;
 
@@ -72,6 +73,16 @@ module.exports.server=function(serv,options) {
         if (entity.deathTime && Date.now() - entity.bornTime >= entity.deathTime) {
           entity.destroy();
           return;
+        } else if (entity.pickupTime && Date.now() - entity.bornTime >= entity.pickupTime) {
+          var players = serv.getNearby({
+            world: entity.world,
+            position: entity.position,
+            radius: 1.5*32 // Seems good for now
+          });
+          if (players.length) {
+            players[0].collect(entity);
+            entity.destroy();
+          }
         }
         if (!entity.velocity || !entity.size) return;
         var oldPosAndOnGround = await entity.calculatePhysics(delta);
@@ -241,19 +252,28 @@ module.exports.entity=function(entity,serv){
     if (entity.type == 'player') {
       entity.despawnEntities(entitiesToRemove);
       entitiesToAdd.forEach(entity.spawnEntity);
-      entity.lastPositionPlayersUpdated=entity.position.clone();
-    } else {
-      entity.lastPositionPlayersUpdated=entity.position.clone();
     }
+    entity.lastPositionPlayersUpdated=entity.position.clone();
 
-    var playersToAdd = entitiesToAdd.filter(e => e.type == 'player').map(e => e.player);
-    var playersToRemove = entitiesToRemove.filter(e => e.type == 'player').map(e => e.player);
+    var playersToAdd = entitiesToAdd.filter(e => e.type == 'player');
+    var playersToRemove = entitiesToRemove.filter(e => e.type == 'player');
 
     playersToRemove.forEach(p => p.despawnEntities([entity]));
-    playersToRemove.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+    playersToRemove.forEach(p => p.nearbyEntities=p.getNearby());
     playersToAdd.forEach(p => p.spawnEntity(entity));
-    playersToAdd.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+    playersToAdd.forEach(p => p.nearbyEntities=p.getNearby());
 
     entity.nearbyEntities=updatedEntities;
   };
+
+  entity.collect = (collectEntity) => {
+    if (entity.type != 'player') serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity');
+    else {
+      serv._writeNearby('collect', {
+        collectedEntityId: collectEntity.id,
+        collectorEntityId: entity.id
+      }, collectEntity);
+      entity.playSoundAtSelf('random.pop');
+    }
+  }
 };

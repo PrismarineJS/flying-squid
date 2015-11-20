@@ -1,5 +1,3 @@
-var Vec3 = require("vec3").Vec3;
-
 module.exports.player=function(player,serv)
 {
   player.changeBlock=async (position,blockType,blockData) =>
@@ -33,7 +31,7 @@ module.exports.player=function(player,serv)
     action(params) {
       var res = params.map((num, i) => { // parseInt paramaters
         if (num.indexOf('~') == 0) {
-          return (player.entity.position[['', 'x', 'y', 'z'][i]] >> 5) + parseInt(num.slice(1) || 0);
+          return (player.position[['', 'x', 'y', 'z'][i]] >> 5) + parseInt(num.slice(1) || 0);
         } else {
           return parseInt(num); // return parseInt>>5 if position, not id
         }

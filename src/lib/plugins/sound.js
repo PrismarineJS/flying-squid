@@ -103,3 +103,9 @@ module.exports.player=function(player,serv) {
     }
   });
 };
+
+module.exports.entity=function(entity,serv) {
+  entity.playSoundAtSelf = (sound, opt={}) => {
+    serv.playSound(sound, entity.world, entity.position.scaled(1/32), opt);
+  }
+};
