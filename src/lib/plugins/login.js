@@ -43,14 +43,6 @@ module.exports.player=function(player,serv)
     player.loadedChunks={};
   }
 
-  function sendPlayersWhenMove()
-  {
-    player.on("positionChanged",() => {
-      if(player.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
-        player.updateAndSpawn();
-    });
-  }
-
   function sendLogin()
   {
     // send init data so client will start rendering world
@@ -169,7 +161,6 @@ module.exports.player=function(player,serv)
 
     announceJoin();
     player.emit("spawned");
-    sendPlayersWhenMove();
 
     await player.waitPlayerLogin();
     player.sendRestMap();
