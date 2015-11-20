@@ -51,6 +51,7 @@ module.exports.server=function(serv,options) {
     mob.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
     mob.friction = new Vec3(15*32, 0, 15*32);
     mob.size = new Vec3(0.75, 1.75, 0.75);
+    mob.health = 20;
     mob.metadata = metadata;
 
     mob.updateAndSpawn();

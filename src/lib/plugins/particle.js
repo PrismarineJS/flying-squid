@@ -9,7 +9,7 @@ module.exports.server=function(serv) {
     }));
     if (!size) size = new Vec3(1.0, 1.0, 1.0);
 
-    serv._writeNearby('world_particles', {
+    serv._writeArray('world_particles', {
       particleId: particle,
       longDistance: longDistance,
       x: position.x,

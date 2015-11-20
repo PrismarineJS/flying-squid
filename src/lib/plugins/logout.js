@@ -2,7 +2,7 @@ module.exports.player=function(player,serv)
 {
   player.despawnPlayers = despawnedPlayers => {
     player._client.write('entity_destroy', {
-      'entityIds': despawnedPlayers.map(p => p.entity.id)
+      'entityIds': despawnedPlayers.map(p => p.id)
     });
   };
 
