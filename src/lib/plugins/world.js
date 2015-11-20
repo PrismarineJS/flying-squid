@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 var spiralloop = require('spiralloop');
 
 var Chunk = require('prismarine-chunk')(require("../version"));
@@ -56,7 +56,7 @@ module.exports.player=function(player,serv) {
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
     if (typeof entity.itemId != 'undefined') {
-      entity.setMetadata([{
+      entity.sendMetadata([{
         "key": 10,
         "type": 5,
         "value": {
@@ -91,9 +91,9 @@ module.exports.player=function(player,serv) {
 
   player.sendNearbyChunks = (view,group) =>
   {
-    player.lastPositionChunkUpdated=player.entity.position;
-    var playerChunkX=Math.floor(player.entity.position.x/16/32);
-    var playerChunkZ=Math.floor(player.entity.position.z/16/32);
+    player.lastPositionChunkUpdated=player.position;
+    var playerChunkX=Math.floor(player.position.x/16/32);
+    var playerChunkZ=Math.floor(player.position.z/16/32);
 
     return spiral([view*2,view*2])
       .map(t => ({
@@ -145,7 +145,7 @@ module.exports.player=function(player,serv) {
     if(player.world == world) return Promise.resolve();
     opt = opt || {};
     player.world = world;
-    player.entity.world = world;
+    player.world = world;
     player.loadedChunks={};
     if (typeof opt.gamemode != 'undefined') player.gameMode = opt.gamemode;
     player._client.write("respawn",{
@@ -154,9 +154,9 @@ module.exports.player=function(player,serv) {
       gamemode: opt.gamemode || player.gameMode,
       levelType:'default'
     });
-    player.entity.position=player.spawnPoint.toFixedPosition();
+    player.position=player.spawnPoint.toFixedPosition();
     player.sendSpawnPosition();
-    player.entity.updateAndSpawn();
+    player.updateAndSpawn();
 
     await player.sendMap();
 

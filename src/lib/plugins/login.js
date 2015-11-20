@@ -1,10 +1,9 @@
 var Entity=require("prismarine-entity");
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-var Player=require("../player");
 var Command = require('../command');
 
 module.exports.server=function(serv,options)
@@ -13,7 +12,7 @@ module.exports.server=function(serv,options)
     client.on('error',error => serv.emit('clientError',client,error)));
 
   serv._server.on('login', async (client) => {
-    var player=new Player();
+    var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
     player._client=client;
     player.commands = new Command({});
     Object.keys(plugins)
@@ -34,14 +33,10 @@ module.exports.player=function(player,serv)
 {
   function addPlayer()
   {
-    player.entity=serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
-    player.entity.type = 'player';
-    player.entity.player=player;
-    player.entity.health = 20;
-    player.entity.food = 20;
-    player.entity.crouching = false; // Needs added in prismarine-entity later
-    player.view=10;
-    player.world=serv.overworld;
+    player.type = 'player';
+    player.health = 20;
+    player.food = 20;
+    player.crouching = false; // Needs added in prismarine-entity later
     player.username=player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
@@ -51,8 +46,8 @@ module.exports.player=function(player,serv)
   function sendPlayersWhenMove()
   {
     player.on("positionChanged",() => {
-      if(player.entity.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
-        player.entity.updateAndSpawn();
+      if(player.position.distanceTo(player.lastPositionPlayersUpdated)>2*32)
+        player.updateAndSpawn();
     });
   }
 
@@ -60,7 +55,7 @@ module.exports.player=function(player,serv)
   {
     // send init data so client will start rendering world
     player._client.write('login', {
-      entityId: player.entity.id,
+      entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,
       dimension: 0,
@@ -68,13 +63,13 @@ module.exports.player=function(player,serv)
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
-    player.entity.position=player.spawnPoint.toFixedPosition();
+    player.position=player.spawnPoint.toFixedPosition();
   }
 
   function sendChunkWhenMove()
   {
     player.on("positionChanged", () => {
-      if(!player.sendingChunks && player.entity.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
+      if(!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
         player.sendRestMap();
     });
   }
@@ -150,7 +145,7 @@ module.exports.player=function(player,serv)
 
 
   player.login = async () =>
-  { 
+  {
     if (serv.uuidToPlayer[player._client.uuid]) {
       player._client.end("You are already connected");
       return;
@@ -165,12 +160,12 @@ module.exports.player=function(player,serv)
     await player.sendMap();
     player.sendSpawnPosition();
     player.sendPosition();
-    player.updateHealth(player.entity.health);
+    player.updateHealth(player.health);
 
 
     updateTime();
     fillTabList();
-    player.entity.updateAndSpawn();
+    player.updateAndSpawn();
 
     announceJoin();
     player.emit("spawned");

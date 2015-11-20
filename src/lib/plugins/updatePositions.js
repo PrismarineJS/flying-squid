@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 Vec3.prototype.toFixedPosition=function() {
   return this.scaled(32).floored();
@@ -19,18 +19,18 @@ module.exports.player=function(player)
   {
     var convYaw=conv(yaw);
     var convPitch=conv(pitch);
-    if (convYaw == player.entity.yaw && convPitch == player.entity.pitch) return;
+    if (convYaw == player.yaw && convPitch == player.pitch) return;
     player._writeOthersNearby("entity_look", {
-      entityId: player.entity.id,
+      entityId: player.id,
       yaw: convYaw,
       pitch: convPitch,
       onGround: onGround
     });
-    player.entity.yaw = convYaw;
-    player.entity.pitch = convPitch;
-    player.entity.onGround = onGround;
+    player.yaw = convYaw;
+    player.pitch = convPitch;
+    player.onGround = onGround;
     player._writeOthersNearby("entity_head_rotation", {
-      entityId: player.entity.id,
+      entityId: player.id,
       headYaw: convYaw
     });
   }
@@ -44,23 +44,23 @@ module.exports.player=function(player)
   });
 
   function sendRelativePositionChange(newPosition, onGround) {
-    if (player.entity.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
-      var diff = newPosition.minus(player.entity.position);
+    if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
+      var diff = newPosition.minus(player.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
       {
         player._writeOthersNearby('entity_teleport', {
-          entityId:player.entity.id,
+          entityId:player.id,
           x: newPosition.x,
           y: newPosition.y,
           z: newPosition.z,
-          yaw: player.entity.yaw,
-          pitch: player.entity.pitch,
+          yaw: player.yaw,
+          pitch: player.pitch,
           onGround: onGround
         });
       }
       else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) {
         player._writeOthersNearby('rel_entity_move', {
-          entityId: player.entity.id,
+          entityId: player.id,
           dX: diff.x,
           dY: diff.y,
           dZ: diff.z,
@@ -68,18 +68,18 @@ module.exports.player=function(player)
         });
       }
     }
-    player.entity.position = newPosition;
-    player.entity.onGround = onGround;
+    player.position = newPosition;
+    player.onGround = onGround;
     player.emit("positionChanged");
   }
 
   player.sendPosition = () => {
     player._client.write('position', {
-      x: player.entity.position.x/32,
-      y: player.entity.position.y/32,
-      z: player.entity.position.z/32,
-      yaw: player.entity.yaw,
-      pitch: player.entity.pitch,
+      x: player.position.x/32,
+      y: player.position.y/32,
+      z: player.position.z/32,
+      yaw: player.yaw,
+      pitch: player.pitch,
       flags: 0x00
     });
   };
@@ -90,7 +90,7 @@ module.exports.entity=function(entity,serv){
     var diff = entity.position.minus(oldPos);
 
     if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
-      serv._writeNearby('entity_teleport', {
+      entity._writeOthersNearby('entity_teleport', {
         entityId: entity.id,
         x: entity.position.x,
         y: entity.position.y,
@@ -98,7 +98,7 @@ module.exports.entity=function(entity,serv){
         yaw: entity.yaw,
         pitch: entity.pitch,
         onGround: onGround
-      }, entity);
+      });
     else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeNearby('rel_entity_move', {
       entityId: entity.id,
       dX: diff.x,

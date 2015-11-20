@@ -1,7 +1,4 @@
-var Entity=require("prismarine-entity");
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
-util.inherits(Entity, EventEmitter);
+var Entity=require("../entity");
 var Vec3 = require("vec3").Vec3;
 var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
 
@@ -14,7 +11,6 @@ module.exports.server=function(serv,options) {
   serv.initEntity = (type, entityType, world, position) => {
     serv.entityMaxId++;
     var entity = new Entity(serv.entityMaxId);
-    EventEmitter.call(entity);
 
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].entity!=undefined)
@@ -35,9 +31,10 @@ module.exports.server=function(serv,options) {
     object.yaw = yaw;
     object.gravity = new Vec3(0, -20*32, 0);
     object.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
-    object.friction = (new Vec3(10*32, 0, 10*32)).floored();
+    object.friction = new Vec3(15*32, 0, 15*32);
     object.size = new Vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
     object.deathTime = 60*1000; // 60 seconds
+    object.pickupTime = 200;
     object.itemId = itemId;
     object.itemDamage = itemDamage;
 
@@ -52,19 +49,17 @@ module.exports.server=function(serv,options) {
     mob.yaw = yaw;
     mob.gravity = new Vec3(0, -20*32, 0);
     mob.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
-    mob.friction = new Vec3(10*32, 0, 10*32);
+    mob.friction = new Vec3(15*32, 0, 15*32);
     mob.size = new Vec3(0.75, 1.75, 0.75);
+    mob.health = 20;
     mob.metadata = metadata;
 
     mob.updateAndSpawn();
   };
 
   serv.destroyEntity = entity => {
-    serv._writeNearby('entity_destroy', {
+    entity._writeOthersNearby('entity_destroy', {
       entityIds: [entity.id]
-    }, {
-      position: entity.position,
-      world: entity.world
     });
     delete serv.entities[entity.id];
   };
@@ -76,6 +71,16 @@ module.exports.server=function(serv,options) {
         if (entity.deathTime && Date.now() - entity.bornTime >= entity.deathTime) {
           entity.destroy();
           return;
+        } else if (entity.pickupTime && Date.now() - entity.bornTime >= entity.pickupTime) {
+          var players = serv.getNearby({
+            world: entity.world,
+            position: entity.position,
+            radius: 1.5*32 // Seems good for now
+          });
+          if (players.length) {
+            players[0].collect(entity);
+            entity.destroy();
+          }
         }
         if (!entity.velocity || !entity.size) return;
         var oldPosAndOnGround = await entity.calculatePhysics(delta);
@@ -99,7 +104,7 @@ module.exports.player=function(player,serv){
       }
     },
     action({id}) {
-      serv.spawnMob(id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnMob(id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -117,7 +122,7 @@ module.exports.player=function(player,serv){
       }
     },
     action({id}) {
-      serv.spawnObject(id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnObject(id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -133,7 +138,7 @@ module.exports.player=function(player,serv){
         player.chat("No entity named "+name);
         return;
       }
-      serv.spawnMob(entity.id, player.world, player.entity.position.scaled(1/32), {
+      serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -166,12 +171,17 @@ module.exports.entity=function(entity,serv){
       entity.updateAndSpawn();
   });
 
-  entity.setMetadata = (data) => {
-    serv._writeNearby('entity_metadata', {
+  entity.sendMetadata = (data) => {
+    entity._writeOthersNearby('entity_metadata', {
       entityId: entity.id,
       metadata: data
-    }, entity);
+    });
   };
+
+  entity.setAndUpdateMetadata = (data) => {
+    entity.metadata = data;
+    entity.sendMetadata(data);
+  }
 
   entity.destroy = () => {
     serv.destroyEntity(entity);
@@ -182,7 +192,7 @@ module.exports.entity=function(entity,serv){
     if (entity.type == 'player') {
       return {
         entityId: entity.id,
-        playerUUID: entity.player._client.uuid,
+        playerUUID: entity._client.uuid,
         x: entity.position.x,
         y: entity.position.y,
         z: entity.position.z,
@@ -225,34 +235,61 @@ module.exports.entity=function(entity,serv){
     }
   };
 
-  entity.getNearby = () => serv
-    .getNearbyEntities({
-      world: entity.world,
-      position: entity.position,
-      radius: entity.viewDistance*32
-    })
-    .filter((e) => e != entity);
-
   entity.updateAndSpawn = () => {
     var updatedEntities=entity.getNearby();
     var entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
     var entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
     if (entity.type == 'player') {
-      entity.player.despawnEntities(entitiesToRemove);
-      entitiesToAdd.forEach(entity.player.spawnEntity);
-      entity.player.lastPositionPlayersUpdated=entity.position.clone();
-    } else {
-      entity.lastPositionPlayersUpdated=entity.position.clone();
+      entity.despawnEntities(entitiesToRemove);
+      entitiesToAdd.forEach(entity.spawnEntity);
     }
+    entity.lastPositionPlayersUpdated=entity.position.clone();
 
-    var playersToAdd = entitiesToAdd.filter(e => e.type == 'player').map(e => e.player);
-    var playersToRemove = entitiesToRemove.filter(e => e.type == 'player').map(e => e.player);
+    var playersToAdd = entitiesToAdd.filter(e => e.type == 'player');
+    var playersToRemove = entitiesToRemove.filter(e => e.type == 'player');
 
     playersToRemove.forEach(p => p.despawnEntities([entity]));
-    playersToRemove.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+    playersToRemove.forEach(p => p.nearbyEntities=p.getNearby());
     playersToAdd.forEach(p => p.spawnEntity(entity));
-    playersToAdd.forEach(p => p.entity.nearbyEntities=p.entity.getNearby());
+    playersToAdd.forEach(p => p.nearbyEntities=p.getNearby());
 
     entity.nearbyEntities=updatedEntities;
   };
+
+  entity.collect = (collectEntity) => {
+    if (entity.type != 'player') serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity');
+    else {
+      collectEntity._writeOthersNearby('collect', {
+        collectedEntityId: collectEntity.id,
+        collectorEntityId: entity.id
+      });
+      entity.playSoundAtSelf('random.pop');
+    }
+  }
+
+  entity.sendVelocity = (vel, maxVel) => {
+    var velocity = vel.scaled(32).floored(); // Make fixed point
+    var maxVelocity = maxVel.scaled(32).floored();
+    var scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    entity._writeOthersNearby('entity_velocity', {
+      entityId: entity.id,
+      velocityX: scaledVelocity.x,
+      velocityY: scaledVelocity.y,
+      velocityZ: scaledVelocity.z
+    });
+    if (entity.type != 'player') {
+      if (maxVelocity) entity.velocity = addVelocityWithMax(entity.velocity, velocity, maxVelocity);
+      else entity.velocity.add(velocity);
+    }
+  }
+  function addVelocityWithMax(current, newVel, max) {
+    var x, y, z;
+    if (current.x > max.x || current.x < -max.x) x = current.x;
+    else x = Math.max(-max.x, Math.min(max.x, current.x + newVel.x));
+    if (current.y > max.y || current.y < -max.y) y = current.y;
+    else y = Math.max(-max.y, Math.min(max.y, current.y + newVel.y));
+    if (current.z > max.z || current.z < -max.z) z = current.z;
+    else z = Math.max(-max.z, Math.min(max.z, current.z + newVel.z));
+    return new Vec3(x, y, z);
+  }
 };

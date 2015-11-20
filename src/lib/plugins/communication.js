@@ -11,7 +11,7 @@ module.exports.server=function(serv)
 
   serv.getNearby= ({world,position,radius=8*16*32}) => serv.players.filter( player =>
     player.world == world &&
-    player.entity.position.distanceTo(position) <= radius
+    player.position.distanceTo(position) <= radius
   );
 
   serv.getNearbyEntities= ({world,position,radius=8*16*32}) => Object.keys(serv.entities)
@@ -22,25 +22,30 @@ module.exports.server=function(serv)
     );
 };
 
-module.exports.player=function(player,serv)
+module.exports.entity=function(entity,serv)
 {
-  player._writeOthers= (packetName, packetFields) =>
-    player
-      .getOthers()
-      .forEach((otherPlayer) => otherPlayer._client.write(packetName, packetFields));
+  
+  entity.getNearby = () => serv
+    .getNearbyEntities({
+      world: entity.world,
+      position: entity.position,
+      radius: entity.viewDistance*32
+    })
+    .filter((e) => e != entity);
 
-  player._writeOthersNearby = (packetName, packetFields) =>
-    serv._writeArray(packetName, packetFields, player.nearbyPlayers());
+  entity.getOtherPlayers = () => serv.players.filter((p) => p != entity);
 
-  player.getOthers = () => serv.players.filter((otherPlayer) => otherPlayer != player);
+  entity.getOthers = () => serv.entities.filter((e) => e != entity);
 
-  player.getNearbyPlayers = (radius=player.entity.viewDistance*32) => serv.getNearby({
-    world: player.world,
-    position: player.position,
-    radius: radius
-  });
+  entity.getNearbyPlayers = (radius=entity.viewDistance*32) => entity.getNearby()
+    .filter((e) => e.type == 'player');
 
-  player.nearbyPlayers = (radius=player.entity.viewDistance*32) => player.entity.nearbyEntities
+  entity.nearbyPlayers = (radius=entity.viewDistance*32) => entity.nearbyEntities
     .filter(e => e.type == 'player')
-    .map(e => e.player);
-};
+
+  entity._writeOthers = (packetName, packetFields) =>
+    serv._writeArray(packetName, packetFields, entity.getOtherPlayers());
+
+  entity._writeOthersNearby = (packetName, packetFields) =>
+    serv._writeArray(packetName, packetFields, entity.getNearbyPlayers());
+}

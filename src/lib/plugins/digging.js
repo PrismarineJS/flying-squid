@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player,serv)
 {
@@ -76,7 +76,7 @@ module.exports.player=function(player,serv)
       player.changeBlock(location,0,0);
       // Drop block
       serv.spawnObject(2, player.world, location.offset(0.5, 0.5, 0.5), {
-        velocity: Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
+        velocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
         itemId: currentlyDugBlock.type,
         itemDamage: currentlyDugBlock.metadata
       });

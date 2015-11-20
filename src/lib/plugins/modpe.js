@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 var dir = require("node-dir");
 var fs = require("fs");
 
@@ -61,15 +61,15 @@ function modpeApi() {
   }
 
   function getPlayerX() {
-    return player.entity.position.x/32;
+    return player.position.x/32;
   }
 
   function getPlayerY() {
-    return player.entity.position.y/32;
+    return player.position.y/32;
   }
 
   function getPlayerZ() {
-    return player.entity.position.z/32;
+    return player.position.z/32;
   }
 
   function getPlayerEnt() {

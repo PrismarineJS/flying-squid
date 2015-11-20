@@ -1,29 +1,27 @@
-var Vec3 = require("vec3").Vec3
+var Vec3 = require("vec3").Vec3;
 
 module.exports.server=function(serv) {
-  serv.emitParticle = (particle, world, position, {whitelist,blacklist=[],radius=32*32,longDistance,size,count}={}) => {
+  serv.emitParticle = (particle, world, position, {whitelist,blacklist=[],radius=32*32,longDistance=true,size,count=1}={}) => {
     var players = (typeof whitelist != 'undefined' ? (typeof whitelist == 'array' ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position.scaled(32).floored(),
       radius: radius // 32 blocks, fixed position
     }));
     if (!size) size = new Vec3(1.0, 1.0, 1.0);
-    players.filter(player => blacklist.indexOf(player) == -1)
-      .forEach(player => {
-        player._client.write('world_particles', {
-          particleId: particle,
-          longDistance: longDistance || true,
-          x: position.x,
-          y: position.y,
-          z: position.z,
-          offsetX: size.x,
-          offsetY: size.y,
-          offsetZ: size.z,
-          particleData: 1.0,
-          particles: count || 1,
-          data: []
-        });
-      });
+
+    serv._writeArray('world_particles', {
+      particleId: particle,
+      longDistance: longDistance,
+      x: position.x,
+      y: position.y,
+      z: position.z,
+      offsetX: size.x,
+      offsetY: size.y,
+      offsetZ: size.z,
+      particleData: 1.0,
+      particles: count,
+      data: []
+    }, players.filter(p => blacklist.indexOf(p) == -1));
   }
 };
 
@@ -47,7 +45,7 @@ module.exports.player=function(player,serv){
         return;
       }
       player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')');
-      serv.emitParticle(particle, player.world, player.entity.position.scaled(1/32), {count: amount,size: size});
+      serv.emitParticle(particle, player.world, player.position.scaled(1/32), {count: amount,size: size});
     }
   });
 };

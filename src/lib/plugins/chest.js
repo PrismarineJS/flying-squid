@@ -4,7 +4,7 @@ module.exports.player=function(player)
 {
   player._client.on('block_place', async ({location} = {}) => {
     var referencePosition=new Vec3(location.x,location.y,location.z);
-    if (player.entity.crouching) return;
+    if (player.crouching) return;
     try {
       var id = await player.world.getBlockType(referencePosition);
       var blockAbove = await player.world.getBlockType(referencePosition.clone().add(new Vec3(0, 1, 0)));
