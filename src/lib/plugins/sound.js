@@ -21,12 +21,14 @@ module.exports.server=function(serv) {
       });
   };
 
-  serv.playNoteBlock = (world, position, pitch) => {
-    serv.emitParticle(23, world, position.clone().add(new Vec3(0.5, 1.5, 0.5)), {
-      count: 1,
-      size: new Vec3(0, 0, 0)
-    });
-    serv.playSound('note.harp', world, position, { pitch: serv.getNote(pitch) });
+  serv.playNoteBlock = (pitch, world, position, {instrument='harp', particle=true}={}) => {
+    if (particle) {
+      serv.emitParticle(23, world, position.clone().add(new Vec3(0.5, 1.5, 0.5)), {
+        count: 1,
+       size: new Vec3(0, 0, 0)
+      });
+    }
+    serv.playSound('note.' + instrument, world, position, { pitch: serv.getNote(pitch) });
   };
 
   serv.getNote = note => 0.5 * Math.pow(Math.pow(2, 1/12), note);
@@ -48,7 +50,7 @@ module.exports.player=function(player,serv) {
       if (typeof data.note == 'undefined') data.note = -1;
       data.note++;
       data.note %= 25;
-      serv.playNoteBlock(player.world, pos, data.note);
+      serv.playNoteBlock(data.note, player.world, pos);
     }).catch((err)=> setTimeout(() => {throw err;},0));
   });
 
@@ -60,7 +62,7 @@ module.exports.player=function(player,serv) {
       if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
       var data = player.world.blockEntityData[pos.toString()];
       if (typeof data.note == 'undefined') data.note = 0;
-      serv.playNoteBlock(player.world, pos, data.note);
+      serv.playNoteBlock(data.not,player.world, pos, data.note);
     }).catch((err)=> setTimeout(() => {throw err;},0));
   });
 

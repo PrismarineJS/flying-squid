@@ -75,7 +75,6 @@ module.exports.player=function(player) {
 
 
   player.handleCommand = (str) => {
-    var res = player.commands.use(str);
-    if(res) player.chat('' + res);
+    player.commands.use(str);
   };
 };

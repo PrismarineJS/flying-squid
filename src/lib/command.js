@@ -24,7 +24,7 @@ class Command {
     return res;
   }
 
-  use(command) {
+  async use(command) {
     var res = this.find(command);
 
     if(res) {
@@ -42,7 +42,7 @@ class Command {
         res[1].shift();
       }
 
-      res = res[0].params.action(res[1]);
+      res = await res[0].params.action(res[1]);
       if(res) return '' + res;
     } else {
       return 'Command not found';

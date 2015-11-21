@@ -32,5 +32,6 @@ class MCServer extends EventEmitter {
     if(options.logging == true) this.createLog();
     this._server.on('error', error => this.emit('error',error));
     this._server.on('listening', () => this.emit('listening',this._server.socketServer.address().port));
+    this.emit('asap');
   }
 }

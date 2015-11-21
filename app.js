@@ -21,7 +21,8 @@ var options = {
   generation:settings.generation,
   'modpe': settings.modpe,
   kickTimeout: settings.kickTimeout ? settings.kickTimeout : 10*1000,
-  regionFolder: settings.regionFolder
+  regionFolder: settings.regionFolder,
+  plugins: settings.plugins
 };
 
 module.exports=mcServer.createMCServer(options);
