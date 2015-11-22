@@ -1,4 +1,4 @@
-var Windows = require("../windows.js")
+var Windows = require("prismarine-windows")("1.8").windows
 var ItemStack = require("prismarine-item")("1.8")
 
 module.exports.player=function(player)

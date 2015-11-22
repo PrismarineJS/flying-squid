@@ -35,6 +35,7 @@
     "prismarine-world": "0.3.3",
     "prismarine-world-sync": "0.1.0",
     "prismarine-item": "git://github.com/PrismarineJS/prismarine-item.git",
+    "prismarine-windows": "git://github.com/PrismarineJS/prismarine-windows.git",
     "random-seed": "^0.2.0",
     "request-promise": "^0.4.3",
     "requireindex": "~1.0.0",
