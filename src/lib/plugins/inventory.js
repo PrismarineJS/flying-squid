@@ -61,7 +61,7 @@ module.exports.player=function(player)
 
   });
   
-  entity.inventory.on("windowUpdate", function(){
+  player.inventory.on("windowUpdate", function(){
     var Items = entity.inventory.slots
     
     for(var ItemIndex in Items){
