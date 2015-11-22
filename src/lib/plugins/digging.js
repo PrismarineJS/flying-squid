@@ -6,18 +6,45 @@ module.exports.player=function(player,serv)
     var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlock(pos)
       .then(block => {
-        currentlyDugBlock=block;
-        if(currentlyDugBlock.type==0) return;
-        if(status==0 && player.gameMode!=1)
-          startDigging(pos);
-        else if(status==2)
-          completeDigging(pos);
-        else if(status==1)
-          cancelDigging(pos);
-        else if(status==0 && player.gameMode==1)
-          creativeDigging(pos);
-      })
-    .catch((err)=> setTimeout(() => {throw err;},0));
+        player.behavior('digPacket', {
+          position: pos,
+          status: status,
+          block: block
+        }, ({position,status,block}) => {
+          currentlyDugBlock=block;
+          if(currentlyDugBlock.type==0) return;
+          if(status==0 && player.gameMode!=1)
+            player.behavior('dig', { // Start dig survival
+              position: position,
+              block: block
+            }, ({position}) => {
+              return startDigging(position);
+            });
+          else if(status==2)
+            player.behavior('finishDig', { // Finish dig survival
+              position: position,
+              block: block
+            }, ({position}) => {
+              return completeDigging(position);
+            });
+          else if(status==1)
+            player.behavior('cancelDig', { // Cancel dig survival
+              position: position,
+              block: block
+            }, ({position}) => {
+              return cancelDigging(position);
+            });
+          else if(status==0 && player.gameMode==1)
+            player.behavior('dig', { // Start/finish dig creative
+              position: position,
+              block: block
+            }, ({position}) => {
+              return creativeDigging(position);
+            });
+        }
+      )}
+    )
+    .catch((err)=> setTimeout(() => {throw err;},0))
   });
 
   function diggingTime(location)

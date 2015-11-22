@@ -3,3 +3,5 @@ dist/
 modpePlugins/
 config/settings.json
 logs/
+src/plugins/*
+!src/plugins/README.md

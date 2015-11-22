@@ -1,16 +1,21 @@
 module.exports = (obj) => {
-  return (eventName, data, func, opt) => {
+  return async (eventName, data, func, opt) => {
     var hiddenCancelled = false;
     var cancelled = false;
+    var cancelCount = 0;
     var cancel = (hidden) => { // Hidden shouldn't be used often but it's not hard to implement so meh
       if (hidden) hiddenCancelled = true;
-      else cancelled = true;
+      else {
+        cancelled = true;
+        cancelCount++;
+      }
     }
-    obj.emit(eventName + '_cancel', data, cancel);
-    obj.emit(eventName, data, cancelled);
+    
+    await obj.emit(eventName + '_cancel', data, cancel);
+    await obj.emit(eventName, data, cancelled, cancelCount);
 
-    if (!hiddenCancelled && !cancelled) func(data);
+    if (!hiddenCancelled && !cancelled) await func(data);
 
-    obj.emit(eventName + '_done', data, cancelled);
+    await obj.emit(eventName + '_done', data, cancelled);
   }
 }

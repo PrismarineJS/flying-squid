@@ -18,26 +18,35 @@ module.exports.player=function(player,serv)
     var referencePosition=new Vec3(location.x,location.y,location.z);
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
-    player.world.getBlockType(referencePosition).then((id) => {
-      if([25].indexOf(id) != -1) return;
-      var sound = 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone');
-      serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
-        pitch: 0.8
-      });
+    player.behavior('placeBlock', {
+      direction: directionVector,
+      heldItem: heldItem,
+      id: heldItem.blockId,
+      damage: heldItem.itemDamage,
+      position: placedPosition,
+      reference: referencePosition,
+      playSound: true,
+      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
+    }, ({direction, heldItem, position, reference, playSound, sound}) => {
+      if (playSound) {
+        serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
+          pitch: 0.8
+        });
+      }
       if(heldItem.blockId!=323){
-          player.changeBlock(placedPosition,heldItem.blockId,heldItem.itemDamage);
+          player.changeBlock(position,heldItem.blockId,heldItem.itemDamage);
       }else if(direction==1){
-        player.setBlock(placedPosition, 63, 0);
+        player.setBlock(position, 63, 0);
           player._client.write('open_sign_entity', {
-              location:placedPosition
+              location:position
           });
       }else{
-        player.setBlock(placedPosition, 68, 0);
+        player.setBlock(position, 68, 0);
           player._client.write('open_sign_entity', {
-              location:placedPosition
+              location:position
           });
       }
-    }).catch((err)=> setTimeout(() => {throw err;},0));
+    });
   });
 };
 

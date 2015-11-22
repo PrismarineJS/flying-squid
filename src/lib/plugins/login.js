@@ -12,15 +12,16 @@ module.exports.server=function(serv,options)
     client.on('error',error => serv.emit('clientError',client,error)));
 
   serv._server.on('login', async (client) => {
-    var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
-    player._client=client;
-    player.commands = new Command({});
-    Object.keys(plugins)
-      .filter(pluginName => plugins[pluginName].player!=undefined)
-      .forEach(pluginName => plugins[pluginName].player(player, serv, options));
-
-    serv.emit("newPlayer",player);
     try {
+      var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
+      player._client=client;
+      player.commands = new Command({});
+      Object.keys(plugins)
+        .filter(pluginName => plugins[pluginName].player!=undefined)
+        .forEach(pluginName => plugins[pluginName].player(player, serv, options));
+
+      serv.emit("newPlayer",player);
+      player.emit('asap');
       await player.login();
     }
     catch(err){
