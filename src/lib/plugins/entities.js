@@ -1,5 +1,6 @@
 var Entity=require("../entity");
 var Vec3 = require("vec3").Vec3;
+var ItemStack = require("prismarine-item")("1.8")
 var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
 
 var path = require('path');
@@ -257,13 +258,18 @@ module.exports.entity=function(entity,serv){
   };
 
   entity.collect = (collectEntity) => {
-    if (entity.type != 'player') serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity');
-    else {
+    if (entity.type != 'player'){
+      serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity')
+    }
+    
+    var EmptySlot = entity.inventory.firstEmptyInventorySlot()
+    if(EmptySlot != null){
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
         collectorEntityId: entity.id
       });
       entity.playSoundAtSelf('random.pop');
+      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.id, 1))
     }
   }
 
