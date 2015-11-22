@@ -25,8 +25,8 @@ module.exports.player=function(player)
       return;
     }
     
-    var NewItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
-    player.inventory.updateSlot(slot, NewItem)
+    var newItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
+    player.inventory.updateSlot(slot, newItem)
     
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
@@ -62,14 +62,14 @@ module.exports.player=function(player)
   });
   
   player.inventory.on("windowUpdate", function(){
-    var Items = player.inventory.slots
+    var items = player.inventory.slots
     
-    for(var ItemIndex in Items){
-      var Item = Items[ItemIndex]
+    for(var itemIndex in items){
+      var item = items[itemIndex]
       player._client.write("set_slot", {
         windowId: 0,
-        slot: ItemIndex,
-        item: ItemStack.toNotch(Item)
+        slot: itemIndex,
+        item: itemStack.toNotch(Item)
       })
     }
   })

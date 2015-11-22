@@ -264,9 +264,9 @@ module.exports.entity=function(entity,serv){
     }
     
     // Add it to a stack already in the player's inventory if possible
-    for(var Item in entity.inventory.items()){
-      if(Item.type == collenctEntity.itemId){
-        Item.stackSize += 1
+    for(var item in entity.inventory.items()){
+      if(item.type == collenctEntity.itemId){
+        item.stackSize += 1
         collectEntity._writeOthersNearby('collect', {
           collectedEntityId: collectEntity.id,
           collectorEntityId: entity.id
@@ -286,8 +286,8 @@ module.exports.entity=function(entity,serv){
       });
       entity.playSoundAtSelf('random.pop');
       
-      var NewItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
-      entity.inventory.updateSlot(emptySlot, NewItem)
+      var newItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
+      entity.inventory.updateSlot(emptySlot, newItem)
       collectEntity.destroy()
     }
   }
