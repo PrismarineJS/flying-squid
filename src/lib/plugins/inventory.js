@@ -19,7 +19,11 @@ module.exports.player=function(player)
   });
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
-    if(item.blockId == -1) return;
+    if(item.blockId == -1){
+      player.inventory.updateSlot(slot, undefined)
+      player.emit("inventoryChange")
+      return;
+    }
     player.inventory.updateSlot(slot, new ItemStack(item.blockId, 1))
     player.emit("inventoryChange")
     

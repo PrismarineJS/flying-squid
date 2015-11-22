@@ -272,6 +272,7 @@ module.exports.entity=function(entity,serv){
   entity.collect = (collectEntity) => {
     if (entity.type != 'player'){
       serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity')
+      return;
     }
     
     var EmptySlot = entity.inventory.firstEmptyInventorySlot()
