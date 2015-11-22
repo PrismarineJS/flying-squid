@@ -1,26 +1,29 @@
+var Windows = require("../windows.js")
+var ItemStack = require("prismarine-item")("1.8")
+
 module.exports.player=function(player)
 {
-  player.heldItemSlot=0;
-  player.heldItem=0;
-  player.inventory=new Array(44);
+  player.heldItemSlot = 0
+  player.heldItem = new ItemStack(256, 0)
+  player.inventory = new Windows.InventoryWindow(0, "???", 44)
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
-    if(player.inventory[36+player.heldItemSlot]===undefined){
-      player.inventory[36+player.heldItemSlot]={
-            blockId:-1
-        };
+    
+    if(player.inventory.itemsRange(36 + player.heldItemSlot, 36 + player.heldItemSlot + 1).length == 0){
+      player.inventory.updateSlot(36 + player.heldItemSlot, new ItemStack(256, 0))
     }
-    player.heldItem = player.inventory[36+player.heldItemSlot];
+    
+    player.heldItem = player.inventory.itemsRange(36 + player.heldItemSlot, 36 + player.heldItemSlot + 1)
     player._writeOthersNearby("entity_equipment",{
-        entityId:player.id,
-        slot:0,
-        item:player.heldItem
+        entityId: player.id,
+        slot: 0,
+        item: ItemStack.toNotch(player.heldItem)
     });
   });
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
-    player.inventory[slot]=item;
+    player.inventory.updateSlot(slot, new ItemStack(256, 1))
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
         entityId:player.id,
