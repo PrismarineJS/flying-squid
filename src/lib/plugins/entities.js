@@ -273,7 +273,6 @@ module.exports.entity=function(entity,serv){
       entity.playSoundAtSelf('random.pop');
       
       var NewItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
-      entity.emit("windowUpdate", emptySlot, undefined, NewItem)
       entity.inventory.updateSlot(emptySlot, NewItem)
     }
   }
