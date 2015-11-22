@@ -22,12 +22,10 @@ module.exports.player=function(player)
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
     if(item.blockId == -1){
       player.inventory.updateSlot(slot, undefined)
-      player.emit("windowUpdate", slot, player.inventory.slots[slot], undefined)
       return;
     }
     
     var NewItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
-    player.emit("windowUpdate", slot, player.inventory.slots[slot], NewItem)
     player.inventory.updateSlot(slot, NewItem)
     
     if (slot==36)
@@ -63,7 +61,7 @@ module.exports.player=function(player)
 
   });
   
-  entity.on("windowUpdate", function(){
+  entity.inventory.on("windowUpdate", function(){
     var Items = entity.inventory.slots
     
     for(var ItemIndex in Items){
