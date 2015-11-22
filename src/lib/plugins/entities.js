@@ -1,6 +1,8 @@
-var Entity=require("../entity");
+var Entity = require("../entity");
+var Version = require("../version")
 var Vec3 = require("vec3").Vec3;
-var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
+var ItemStack = require("prismarine-item")(Version)
+var entitiesByName=require("minecraft-data")(Version).entitiesByName;
 
 var path = require('path');
 var requireIndex = require('requireindex');
@@ -79,7 +81,6 @@ module.exports.server=function(serv,options) {
           });
           if (players.length) {
             players[0].collect(entity);
-            entity.destroy();
           }
         }
         if (!entity.velocity || !entity.size) return;
@@ -257,13 +258,37 @@ module.exports.entity=function(entity,serv){
   };
 
   entity.collect = (collectEntity) => {
-    if (entity.type != 'player') serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity');
-    else {
+    if (entity.type != 'player'){
+      serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity')
+      return;
+    }
+    
+    // Add it to a stack already in the player's inventory if possible
+    for(var item in entity.inventory.items()){
+      if(item.type == collectEntity.itemId){
+        item.stackSize += 1
+        collectEntity._writeOthersNearby('collect', {
+          collectedEntityId: collectEntity.id,
+          collectorEntityId: entity.id
+        });
+        entity.playSoundAtSelf('random.pop');
+        collectEntity.destroy()
+        return;
+      }
+    }
+    
+    // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
+    var emptySlot = entity.inventory.firstEmptyInventorySlot()
+    if(emptySlot != null){
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
         collectorEntityId: entity.id
       });
       entity.playSoundAtSelf('random.pop');
+      
+      var newItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
+      entity.inventory.updateSlot(emptySlot, newItem)
+      collectEntity.destroy()
     }
   }
 
