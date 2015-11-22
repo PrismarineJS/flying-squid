@@ -173,7 +173,7 @@ module.exports.entity=function(entity,serv){
   });
   
   entity.on("inventoryChange", function(){
-      var Items = entity.inventory.items()
+      var Items = entity.inventory.slots
       for(var ItemIndex in Items){
         var Item = Items[ItemIndex]
         entity._client.write("set_slot", {
@@ -281,7 +281,7 @@ module.exports.entity=function(entity,serv){
         collectorEntityId: entity.id
       });
       entity.playSoundAtSelf('random.pop');
-      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.id, 1))
+      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.itemId, 1))
       entity.emit("inventoryChange")
     }
   }

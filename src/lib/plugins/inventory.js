@@ -6,9 +6,6 @@ module.exports.player=function(player)
   player.heldItemSlot = 0
   player.heldItem = new ItemStack(256, 1)
   player.inventory = new Windows.InventoryWindow(0, "???", 44)
-  for(var i = 0; i < 54; i++){
-    player.inventory.updateSlot(i, new ItemStack(257, 1))
-  }
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
@@ -23,7 +20,7 @@ module.exports.player=function(player)
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
     if(item.blockId == -1) return;
-    player.inventory.updateSlot(slot + 9, new ItemStack(item.blockId, 1))
+    player.inventory.updateSlot(slot, new ItemStack(item.blockId, 1))
     player.emit("inventoryChange")
     
     if (slot==36)
