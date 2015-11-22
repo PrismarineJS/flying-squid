@@ -66,7 +66,7 @@ module.exports.player=function(player)
     
     for(var ItemIndex in Items){
       var Item = Items[ItemIndex]
-      entity._client.write("set_slot", {
+      player._client.write("set_slot", {
         windowId: 0,
         slot: ItemIndex,
         item: ItemStack.toNotch(Item)

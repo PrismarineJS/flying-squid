@@ -81,7 +81,6 @@ module.exports.server=function(serv,options) {
           });
           if (players.length) {
             players[0].collect(entity);
-            entity.destroy();
           }
         }
         if (!entity.velocity || !entity.size) return;
@@ -274,6 +273,7 @@ module.exports.entity=function(entity,serv){
       
       var NewItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
       entity.inventory.updateSlot(emptySlot, NewItem)
+      collectEntity.destroy()
     }
   }
 
