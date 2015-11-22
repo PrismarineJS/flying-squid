@@ -1,7 +1,8 @@
-var Entity=require("../entity");
+var Entity = require("../entity");
+var Version = require("../version")
 var Vec3 = require("vec3").Vec3;
-var ItemStack = require("prismarine-item")("1.8")
-var entitiesByName=require("minecraft-data")(require("../version")).entitiesByName;
+var ItemStack = require("prismarine-item")(Version)
+var entitiesByName=require("minecraft-data")(Version).entitiesByName;
 
 var path = require('path');
 var requireIndex = require('requireindex');
@@ -171,18 +172,6 @@ module.exports.entity=function(entity,serv){
     if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
       entity.updateAndSpawn();
   });
-  
-  entity.on("inventoryChange", function(){
-      var Items = entity.inventory.slots
-      for(var ItemIndex in Items){
-        var Item = Items[ItemIndex]
-        entity._client.write("set_slot", {
-          windowId: 0,
-          slot: ItemIndex,
-          item: ItemStack.toNotch(Item)
-        })
-      }
-  })
 
   entity.sendMetadata = (data) => {
     entity._writeOthersNearby('entity_metadata', {
@@ -275,15 +264,17 @@ module.exports.entity=function(entity,serv){
       return;
     }
     
-    var EmptySlot = entity.inventory.firstEmptyInventorySlot()
-    if(EmptySlot != null){
+    var emptySlot = entity.inventory.firstEmptyInventorySlot()
+    if(emptySlot != null){
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
         collectorEntityId: entity.id
       });
       entity.playSoundAtSelf('random.pop');
-      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.itemId, 1, collectEntity.damage))
-      entity.emit("inventoryChange")
+      
+      var NewItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage)
+      entity.emit("windowUpdate", emptySlot, undefined, NewItem)
+      entity.inventory.updateSlot(emptySlot, NewItem)
     }
   }
 

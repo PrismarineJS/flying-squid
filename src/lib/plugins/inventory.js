@@ -1,11 +1,12 @@
-var Windows = require("prismarine-windows")("1.8").windows
-var ItemStack = require("prismarine-item")("1.8")
+var Version = require("../version")
+var Windows = require("prismarine-windows")(Version).windows
+var ItemStack = require("prismarine-item")(Version)
 
 module.exports.player=function(player)
 {
   player.heldItemSlot = 0
   player.heldItem = new ItemStack(256, 1)
-  player.inventory = new Windows.InventoryWindow(0, "???", 44)
+  player.inventory = new Windows.InventoryWindow(0, "Inventory", 44)
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
@@ -21,11 +22,13 @@ module.exports.player=function(player)
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
     if(item.blockId == -1){
       player.inventory.updateSlot(slot, undefined)
-      player.emit("inventoryChange")
+      player.emit("windowUpdate", slot, player.inventory.slots[slot], undefined)
       return;
     }
-    player.inventory.updateSlot(slot, new ItemStack(item.blockId, item.itemCount, item.metadata))
-    player.emit("inventoryChange")
+    
+    var NewItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
+    player.emit("windowUpdate", slot, player.inventory.slots[slot], NewItem)
+    player.inventory.updateSlot(slot, NewItem)
     
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
@@ -59,4 +62,17 @@ module.exports.player=function(player)
             });
 
   });
+  
+  entity.on("windowUpdate", function(){
+    var Items = entity.inventory.slots
+    
+    for(var ItemIndex in Items){
+      var Item = Items[ItemIndex]
+      entity._client.write("set_slot", {
+        windowId: 0,
+        slot: ItemIndex,
+        item: ItemStack.toNotch(Item)
+      })
+    }
+  })
 };
