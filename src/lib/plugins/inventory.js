@@ -13,12 +13,16 @@ module.exports.player=function(player)
     player._writeOthersNearby("entity_equipment",{
         entityId:player.id,
         slot:0,
-        item:player.heldItem
+        item:{
+          blockId: player.heldItem.itemType.id,
+          itemCount: player.heldItem.stackSize,
+          metadata: 0
+        }
     });
   });
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
-    player.inventory.setSlot( (slot - (slot % 9)) / 9 , slot % 9  , item);
+    player.inventory.setSlot( (slot - (slot % 9)) / 9 - 1, slot % 9, new ItemStack(new Item(256), 1));
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
         entityId:player.id,
@@ -59,9 +63,10 @@ function Inventory(Rows, Columns){
   this.columns = Columns
    
   this.getSlot = function(Row, Column){
-   return this._inventory[Row][Column]
+    return this._inventory[Row][Column]
   }
   this.setSlot = function(Row, Column, Item){
+    console.log("" + Row + "" + Column)
     this._inventory[Row][Column] = Item
   }
   this.inventoryAsArray = function(){
