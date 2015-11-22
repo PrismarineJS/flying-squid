@@ -4,15 +4,14 @@ var ItemStack = require("prismarine-item")("1.8")
 module.exports.player=function(player)
 {
   player.heldItemSlot = 0
-  player.heldItem = new ItemStack(256, 0)
+  player.heldItem = new ItemStack(256, 1)
   player.inventory = new Windows.InventoryWindow(0, "???", 44)
+  for(var i = 0; i < 54; i++){
+    player.inventory.updateSlot(i, new ItemStack(257, 1))
+  }
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
-    
-    if(player.inventory.itemsRange(36 + player.heldItemSlot, 36 + player.heldItemSlot + 1).length == 0){
-      player.inventory.updateSlot(36 + player.heldItemSlot, new ItemStack(256, 0))
-    }
     
     player.heldItem = player.inventory.itemsRange(36 + player.heldItemSlot, 36 + player.heldItemSlot + 1)
     player._writeOthersNearby("entity_equipment",{
@@ -23,7 +22,10 @@ module.exports.player=function(player)
   });
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
-    player.inventory.updateSlot(slot, new ItemStack(256, 1))
+    if(item.blockId == -1) return;
+    player.inventory.updateSlot(slot + 9, new ItemStack(item.blockId, 1))
+    player.emit("inventoryChange")
+    
     if (slot==36)
       player._writeOthersNearby("entity_equipment",{
         entityId:player.id,

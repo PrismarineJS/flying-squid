@@ -171,6 +171,18 @@ module.exports.entity=function(entity,serv){
     if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
       entity.updateAndSpawn();
   });
+  
+  entity.on("inventoryChange", function(){
+      var Items = entity.inventory.items()
+      for(var ItemIndex in Items){
+        var Item = Items[ItemIndex]
+        entity._client.write("set_slot", {
+          windowId: 0,
+          slot: ItemIndex,
+          item: ItemStack.toNotch(Item)
+        })
+      }
+  })
 
   entity.sendMetadata = (data) => {
     entity._writeOthersNearby('entity_metadata', {
@@ -270,6 +282,7 @@ module.exports.entity=function(entity,serv){
       });
       entity.playSoundAtSelf('random.pop');
       entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.id, 1))
+      entity.emit("inventoryChange")
     }
   }
 
