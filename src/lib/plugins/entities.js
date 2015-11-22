@@ -263,6 +263,21 @@ module.exports.entity=function(entity,serv){
       return;
     }
     
+    // Add it to a stack already in the player's inventory if possible
+    if(Item in entity.inventory.items()){
+      if(Item.type == collenctEntity.itemId){
+        Item.stackSize += 1
+        collectEntity._writeOthersNearby('collect', {
+          collectedEntityId: collectEntity.id,
+          collectorEntityId: entity.id
+        });
+        entity.playSoundAtSelf('random.pop');
+        collectEntity.destroy()
+        return;
+      }
+    }
+    
+    // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
     var emptySlot = entity.inventory.firstEmptyInventorySlot()
     if(emptySlot != null){
       collectEntity._writeOthersNearby('collect', {
