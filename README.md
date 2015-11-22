@@ -41,6 +41,11 @@ Or try our autoupdating flying-squid server [autonomous-squid](https://github.co
 You can also install flying-squid globally with `sudo npm install -g flying-squid`
 and then run it with `flying-squid` command.
 
+## Plugins
+
+* [flying-squid-irc](https://github.com/rom1504/flying-squid-irc) a bridge between a irc chan and the minecraft server.
+Currently used between our test server (rom1504.fr) and our gitter room (through the official gitter irc bridge)
+
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
 
