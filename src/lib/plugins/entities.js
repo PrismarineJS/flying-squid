@@ -282,7 +282,7 @@ module.exports.entity=function(entity,serv){
         collectorEntityId: entity.id
       });
       entity.playSoundAtSelf('random.pop');
-      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.itemId, 1))
+      entity.inventory.updateSlot(EmptySlot, new ItemStack(collectEntity.itemId, 1, collectEntity.damage))
       entity.emit("inventoryChange")
     }
   }

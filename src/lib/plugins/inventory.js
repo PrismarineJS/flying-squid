@@ -24,7 +24,7 @@ module.exports.player=function(player)
       player.emit("inventoryChange")
       return;
     }
-    player.inventory.updateSlot(slot, new ItemStack(item.blockId, 1))
+    player.inventory.updateSlot(slot, new ItemStack(item.blockId, item.itemCount, item.metadata))
     player.emit("inventoryChange")
     
     if (slot==36)
