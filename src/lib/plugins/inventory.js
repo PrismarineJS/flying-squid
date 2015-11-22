@@ -69,7 +69,7 @@ module.exports.player=function(player)
       player._client.write("set_slot", {
         windowId: 0,
         slot: itemIndex,
-        item: ItemStack.toNotch(Item)
+        item: ItemStack.toNotch(item)
       })
     }
   })

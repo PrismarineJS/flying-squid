@@ -265,7 +265,7 @@ module.exports.entity=function(entity,serv){
     
     // Add it to a stack already in the player's inventory if possible
     for(var item in entity.inventory.items()){
-      if(item.type == collenctEntity.itemId){
+      if(item.type == collectEntity.itemId){
         item.stackSize += 1
         collectEntity._writeOthersNearby('collect', {
           collectedEntityId: collectEntity.id,
