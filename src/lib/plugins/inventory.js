@@ -11,7 +11,7 @@ module.exports.player=function(player)
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
     
-    player.heldItem = player.inventory.itemsRange(36 + player.heldItemSlot, 36 + player.heldItemSlot + 1)
+    player.heldItem = player.inventory.slots[36 + player.heldItemSlot]
     player._writeOthersNearby("entity_equipment",{
         entityId: player.id,
         slot: 0,
