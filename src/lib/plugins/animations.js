@@ -1,10 +1,14 @@
 module.exports.player=function(player)
 {
   player._client.on("arm_animation", () =>
-    player._writeOthersNearby("animation", {
-      entityId: player.id,
-      animation: 0
-    }));
+    player.behavior('punch', {}, () => {
+      player._writeOthersNearby("animation", {
+        entityId: player.id,
+        animation: 0
+      });
+    })
+  );
+    
 
   player._client.on("entity_action", ({actionId} = {}) => {
     if(actionId == 3) {

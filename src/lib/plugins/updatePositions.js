@@ -17,21 +17,29 @@ module.exports.player=function(player)
   }
   function sendLook(yaw,pitch,onGround)
   {
-    var convYaw=conv(yaw);
-    var convPitch=conv(pitch);
-    if (convYaw == player.yaw && convPitch == player.pitch) return;
-    player._writeOthersNearby("entity_look", {
-      entityId: player.id,
-      yaw: convYaw,
-      pitch: convPitch,
+    player.behavior('look', {
+      yaw: yaw,
+      pitch: pitch,
       onGround: onGround
-    });
-    player.yaw = convYaw;
-    player.pitch = convPitch;
-    player.onGround = onGround;
-    player._writeOthersNearby("entity_head_rotation", {
-      entityId: player.id,
-      headYaw: convYaw
+    }, ({yaw, pitch, onGround}) => {
+      var convYaw=conv(yaw);
+      var convPitch=conv(pitch);
+      if (convYaw == player.yaw && convPitch == player.pitch) return;
+      player._writeOthersNearby("entity_look", {
+        entityId: player.id,
+        yaw: convYaw,
+        pitch: convPitch,
+        onGround: onGround
+      });
+      player.yaw = convYaw;
+      player.pitch = convPitch;
+      player.onGround = onGround;
+      player._writeOthersNearby("entity_head_rotation", {
+        entityId: player.id,
+        headYaw: convYaw
+      });
+    }, () => {
+      player.sendPosition();
     });
   }
 
@@ -44,33 +52,39 @@ module.exports.player=function(player)
   });
 
   function sendRelativePositionChange(newPosition, onGround) {
-    if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
-      var diff = newPosition.minus(player.position);
-      if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
-      {
-        player._writeOthersNearby('entity_teleport', {
-          entityId:player.id,
-          x: newPosition.x,
-          y: newPosition.y,
-          z: newPosition.z,
-          yaw: player.yaw,
-          pitch: player.pitch,
-          onGround: onGround
-        });
+    player.behavior('move', {
+      onGround: onGround,
+      position: newPosition
+    }, ({onGround, position}) => {
+      if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
+        var diff = newPosition.minus(player.position);
+        if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
+        {
+          player._writeOthersNearby('entity_teleport', {
+            entityId:player.id,
+            x: newPosition.x,
+            y: newPosition.y,
+            z: newPosition.z,
+            yaw: player.yaw,
+            pitch: player.pitch,
+            onGround: onGround
+          });
+        }
+        else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) {
+          player._writeOthersNearby('rel_entity_move', {
+            entityId: player.id,
+            dX: diff.x,
+            dY: diff.y,
+            dZ: diff.z,
+            onGround: onGround
+          });
+        }
       }
-      else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) {
-        player._writeOthersNearby('rel_entity_move', {
-          entityId: player.id,
-          dX: diff.x,
-          dY: diff.y,
-          dZ: diff.z,
-          onGround: onGround
-        });
-      }
-    }
-    player.position = newPosition;
-    player.onGround = onGround;
-    player.emit("positionChanged");
+      player.position = newPosition;
+      player.onGround = onGround;
+    }, () => {
+      player.sendPosition();
+    });
   }
 
   player.sendPosition = () => {

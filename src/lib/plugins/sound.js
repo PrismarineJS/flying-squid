@@ -40,11 +40,12 @@ module.exports.player=function(player,serv) {
     serv.playSound(sound, player.world, null, opt);
   };
 
-  player._client.on('block_place', ({location}={}) => {
+  player._client.on('placeBlock_cancel', ({location}={}, cancel) => {
     if (player.crouching) return;
     var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlockType(pos).then((id) => {
       if (id != 25) return;
+      cancel();
       if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
       var data = player.world.blockEntityData[pos.toString()];
       if (typeof data.note == 'undefined') data.note = -1;
@@ -54,11 +55,12 @@ module.exports.player=function(player,serv) {
     }).catch((err)=> setTimeout(() => {throw err;},0));
   });
 
-  player._client.on('block_dig', ({location,status} = {}) => {
+  player._client.on('dig_cancel', ({location,status} = {}, cancel) => {
     if (status != 0 || player.gameMode == 1) return;
     var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlockType(pos).then((id) => {
       if (id != 25) return;
+      cancel();
       if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
       var data = player.world.blockEntityData[pos.toString()];
       if (typeof data.note == 'undefined') data.note = 0;

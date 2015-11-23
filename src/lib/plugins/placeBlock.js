@@ -26,7 +26,8 @@ module.exports.player=function(player,serv)
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
+      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone'),
+      world: player.world
     }, ({direction, heldItem, position, reference, playSound, sound}) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
@@ -46,6 +47,10 @@ module.exports.player=function(player,serv)
               location:position
           });
       }
+    }, async () => {
+      var id = await player.world.getBlockType(placedPosition);
+      var damage = await player.world.getBlockData(placedPosition);
+      player.sendBlock(placedPosition, id, damage);
     });
   });
 };

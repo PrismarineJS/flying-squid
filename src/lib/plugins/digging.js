@@ -2,6 +2,11 @@ var Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player,serv)
 {
+
+  function cancelDig({position, block}) {
+    player.sendBlock(position, block.id, block.data);
+  }
+
   player._client.on("block_dig",({location,status} = {}) => {
     var pos=new Vec3(location.x,location.y,location.z);
     player.world.getBlock(pos)
@@ -19,31 +24,30 @@ module.exports.player=function(player,serv)
               block: block
             }, ({position}) => {
               return startDigging(position);
-            });
+            }, cancelDig);
           else if(status==2)
             player.behavior('finishDig', { // Finish dig survival
               position: position,
               block: block
             }, ({position}) => {
               return completeDigging(position);
-            });
+            }, cancelDig);
           else if(status==1)
             player.behavior('cancelDig', { // Cancel dig survival
               position: position,
               block: block
             }, ({position}) => {
               return cancelDigging(position);
-            });
+            }, cancelDig);
           else if(status==0 && player.gameMode==1)
             player.behavior('dig', { // Start/finish dig creative
               position: position,
               block: block
             }, ({position}) => {
               return creativeDigging(position);
-            });
-        }
-      )}
-    )
+            }, cancelDig);
+        }, cancelDig)
+      })
     .catch((err)=> setTimeout(() => {throw err;},0))
   });
 

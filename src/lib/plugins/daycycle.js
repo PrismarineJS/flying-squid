@@ -14,7 +14,12 @@ module.exports.server=function(serv) {
   serv.on('tick', (delta,count) => {
     if (!serv.doDaylightCycle) return;
     if (count % 20 == 0) {
-      serv.setTime((serv.time + 20) % 24000); // Vanilla only does it every second
+      serv.behavior('changeTime', {
+        old: serv.time,
+        newTime: serv.time + 20
+      }, ({newTime}) => {
+        serv.setTime((serv.time + 20) % 24000); // Vanilla only does it every second  
+      });
     }
   })
 };

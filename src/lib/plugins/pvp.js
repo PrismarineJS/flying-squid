@@ -17,22 +17,31 @@ module.exports.player=function(player,serv)
     var attackedEntity = serv.entities[entityId];
     if(!attackedEntity || (attackedEntity.gameMode != 0 && attackedEntity.type == 'player')) return;
 
-    attackedEntity.updateHealth(attackedEntity.health - 1);
-    serv.playSound('game.player.hurt', player.world, attackedEntity.position.scaled(1/32));
+    player.behavior('attack', {
+      attackedEntity: attackedEntity,
+      sound: 'game.player.hurt',
+      playSound: true,
+      damage: 1,
+      velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5),
+      maxVelocity: new Vec3(4, 4, 4),
+      animation: true
+    }, ({entity, sound, playSound, damage, velocity, maxVelocity, animation}) => {
+      attackedEntity.updateHealth(attackedEntity.health - dealDamage);
+    serv.playSound(sound, player.world, attackedEntity.position.scaled(1/32));
 
-    var attackVelocity = attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5/32);
-    attackedEntity.sendVelocity(attackVelocity, new Vec3(4, 4, 4));
+      attackedEntity.sendVelocity(velocity.scaled(1/32), maxVelocity);
 
-    if(attackedEntity.health<=0)
-      attackedEntity._writeOthers('entity_status',{
+      if(attackedEntity.health<=0 && animation)
+        attackedEntity._writeOthers('entity_status',{
+          entityId:attackedEntity.id,
+          entityStatus:3
+        });
+      else if (animation)
+        attackedEntity._writeOthers('animation',{
         entityId:attackedEntity.id,
-        entityStatus:3
+        animation:1
       });
-    else
-      attackedEntity._writeOthers('animation',{
-      entityId:attackedEntity.id,
-      animation:1
-    });
+    });    
   }
 
   player._client.on("use_entity", ({mouse,target} = {}) => {
