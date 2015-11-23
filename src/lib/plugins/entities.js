@@ -167,7 +167,7 @@ module.exports.entity=function(entity,serv){
   };
 
 
-  entity.on("positionChanged",() => {
+  entity.on("move",() => {
     if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
       entity.updateAndSpawn();
   });

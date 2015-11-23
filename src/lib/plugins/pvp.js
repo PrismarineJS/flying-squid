@@ -25,9 +25,9 @@ module.exports.player=function(player,serv)
       velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5),
       maxVelocity: new Vec3(4, 4, 4),
       animation: true
-    }, ({entity, sound, playSound, damage, velocity, maxVelocity, animation}) => {
-      attackedEntity.updateHealth(attackedEntity.health - dealDamage);
-    serv.playSound(sound, player.world, attackedEntity.position.scaled(1/32));
+    }, ({attackedEntity, sound, playSound, damage, velocity, maxVelocity, animation}) => {
+      attackedEntity.updateHealth(attackedEntity.health - damage);
+      serv.playSound(sound, player.world, attackedEntity.position.scaled(1/32));
 
       attackedEntity.sendVelocity(velocity.scaled(1/32), maxVelocity);
 

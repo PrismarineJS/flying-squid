@@ -19,6 +19,7 @@ module.exports.server = function(serv, settings) {
   }
 
   for (var p in settings.plugins) {
+    if (settings.plugins[p].disabled) continue;
     try {
       serv.addPlugin(p, require(p), settings.plugins[p]);
     } catch (err) {

@@ -22,12 +22,11 @@ module.exports.player=function(player,serv)
       direction: directionVector,
       heldItem: heldItem,
       id: heldItem.blockId,
-      damage: heldItem.itemDamage,
+      data: heldItem.itemDamage,
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
       sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone'),
-      world: player.world
     }, ({direction, heldItem, position, reference, playSound, sound}) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {

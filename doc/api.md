@@ -19,6 +19,7 @@
       - [serv.time](#servtime)
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
+      - [serv.plugins](#servplugins)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
@@ -48,21 +49,70 @@
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
       - [server._writeNearby(packetName, packetFields, loc)](#server_writenearbypacketname-packetfields-loc)
-  - [Player](#player)
+  - [Entity](#entity-1)
     - [Properties](#properties-1)
-      - [player.entity](#playerentity)
+      - [entity.id](#entityid)
+      - [entity.position](#entityposition)
+      - [entity.world](#entityworld)
+      - [entity.type](#entitytype)
+      - [entity.entityType](#entityentitytype)
+      - [entity.nearbyEntities](#entitynearbyentities)
+      - [entity.viewDistance](#entityviewdistance)
+      - [entity.health](#entityhealth)
+      - [entity.pitch](#entitypitch)
+      - [entity.headPitch](#entityheadpitch)
+      - [entity.yaw](#entityyaw)
+      - [entity.gravity](#entitygravity)
+      - [entity.terminalvelocity](#entityterminalvelocity)
+      - [entity.friction](#entityfriction)
+      - [entity.size](#entitysize)
+      - [entity.deathTime](#entitydeathtime)
+      - [entity.pickupTime](#entitypickuptime)
+      - [entity.bornTime](#entityborntime)
+      - [entity.itemId](#entityitemid)
+      - [entity.itemDamage](#entityitemdamage)
+      - [entity.metadata](#entitymetadata)
+      - [entity.nearbyEntities](#entitynearbyentities-1)
+    - [Events](#events-1)
+    - [Behaviors](#behaviors)
+      - [FORMAT](#format)
+      - ["move"](#move)
+    - [Methods](#methods-1)
+      - [entity.getData(pluginName)](#entitygetdatapluginname)
+      - [entity.getOthers()](#entitygetothers)
+      - [entity.getOtherPlayers()](#entitygetotherplayers)
+      - [entity.getNearby()](#entitygetnearby)
+      - [entity.getNearbyPlayers()](#entitygetnearbyplayers)
+      - [entity.nearbyPlayers()](#entitynearbyplayers)
+    - [Low level Methods](#low-level-methods)
+      - [entity._writeOthers(packetName, packetFields)](#entity_writeotherspacketname-packetfields)
+      - [entity._writeOthersNearby(packetName, packetFields)](#entity_writeothersnearbypacketname-packetfields)
+  - [Player](#player)
+    - [Properties](#properties-2)
       - [player.username](#playerusername)
       - [player.view](#playerview)
-      - [player.world](#playerworld)
-      - [player.nearbyPlayers](#playernearbyplayers)
-    - [Events](#events-1)
+    - [Events](#events-2)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
       - ["disconnected"](#disconnected)
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
       - ["positionChanged"](#positionchanged)
-    - [Methods](#methods-1)
+    - [Behaviors](#behaviors-1)
+      - ["move"](#move-1)
+      - ["look"](#look)
+      - ["chat"](#chat)
+      - ["command"](#command)
+      - ["punch"](#punch)
+      - ["sendBlock"](#sendblock)
+      - ["sendChunk"](#sendchunk)
+      - ["dig"](#dig)
+      - ["dug"](#dug)
+      - ["cancelDig"](#canceldig)
+      - ["placeBlock"](#placeblock)
+      - ["attack"](#attack)
+      - ["requestRespawn"](#requestrespawn)
+    - [Methods](#methods-2)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
       - [player.kick(reason)](#playerkickreason)
@@ -83,8 +133,6 @@
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods-1)
-      - [player._writeOthers(packetName, packetFields)](#player_writeotherspacketname-packetfields)
-      - [player._writeOthersNearby(packetName, packetFields)](#player_writeothersnearbypacketname-packetfields)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -158,6 +206,10 @@ Best to use with modulo (e.g. Something every 10 seconds is `serv.tickCount % 20
 #### serv.doDaylightCycle
 
 Default `true`. If false, time will not automatically pass.
+
+#### serv.plugins
+
+List of all plugins. Use serv.plugins[pluginName] to get a plugin's object and data.
 
 ### Events
 
@@ -293,13 +345,227 @@ Writes packet to every player in playerArray
 
 Writes packet to all players within distance of loc. loc has the same paramater as loc in server.getNearby()
 
-## Player
+## Entity
+
+Players are a type of entity, so they will have most of the attributes and methods
 
 ### Properties
 
-#### player.entity
+#### entity.id
 
-The entity of the player, of type `Flying-squid.Entity`
+ID of entity on server
+
+#### entity.position
+
+Current position (currently in fixed position (x32 what you'd expect) so do entity.position.scaled(1/32) to get normal position)
+
+#### entity.world
+
+World object entity is in
+
+#### entity.type
+
+Either "player", "mob", or "object" (currently)
+
+#### entity.entityType
+
+Sub-category of entity. For mobs, this is which mob (Zombie/Skeleton, etc). For objects, this is which object (Arrow/Dropped item, etc)
+
+#### entity.nearbyEntities
+
+Nearby entities to this entity
+
+#### entity.viewDistance
+
+How far away entities are loaded/unloaded (used for players ATM)
+
+#### entity.health
+
+How many half-hearts an entity has of health (e.g. Player has 20). Not really used for objects, only players and mobs.
+
+#### entity.pitch
+
+Pitch of entity (rotation sideways)
+
+#### entity.headPitch
+
+Pitch of entity's head
+
+#### entity.yaw
+
+Yaw of entity (rotation looking up and down)
+
+#### entity.gravity
+
+Gravity of entity (non-players) to calculate physics.
+
+#### entity.terminalvelocity
+
+Only applies to gravity, really. You can still apply a velocity larger than terminal velocity.
+
+#### entity.friction
+
+Decreases velocity when touching blocks
+
+#### entity.size
+
+Used to calculate collisions for server-side entities
+
+#### entity.deathTime
+
+How much time before an entity despawns (in ms)
+
+#### entity.pickupTime
+
+How long before an entity can be picked up (in ms)
+
+#### entity.bornTime
+
+When an entity was born. Used with pickupTime and deathTime (time in epoch)
+
+#### entity.itemId
+
+If a block drop, what item id
+
+#### entity.itemDamage
+
+If a block drop, what item damage
+
+#### entity.metadata
+
+Metadata for the entity (not like block metadata/damage). Contains stuff like NBT.
+
+#### entity.nearbyEntities
+
+List of entities that the entity believes is nearby.
+
+### Events
+
+
+
+### Behaviors
+
+Behaviors are very interesting. Let me explain to you how they work:
+
+Behaviors are a special type of event. They are editable and allow defaults to be cancellable making the powerful 
+for plugins to take control of and interact with each other. Three different events get called 
+for a behavior:
+- EVENTNAME_cancel
+- EVENTNAME
+- EVENTNAME_done
+
+EVENTNAME_cancel passses the paramaters `data` (object of all info about behavior. Changing the data could have effects on outcome) and `cancel`, a function. This event is run before the default action. If `cancel()` is called, it will cancel the default action. More on this later.
+
+EVENTNAME passes `data` as well as `cancelled` so plugins can check if the default behavior has been cancelled. This is event is run 
+before the default action.
+
+EVENTNAME_done passes `data` and `cancelled`. This event is run before the default action.
+
+Example: One plugin wants to cancel a player's movement while another wants to say "HI" when they move
+
+Plugin A:
+```js
+player.on('move_cancel', ({position}, cancel) => {
+  cancel(); // If player tries to move, shoots them back where they came from
+});
+```
+
+Plugin B:
+```js
+player.on('move', ({position}, cancelled) => {
+  if (!cancelled) player.chat('HI!');
+})
+```
+
+When a player normally moves, the server saves their position and sends it to all clients. Therefore, if a "move" behavior was truly cancelled, 
+the player would be able to move freely while the server and other players would see the player stationary. This doesn't happen because 
+behaviors can have "default cancel functions". In the case of a player's "move", the default cancel function sends them back where they 
+came from. To prevent this from happening, use the "preventDefaultCancel" paramater: cancel(false);
+
+Plugin C
+```js
+player.on('move_cancel', ({position}, cancel) => {
+  cancel(false); // Doesn't teleport player back
+});
+```
+
+If we keep Plugin B and replace Plugin A with Plugin C, we'll see that the player can move freely but will not recieve the 
+word "HI" and other players will be unable to see their movements.
+
+Finally, there is hidden cancel. This is the second paramater in cancel, and allows plugins to hide the fact that they cancelled 
+the default action from other plugins. It's best not to use this, but I know somebody will someday need this.
+
+Plugin D
+```js
+player.on('move_cancel', ({position}, cancel) => {
+  cancel(false, true); // Player doesn't teleport back and now "cancelled" will be false
+})
+```
+
+Using Plugin B and D together, the player will be able to move freely and will be spammed with "HI", however the server will not store 
+their position and other players will not see the player move.
+
+#### FORMAT
+
+Defition of behavior.
+- var1: Variable with value, can be changed (default: defaultValue)
+- var2 (u): Variable with value. You can change it however it will not have any effect on the defautl action (and could screw with other plugins, watch out!). U stands for unused
+
+Default: What happens if this isn't cancelled.
+
+Cancelled: What happens if this is cancelled and preventDefaultCancel is still false.
+
+#### "move"
+
+Emitted when server calculates new position for the entity (DOES NOT APPLY TO PLAYER!)
+- old (u): Where the entity came from
+- onGround (u): If the entity is on the ground
+
+Default: Send entity relative-move or teleport packets to all nearby players
+
+Cancelled: Set entity position to old position
+
+### Methods
+
+#### entity.getData(pluginName)
+
+Gets object that stores data, personalized per plugin. Returns null if plugin does not exist.
+
+Shortcut for: entity.pluginData[pluginName];
+
+#### entity.getOthers()
+
+Get every other entity other than self
+
+#### entity.getOtherPlayers()
+
+Gets every player other than self (all players if entity is not a player)
+
+#### entity.getNearby()
+
+Gets all entities nearby (within entity.viewDistance)
+
+#### entity.getNearbyPlayers()
+
+Gets all nearby players regardless of what client thinks
+
+#### entity.nearbyPlayers()
+
+Gets all nearby players that client can see
+
+### Low level Methods
+
+#### entity._writeOthers(packetName, packetFields)
+
+Writes to all other players on server
+
+#### entity._writeOthersNearby(packetName, packetFields)
+
+Writes to all players within viewDistance
+
+## Player
+
+### Properties
 
 #### player.username
 
@@ -308,14 +574,6 @@ The username of the player
 #### player.view
 
 The view size of the player, for example 8 for 16x16
-
-#### player.world
-
-The world which the player is in.
-
-#### player.nearbyPlayers
-
-Nearby players.
 
 ### Events
 
@@ -342,6 +600,148 @@ Fires when the player says `message`.
 #### "positionChanged"
 
 fires when the position changes in small amounts (walking, running, or flying)
+
+### Behaviors
+
+See entity "Behaviors" for more info
+
+#### "move"
+
+When player tries to move
+- position (u): New position player is trying to move to
+- onGround (u): Whether player thinks they're on the ground or not
+
+Default: Save position/onGround and write to all nearby players
+
+Cancelled: Snap back to old position
+
+#### "look"
+
+When player tries to look somewhere
+- yaw (u): New yaw player is looking
+- pitch (u): New pitch player is looking
+- onGround (u): If player thinks they're on the ground
+
+Default: Save look directions, send to all nearby players
+
+Cancelled: Snap their view back to old yaw and pitch
+
+#### "chat"
+
+Emitted when player tries to say something (unless they're message starts with /, then refer to "command")
+- message (u): Message player sent
+- broadcastMessage: What is put in server chat (Default: <username> message)
+
+Default: Broadcasts to server their message
+
+Cancelled: Nothing
+
+#### "command"
+
+Emitted when player starts their message with a slash
+- message: Their commands (includes the slash)
+
+Default: Handle command by command system
+
+Cancelled: Nothing
+
+#### "punch"
+
+When player tries to punch nothing
+
+Default: Send punch animation to nearby players
+
+Cancelled: Nothing
+
+#### "sendBlock"
+
+Emitted when sending a block to a player (block changed). This is separate for every player, cancelling this for one player causes ghost blocks!
+- position: Position of the block
+- id: ID of the block
+- data: Metadata of the block
+
+Default: Send block change to player.
+
+Cancelled: Nothing
+
+#### "sendChunk"
+
+Emitted when sending a chunk to a player (loading it in)
+- x: Chunk X
+- z: Chunk Z
+- chunk: Chunk data
+
+Default: Continue sending chunk to client
+
+Cancelled: Nothing
+
+#### "dig"
+
+Emitted when any player STARTS digging (i.e. survival only)
+- position: Position of block being mined
+- block (u): Block being mined
+
+Default: Allow player to start mining block, send changes in break animation to other players
+
+Cancelled: Stop them from digging
+
+#### "dug"
+
+Emitted when a player finishes digging something (or a player in creative breaks a block)
+- position: Position of block dug
+- block (u): Block dug
+
+Default: Save new block as air, sends to all nearby players
+
+Cancelled: Send to player the block that was there
+
+#### "cancelDig"
+
+Emitted when a player cancels digging in the middle (i.e. survival only)
+- position: Position of block that was being mined
+- block (u): Block that was being mined
+
+Default: Stop animation for all players, save stop digging
+
+Cancelled: Nothing
+
+#### "placeBlock"
+
+Emitted when a player places a block
+- position: Position they're attempting to place the block
+- id: Id of block being placed
+- data: Data of block being placed
+- reference (u): Reference block that was placed on
+- direction (u): Direction vector from reference to position
+- playSound: Which sound to play (Default: true)
+- sound: Sound to play (Default: default sound for that material)
+
+Default: Place block for server and nearby players
+
+Cancelled: Replace block with old block for player
+
+#### "attack"
+
+Emitted when a player attacks an entity
+- attackdEntity: Entity being attacked
+- playSound: Play sound (Default: true)
+- sound: Sound to play (default is game.player.hurt)
+- damage: Damage to deal (default is based off player's weapon, player's potions, attackEntity's potions, and attackedEntity armor)
+- velocity: Which way should attackedEntity move when hit
+- maxVelocity: maxVelocity from consecutive hits
+- animation: Play death/hit animation
+
+Default: Damage entity, play sound, send velocity, play animation for death/hit
+
+Cancelled: Nothing
+
+#### "requestRespawn"
+
+Emitted when a player tries to respawn
+
+Default: Let them respawn
+
+Cancelled: Nothing. You monster.
 
 ### Methods
 
@@ -430,10 +830,4 @@ The internal implementation to communicate with a client
 
 ### Low level methods
 
-#### player._writeOthers(packetName, packetFields)
-
-write to other players than `player` the packet `packetName` with fields `packetFields`
-
-#### player._writeOthersNearby(packetName, packetFields)
-
-write to other players in same world that are within 150 blocks (see player.getNearby())
+Same as entity

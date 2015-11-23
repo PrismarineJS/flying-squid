@@ -16,7 +16,7 @@ module.exports.player=function(player,serv)
     player.behavior('sendBlock', {
       position: position,
       id: blockType,
-      damage: blockData
+      data: blockData
     }, ({position, id, damage}) => {
       player._client.write("block_change",{
         location:position,

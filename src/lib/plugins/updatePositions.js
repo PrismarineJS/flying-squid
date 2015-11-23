@@ -21,7 +21,7 @@ module.exports.player=function(player)
       yaw: yaw,
       pitch: pitch,
       onGround: onGround
-    }, ({yaw, pitch, onGround}) => {
+    }, () => {
       var convYaw=conv(yaw);
       var convPitch=conv(pitch);
       if (convYaw == player.yaw && convPitch == player.pitch) return;
@@ -55,7 +55,7 @@ module.exports.player=function(player)
     player.behavior('move', {
       onGround: onGround,
       position: newPosition
-    }, ({onGround, position}) => {
+    }, () => {
       if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
         var diff = newPosition.minus(player.position);
         if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
@@ -101,26 +101,31 @@ module.exports.player=function(player)
 
 module.exports.entity=function(entity,serv){
   entity.sendPosition = ({oldPos,onGround}) => {
-    var diff = entity.position.minus(oldPos);
-
-    if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
-      entity._writeOthersNearby('entity_teleport', {
-        entityId: entity.id,
-        x: entity.position.x,
-        y: entity.position.y,
-        z: entity.position.z,
-        yaw: entity.yaw,
-        pitch: entity.pitch,
-        onGround: onGround
-      });
-    else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeNearby('rel_entity_move', {
-      entityId: entity.id,
-      dX: diff.x,
-      dY: diff.y,
-      dZ: diff.z,
+    entity.behavior('move', {
+      old: oldPos,
       onGround: onGround
-    }, entity);
+    }, ({old,onGround}) => {
+      var diff = entity.position.minus(oldPos);
 
-    entity.emit('positionChanged', oldPos);
+      if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
+        entity._writeOthersNearby('entity_teleport', {
+          entityId: entity.id,
+          x: entity.position.x,
+          y: entity.position.y,
+          z: entity.position.z,
+          yaw: entity.yaw,
+          pitch: entity.pitch,
+          onGround: onGround
+        });
+      else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeNearby('rel_entity_move', {
+        entityId: entity.id,
+        dX: diff.x,
+        dY: diff.y,
+        dZ: diff.z,
+        onGround: onGround
+      }, entity);
+    }, () => {
+      entity.position = oldPos;
+    });
   };
 };
