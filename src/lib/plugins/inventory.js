@@ -19,51 +19,61 @@ module.exports.player = function(player)
     });
   });
   
-  player._client.on("window_click", function(clickInfo){
-    // Let the inventory know of the click
-    player.inventory.acceptClick(clickInfo)
-    
-    // Do other stuff the inventory doesn't do, eg spawn the dropped item
+  player._client.on("window_click", function(clickInfo){   
+    // Do other stuff the inventory doesn't do, eg spawn the dropped item.
+    // I've left in stuff that inventory handles, because the cancelling hooks
+    // might go here (?)
     switch(clickInfo.mode){
       case 0:
-        if(clickInfo.button == 0){
+        if(clickInfo.mouseButton == 0){
           // Left mouse click
+          // Inventory deals with this
         }else{
           // Right mouse click
+          // Inventory deals with this
         }
       break;
       
       case 1:
-        if(clickInfo.button == 0){
+        if(clickInfo.mouseButton == 0){
           // Shift + Left click
+          // Inventory deals with this
         }else{
           // Shift + right click
+          // Inventory deals with this
         }
       break;
       
       case 2:
-        // button 0 -> 8, indication hotbar switching
+        // button 0 -> 8, indication hotbar switching items
+        // (Nothing to do with held_item_slot)
+        // DANGER! crashes because windows.js hasn't implemented it yet.
       break
       
       case 3:
         // Middle click
+        // DANGER! crashes because windows.js hasn't implemented it yet.
       break;
       
       case 4:
         if(clickInfo.slot == -999){
-          // Click with nothing outside window
+          // Click with nothing outside window. Do nothing.
         }else{
-          if(clickInfo.button == 0){
+          // I'd love to implement this, but dropped entities are not finished.
+          if(clickInfo.mouseButton == 0){
             // Drop one item at slot
+            // Inventory handles removing one
           }else{
             // Drop full stack at slot
+            // Inventory handles removing the whole stack
           }
         }
       break;
       
+      // Inventory does not support dragging yet, so not implementing yet.
       case 5:
         if(clickInfo.slot == -999){
-          switch(clickInfo.button){
+          switch(clickInfo.mouseButton){
             case 0:
               // Start left mouse drag
             break;
@@ -81,7 +91,7 @@ module.exports.player = function(player)
             break;
           }
         }else{
-          switch(clickInfo.button){
+          switch(clickInfo.mouseButton){
             case 1:
               // Add slot for left mouse drag
             break;
@@ -93,10 +103,16 @@ module.exports.player = function(player)
         }
       break;
       
+      // Inventory does not support double click yet, so not implementing yet.
       case 6:
         // Double click
       break;
     }
+    
+    // Let the inventory know of the click.
+    // It's important to let it know of the click later, because it destroys
+    // information we need about the inventory.
+    player.inventory.acceptClick(clickInfo)
   })
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
@@ -108,12 +124,6 @@ module.exports.player = function(player)
     var newItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
     player.inventory.updateSlot(slot, newItem)
     
-    if (slot==36)
-      player._writeOthersNearby("entity_equipment",{
-        entityId:player.id,
-        slot:0,
-        item:item
-      });
     if (slot==5)
             player._writeOthersNearby("entity_equipment",{
                 entityId:player.id,
@@ -144,6 +154,14 @@ module.exports.player = function(player)
   player.inventory.on("windowUpdate", function(){
     var items = player.inventory.slots
     
+    // Update held item
+    player._writeOthersNearby("entity_equipment",{
+      entityId: player.id,
+      slot: 0,
+      item: ItemStack.toNotch(player.heldItem)
+    });
+    
+    // Update slots in inventory
     for(var itemIndex in items){
       var item = items[itemIndex]
       player._client.write("set_slot", {
