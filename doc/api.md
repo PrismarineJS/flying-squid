@@ -639,7 +639,7 @@ Cancelled: Nothing
 #### "command"
 
 Emitted when player starts their message with a slash
-- message: Their commands (includes the slash)
+- command: Their commands (excludes the slash)
 
 Default: Handle command by command system
 

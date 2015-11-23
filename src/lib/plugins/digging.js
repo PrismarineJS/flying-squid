@@ -15,28 +15,28 @@ module.exports.player=function(player,serv)
         if(currentlyDugBlock.type==0) return;
         if(status==0 && player.gameMode!=1)
           player.behavior('dig', { // Start dig survival
-            position: position,
+            position: pos,
             block: block
           }, ({position}) => {
             return startDigmehging(position);
           }, cancelDig);
         else if(status==2)
           player.behavior('dug', { // Finish dig survival
-            position: position,
+            position: pos,
             block: block
           }, ({position}) => {
             return completeDigging(position);
           }, cancelDig);
         else if(status==1)
           player.behavior('cancelDig', { // Cancel dig survival
-            position: position,
+            position: pos,
             block: block
           }, ({position}) => {
             return cancelDigging(position);
           });
         else if(status==0 && player.gameMode==1)
           player.behavior('dug', { // Start/finish dig creative
-            position: position,
+            position: pos,
             block: block
           }, ({position}) => {
             return creativeDigging(position);

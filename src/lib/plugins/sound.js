@@ -40,31 +40,28 @@ module.exports.player=function(player,serv) {
     serv.playSound(sound, player.world, null, opt);
   };
 
-  player._client.on('placeBlock_cancel', ({location}={}, cancel) => {
+  player.on('placeBlock_cancel', async ({position, reference}, cancel) => {
     if (player.crouching) return;
-    var pos=new Vec3(location.x,location.y,location.z);
-    player.world.getBlockType(pos).then((id) => {
-      if (id != 25) return;
-      cancel();
-      if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
-      var data = player.world.blockEntityData[pos.toString()];
-      if (typeof data.note == 'undefined') data.note = -1;
-      data.note++;
-      data.note %= 25;
-      serv.playNoteBlock(data.note, player.world, pos);
-    }).catch((err)=> setTimeout(() => {throw err;},0));
+    var id = await player.world.getBlockType(reference);
+    if (id != 25) return;
+    cancel(false);
+    if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {};
+    var data = player.world.blockEntityData[reference.toString()];
+    if (typeof data.note == 'undefined') data.note = -1;
+    data.note++;
+    data.note %= 25;
+    serv.playNoteBlock(data.note, player.world, reference);
   });
 
-  player._client.on('dig_cancel', ({location,status} = {}, cancel) => {
+  player.on('dig_cancel', async ({position, reference}, cancel) => {
     if (status != 0 || player.gameMode == 1) return;
-    var pos=new Vec3(location.x,location.y,location.z);
-    player.world.getBlockType(pos).then((id) => {
+    return player.world.getBlockType(reference).then((id) => {
       if (id != 25) return;
       cancel();
-      if (!player.world.blockEntityData[pos.toString()]) player.world.blockEntityData[pos.toString()] = {};
-      var data = player.world.blockEntityData[pos.toString()];
+      if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {};
+      var data = player.world.blockEntityData[reference.toString()];
       if (typeof data.note == 'undefined') data.note = 0;
-      serv.playNoteBlock(data.not,player.world, pos, data.note);
+      serv.playNoteBlock(data.not,player.world, reference, data.note);
     }).catch((err)=> setTimeout(() => {throw err;},0));
   });
 
