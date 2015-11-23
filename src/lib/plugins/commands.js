@@ -75,6 +75,6 @@ module.exports.player=function(player) {
 
 
   player.handleCommand = (str) => {
-    player.commands.use(str);
+    player.commands.use(str).catch((err)=> setTimeout(() => {throw err;},0));
   };
 };
