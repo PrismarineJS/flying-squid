@@ -723,7 +723,7 @@ Cancelled: Replace block with old block for player
 #### "attack"
 
 Emitted when a player attacks an entity
-- attackdEntity: Entity being attacked
+- attackedEntity: Entity being attacked
 - playSound: Play sound (Default: true)
 - sound: Sound to play (default is game.player.hurt)
 - damage: Damage to deal (default is based off player's weapon, player's potions, attackEntity's potions, and attackedEntity armor)

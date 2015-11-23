@@ -57,7 +57,7 @@ module.exports.player=function(player,serv) {
     if (status != 0 || player.gameMode == 1) return;
     return player.world.getBlockType(reference).then((id) => {
       if (id != 25) return;
-      cancel();
+      cancel(false);
       if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {};
       var data = player.world.blockEntityData[reference.toString()];
       if (typeof data.note == 'undefined') data.note = 0;

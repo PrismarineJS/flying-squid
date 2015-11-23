@@ -18,7 +18,7 @@ module.exports.player=function(player,serv)
             position: pos,
             block: block
           }, ({position}) => {
-            return startDigmehging(position);
+            return startDigging(position);
           }, cancelDig);
         else if(status==2)
           player.behavior('dug', { // Finish dig survival
