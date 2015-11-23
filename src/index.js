@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
+require('emit-then').register();
 if (process.env.NODE_ENV === 'dev'){
   require('longjohn');
 }

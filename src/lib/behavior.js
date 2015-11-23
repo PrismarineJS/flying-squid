@@ -13,12 +13,12 @@ module.exports = (obj) => {
       defaultCancel = dC;
     }
     
-    await obj.emit(eventName + '_cancel', data, cancel);
-    await obj.emit(eventName, data, cancelled, cancelCount);
+    await obj.emitThen(eventName + '_cancel', data, cancel).catch((err)=> setTimeout(() => {throw err;},0));
+    await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err)=> setTimeout(() => {throw err;},0));
 
-    if (!hiddenCancelled && !cancelled) await func(data);
-    else if (cancelFunc && defaultCancel) cancelFunc(data);
+    if (!hiddenCancelled && !cancelled) await func(data).catch((err)=> setTimeout(() => {throw err;},0));
+    else if (cancelFunc && defaultCancel) await cancelFunc(data).catch((err)=> setTimeout(() => {throw err;},0));
 
-    await obj.emit(eventName + '_done', data, cancelled);
+    await obj.emitThen(eventName + '_done', data, cancelled).catch((err)=> setTimeout(() => {throw err;},0));
   }
 }

@@ -53,16 +53,14 @@ module.exports.player=function(player,serv) {
     serv.playNoteBlock(data.note, player.world, reference);
   });
 
-  player.on('dig_cancel', async ({position, reference}, cancel) => {
-    if (status != 0 || player.gameMode == 1) return;
-    return player.world.getBlockType(reference).then((id) => {
-      if (id != 25) return;
-      cancel(false);
-      if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {};
-      var data = player.world.blockEntityData[reference.toString()];
-      if (typeof data.note == 'undefined') data.note = 0;
-      serv.playNoteBlock(data.not,player.world, reference, data.note);
-    }).catch((err)=> setTimeout(() => {throw err;},0));
+  player.on('dig_cancel', async ({position}, cancel) => {
+    var id = await player.world.getBlockType(position);
+    if (id != 25) return;
+    cancel(false);
+    if (!player.world.blockEntityData[position.toString()]) player.world.blockEntityData[position.toString()] = {};
+    var data = player.world.blockEntityData[position.toString()];
+    if (typeof data.note == 'undefined') data.note = 0;
+    serv.playNoteBlock(data.note ,player.world, position);
   });
 
 
