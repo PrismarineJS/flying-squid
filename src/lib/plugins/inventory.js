@@ -38,9 +38,11 @@ module.exports.player = function(player)
         if(clickInfo.mouseButton == 0){
           // Shift + Left click
           // Inventory deals with this
+          return;
         }else{
           // Shift + right click
           // Inventory deals with this
+          return;
         }
       break;
       
@@ -65,9 +67,11 @@ module.exports.player = function(player)
           if(clickInfo.mouseButton == 0){
             // Drop one item at slot
             // Inventory handles removing one
+            return;
           }else{
             // Drop full stack at slot
             // Inventory handles removing the whole stack
+            return;
           }
         }
       break;
