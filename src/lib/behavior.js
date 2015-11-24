@@ -20,5 +20,6 @@ module.exports = (obj) => {
     else if (cancelFunc && defaultCancel) await cancelFunc(data).catch((err)=> setTimeout(() => {throw err;},0));
 
     await obj.emitThen(eventName + '_done', data, cancelled).catch((err)=> setTimeout(() => {throw err;},0));
+    return data;
   }
 }

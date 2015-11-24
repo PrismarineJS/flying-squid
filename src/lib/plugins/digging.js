@@ -95,7 +95,16 @@ module.exports.player=function(player,serv)
   {
     clearInterval(animationInterval);
     var diggingTime=new Date()-startDiggingTime;
+    var stop = false;
     if(expectedDiggingTime-diggingTime<100) {
+      stop = true;
+      stop = player.behavior('forceCancelDig', {
+        stop: true,
+        start: startDiggingTime,
+        time: diggingTime
+      }).stop;
+    }
+    if(!stop) {
       player.behavior('dug', {
         position: location,
         block: currentlyDugBlock,
@@ -109,8 +118,9 @@ module.exports.player=function(player,serv)
         blockDropDeath: 60*5*1000
       }, (data) => {
         player.changeBlock(data.position,0,0);
+        console.log('dropping',data.dropBlock);
         if (data.dropBlock) dropBlock(data);
-      })
+      }, cancelDig)
     }
     else
     {
@@ -148,7 +158,7 @@ module.exports.player=function(player,serv)
     }, (data) => {
       player.changeBlock(data.position,0,0);
       if (data.dropBlock) dropBlock(data);
-    });
+    }, cancelDig);
   }
 
 };

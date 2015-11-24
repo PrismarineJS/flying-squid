@@ -109,6 +109,7 @@
       - ["dig"](#dig)
       - ["dug"](#dug)
       - ["cancelDig"](#canceldig)
+      - ["forceCancelDig"](#forcecanceldig)
         - ["breakAnimation"](#breakanimation)
       - ["placeBlock"](#placeblock)
       - ["attack"](#attack)
@@ -714,6 +715,13 @@ Default: Stop animation for all players, save stop digging
 
 Cancelled: Nothing
 
+#### "forceCancelDig"
+
+Emitted when the server cancels a dig (currently only happens if the player mines too fast)
+- stop: Whether the digging should be cancelled because they mined too fast (Default: true)
+- start (u): Time mining started
+- time (u): How long the player has been mining
+
 ##### "breakAnimation"
 
 Emitted when the server believes the break animation should increase (not sent by client!)
@@ -732,7 +740,7 @@ Cancelled: Nothing
 Emitted when a player places a block
 - position: Position they're attempting to place the block
 - id: Id of block being placed
-- data: Data of block being placed
+- damage: Data of block being placed
 - reference (u): Reference block that was placed on
 - direction (u): Direction vector from reference to position
 - playSound: Which sound to play (Default: true)

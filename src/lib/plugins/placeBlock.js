@@ -22,19 +22,19 @@ module.exports.player=function(player,serv)
       direction: directionVector,
       heldItem: heldItem,
       id: heldItem.blockId,
-      data: heldItem.itemDamage,
+      damage: heldItem.itemDamage,
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
       sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone'),
-    }, ({direction, heldItem, position, reference, playSound, sound}) => {
+    }, ({direction, heldItem, position, reference, playSound, sound, id, damage}) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8
         });
       }
       if(heldItem.blockId!=323){
-          player.changeBlock(position,heldItem.blockId,heldItem.itemDamage);
+          player.changeBlock(position, id, damage);
       }else if(direction==1){
         player.setBlock(position, 63, 0);
           player._client.write('open_sign_entity', {

@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 module.exports.server = function(serv, settings) {
   serv.plugins = {};
   serv.pluginCount = 0;
@@ -23,11 +25,12 @@ module.exports.server = function(serv, settings) {
     try {
       serv.addPlugin(p, require(p), settings.plugins[p]);
     } catch (err) {
-      try {
-        serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p]);
+      try { // Throw error if cannot find plugin
+        fs.accessSync('./dist/plugins/' + p);
       } catch (err) {
         throw new Error('Cannot find plugin "' + p + '"');
       }
+      serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p]);
     }
   }
 
