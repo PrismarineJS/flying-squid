@@ -61,7 +61,7 @@ module.exports.player=function(player,serv)
 
   function sendChunkWhenMove()
   {
-    player.on("positionChanged", () => {
+    player.on("move", () => {
       if(!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
         player.sendRestMap();
     });
