@@ -25,7 +25,7 @@ module.exports.server=function(serv,options) {
     return entity;
   };
 
-  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=500,deathTime=60*1000}={}) => {
+  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=undefined,deathTime=undefined}) => {
     var object = serv.initEntity('object', type, world, position.scaled(32).floored());
     object.data = data;
     object.velocity = velocity.scaled(32).floored();

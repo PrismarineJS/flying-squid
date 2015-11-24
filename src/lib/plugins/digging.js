@@ -118,7 +118,6 @@ module.exports.player=function(player,serv)
         blockDropDeath: 60*5*1000
       }, (data) => {
         player.changeBlock(data.position,0,0);
-        console.log('dropping',data.dropBlock);
         if (data.dropBlock) dropBlock(data);
       }, cancelDig)
     }
