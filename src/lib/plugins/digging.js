@@ -21,12 +21,7 @@ module.exports.player=function(player,serv)
             return startDigging(position);
           }, cancelDig);
         else if(status==2)
-          player.behavior('dug', { // Finish dig survival
-            position: pos,
-            block: block
-          }, ({position}) => {
-            return completeDigging(position);
-          }, cancelDig);
+          completeDigging(position);
         else if(status==1)
           player.behavior('cancelDig', { // Cancel dig survival
             position: pos,
@@ -35,12 +30,7 @@ module.exports.player=function(player,serv)
             return cancelDigging(position);
           });
         else if(status==0 && player.gameMode==1)
-          player.behavior('dug', { // Start/finish dig creative
-            position: pos,
-            block: block
-          }, ({position}) => {
-            return creativeDigging(position);
-          }, cancelDig);
+          return creativeDigging(position);
       })
     .catch((err)=> setTimeout(() => {throw err;},0))
   });
@@ -73,12 +63,20 @@ module.exports.player=function(player,serv)
       newDestroyState=newDestroyState>9 ? 9 : newDestroyState;
       if(newDestroyState!=lastDestroyState)
       {
-        lastDestroyState=newDestroyState;
-        player._writeOthersNearby("block_break_animation",{
-          "entityId":currentAnimationId,
-          "location":location,
-          "destroyStage":newDestroyState
-        });
+        player.behavior('breakAnimation', {
+          lastState: lastDestroyState,
+          state: newDestroyState,
+          start: startDigging,
+          timePassed: currentDiggingTime,
+          position: location
+        }, ({lastState, state}) => {
+          lastDestroyState=state;
+          player._writeOthersNearby("block_break_animation",{
+            "entityId":currentAnimationId,
+            "location":location,
+            "destroyStage":state
+          });
+        })
       }
     }
   }
@@ -98,13 +96,19 @@ module.exports.player=function(player,serv)
     clearInterval(animationInterval);
     var diggingTime=new Date()-startDiggingTime;
     if(expectedDiggingTime-diggingTime<100) {
-      player.changeBlock(location,0,0);
-      // Drop block
-      serv.spawnObject(2, player.world, location.offset(0.5, 0.5, 0.5), {
-        velocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
-        itemId: currentlyDugBlock.type,
-        itemDamage: currentlyDugBlock.metadata
-      });
+      player.behavior('dug', {
+        position: location,
+        block: currentlyDugBlock,
+        dropBlock: true,
+        blockDropPosition: location.offset(0.5, 0.5, 0.5),
+        blockDropWorld: player.world,
+        blockDropVelocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
+        blockDropId: currentlyDugBlock.type,
+        blockDropDamage: currentlyDugBlock.metadata
+      }, (data) => {
+        player.changeBlock(data.position,0,0);
+        if (data.dropBlock) dropBlock(data);
+      })
     }
     else
     {
@@ -115,10 +119,30 @@ module.exports.player=function(player,serv)
     }
   }
 
+  function dropBlock({blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage}) {
+    serv.spawnObject(2, blockDropWorld, blockDropPosition, {
+      velocity: blockDropVelocity,
+      itemId: blockDropId,
+      itemDamage: blockDropDamage
+    });
+  }
+
 
   function creativeDigging(location)
   {
-    return player.changeBlock(location,0,0);
+    player.behavior('dug', {
+      position: location,
+      block: currentlyDugBlock,
+      dropBlock: true,
+      blockDropPosition: location.offset(0.5, 0.5, 0.5),
+      blockDropWorld: player.world,
+      blockDropVelocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
+      blockDropId: currentlyDugBlock.type,
+      blockDropDamage: currentlyDugBlock.metadata
+    }, (data) => {
+      player.changeBlock(data.position,0,0);
+      if (data.dropBlock) dropBlock(data);
+    });
   }
 
 };

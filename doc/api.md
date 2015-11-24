@@ -690,6 +690,12 @@ Cancelled: Stop them from digging
 Emitted when a player finishes digging something (or a player in creative breaks a block)
 - position: Position of block dug
 - block (u): Block dug
+- dropBlock: Should it drop a block object (Default: false in creative, otherwise true)
+- blockDropPosition: Where block is dropped (Default: center of block)
+- blockDropWorld: World block is dropped in (Default is the world the player/block is in)
+- blockDropVelocity: The velocity the block has when dropped (Default: random)
+- blockDropId: ID of the block dropped
+- blockDropDamage: Damage of the block dropped
 
 Default: Save new block as air, sends to all nearby players
 
@@ -702,6 +708,19 @@ Emitted when a player cancels digging in the middle (i.e. survival only)
 - block (u): Block that was being mined
 
 Default: Stop animation for all players, save stop digging
+
+Cancelled: Nothing
+
+##### "breakAnimation"
+
+Emitted when the server believes the break animation should increase (not sent by client!)
+- position: Position of block being updated
+- state: New state being changed to
+- lastState (u): Last state of block
+- start (u): When mining started
+- timePassed (u): How long between start and now
+
+Default: Send animation to everyone
 
 Cancelled: Nothing
 
