@@ -20,11 +20,11 @@ This is a list that will keep the developers and the community organized!
  - [x] Other dimensions
  - [x] Block dropping
  - [x] Entity basics
+ - [x] Plugin System
 
 ### To-do
 #### Priority
  - [ ] Inventories (saving the blocks players get)
- - [ ] Plugin System
  - [ ] Crafting and Smelting
  - [ ] Add in cluster functionality
  

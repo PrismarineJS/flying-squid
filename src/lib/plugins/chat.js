@@ -11,12 +11,19 @@ module.exports.player=function(player,serv)
 {
   player._client.on('chat', ({message} = {}) => {
     if(message[0]=="/") {
-      var command = message.slice(1);
-      player.handleCommand(command);
+      player.behavior('command', {
+        command: message.slice(1)
+      }, ({command}) => {
+        player.handleCommand(command);
+      });
     }
     else {
-      serv.broadcast('<' + player.username + '>' + ' ' + message);
-      player.emit("chat",message);
+      player.behavior('chat', {
+        message: message,
+        broadcastMessage: '<' + player.username + '>' + ' ' + message
+      }, ({message, broadcast, broadcastMessage}) => {
+        serv.broadcast(broadcastMessage);
+      });
     }
   });
 

@@ -13,10 +13,17 @@ module.exports.player=function(player,serv)
   };
   
   player.sendBlock = (position, blockType, blockData) =>  // Call from player.setBlock unless you want "local" fake blocks
-    player._client.write("block_change",{
+    player.behavior('sendBlock', {
+      position: position,
+      id: blockType,
+      data: blockData
+    }, ({position, id, damage}) => {
+      player._client.write("block_change",{
         location:position,
         type:blockType<<4 | blockData
+      });
     });
+    
 
   player.setBlock = (position,blockType,blockData) => serv.setBlock(player.world,position,blockType,blockData);
 

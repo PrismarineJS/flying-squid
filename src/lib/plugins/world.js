@@ -70,14 +70,20 @@ module.exports.player=function(player,serv) {
 
   player.sendChunk = (chunkX,chunkZ,column) =>
   {
-    player._client.write('map_chunk', {
+    return player.behavior('sendChunk', {
       x: chunkX,
       z: chunkZ,
-      groundUp: true,
-      bitMap: 0xffff,
-      chunkData: column.dump()
-    });
-    return Promise.resolve();
+      chunk: column
+    }, ({x, z, chunk}) => {
+      player._client.write('map_chunk', {
+        x: x,
+        z: z,
+        groundUp: true,
+        bitMap: 0xffff,
+        chunkData: chunk.dump()
+      });
+      return Promise.resolve();
+    })
   };
 
   function spiral(arr)

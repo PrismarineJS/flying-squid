@@ -25,7 +25,7 @@ module.exports.server=function(serv,options) {
     return entity;
   };
 
-  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0}={}) => {
+  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=500,deathTime=60*1000}={}) => {
     var object = serv.initEntity('object', type, world, position.scaled(32).floored());
     object.data = data;
     object.velocity = velocity.scaled(32).floored();
@@ -35,8 +35,8 @@ module.exports.server=function(serv,options) {
     object.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
     object.friction = new Vec3(15*32, 0, 15*32);
     object.size = new Vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
-    object.deathTime = 60*1000; // 60 seconds
-    object.pickupTime = 200;
+    object.deathTime = deathTime;
+    object.pickupTime = pickupTime;
     object.itemId = itemId;
     object.itemDamage = itemDamage;
 
@@ -167,7 +167,7 @@ module.exports.entity=function(entity,serv){
   };
 
 
-  entity.on("positionChanged",() => {
+  entity.on("move",() => {
     if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
       entity.updateAndSpawn();
   });
@@ -259,7 +259,8 @@ module.exports.entity=function(entity,serv){
 
   entity.collect = (collectEntity) => {
     if (entity.type != 'player'){
-      serv.emit('error', 'Non-player entity (ttype ' + entity.type + ') cannot collect another entity')
+      console.log('[ERROR] Non-player entity (type ' + entity.type + ') cannot collect another entity');
+      console.log((new Error()).stack);
       return;
     }
     
