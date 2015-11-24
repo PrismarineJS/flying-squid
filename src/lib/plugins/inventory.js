@@ -48,11 +48,13 @@ module.exports.player = function(player)
         // button 0 -> 8, indication hotbar switching items
         // (Nothing to do with held_item_slot)
         // DANGER! crashes because windows.js hasn't implemented it yet.
+        return;
       break
       
       case 3:
         // Middle click
         // DANGER! crashes because windows.js hasn't implemented it yet.
+        return;
       break;
       
       case 4:
@@ -76,28 +78,34 @@ module.exports.player = function(player)
           switch(clickInfo.mouseButton){
             case 0:
               // Start left mouse drag
+              return;
             break;
             
             case 4:
               // Start right mouse drag
+              return;
             break;
             
             case 2:
               // End left mouse drag
+              return;
             break;
             
             case 6:
               // End right mouse drag
+              return;
             break;
           }
         }else{
           switch(clickInfo.mouseButton){
             case 1:
               // Add slot for left mouse drag
+              return;
             break;
             
             case 5:
               // Add slot for right mouse drag
+              return;
             break;
           }
         }
@@ -106,6 +114,7 @@ module.exports.player = function(player)
       // Inventory does not support double click yet, so not implementing yet.
       case 6:
         // Double click
+        return;
       break;
     }
     
