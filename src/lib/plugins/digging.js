@@ -21,7 +21,7 @@ module.exports.player=function(player,serv)
             return startDigging(position);
           }, cancelDig);
         else if(status==2)
-          completeDigging(position);
+          completeDigging(pos);
         else if(status==1)
           player.behavior('cancelDig', { // Cancel dig survival
             position: pos,
@@ -30,7 +30,7 @@ module.exports.player=function(player,serv)
             return cancelDigging(position);
           });
         else if(status==0 && player.gameMode==1)
-          return creativeDigging(position);
+          return creativeDigging(pos);
       })
     .catch((err)=> setTimeout(() => {throw err;},0))
   });
@@ -104,7 +104,9 @@ module.exports.player=function(player,serv)
         blockDropWorld: player.world,
         blockDropVelocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
         blockDropId: currentlyDugBlock.type,
-        blockDropDamage: currentlyDugBlock.metadata
+        blockDropDamage: currentlyDugBlock.metadata,
+        blockDropPickup: 500,
+        blockDropDeath: 60*5*1000
       }, (data) => {
         player.changeBlock(data.position,0,0);
         if (data.dropBlock) dropBlock(data);
@@ -119,11 +121,13 @@ module.exports.player=function(player,serv)
     }
   }
 
-  function dropBlock({blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage}) {
+  function dropBlock({blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropPickup, blockDropDeath}) {
     serv.spawnObject(2, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
-      itemDamage: blockDropDamage
+      itemDamage: blockDropDamage,
+      pickupTime: blockDropPickup,
+      deathTime: blockDropDeath
     });
   }
 
@@ -133,12 +137,14 @@ module.exports.player=function(player,serv)
     player.behavior('dug', {
       position: location,
       block: currentlyDugBlock,
-      dropBlock: true,
+      dropBlock: false,
       blockDropPosition: location.offset(0.5, 0.5, 0.5),
       blockDropWorld: player.world,
       blockDropVelocity: new Vec3(Math.random()*4 - 2, Math.random()*2 + 2, Math.random()*4 - 2),
       blockDropId: currentlyDugBlock.type,
-      blockDropDamage: currentlyDugBlock.metadata
+      blockDropDamage: currentlyDugBlock.metadata,
+      blockDropPickup: 500,
+      blockDropDeath: 60*5*1000
     }, (data) => {
       player.changeBlock(data.position,0,0);
       if (data.dropBlock) dropBlock(data);

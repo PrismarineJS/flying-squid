@@ -109,6 +109,7 @@
       - ["dig"](#dig)
       - ["dug"](#dug)
       - ["cancelDig"](#canceldig)
+        - ["breakAnimation"](#breakanimation)
       - ["placeBlock"](#placeblock)
       - ["attack"](#attack)
       - ["requestRespawn"](#requestrespawn)
@@ -696,6 +697,8 @@ Emitted when a player finishes digging something (or a player in creative breaks
 - blockDropVelocity: The velocity the block has when dropped (Default: random)
 - blockDropId: ID of the block dropped
 - blockDropDamage: Damage of the block dropped
+- blockDropPickup: Time before user can pick up the block (Default: 0.5 seconds)
+- blockDropDeath: Time before item despawns (Default: 5 minutes)
 
 Default: Save new block as air, sends to all nearby players
 
