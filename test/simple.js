@@ -7,6 +7,13 @@ describe("Server", function() {
       done(null);
     })
   });
+
+  after(function(done){
+    serv._server.close();
+    serv._server.on("close",function(){
+      done();
+    });
+  });
   it("Is running", function(done) {
     var client = net.Socket();
     client.connect(serv._server.socketServer.address().port, '127.0.0.1', done);

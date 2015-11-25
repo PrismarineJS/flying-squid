@@ -32,6 +32,13 @@ describe("Server with mineflayer connection", function() {
     })
   });
 
+  after(function(done){
+    serv._server.close();
+    serv._server.on("close",function(){
+      done();
+    });
+  });
+
   describe("commands",function(){
     it("has an help command", function(done) {
       bot.once("message",function(message){
