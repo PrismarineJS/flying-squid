@@ -259,8 +259,7 @@ module.exports.entity=function(entity,serv){
 
   entity.collect = (collectEntity) => {
     if (entity.type != 'player'){
-      console.log('[ERROR] Non-player entity (type ' + entity.type + ') cannot collect another entity');
-      console.log((new Error()).stack);
+      serv.emit('error',new Error('[ERROR] Non-player entity (type ' + entity.type + ') cannot collect another entity'));
       return;
     }
     

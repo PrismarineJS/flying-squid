@@ -9,19 +9,9 @@ describe("Server with mineflayer connection", function() {
   var serv;
   var player;
   before(function(done){
-    var options = {
-      'motd': settings.motd,
-      'max-players': settings.maxPlayers,
-      'port': 25566,
-      'online-mode': false,
-      gameMode:settings.gameMode,
-      logging:settings.logging,
-      generation:settings.generation,
-      'modpe': settings.modpe,
-      kickTimeout: settings.kickTimeout ? settings.kickTimeout : 10*1000,
-      regionFolder: settings.regionFolder,
-      plugins: settings.plugins
-    };
+    var options = settings;
+    options["online-mode"]=false;
+    options["port"]=25566;
 
     serv=mcServer.createMCServer(options);
 

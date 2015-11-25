@@ -9,10 +9,6 @@ function requireFromString(src, filename) {
   return m.exports;
 }
 
-function log(msg) {
-  console.log("[MODPE-NOINJECT] " + msg);
-}
-
 function modpeApi() {
   var Vec3 = null;
   var vec3 = null;
@@ -45,7 +41,6 @@ function modpeApi() {
   }
 
   function clientMessage(message) {
-    console.log(message);
     player.chat(message);
   }
 
@@ -104,7 +99,6 @@ function modpeApi() {
 }
 
 function convert(code) {
-  log("Started conversion...");
   var api = modpeApi.toString()
     .split("\n");
   api[0] = "";
@@ -116,8 +110,9 @@ function convert(code) {
 
 module.exports.server=function(serv,settings)
 {
+  var verboseMPE=false;
   function log(msg){
-    serv.log("[MPE]:  "+msg);
+    if(verboseMPE) serv.log("[MPE]:  "+msg);
   }
   if(!settings.modpe){
     log("Modpe support is not enabled, disabling injecting...");
@@ -164,7 +159,7 @@ module.exports.server=function(serv,settings)
       else if (packet.status == 2)
         destroyBlock(pos.x, pos.y, pos.z, 0);
       else if (packet.status == 1)
-        console.log("Unused in ModPE");
+      {/*Unused in ModPE*/}
       else if (packet.status == 0 && player.gameMode == 1)
         destroyBlock(pos.x, pos.y, pos.z, 0);
     });
@@ -185,7 +180,7 @@ module.exports.server=function(serv,settings)
         procCmd(command);
       }
       catch(err) {
-        console.log("MODPE error: "+err.stack);
+        serv.emit("error",err);
       }
     });
 

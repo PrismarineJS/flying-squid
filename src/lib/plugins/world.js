@@ -141,7 +141,6 @@ module.exports.player=function(player,serv) {
 
   player.sendSpawnPosition = () =>
   {
-    console.log("setting spawn at "+player.spawnPoint);
     player._client.write('spawn_position',{
       "location":player.spawnPoint
     });

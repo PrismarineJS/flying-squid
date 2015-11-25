@@ -20,7 +20,7 @@ module.exports.server=function(serv,settings)
 
   serv.log = message => {
     message=moment().format('MMMM Do YYYY, HH:mm:ss')+" "+message;
-    console.log(message);
+    if(!settings.noConsoleOutput) console.log(message);
     if (!settings.logging) return;
     fs.appendFile(logFile, message + "\n", (err) => {
       if (err) console.log(err);
