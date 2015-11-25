@@ -12,7 +12,7 @@ describe("Server with mineflayer connection", function() {
     var options = {
       'motd': settings.motd,
       'max-players': settings.maxPlayers,
-      'port': settings.port,
+      'port': 25566,
       'online-mode': false,
       gameMode:settings.gameMode,
       logging:settings.logging,
@@ -28,7 +28,7 @@ describe("Server with mineflayer connection", function() {
     serv.on("listening",function(){
       bot = mineflayer.createBot({
         host: "localhost",
-        port: 25565,
+        port: 25566,
         username: "echo"
       });
 
