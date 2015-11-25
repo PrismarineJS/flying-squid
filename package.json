@@ -25,6 +25,7 @@
     "babel-runtime": "^5.4.4",
     "minecraft-data": "0.7.0",
     "minecraft-protocol": "0.16.2",
+    "minecraft-chat-parser": "0.0.0",
     "mkdirp": "0.5.1",
     "moment": "^2.10.6",
     "node-dir": "~0.1.9",
