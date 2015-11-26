@@ -114,7 +114,7 @@ module.exports.player=function(player,serv,settings) {
     var playerChunkZ=Math.floor(player.position.z/16/32);
 
     Object.keys(player.loadedChunks)
-      .map((key) => key.split(","))
+      .map((key) => key.split(",").map(a => parseInt(a)))
       .filter(([x,z]) => Math.abs(x-playerChunkX)>view || Math.abs(z-playerChunkZ)>view)
       .forEach(([x,z]) => player.unloadChunk(x,z));
 
