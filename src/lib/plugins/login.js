@@ -18,7 +18,13 @@ module.exports.server=function(serv,options)
       player.commands = new Command({});
       Object.keys(plugins)
         .filter(pluginName => plugins[pluginName].player!=undefined)
-        .forEach(pluginName => plugins[pluginName].player(player, serv, options));
+        .forEach(pluginName => {
+          player._client.on("newListener",(event,listener) => {
+            console.log(pluginName+" : "+event);
+          });
+          plugins[pluginName].player(player, serv, options);
+          player._client.removeAllListeners("newListener");
+        });
 
       serv.emit("newPlayer",player);
       player.emit('asap');
