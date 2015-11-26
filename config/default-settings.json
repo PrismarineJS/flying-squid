@@ -15,5 +15,6 @@
   "plugins": {
     
   },
-  "modpe": false
+  "modpe": false,
+  "view-distance":10
 }

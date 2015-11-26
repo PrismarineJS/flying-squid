@@ -51,7 +51,7 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
 };
 
-module.exports.player=function(player,serv) {
+module.exports.player=function(player,serv,settings) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
@@ -151,7 +151,7 @@ module.exports.player=function(player,serv) {
   player.sendRestMap = () =>
   {
     player.sendingChunks=true;
-    player.sendNearbyChunks(player.view,true)
+    player.sendNearbyChunks(Math.min(player.view,settings["view-distance"]),true)
       .then(() => player.sendingChunks=false)
       .catch((err)=> setTimeout(() => {throw err;},0));
   };
