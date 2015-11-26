@@ -68,6 +68,18 @@ module.exports.player=function(player,serv) {
     }
   };
 
+  player.unloadChunk = (chunkX,chunkZ) =>
+  {
+    delete player.loadedChunks[chunkX+","+chunkZ];
+    player._client.write('map_chunk', {
+      x: chunkX,
+      z: chunkZ,
+      groundUp: true,
+      bitMap: 0x0000,
+      chunkData: new Buffer(0)
+    });
+  };
+
   player.sendChunk = (chunkX,chunkZ,column) =>
   {
     return player.behavior('sendChunk', {
@@ -100,6 +112,11 @@ module.exports.player=function(player,serv) {
     player.lastPositionChunkUpdated=player.position;
     var playerChunkX=Math.floor(player.position.x/16/32);
     var playerChunkZ=Math.floor(player.position.z/16/32);
+
+    Object.keys(player.loadedChunks)
+      .map((key) => key.split(","))
+      .filter(([x,z]) => Math.abs(x-playerChunkX)>view || Math.abs(z-playerChunkZ)>view)
+      .forEach(([x,z]) => player.unloadChunk(x,z));
 
     return spiral([view*2,view*2])
       .map(t => ({
