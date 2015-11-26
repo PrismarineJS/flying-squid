@@ -36,8 +36,11 @@ class Command {
           pars = pars.match(parse);
         }
       }
+      
+      var val = res[0].params.action(res[1])
+      if (val && val.catch) res = await val.catch((err)=> setTimeout(() => {throw err;},0));
+      else res = val;
 
-      res = await com.params.action(pars);
       if(res) return '' + res;
     } else {
       return 'Command not found';

@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 module.exports.server = function(serv, settings) {
   serv.plugins = {};
   serv.pluginCount = 0;
@@ -26,12 +24,12 @@ module.exports.server = function(serv, settings) {
       require.resolve(p); // Check if it exists, if not do catch, otherwise jump to bottom
     } catch (err) {
       try { // Throw error if cannot find plugin        
-        fs.accessSync('./dist/plugins/' + p);
+        require.resolve('../../plugins/' + p);
       } catch (err) {
         throw new Error('Cannot find plugin "' + p + '"');
       }
       serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p]);
-      return;
+      continue;
     }
     serv.addPlugin(p, require(p), settings.plugins[p]);
   });
@@ -39,6 +37,13 @@ module.exports.server = function(serv, settings) {
   Object.keys(serv.plugins).forEach((p) =>{
     if (serv.plugins[p].server) serv.plugins[p].server.call(serv.plugins[p], serv, settings);
   });
+
+  serv.on('asap', () => {
+    for (var p in serv.plugins) {
+      serv.log('[PLUGINS] Loaded "' + serv.plugins[p].name + '"');
+    }
+  });
+  
   serv.externalPluginsLoaded = true;
 };
 

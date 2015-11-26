@@ -20,7 +20,7 @@ module.exports.player=function(player,serv)
 
   player._client.on('end', () => {
     if(player) {
-      serv.broadcast(player.username + ' quit the game.', "yellow");
+      serv.broadcast(serv.color.yellow + player.username + ' quit the game.');
       player._writeOthers('player_info', {
         action: 4,
         data: [{
