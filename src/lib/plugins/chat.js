@@ -5,7 +5,7 @@ module.exports.server=function(serv)
 
     if (typeof message == 'string') message = serv.parseClassic(message);
 
-    whitelist.filter(w => blacklist.indexOf(w) == 0).forEach(player => {
+    whitelist.filter(w => blacklist.indexOf(w) == -1).forEach(player => {
       if (!system) player.chat(message);
       else player.system(message);
     });
@@ -45,6 +45,7 @@ module.exports.server=function(serv)
   };
 
   serv.parseClassic = (message) => {
+    if (typeof message == 'object') return message;
     var messageList = [];
     var text = '';
     var nextChanged = false;
@@ -110,10 +111,11 @@ module.exports.server=function(serv)
     }
     createJSON();
 
-    return {
+    if (messageList.length > 0) return {
       text: '',
       extra: messageList
     }
+    else return { text: '' }
   }
 };
 
@@ -126,9 +128,18 @@ module.exports.player=function(player,serv)
     else {
       player.behavior('chat', {
         message: message,
-        broadcastMessage: '<' + player.username + '>' + ' ' + message
-      }, ({broadcastMessage}) => {
-        serv.broadcast(broadcastMessage);
+        prefix: '<' + player.username + '> ',
+        text: message,
+        whitelist: serv.players,
+        blacklist: []
+      }, ({message, prefix, text, whitelist, blacklist}) => {
+        var obj = serv.parseClassic(prefix);
+        if (!obj.extra) obj.extra = [];
+        obj.extra.push(serv.parseClassic(text));
+        serv.broadcast(obj, {
+          whitelist: whitelist,
+          blacklist: blacklist
+        });
       });
     }
   });
@@ -137,6 +148,12 @@ module.exports.player=function(player,serv)
     if (typeof message == 'string') message = serv.parseClassic(message);
     player._client.write('chat', { message: JSON.stringify(message), position: 0 });
   };
+
+  player.emptyChat = (count=1) => {
+    for (var i = 0; i < count; i++) {
+      player.chat('');
+    }
+  }
 
   player.system = message => {
     if (typeof message == 'string') message = serv.parseClassic(message);
