@@ -1,6 +1,6 @@
 var version = require("../version");
 var entitiesByName=require("minecraft-data")(version).entitiesByName;
-var Entity = require("../entity");
+var Entity = require("prismarine-entity");
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
