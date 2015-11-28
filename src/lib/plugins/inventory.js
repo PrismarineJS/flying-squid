@@ -134,7 +134,7 @@ module.exports.player = function(player)
       return;
     }
     
-    var newItem = new ItemStack(item.blockId, item.itemCount, item.metadata)
+    var newItem = ItemStack.fromNotch(item);
     player.inventory.updateSlot(slot, newItem)
     
     if (slot==5)
