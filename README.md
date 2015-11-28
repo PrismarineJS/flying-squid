@@ -1,4 +1,4 @@
-Flying-squid
+flying-squid
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
@@ -31,7 +31,7 @@ A semi-functional minecraft server in Node.js
 * rom1504.fr (Port 25565) using [auto-squid](https://github.com/rom1504/auto-squid)
 
 ## Building / Running
-Before running or building it is recommended that you configure the server in config/settings.json
+Before running or building it is recommended that you configure the server in `config/settings.json`
 
     npm install
     node app.js
@@ -49,15 +49,15 @@ Currently used between our test server (rom1504.fr) and our gitter room (through
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
 
-## Dev Documentation
-For development see [api.md](doc/api.md), [contribute.md](doc/contribute.md) and [history.md](doc/history.md)
+## Development Documentation
+For development see [API.md](doc/API.md), [CONTRIBUTE.md](doc/CONTRIBUTE.md) and [HISTORY.md](doc/HISTORY.md)
 
 ## Using as a lib
 
-Flying-squid is also a server lib. Here is a basic example of usage :
+flying-squid is also a server lib. Here is a basic example of usage:
 
 ```js
-var mcServer=require("flying-squid");
+var mcServer = require("flying-squid");
 
 mcServer.createMCServer({
   "motd": "A Minecraft Server \nRunning flying-squid",
@@ -76,11 +76,13 @@ mcServer.createMCServer({
 });
 ```
 
-You can add server plugins and player plugins in your package, following [contribute.md](doc/contribute.md).
+You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](doc/CONTRIBUTE.md).
 
 ## Contributors
 
- - @roblabla for helping out with the protocols
- - @rom1504 for massive contributions to the code
+ - [@roblabla](https://github.com/roblabla) for helping out with the protocols
+ - [@rom1504](https://github.com/rom1504) for massive contributions to the code
+ - [@demipixel](https://github.com/demipixel) 
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
+ - All of our other awesome contributors!
