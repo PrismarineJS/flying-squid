@@ -11,7 +11,7 @@ module.exports.player = function(player,serv)
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
     player.heldItem = player.inventory.slots[36 + player.heldItemSlot];
-    
+
     player._writeOthersNearby("entity_equipment",{
         entityId: player.id,
         slot: 0,
@@ -19,7 +19,7 @@ module.exports.player = function(player,serv)
     });
   });
   
-  player._client.on("window_click", function(clickInfo){   
+  player._client.on("window_click", function(clickInfo){
     // Do other stuff the inventory doesn't do, eg spawn the dropped item.
     // I've left in stuff that inventory handles, because the cancelling hooks
     // might go here (?)
@@ -141,52 +141,30 @@ module.exports.player = function(player,serv)
     
     var newItem = ItemStack.fromNotch(item);
     player.inventory.updateSlot(slot, newItem);
-    
-    if (slot==5)
-            player._writeOthersNearby("entity_equipment",{
-                entityId:player.id,
-                slot:4,
-                item:item
-            });
-    if (slot==6)
-            player._writeOthersNearby("entity_equipment",{
-                entityId:player.id,
-                slot:3,
-                item:item
-            });
-    if (slot==7)
-            player._writeOthersNearby("entity_equipment",{
-                entityId:player.id,
-                slot:2,
-                item:item
-            });
-    if (slot==8)
-            player._writeOthersNearby("entity_equipment",{
-                entityId:player.id,
-                slot:1,
-                item:item
-            });
-
   });
   
-  player.inventory.on("windowUpdate", function(){
-    
-    // Update held item
-    player._writeOthersNearby("entity_equipment",{
-      entityId: player.id,
-      slot: 0,
-      item: ItemStack.toNotch(player.heldItem)
-    });
-    
-    // Update slots in inventory
-    for(var itemIndex=0;itemIndex<player.inventory.slots.length;itemIndex++) {
-      var item = player.inventory.slots[itemIndex];
-      player._client.write("set_slot", {
-        windowId: 0,
-        slot: itemIndex,
-        item: ItemStack.toNotch(item)
-      })
+  player.inventory.on("windowUpdate", function(slot,oldItem,newItem){
+
+    var equipments={
+      5:4,
+      6:3,
+      7:2,
+      8:1
+    };
+    equipments[player.heldItemSlot]=0;
+    if(equipments[slot]!==undefined) {
+      player._writeOthersNearby("entity_equipment", {
+        entityId: player.id,
+        slot: equipments[slot],
+        item: ItemStack.toNotch(newItem)
+      });
     }
+
+    player._client.write("set_slot", {
+      windowId: 0,
+      slot: slot,
+      item: ItemStack.toNotch(newItem)
+    });
   });
 
 
