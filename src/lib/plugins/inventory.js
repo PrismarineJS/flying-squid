@@ -125,7 +125,12 @@ module.exports.player = function(player)
     // Let the inventory know of the click.
     // It's important to let it know of the click later, because it destroys
     // information we need about the inventory.
-    player.inventory.acceptClick(clickInfo)
+    try {
+      player.inventory.acceptClick(clickInfo)
+    }
+    catch(err) {
+      serv.emit('error',err);
+    }
   })
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
