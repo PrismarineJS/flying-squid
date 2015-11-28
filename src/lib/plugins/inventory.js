@@ -1,21 +1,21 @@
-var Version = require("../version");
-var Windows = require("prismarine-windows")(Version).windows;
-var ItemStack = require("prismarine-item")(Version);
+var version = require("../version");
+var windows = require("prismarine-windows")(version).windows;
+var Item = require("prismarine-item")(version);
 
 module.exports.player = function(player,serv)
 {
   player.heldItemSlot = 0;
-  player.heldItem = new ItemStack(256, 1);
-  player.inventory = new Windows.InventoryWindow(0, "Inventory", 44);
+  player.heldItem = new Item(256, 1);
+  player.inventory = new windows.InventoryWindow(0, "Inventory", 44);
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
-    player.heldItem = player.inventory.slots[36 + player.heldItemSlot];
+    player.setEquipment(0,player.inventory.slots[36 + player.heldItemSlot]);
 
     player._writeOthersNearby("entity_equipment",{
         entityId: player.id,
         slot: 0,
-        item: ItemStack.toNotch(player.heldItem)
+        item: Item.toNotch(player.heldItem)
     });
   });
   
@@ -139,7 +139,7 @@ module.exports.player = function(player,serv)
       return;
     }
     
-    var newItem = ItemStack.fromNotch(item);
+    var newItem = Item.fromNotch(item);
     player.inventory.updateSlot(slot, newItem);
   });
   
@@ -153,17 +153,18 @@ module.exports.player = function(player,serv)
     };
     equipments[player.heldItemSlot]=0;
     if(equipments[slot]!==undefined) {
+      player.setEquipment(equipments[slot],newItem);
       player._writeOthersNearby("entity_equipment", {
         entityId: player.id,
         slot: equipments[slot],
-        item: ItemStack.toNotch(newItem)
+        item: Item.toNotch(newItem)
       });
     }
 
     player._client.write("set_slot", {
       windowId: 0,
       slot: slot,
-      item: ItemStack.toNotch(newItem)
+      item: Item.toNotch(newItem)
     });
   });
 
@@ -197,7 +198,7 @@ module.exports.player = function(player,serv)
       });
       player.playSoundAtSelf('random.pop');
 
-      var newItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage);
+      var newItem =  new Item(collectEntity.itemId, 1, collectEntity.damage);
       player.inventory.updateSlot(emptySlot, newItem);
       collectEntity.destroy()
     }

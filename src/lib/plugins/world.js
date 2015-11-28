@@ -53,21 +53,6 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
 
 module.exports.player=function(player,serv,settings) {
 
-  player.spawnEntity = entity => {
-    player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
-    if (typeof entity.itemId != 'undefined') {
-      entity.sendMetadata([{
-        "key": 10,
-        "type": 5,
-        "value": {
-          blockId: entity.itemId,
-          itemDamage: entity.itemDamage,
-          itemCount:1
-        }
-      }]);
-    }
-  };
-
   player.unloadChunk = (chunkX,chunkZ) =>
   {
     delete player.loadedChunks[chunkX+","+chunkZ];

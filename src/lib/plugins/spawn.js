@@ -4,6 +4,7 @@ var Entity = require("../entity");
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
+var Item = require("prismarine-item")(version);
 
 var Vec3 = require("vec3").Vec3;
 
@@ -118,6 +119,31 @@ module.exports.player=function(player,serv){
       });
     }
   });
+
+
+  player.spawnEntity = entity => {
+    player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
+    if (typeof entity.itemId != 'undefined') {
+      entity.sendMetadata([{
+        "key": 10,
+        "type": 5,
+        "value": {
+          blockId: entity.itemId,
+          itemDamage: entity.itemDamage,
+          itemCount:1
+        }
+      }]);
+    }
+    entity.equipment.forEach((equipment,slot) => {
+      console.log(equipment+" "+slot);
+        if (equipment != undefined) player._client.write("entity_equipment", {
+          entityId: entity.id,
+          slot: slot,
+          item: Item.toNotch(equipment)
+        });
+      }
+    )
+  };
 };
 
 module.exports.entity=function(entity,serv) {
