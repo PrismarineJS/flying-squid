@@ -30,7 +30,7 @@ module.exports.player=function(player,serv){
     info: 'to change a time to night',
     usage: '/night',
     action(params) {
-      player.handleCommand('time set night');
+      return player.handleCommand('time set night');
     }
   });
 
@@ -69,7 +69,7 @@ module.exports.player=function(player,serv){
     info: 'to change a time to day',
     usage: '/day',
     action(params) {
-      player.handleCommand('time set day');
+      return player.handleCommand('time set day');
     }
   });
 };

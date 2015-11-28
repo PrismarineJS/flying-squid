@@ -74,7 +74,13 @@ module.exports.player=function(player) {
   });
 
 
-  player.handleCommand = (str) => {
-    player.commands.use(str).catch((err)=> setTimeout(() => {throw err;},0));
-  };
+  player.handleCommand = async (str) => {
+    try {
+      var res = await player.commands.use(str)
+      if (res) player.chat('' + res);
+    }
+    catch(err) {
+      setTimeout(() => {throw err;}, 0);
+    }
+  }
 };

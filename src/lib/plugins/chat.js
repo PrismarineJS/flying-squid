@@ -11,11 +11,7 @@ module.exports.player=function(player,serv)
 {
   player._client.on('chat', ({message} = {}) => {
     if(message[0]=="/") {
-      player.behavior('command', {
-        command: message.slice(1)
-      }, ({command}) => {
-        player.handleCommand(command);
-      });
+      player.behavior('command', {command: message.slice(1)}, ({command}) => player.handleCommand(command));
     }
     else {
       player.behavior('chat', {
