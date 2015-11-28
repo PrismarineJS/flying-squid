@@ -150,34 +150,54 @@ See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 ### Flying-squid.createMCServer(options)
 
 Create and return an instance of the class MCServer.
+Options is an object containing the following properties:
 
-options is an object containing the settings
+```
+port: default to 25565
+host: default to localhost
+kickTimeout: default to 10*1000 (10s), kick client that doesn't answer to keepalive after that time
+checkTimeoutInterval: defaults to 4*1000 (4s), send keepalive packet at that period
+online-mode: defaults to true
+beforePing: allow customisation of the answer to ping the server does. It takes a function with argument response and client, response is the default json response, and client is client who sent a ping. It can take as third argument a callback. If the callback is passed, the function should pass its result to the callback, if not it should return.
+motd: the string that players see when looking for the server. Defaults to "A Minecraft server"
+maxPlayers: the amount of players on the server. Defaults to 20
+logging: defaults to true, enables logging
+gameMode: defaults to 0, 0 is survival 1 is creative.
+generation: is an object. contains the name and the options for the generator. example:
+{
+  "name":"diamond_square",
+  "options":{
+    "worldHeight":80
+  }
+}
+modpe: defaults to false, wether or not modpe should be enabled.
+```
 
 ### Properties
 
 #### serv.entityMaxId
 
-Current maximum entity id
+The current maximum allowed entities on the server
 
 #### serv.players
 
-Array of connected players
+Returns an array of players currently logged in
 
 #### serv.uuidToPlayer
 
-Object uuid to players
+Object for converting UUIDs to players
 
 #### serv.overworld
 
-Contains the overworld world. This is where the default spoint is and where peope will play survival and such.
+Contains the overworld world. This is where the default spawn point is
 
 #### serv.netherworld
 
-Contains the nether world. This WILL be used when a player travels through a portal if they are in the overworld.
+Contains the nether world. This **WILL** be used when a player travels through a portal if they are in the overworld!
 
 #### serv.endworld
 
-WILL contain the end world. *NOT YET IMPLEMENTED!*
+Contains the end world. **NOT YET IMPLEMENTED!**
 
 #### serv.entities
 
