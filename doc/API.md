@@ -177,11 +177,11 @@ modpe: defaults to false, wether or not modpe should be enabled.
 
 #### serv.entityMaxId
 
-The current maximum allowed entities on the server
+The current maximum ID (i.e. the last entity that was spawned has that id)
 
 #### serv.players
 
-Returns an array of players currently logged in
+An array of players currently logged in
 
 #### serv.uuidToPlayer
 
