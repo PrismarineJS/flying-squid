@@ -2,7 +2,7 @@ var Vec3 = require("vec3").Vec3;
 
 module.exports.server=function(serv) {
   serv.emitParticle = (particle, world, position, {whitelist,blacklist=[],radius=32*32,longDistance=true,size=new Vec3(1, 1, 1),count=1}={}) => {
-    var players = (typeof whitelist != 'undefined' ? (typeof whitelist == 'array' ? whitelist : [whitelist]) : serv.getNearby({
+    var players = (typeof whitelist != 'undefined' ? (whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position.scaled(32).floored(),
       radius: radius // 32 blocks, fixed position

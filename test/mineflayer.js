@@ -41,7 +41,7 @@ describe("Server with mineflayer connection", function() {
 
   describe("commands",function(){
     it("has an help command", function(done) {
-      bot.once("message",function(message){
+      bot.once("message",function(){
         done();
       });
       bot.chat("/help");

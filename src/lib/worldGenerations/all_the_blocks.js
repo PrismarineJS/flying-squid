@@ -3,7 +3,7 @@ var Vec3 = require('vec3').Vec3;
 var blocks=require("minecraft-data")(require("../version")).blocks;
 
 function generation() {
-  function generateSimpleChunk(chunkX, chunkZ) {
+  function generateSimpleChunk() {
     var chunk = new Chunk();
 
     var i=2;

@@ -1,16 +1,16 @@
-var Version = require("../version")
-var Windows = require("prismarine-windows")(Version).windows
-var ItemStack = require("prismarine-item")(Version)
+var Version = require("../version");
+var Windows = require("prismarine-windows")(Version).windows;
+var ItemStack = require("prismarine-item")(Version);
 
-module.exports.player = function(player)
+module.exports.player = function(player,serv)
 {
-  player.heldItemSlot = 0
-  player.heldItem = new ItemStack(256, 1)
-  player.inventory = new Windows.InventoryWindow(0, "Inventory", 44)
+  player.heldItemSlot = 0;
+  player.heldItem = new ItemStack(256, 1);
+  player.inventory = new Windows.InventoryWindow(0, "Inventory", 44);
   
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
-    player.heldItem = player.inventory.slots[36 + player.heldItemSlot]
+    player.heldItem = player.inventory.slots[36 + player.heldItemSlot];
     
     player._writeOthersNearby("entity_equipment",{
         entityId: player.id,
@@ -51,7 +51,7 @@ module.exports.player = function(player)
         // (Nothing to do with held_item_slot)
         // DANGER! crashes because windows.js hasn't implemented it yet.
         return;
-      break
+      break;
       
       case 3:
         // Middle click
@@ -131,16 +131,16 @@ module.exports.player = function(player)
     catch(err) {
       serv.emit('error',err);
     }
-  })
+  });
   
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
     if(item.blockId == -1){
-      player.inventory.updateSlot(slot, undefined)
+      player.inventory.updateSlot(slot, undefined);
       return;
     }
     
     var newItem = ItemStack.fromNotch(item);
-    player.inventory.updateSlot(slot, newItem)
+    player.inventory.updateSlot(slot, newItem);
     
     if (slot==5)
             player._writeOthersNearby("entity_equipment",{
@@ -170,7 +170,6 @@ module.exports.player = function(player)
   });
   
   player.inventory.on("windowUpdate", function(){
-    var items = player.inventory.slots
     
     // Update held item
     player._writeOthersNearby("entity_equipment",{
@@ -180,13 +179,49 @@ module.exports.player = function(player)
     });
     
     // Update slots in inventory
-    for(var itemIndex in items){
-      var item = items[itemIndex]
+    for(var itemIndex=0;itemIndex<player.inventory.slots.length;itemIndex++) {
+      var item = player.inventory.slots[itemIndex];
       player._client.write("set_slot", {
         windowId: 0,
         slot: itemIndex,
         item: ItemStack.toNotch(item)
       })
     }
-  })
+  });
+
+
+
+  player.collect = (collectEntity) => {
+
+    // Add it to a stack already in the player's inventory if possible
+    for(var itemKey=0;itemKey<player.inventory.slots.length;itemKey++) {
+      var item = player.inventory.slots[itemKey];
+      if(item == undefined) continue;
+      if(item.type == collectEntity.itemId){
+        item.count += 1;
+        player.inventory.updateSlot(itemKey, item);
+        collectEntity._writeOthersNearby('collect', {
+          collectedEntityId: collectEntity.id,
+          collectorEntityId: player.id
+        });
+        player.playSoundAtSelf('random.pop');
+        collectEntity.destroy();
+        return;
+      }
+    }
+
+    // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
+    var emptySlot = player.inventory.firstEmptyInventorySlot();
+    if(emptySlot != null){
+      collectEntity._writeOthersNearby('collect', {
+        collectedEntityId: collectEntity.id,
+        collectorEntityId: player.id
+      });
+      player.playSoundAtSelf('random.pop');
+
+      var newItem =  new ItemStack(collectEntity.itemId, 1, collectEntity.damage);
+      player.inventory.updateSlot(emptySlot, newItem);
+      collectEntity.destroy()
+    }
+  };
 };

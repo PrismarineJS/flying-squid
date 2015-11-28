@@ -511,10 +511,10 @@ player.on('move_cancel', ({position}, cancel) => {
 });
 ```
 
-If we keep Plugin B and replace Plugin A with Plugin C, we'll see that the player can move freely but will not recieve the 
+If we keep Plugin B and replace Plugin A with Plugin C, we'll see that the player can move freely but will not receive the 
 word "HI" and other players will be unable to see their movements.
 
-Finally, there is hidden cancel. This is the second paramater in cancel, and allows plugins to hide the fact that they cancelled 
+Finally, there is hidden cancel. This is the second parameter in cancel, and allows plugins to hide the fact that they cancelled 
 the default action from other plugins. It's best not to use this, but I know somebody will someday need this.
 
 Plugin D
@@ -529,9 +529,9 @@ their position and other players will not see the player move.
 
 #### FORMAT
 
-Defition of behavior.
+Definition of behavior.
 - var1: Variable with value, can be changed (default: defaultValue)
-- var2 (u): Variable with value. You can change it however it will not have any effect on the defautl action (and could screw with other plugins, watch out!). U stands for unused
+- var2 (u): Variable with value. You can change it however it will not have any effect on the default action (and could screw with other plugins, watch out!). U stands for unused
 
 Default: What happens if this isn't cancelled.
 
@@ -819,7 +819,7 @@ sends `message` to the player
 
 change the block at position `position` to `blockType` and `blockData`
 
-this will not change the block for the user themself. It is mainly useful when a user places a block 
+this will not change the block for the user himself. It is mainly useful when a user places a block 
 and only needs to send it to other players on the server
 
 #### player.sendBlock(position,blockType,blockData)

@@ -17,7 +17,7 @@ module.exports.player=function(player,serv)
       player.behavior('chat', {
         message: message,
         broadcastMessage: '<' + player.username + '>' + ' ' + message
-      }, ({message, broadcast, broadcastMessage}) => {
+      }, ({broadcastMessage}) => {
         serv.broadcast(broadcastMessage);
       });
     }

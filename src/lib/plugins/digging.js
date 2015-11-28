@@ -35,7 +35,7 @@ module.exports.player=function(player,serv)
     .catch((err)=> setTimeout(() => {throw err;},0))
   });
 
-  function diggingTime(location)
+  function diggingTime()
   {
     // assume holding nothing and usual conditions
     return currentlyDugBlock.digTime();
@@ -69,7 +69,7 @@ module.exports.player=function(player,serv)
           start: startDigging,
           timePassed: currentDiggingTime,
           position: location
-        }, ({lastState, state}) => {
+        }, ({state}) => {
           lastDestroyState=state;
           player._writeOthersNearby("block_break_animation",{
             "entityId":currentAnimationId,
@@ -97,7 +97,6 @@ module.exports.player=function(player,serv)
     var diggingTime=new Date()-startDiggingTime;
     var stop = false;
     if(expectedDiggingTime-diggingTime<100) {
-      stop = true;
       stop = player.behavior('forceCancelDig', {
         stop: true,
         start: startDiggingTime,

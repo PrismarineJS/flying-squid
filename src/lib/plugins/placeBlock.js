@@ -26,8 +26,8 @@ module.exports.player=function(player,serv)
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone'),
-    }, ({direction, heldItem, position, reference, playSound, sound, id, damage}) => {
+      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
+    }, ({direction, heldItem, position, playSound, sound, id, damage}) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8

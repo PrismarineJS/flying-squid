@@ -25,7 +25,7 @@ module.exports.player=function(player,serv)
       velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5),
       maxVelocity: new Vec3(4, 4, 4),
       animation: true
-    }, ({attackedEntity, sound, playSound, damage, velocity, maxVelocity, animation}) => {
+    }, ({attackedEntity, sound, damage, velocity, maxVelocity, animation}) => {
       attackedEntity.updateHealth(attackedEntity.health - damage);
       serv.playSound(sound, player.world, attackedEntity.position.scaled(1/32));
 
@@ -51,11 +51,11 @@ module.exports.player=function(player,serv)
 
 };
 
-module.exports.entity=function(entity,serv)
+module.exports.entity=function(entity)
 {
   if (entity.type != 'player') {
     entity.updateHealth = (health) => {
       entity.health = health;
     }
   }
-}
+};

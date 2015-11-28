@@ -2,7 +2,7 @@ var Vec3 = require('vec3').Vec3;
 
 module.exports.server=function(serv) {
   serv.playSound = (sound, world, position, {whitelist,blacklist=[],radius=32*32,volume=1.0,pitch=1.0}={}) => {
-    var players = (typeof whitelist != 'undefined' ? (typeof whitelist == 'array' ? whitelist : [whitelist]) : serv.getNearby({
+    var players = (typeof whitelist != 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position.scaled(32).floored(),
       radius: radius // 32 blocks, fixed position
@@ -40,7 +40,7 @@ module.exports.player=function(player,serv) {
     serv.playSound(sound, player.world, null, opt);
   };
 
-  player.on('placeBlock_cancel', async ({position, reference}, cancel) => {
+  player.on('placeBlock_cancel', async ({reference}, cancel) => {
     if (player.crouching) return;
     var id = await player.world.getBlockType(reference);
     if (id != 25) return;

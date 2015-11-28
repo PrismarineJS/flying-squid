@@ -83,6 +83,6 @@ You can add server plugins and player plugins in your package, following [CONTRI
  - [@roblabla](https://github.com/roblabla) for helping out with the protocols
  - [@rom1504](https://github.com/rom1504) for massive contributions to the code
  - [@demipixel](https://github.com/demipixel) 
- - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protcol
+ - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protocol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
  - All of our other awesome contributors!

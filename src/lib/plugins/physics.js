@@ -21,7 +21,6 @@ module.exports.entity=function(entity){
     var yBlock = yVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(yVec)].boundingBox == 'block';
     var zBlock = zVec.equals(yVec) ? yBlock : (zVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(zVec)].boundingBox == 'block');
 
-    var old = entity.position.clone();
 
     if (xBlock || yBlock || zBlock) {
       entity.velocity.x = getFriction(entity.velocity.x, entity.friction.x, delta);

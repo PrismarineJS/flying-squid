@@ -15,7 +15,7 @@ function generation({seed,level=50}={}) {
           let data;
 
           if (y < bedrockheightbottom) block = 7;
-          else if (y < 50) block = 87;
+          else if (y < level) block = 87;
           else if (y > 127 - bedrockheighttop) block = 7;
 
           var pos = new Vec3(x, y, z);

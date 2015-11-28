@@ -18,10 +18,10 @@ module.exports.server = function(serv, settings) {
     };
     serv.pluginCount++;
     if (serv.externalPluginsLoaded && plugin.server) serv.plugins[name].server.call(p, serv, settings);
-  }
+  };
 
-  for (var p in settings.plugins) {
-    if (settings.plugins[p].disabled) continue;
+  Object.keys(settings.plugins).forEach((p) =>{
+    if (settings.plugins[p].disabled) return;
     try {
       require.resolve(p); // Check if it exists, if not do catch, otherwise jump to bottom
     } catch (err) {
@@ -34,11 +34,11 @@ module.exports.server = function(serv, settings) {
       return;
     }
     serv.addPlugin(p, require(p), settings.plugins[p]);
-  }
+  });
 
-  for (var p in serv.plugins) {
+  Object.keys(serv.plugins).forEach((p) =>{
     if (serv.plugins[p].server) serv.plugins[p].server.call(serv.plugins[p], serv, settings);
-  }
+  });
   serv.externalPluginsLoaded = true;
 };
 
@@ -59,10 +59,10 @@ module.exports.entity = function(entity, serv) {
   entity.getData = (pluginName) => {
     if (typeof pluginName == 'object') pluginName = pluginName.name;
     return entity.pluginData[pluginName] || null;
-  }
+  };
 
   Object.keys(serv.plugins).forEach(p => {
     var plugin = serv.plugins[p];
     if (plugin.entity) plugin.entity.call(plugin, entity, serv);
   });
-}
+};

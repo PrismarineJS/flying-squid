@@ -129,7 +129,7 @@ module.exports.player=function(player,serv,settings) {
         if(!loaded) player.loadedChunks[key]=1;
         return !loaded;
       })
-      .reduce((acc,{chunkX,chunkZ},i)=> {
+      .reduce((acc,{chunkX,chunkZ})=> {
           var p=acc
             .then(() => player.world.getColumn(chunkX, chunkZ))
             .then((column) => player.sendChunk(chunkX, chunkZ, column));

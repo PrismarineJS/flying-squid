@@ -41,11 +41,11 @@ module.exports.entity=function(entity,serv)
     .filter((e) => e.type == 'player');
 
   entity.nearbyPlayers = (radius=entity.viewDistance*32) => entity.nearbyEntities
-    .filter(e => e.type == 'player')
+    .filter(e => e.type == 'player');
 
   entity._writeOthers = (packetName, packetFields) =>
     serv._writeArray(packetName, packetFields, entity.getOtherPlayers());
 
   entity._writeOthersNearby = (packetName, packetFields) =>
     serv._writeArray(packetName, packetFields, entity.getNearbyPlayers());
-}
+};

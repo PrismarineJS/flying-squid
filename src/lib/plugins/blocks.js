@@ -15,9 +15,9 @@ module.exports.player=function(player,serv)
   player.sendBlock = (position, blockType, blockData) =>  // Call from player.setBlock unless you want "local" fake blocks
     player.behavior('sendBlock', {
       position: position,
-      id: blockType,
-      data: blockData
-    }, ({position, id, damage}) => {
+      blockType: blockType,
+      blockData: blockData
+    }, ({position, blockType, blockData}) => {
       player._client.write("block_change",{
         location:position,
         type:blockType<<4 | blockData
@@ -38,7 +38,7 @@ module.exports.player=function(player,serv)
       return results;
     },
     action(params) {
-      var res = params.map((num, i) => { // parseInt paramaters
+      var res = params.map((num, i) => { // parseInt parameters
         if (num.indexOf('~') == 0) {
           return (player.position[['', 'x', 'y', 'z'][i]] >> 5) + parseInt(num.slice(1) || 0);
         } else {

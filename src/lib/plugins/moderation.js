@@ -23,15 +23,15 @@ module.exports.server=function(serv)
         if(!body) throw new Error("username not found");
         return uuidInParts(JSON.parse(body).id)
       })
-      .catch(err => {throw new Error("username not found");});
+      .catch(err => {throw err;});
   };
 
-  serv.banUsername = (username, reason, cb) => {
+  serv.banUsername = (username, reason) => {
     return serv.getUUIDFromUsername(username)
       .then(uuid => serv.ban(uuid, reason));
   };
 
-  serv.pardonUsername = (username, cb) => {
+  serv.pardonUsername = (username) => {
     return serv.getUUIDFromUsername(username)
       .then(pardon);
   };

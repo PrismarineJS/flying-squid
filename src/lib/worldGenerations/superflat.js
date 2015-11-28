@@ -2,7 +2,7 @@ var Chunk = require('prismarine-chunk')(require("../version"));
 var Vec3 = require('vec3').Vec3;
 
 function generation({opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thickness=3,debug=false}={}) {
-  function generateChunk(chunkX,chunkZ) {
+  function generateChunk() {
     var chunk=new Chunk();
     var height = middle_thickness + 1;
     var DEBUG_POINTS = [new Vec3(0, height, 0), new Vec3(15, height, 0), new Vec3(0, height, 15), new Vec3(15, height, 15)];
@@ -19,11 +19,8 @@ function generation({opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thick
       }
     }
 
-    if (debug) {
-      for (var d in DEBUG_POINTS) {
-        chunk.setBlockType(DEBUG_POINTS[d], 35);
-      }
-    }
+    if (debug)
+        DEBUG_POINTS.forEach(p => chunk.setBlockType(p, 35));
     return chunk;
   }
   return generateChunk;

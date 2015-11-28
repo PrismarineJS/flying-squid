@@ -149,7 +149,7 @@ module.exports.server=function(serv,settings)
   function injectPlayer(player,serv) {
     log("Injected into player");
 
-    initSquid(player, serv, vec3);
+    initSquid(player, serv, Vec3);
     newLevel();
 
     player._client.on("block_dig", function (packet) {

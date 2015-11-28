@@ -76,7 +76,7 @@ module.exports.player=function(player) {
 
   player.handleCommand = async (str) => {
     try {
-      var res = await player.commands.use(str)
+      var res = await player.commands.use(str);
       if (res) player.chat('' + res);
     }
     catch(err) {

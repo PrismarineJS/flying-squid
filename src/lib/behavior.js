@@ -11,7 +11,7 @@ module.exports = (obj) => {
         cancelCount++;
       }
       defaultCancel = dC;
-    }
+    };
     
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err)=> setTimeout(() => {throw err;},0));
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err)=> setTimeout(() => {throw err;},0));
@@ -22,4 +22,4 @@ module.exports = (obj) => {
     await obj.emitThen(eventName + '_done', data, cancelled).catch((err)=> setTimeout(() => {throw err;},0));
     return data;
   }
-}
+};

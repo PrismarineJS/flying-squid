@@ -18,7 +18,7 @@ module.exports.server=function(serv) {
         old: serv.time,
         newTime: serv.time + 20
       }, ({newTime}) => {
-        serv.setTime((serv.time + 20) % 24000); // Vanilla only does it every second  
+        serv.setTime(newTime % 24000); // Vanilla only does it every second
       });
     }
   })
@@ -29,7 +29,7 @@ module.exports.player=function(player,serv){
     base: 'night',
     info: 'to change a time to night',
     usage: '/night',
-    action(params) {
+    action() {
       return player.handleCommand('time set night');
     }
   });
@@ -68,7 +68,7 @@ module.exports.player=function(player,serv){
     base: 'day',
     info: 'to change a time to day',
     usage: '/day',
-    action(params) {
+    action() {
       return player.handleCommand('time set day');
     }
   });

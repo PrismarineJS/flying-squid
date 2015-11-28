@@ -15,9 +15,9 @@ class Command {
 
       var ended = space + '(.*)';
 
-      var finded = command.match(new RegExp('^' + key + ended));
-      if(finded) {
-        res = [this.hash[key], finded];
+      var found = command.match(new RegExp('^' + key + ended));
+      if(found) {
+        res = [this.hash[key], found];
       }
     }
 
