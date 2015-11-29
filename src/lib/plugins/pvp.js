@@ -47,11 +47,12 @@ module.exports.entity=function(entity,serv)
 
     entity.sendVelocity(velocity.scaled(1/32), maxVelocity);
 
-    if(entity.health<=0 && animation) {
-      entity._writeOthers('entity_status', {
-        entityId: entity.id,
-        entityStatus: 3
-      });
+    if(entity.health<=0) {
+      if(animation)
+        entity._writeOthers('entity_status', {
+          entityId: entity.id,
+          entityStatus: 3
+        });
       if(entity.type!="player") {
         delete serv.entities[entity.id];
         setTimeout(() => {
