@@ -24,6 +24,13 @@ module.exports.player=function(player,serv)
   }
 
   player._client.on("use_entity", ({mouse,target} = {}) => {
+    if(!serv.entities[target])
+    {
+      var dragon;
+      for(dragon=target-1;dragon>=target-7 && !serv.entities[dragon];dragon--){}
+      if(serv.entities[dragon] && serv.entities[dragon].entityType==63)
+         target=dragon;
+    }
     if(mouse == 1)
       attackEntity(target);
   });
