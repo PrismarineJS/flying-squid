@@ -1,11 +1,5 @@
 module.exports.player=function(player,serv)
 {
-  player.despawnPlayers = despawnedPlayers => {
-    player._client.write('entity_destroy', {
-      'entityIds': despawnedPlayers.map(p => p.id)
-    });
-  };
-
   player.despawnEntities = entities => player._client.write('entity_destroy', {
     'entityIds': entities.map(e => e.id)
   });
@@ -19,7 +13,7 @@ module.exports.player=function(player,serv)
           UUID: player._client.uuid
         }]
       });
-      player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnPlayers([player]));
+      player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]));
       delete serv.entities[player.id];
       player.emit('disconnected');
       var index = serv.players.indexOf(player);

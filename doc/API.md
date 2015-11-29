@@ -84,6 +84,7 @@
       - [entity.getNearby()](#entitygetnearby)
       - [entity.getNearbyPlayers()](#entitygetnearbyplayers)
       - [entity.nearbyPlayers()](#entitynearbyplayers)
+      - [entity.takeDamage({sound='game.player.hurt', damage=1, velocity=new Vec3(0,0,0), maxVelocity=new Vec3(4, 4, 4), animation=true})](#entitytakedamagesoundgameplayerhurt-damage1-velocitynew-vec3000-maxvelocitynew-vec34-4-4-animationtrue)
     - [Low level Methods](#low-level-methods)
       - [entity._writeOthers(packetName, packetFields)](#entity_writeotherspacketname-packetfields)
       - [entity._writeOthersNearby(packetName, packetFields)](#entity_writeothersnearbypacketname-packetfields)
@@ -129,7 +130,6 @@
       - [player.updateHealth(health)](#playerupdatehealthhealth)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
-      - [player.despawnPlayers(despawnedPlayers)](#playerdespawnplayersdespawnedplayers)
       - [player.updateAndSpawnNearbyPlayers()](#playerupdateandspawnnearbyplayers)
       - [player.playSound(sound, opt)](#playerplaysoundsound-opt)
     - [Low level properties](#low-level-properties)
@@ -575,6 +575,14 @@ Gets all nearby players regardless of what client thinks
 
 Gets all nearby players that client can see
 
+#### entity.takeDamage({sound='game.player.hurt', damage=1, velocity=new Vec3(0,0,0), maxVelocity=new Vec3(4, 4, 4), animation=true})
+
+* sound: Sound to play (default is game.player.hurt)
+* damage: Damage to deal (default is based off player's weapon, player's potions, attackEntity's potions, and attackedEntity armor)
+* velocity: Which way should attackedEntity move when hit
+* maxVelocity: maxVelocity from consecutive hits
+* animation: Play death/hit animation
+
 ### Low level Methods
 
 #### entity._writeOthers(packetName, packetFields)
@@ -859,10 +867,6 @@ The world object which the player is in (use serv.overworld, serv.netherworld, s
 #### player.spawnAPlayer(spawnedPlayer)
 
 Spawn `spawnedPlayer` for `player`.
-
-#### player.despawnPlayers(despawnedPlayers)
-
-Despawn `despawnedPlayers` for `player`.
 
 #### player.updateAndSpawnNearbyPlayers()
 

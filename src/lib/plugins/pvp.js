@@ -19,29 +19,8 @@ module.exports.player=function(player,serv)
 
     player.behavior('attack', {
       attackedEntity: attackedEntity,
-      sound: 'game.player.hurt',
-      playSound: true,
-      damage: 1,
-      velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5),
-      maxVelocity: new Vec3(4, 4, 4),
-      animation: true
-    }, ({attackedEntity, sound, damage, velocity, maxVelocity, animation}) => {
-      attackedEntity.updateHealth(attackedEntity.health - damage);
-      serv.playSound(sound, player.world, attackedEntity.position.scaled(1/32));
-
-      attackedEntity.sendVelocity(velocity.scaled(1/32), maxVelocity);
-
-      if(attackedEntity.health<=0 && animation)
-        attackedEntity._writeOthers('entity_status',{
-          entityId:attackedEntity.id,
-          entityStatus:3
-        });
-      else if (animation)
-        attackedEntity._writeOthers('animation',{
-        entityId:attackedEntity.id,
-        animation:1
-      });
-    });    
+      velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5)
+    }, (o) => o.attackedEntity.takeDamage(o));
   }
 
   player._client.on("use_entity", ({mouse,target} = {}) => {
@@ -49,10 +28,45 @@ module.exports.player=function(player,serv)
       attackEntity(target);
   });
 
+  player.commands.add({
+    base: 'killall',
+    info: 'Kill everything',
+    usage: '/killall',
+    action() {
+      Object.keys(serv.entities).forEach(key => serv.entities[key].takeDamage({damage:20}));
+    }
+  });
+
 };
 
-module.exports.entity=function(entity)
+module.exports.entity=function(entity,serv)
 {
+  entity.takeDamage=({sound='game.player.hurt', damage=1, velocity=new Vec3(0,0,0), maxVelocity=new Vec3(4, 4, 4), animation=true}) => {
+    entity.updateHealth(entity.health - damage);
+    serv.playSound(sound, entity.world, entity.position.scaled(1/32));
+
+    entity.sendVelocity(velocity.scaled(1/32), maxVelocity);
+
+    if(entity.health<=0 && animation) {
+      entity._writeOthers('entity_status', {
+        entityId: entity.id,
+        entityStatus: 3
+      });
+      if(entity.type!="player") {
+        delete serv.entities[entity.id];
+        setTimeout(() => {
+          entity.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([entity]));
+        },2000);
+        // this is the duration of the despawning animation, it should change for every entity (see EnderDragon)
+      }
+    }
+    else if (animation)
+      entity._writeOthers('animation',{
+        entityId:entity.id,
+        animation:1
+      });
+  };
+
   if (entity.type != 'player') {
     entity.updateHealth = (health) => {
       entity.health = health;
