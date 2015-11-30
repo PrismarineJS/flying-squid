@@ -120,6 +120,28 @@ module.exports.player=function(player,serv){
     }
   });
 
+  player.commands.add({
+    base: 'attach',
+    info: 'attach an entity on an other entity',
+    usage: '/attach <carrierId> <attachedId>',
+    parse(str)  {
+      var pars=str.split(' ');
+      if(pars.length!=2)
+        return false;
+      var [carrierId,attachedId]=pars.map(a => parseInt(a));
+      return {carrierId:carrierId,attachedId:attachedId};
+    },
+    action({carrierId,attachedId}) {
+      var p={
+        entityId:attachedId,
+        vehicleId:carrierId,
+        leash:false
+      };
+      player._client.write('attach_entity',p);
+      player._writeOthersNearby('attach_entity',p);
+    }
+  });
+
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
