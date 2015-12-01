@@ -24,7 +24,7 @@ module.exports.entity=function(entity){
 
     if (xBlock || yBlock || zBlock) {
       entity.velocity.x = getFriction(entity.velocity.x, entity.friction.x, delta);
-      entity.velocity.z = getFriction(entity.velocity.x, entity.friction.x, delta);
+      entity.velocity.z = getFriction(entity.velocity.z, entity.friction.z, delta);
     }
 
     var oldPos = entity.position.clone();
