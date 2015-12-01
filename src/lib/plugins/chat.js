@@ -1,3 +1,5 @@
+var ChatParser = require("minecraft-chat-parser")
+
 module.exports.server=function(serv)
 {
   serv.broadcast = (message, color) =>
@@ -5,6 +7,11 @@ module.exports.server=function(serv)
       "text": message,
       "color": color
     }));
+  serv.broadcastColor = (message) =>
+    serv.players.forEach(player => player.chat(
+        ChatParser(message)
+      )    
+    )
 };
 
 module.exports.player=function(player,serv)

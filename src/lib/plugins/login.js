@@ -121,7 +121,7 @@ module.exports.player=function(player,serv)
 
   function announceJoin()
   {
-    serv.broadcast(player.username + ' joined the game.', "yellow");
+    serv.broadcastColor('&e' + player.username + ' joined the game.');
     player.emit("connected");
   }
 
