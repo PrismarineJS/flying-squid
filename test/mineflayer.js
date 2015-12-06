@@ -10,11 +10,12 @@ function assertPosEqual(pos1,pos2) {
 }
 var once = require('event-promise');
 
-describe("Server with mineflayer connection", () => {
+describe("Server with mineflayer connection", () =>  {
   var bot;
   var bot2;
   var serv;
-  before(async () => {
+  before(async function () {
+    this.timeout(10 * 60 * 1000);
     var options = settings;
     options["online-mode"]=false;
     options["port"]=25566;
@@ -32,7 +33,16 @@ describe("Server with mineflayer connection", () => {
       port: 25566,
       username: "bot2"
     });
-    return Promise.all([once(bot,'spawn'),once(bot2,'spawn')])
+
+    await new Promise((cb) => {
+      var l=() => {
+        if(bot.entity.onGround) {
+          bot.removeListener("move",l);
+          cb();
+        }
+      };
+      bot.on("move",l);
+    });
   });
 
   after(() => {
@@ -94,14 +104,19 @@ describe("Server with mineflayer connection", () => {
         assertPosEqual(bot2.entity.position,initialPosition.offset(1,-2,3));
       });
     });
-  });
-  it("can use /deop",async () => {
-    bot.chat('/deop bot');
-    let msg1=await once(bot,'message');
-    assert.equal(msg1.text,'bot is deopped');
-    bot.chat('/op bot');
-    let msg2=await once(bot,'message');
-    assert.equal(msg2.text,'You do not have permission to use this command');
-    serv.getPlayer("bot").op=true;
+    it("can use /deop",async () => {
+      bot.chat('/deop bot');
+      let msg1=await once(bot,'message');
+      assert.equal(msg1.text,'bot is deopped');
+      bot.chat('/op bot');
+      let msg2=await once(bot,'message');
+      assert.equal(msg2.text,'You do not have permission to use this command');
+      serv.getPlayer("bot").op=true;
+    });
+    it("can use /setblock",async() => {
+      bot.chat('/setblock 1 2 3 95 0');
+      let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
+      assert.equal(newBlock.type,95);
+    });
   });
 });
