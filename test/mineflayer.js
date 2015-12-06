@@ -6,7 +6,7 @@ var assert = require('chai').assert;
 var Vec3 = require('vec3').Vec3;
 
 function assertPosEqual(pos1,pos2) {
-  assert.isBelow(pos1.distanceTo(pos2),0.01);
+  assert.isBelow(pos1.distanceTo(pos2),0.1);
 }
 
 
@@ -105,6 +105,34 @@ describe("Server with mineflayer connection", function() {
         });
         bot.chat('/tp bot2 bot');
       });
+      it("can tp with relative positions",function(done) {
+        var initialPosition=bot.entity.position.clone();
+        bot.once('forcedMove', function () {
+          assertPosEqual(bot.entity.position,initialPosition.offset(1,-2,3));
+          done();
+        });
+        bot.chat('/tp ~1 ~-2 ~3');
+      });
+      it("can tp somebody else with relative positions",function(done) {
+        var initialPosition=bot2.entity.position.clone();
+        bot2.once('forcedMove', function () {
+          assertPosEqual(bot2.entity.position,initialPosition.offset(1,-2,3));
+          done();
+        });
+        bot.chat('/tp bot2 ~1 ~-2 ~3');
+      });
     });
+  });
+  it("can use /deop",function(done) {
+    bot.once('message',function(message){
+      assert.equal(message.text,'bot is deopped');
+      bot.once('message',function(message){
+        assert.equal(message.text,'You do not have permission to use this command');
+        serv.getPlayer("bot").op=true;
+        done();
+      });
+    });
+    bot.chat('/deop bot');
+    bot.chat('/op bot');
   });
 });
