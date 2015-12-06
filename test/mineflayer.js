@@ -14,6 +14,20 @@ describe("Server with mineflayer connection", () =>  {
   var bot;
   var bot2;
   var serv;
+
+  async function onGround()
+  {
+    await new Promise((cb) => {
+    var l=() => {
+      if(bot.entity.onGround) {
+        bot.removeListener("move",l);
+        cb();
+      }
+    };
+    bot.on("move",l);
+  });
+  }
+
   before(async function () {
     this.timeout(10 * 60 * 1000);
     var options = settings;
@@ -34,20 +48,45 @@ describe("Server with mineflayer connection", () =>  {
       username: "bot2"
     });
 
-    await new Promise((cb) => {
-      var l=() => {
-        if(bot.entity.onGround) {
-          bot.removeListener("move",l);
-          cb();
-        }
-      };
-      bot.on("move",l);
-    });
+    await onGround();
   });
 
   after(() => {
     serv._server.close();
     return once(serv._server,"close");
+  });
+
+
+
+  describe("actions",() => {
+    it("can dig",async function () {
+      this.timeout(10 * 60 * 1000);
+      var pos=bot.entity.position.offset(0,-1,0);
+      bot.dig(bot.blockAt(pos));
+      let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+pos,{array:true});
+      assert.equal(newBlock.type,0);
+      await onGround();
+    });
+    it.skip("can place a block",async function () {
+
+      this.timeout(10 * 60 * 1000);
+      var pos=bot.entity.position.offset(0,-2,0);
+      bot.dig(bot.blockAt(pos));
+
+      let [oldBlock,newBlock]=await once(bot2,'blockUpdate:'+pos,{array:true});
+      assert.equal(newBlock.type,0);
+      bot.creative.setInventorySlot(36,new mineflayer.Item(1,1));
+      await new Promise((cb) => {
+        bot.inventory.on("windowUpdate",(slot,oldItem,newItem) => {
+          if(slot==36 && newItem && newItem.type==1)
+            cb();
+        });
+      });
+
+      bot.placeBlock(bot.blockAt(pos.offset(0,-2,0)),new Vec3(0,1,0));
+      [oldBlock,newBlock]=await once(bot2,'blockUpdate:'+pos.offset(0,-1,0),{array:true});
+      assert.equal(newBlock.type,1);
+    });
   });
 
   describe("commands",() => {
