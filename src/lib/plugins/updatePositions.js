@@ -52,10 +52,10 @@ module.exports.player=function(player)
   });
 
   player.sendRelativePositionChange = (newPosition, onGround) => {
-    player.behavior('move', {
+    return player.behavior('move', {
       onGround: onGround,
       position: newPosition
-    }, () => {
+    }, async () => {
       if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
         var diff = newPosition.minus(player.position);
         if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
@@ -85,7 +85,7 @@ module.exports.player=function(player)
     }, () => {
       player.sendPosition();
     });
-  }
+  };
 
   player.sendPosition = () => {
     player._client.write('position', {
@@ -98,8 +98,8 @@ module.exports.player=function(player)
     });
   };
 
-  player.teleport = (position) => {
-    player.sendRelativePositionChange(position, false);
+  player.teleport = async (position) => {
+    await player.sendRelativePositionChange(position, false);
     player.sendPosition();
   }
 };
