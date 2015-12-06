@@ -37,9 +37,9 @@ module.exports.player = (player, serv) => {
         if(!(player_from = serv.getPlayer(args[0])))
           return false;
 
-        let x = getPos(args[0], 'x', player_from);
-        let y = getPos(args[1], 'y', player_from);
-        let z = getPos(args[2], 'z', player_from);
+        let x = getPos(args[1], 'x', player_from);
+        let y = getPos(args[2], 'y', player_from);
+        let z = getPos(args[3], 'z', player_from);
 
         player_from.teleport(new Vec3(x, y, z));
       }

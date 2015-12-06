@@ -15,6 +15,8 @@ module.exports.server=function(serv,options)
     try {
       var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
       player._client=client;
+
+      player.profileProperties=player._client.profile ? player._client.profile.properties : [];
       player.commands = new Command({});
       Object.keys(plugins)
         .filter(pluginName => plugins[pluginName].player!=undefined)
@@ -95,8 +97,6 @@ module.exports.player=function(player,serv)
 
   function fillTabList()
   {
-    player.profileProperties=player._client.profile ? player._client.profile.properties : [];
-
     player._writeOthers('player_info',{
       action: 0,
       data: [{
