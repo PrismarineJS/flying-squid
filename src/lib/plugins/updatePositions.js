@@ -97,6 +97,11 @@ module.exports.player=function(player)
       flags: 0x00
     });
   };
+
+  player.teleport = (position) => {
+    player.sendRelativePositionChange(position, false);
+    player.sendPosition();
+  }
 };
 
 module.exports.entity=function(entity,serv){

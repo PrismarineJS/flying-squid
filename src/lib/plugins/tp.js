@@ -17,19 +17,16 @@ module.exports.player = (player, serv) => {
         if(!(player_from = serv.getPlayer(args[0])) || !(player_to = serv.getPlayer(args[1])))
           return false;
 
-        player_from.position = new Vec3(player_to.position.x, player_to.position.y, player_to.position.z);
-        player_from.sendPosition();
+        player_from.teleport(player_to.position.clone());
       } else if(args.length === 3) {
-        player.position = new Vec3(args[0]*32, args[1]*32, args[2]*32);
-        player.sendPosition();
+        player.teleport(new Vec3(args[0]*32, args[1]*32, args[2]*32));
       } else if(args.length === 4) {
         let player_from;
 
         if(!(player_from = serv.getPlayer(args[0])))
           return false;
 
-        player_from.position = new Vec3(args[1]*32, args[2]*32, args[3]*32);
-        player_from.sendPosition();
+        player_from.teleport(new Vec3(args[1]*32, args[2]*32, args[3]*32));
       }
     }
   });
