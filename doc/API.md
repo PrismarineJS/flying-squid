@@ -45,6 +45,10 @@
       - [server.playNoteBlock(world, position, pitch)](#serverplaynoteblockworld-position-pitch)
       - [server.getNote(note)](#servergetnotenote)
       - [server.emitParticle(particle, world, position, opt)](#serveremitparticleparticle-world-position-opt)
+      - [serv.getXpLevel(xp)](#servgetxplevelxp)
+      - [serv.getXpRequired(level, toLevel=level+1)](#servgetxprequiredlevel-tolevellevel1)
+      - [serv.getBaseXpFromLevel(level)](#servgetbasexpfromlevellevel)
+      - [serv.distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)](#servdistancetoxplevelxp-tolevelstartlevel1-startlevelxp-level)
     - [Low level methods](#low-level-methods)
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
@@ -92,6 +96,9 @@
     - [Properties](#properties-2)
       - [player.username](#playerusername)
       - [player.view](#playerview)
+      - [player.xp](#playerxp)
+      - [player.displayXp](#playerdisplayxp)
+      - [player.xpLevel](#playerxplevel)
     - [Events](#events-2)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -132,6 +139,10 @@
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
       - [player.updateAndSpawnNearbyPlayers()](#playerupdateandspawnnearbyplayers)
       - [player.playSound(sound, opt)](#playerplaysoundsound-opt)
+      - [player.setXp(xp, opt)](#playersetxpxp-opt)
+      - [player.sendXp()](#playersendxp)
+      - [player.setXpLevel(level)](#playersetxplevellevel)
+      - [player.setDisplayXp(num)](#playersetdisplayxpnum)
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods-1)
@@ -352,6 +363,28 @@ Opt:
 - longDistance: I don't know what this is. I think this is pointless with our implenetation of radius, not sure though...
 - size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense)
 - count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)
+
+#### serv.getXpLevel(xp)
+
+Get level given XP amount
+
+#### serv.getXpRequired(level, toLevel=level+1)
+
+Get's the amount of xp required to get from level to toLevel (or level to level+1)
+
+#### serv.getBaseXpFromLevel(level)
+
+Gets the minimum amount of xp required to be at that level (or "base xp" for that level)
+
+#### serv.distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)
+
+Gets a number between 0 and 1 (used in player.displayXp as the green bar at the bottom) that is the progress of xp between startLevel and toLevel.
+
+By default, startLevel will be the xp's lowest possible level: serv.getXpLevel(xp)
+
+By default, toLevel is startLevel + 1.
+
+This means when startLevel and toLevel are at their defaults, this function returns the progress to the next level of XP (from 0.0 to 1.0)
 
 ### Low level methods
 
@@ -604,6 +637,18 @@ The username of the player
 #### player.view
 
 The view size of the player, for example 8 for 16x16
+
+#### player.xp
+
+Total experience the player has (int). Set this using player.setXp()
+
+#### player.displayXp
+
+Number from 0 to 1.0 representing the progress bar at the bottom of the player's screen. Set this with player.setDisplayXp()
+
+#### player.xpLevel
+
+Level of xp the player has. Set this with player.setXpLevel()
 
 ### Events
 
@@ -875,6 +920,25 @@ Spawn and despawn the correct players depending on distance for `player`.
 #### player.playSound(sound, opt)
 
 Easy way to only play a sound for one player. Same opt as serv.playSound except no `whitelist`.
+
+#### player.setXp(xp, opt)
+
+Sets the player's XP level. Options:
+- setLevel: Calculate and set player.level (default: true)
+- setDisplay: Calculate and set player.displayXp (default: true)
+- send: Send xp packet (default: true)
+
+#### player.sendXp()
+
+Updates the player's xp based on player.xp, player.displayXp, and player.xpLevel
+
+#### player.setXpLevel(level)
+
+Sets and sends the player's new level
+
+#### player.setDisplayXp(num)
+
+Sets and sends the palyer's new display amount. num should be from 0 to 1.0
 
 ### Low level properties
 
