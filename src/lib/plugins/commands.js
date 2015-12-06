@@ -114,7 +114,7 @@ module.exports.player=function(player, serv) {
   player.handleCommand = async (str) => {
     try {
       var res = await player.commands.use(str, player.op);
-      if (res) player.chat('' + res);
+      if (res) player.chat(serv.color.red + res);
     }
     catch(err) {
       if (err instanceof UserError) player.chat('Error: ' + err.message);
