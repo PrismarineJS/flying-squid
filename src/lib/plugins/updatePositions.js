@@ -51,7 +51,7 @@ module.exports.player=function(player)
     sendLook(yaw,pitch,onGround);
   });
 
-  function sendRelativePositionChange(newPosition, onGround) {
+  player.sendRelativePositionChange = (newPosition, onGround) => {
     player.behavior('move', {
       onGround: onGround,
       position: newPosition
