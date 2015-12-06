@@ -39,6 +39,7 @@ module.exports.player=function(player,serv)
     base: 'killall',
     info: 'Kill everything',
     usage: '/killall',
+    op: true,
     action() {
       Object.keys(serv.entities).forEach(key => serv.entities[key].takeDamage({damage:20}));
     }

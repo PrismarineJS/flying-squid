@@ -68,6 +68,7 @@ module.exports.player=function(player,serv) {
     base: 'playsound',
     info: 'to play sound for yourself',
     usage: '/playsound <sound_name> [volume] [pitch]',
+    op: true,
     parse(str) {
       var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
       if(!results) return false;
@@ -87,6 +88,7 @@ module.exports.player=function(player,serv) {
     base: 'playsoundforall',
     info: 'to play sound for everyone',
     usage: '/playsoundforall <sound_name> [volume] [pitch]',
+    op: true,
     parse(str) {
       var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
       if(!results) return false;

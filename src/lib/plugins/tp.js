@@ -4,7 +4,7 @@ module.exports.player = (player, serv) => {
 
   var getPos = (num, dir='x', p=player) => {
     if (num[0] == '~') return p.position[dir] + parseInt(num.slice(1, num.length) || 0)*32;
-    else return parseInt(num);
+    else return parseInt(num)*32;
   }
 
   player.commands.add({
@@ -12,6 +12,7 @@ module.exports.player = (player, serv) => {
     aliases: ['tp'],
     info: 'to teleport a player',
     usage: '/teleport [target player] <destination player or x> [y] [z]',
+    op: true,
     parse(str) {
       return str.match(/^(((\w* )?~?-?\d* ~?-?\d* ~?-?\d*)|(\w* \w*))$/) ? str.split(' ') : false;
     },

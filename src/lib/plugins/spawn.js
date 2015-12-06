@@ -72,6 +72,7 @@ module.exports.player=function(player,serv){
     base: 'spawn',
     info: 'Spawn a mob',
     usage: '/spawn <entity_id>',
+    op: true,
     parse(str) {
       var results=str.match(/(\d+)/);
       if (!results) return false;
@@ -90,6 +91,7 @@ module.exports.player=function(player,serv){
     base: 'spawnObject',
     info: 'Spawn an object',
     usage: '/spawnObject <entity_id>',
+    op: true,
     parse(str) {
       var results=str.match(/(\d+)/);
       if (!results) return false;
@@ -108,6 +110,7 @@ module.exports.player=function(player,serv){
     base: 'summon',
     info: 'Summon an entity',
     usage: '/summon <entity_name>',
+    op: true,
     action(name) {
       var entity=entitiesByName[name];
       if(!entity) {
@@ -124,6 +127,7 @@ module.exports.player=function(player,serv){
     base: 'attach',
     info: 'attach an entity on an other entity',
     usage: '/attach <carrierId> <attachedId>',
+    op: true,
     parse(str)  {
       var pars=str.split(' ');
       if(pars.length!=2)

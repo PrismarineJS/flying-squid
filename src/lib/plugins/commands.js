@@ -18,7 +18,7 @@ module.exports.player=function(player) {
           if(used.indexOf(hash[key]) > -1) continue;
           used.push(hash[key]);
 
-          if(hash[key].params.info) {
+          if(hash[key].params.info && (player.op || !hash[key].params.op)) {
             var str = hash[key].params.usage + ' ' + hash[key].params.info;
             if(hash[key].params.aliases && hash[key].params.aliases.length) {
               str += ' (aliases: ' + hash[key].params.aliases.join(', ') + ')';
@@ -76,7 +76,7 @@ module.exports.player=function(player) {
 
   player.handleCommand = async (str) => {
     try {
-      var res = await player.commands.use(str);
+      var res = await player.commands.use(str, player.op);
       if (res) player.chat('' + res);
     }
     catch(err) {

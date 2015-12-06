@@ -29,6 +29,7 @@ module.exports.player=function(player,serv){
     base: 'particle',
     info: 'emit a particle at a position',
     usage: '/particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]',
+    op: true,
     parse(str) {
       var results=str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/);
       if(!results) return false;

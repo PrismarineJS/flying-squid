@@ -32,6 +32,7 @@ module.exports.player=function(player,serv)
     base: 'setblock',
     info: 'to put a block',
     usage: '/setblock <x> <y> <z> <id> <data>',
+    op: true,
     parse(str) {
       var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3}) ([0-9]{1,3})/);
       if(!results) return false;

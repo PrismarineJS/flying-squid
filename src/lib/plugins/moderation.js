@@ -71,6 +71,7 @@ module.exports.player=function(player,serv)
     base: 'kick',
     info: 'to kick a player',
     usage: '/kick <player> [reason]',
+    op: true,
     parse(str) {
       if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
         return false;
@@ -95,6 +96,7 @@ module.exports.player=function(player,serv)
     base: 'ban',
     info: 'to ban a player',
     usage: '/ban <player> [reason]',
+    op: true,
     parse(str) {
       if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
         return false;
@@ -125,6 +127,7 @@ module.exports.player=function(player,serv)
     base: 'pardon',
     info: 'to pardon a player',
     usage: '/pardon <player>',
+    op: true,
     parse(str) {
       if(!str.match(/([a-zA-Z0-9_]+)/))
         return false;

@@ -24,10 +24,11 @@ class Command {
     return res;
   }
 
-  async use(command) {
+  async use(command, op=true) {
     var res = this.find(command);
 
     if(res) {
+      if (res[0].params.op && !op) return 'You do not have permission to use this command';
       var parse = res[0].params.parse;
       if(parse) {
         if(typeof parse == 'function') {
@@ -73,6 +74,10 @@ class Command {
   space(end) {
     var first = !(this.parent && this.parent.parent);
     return this.params.merged || (!end && first) ? '' : ' ';
+  }
+
+  setOp(op) {
+    this.params.op = op;
   }
 }
 

@@ -19,6 +19,7 @@ module.exports.player=function(player){
     aliases: ['gm'],
     info: 'to change game mode',
     usage: '/gamemode <0-3>',
+    op: true,
     parse(str) {
       var results;
       if(!(results = str.match(/^([0-3])$/)))

@@ -29,6 +29,7 @@ module.exports.player=function(player,serv){
     base: 'night',
     info: 'to change a time to night',
     usage: '/night',
+    op: true,
     action() {
       return player.handleCommand('time set night');
     }
@@ -38,6 +39,7 @@ module.exports.player=function(player,serv){
     base: 'time',
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
+    op: true,
     parse(str) {
       var data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/);
       if(!data) return false;
@@ -68,6 +70,7 @@ module.exports.player=function(player,serv){
     base: 'day',
     info: 'to change a time to day',
     usage: '/day',
+    op: true,
     action() {
       return player.handleCommand('time set day');
     }
