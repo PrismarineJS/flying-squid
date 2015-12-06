@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepublish": "gulp",
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec distTest"
   },
   "keywords": [],
   "licenses": {
@@ -55,12 +55,13 @@
     "babel": "5.8.23",
     "chai": "~3.2.0",
     "doctoc": "^0.15.0",
+    "event-promise": "0.0.1",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "gulp-plumber": "^1.0.1",
     "gulp-sourcemaps": "^1.3.0",
     "longjohn": "~0.2.8",
     "mineflayer": "^1.5.1",
-    "mocha": "~2.2.5"
+    "mocha": "~2.3.4"
   }
 }

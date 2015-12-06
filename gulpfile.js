@@ -25,8 +25,24 @@ gulp.task('compile', function() {
     .pipe(gulp.dest('dist/'));
 });
 
+gulp.task('compileTest', function() {
+  return gulp
+    .src('test/**/*.js')
+    .pipe(plumber({
+      errorHandler: function(err) {
+        console.error(err.stack);
+        this.emit('end');
+      }
+    }))
+    .pipe(sourcemaps.init())
+    .pipe(babel(options))
+    .pipe(plumber.stop())
+    .pipe(sourcemaps.write('maps/'))
+    .pipe(gulp.dest('distTest/'));
+});
+
 gulp.task('watch', function() {
   return gulp.watch('src/**/*.js', ['compile']);
 });
 
-gulp.task('default', ['compile']);
+gulp.task('default', ['compile','compileTest']);

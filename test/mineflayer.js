@@ -8,131 +8,100 @@ var Vec3 = require('vec3').Vec3;
 function assertPosEqual(pos1,pos2) {
   assert.isBelow(pos1.distanceTo(pos2),0.1);
 }
+var once = require('event-promise');
 
-
-describe("Server with mineflayer connection", function() {
+describe("Server with mineflayer connection", () => {
   var bot;
   var bot2;
   var serv;
-  before(function(done){
+  before(async () => {
     var options = settings;
     options["online-mode"]=false;
     options["port"]=25566;
 
     serv=mcServer.createMCServer(options);
 
-    serv.on("listening",function(){
-      bot = mineflayer.createBot({
-        host: "localhost",
-        port: 25566,
-        username: "bot"
-      });
-      bot2 = mineflayer.createBot({
-        host: "localhost",
-        port: 25566,
-        username: "bot2"
-      });
-
-      var nbSpawn=0;
-
-      function spawn() {
-        nbSpawn++;
-        if(nbSpawn==2)
-          done();
-      }
-
-      bot.on('spawn', spawn);
-      bot2.on('spawn', spawn);
-
-    })
+    await once(serv,"listening");
+    bot = mineflayer.createBot({
+      host: "localhost",
+      port: 25566,
+      username: "bot"
+    });
+    bot2 = mineflayer.createBot({
+      host: "localhost",
+      port: 25566,
+      username: "bot2"
+    });
+    return Promise.all([once(bot,'spawn'),once(bot2,'spawn')])
   });
 
-  after(function(done){
+  after(() => {
     serv._server.close();
-    serv._server.on("close",function(){
-      done();
-    });
+    return once(serv._server,"close");
   });
 
-  describe("commands",function(){
-    it("has an help command", function(done) {
-      bot.once("message",function(){
-        done();
-      });
+  describe("commands",() => {
+    it("has an help command", async () => {
       bot.chat("/help");
+      await once(bot,"message");
     });
-    it("can use /particle",function(done){
-      bot._client.once('world_particles',function(){
-        done();
-      });
+    it("can use /particle",async () => {
       bot.chat("/particle 5 10 100 100 100");
+      await once(bot._client,'world_particles');
     });
-    it("can use /playsound",function(done) {
-      bot.once('soundEffectHeard',function(){
-        done();
-      });
+    it("can use /playsound",async () => {
       bot.chat('/playsound ambient.weather.rain');
+      await once(bot,'soundEffectHeard');
     });
-    it("can use /summon",function(done) {
-      var listener=function(entity){
-        if(entity.name=="EnderDragon") {
-          bot.removeListener('entitySpawn',listener);
-          done();
-        }
-      };
-      bot.on('entitySpawn',listener);
+    it("can use /summon",async () => {
       bot.chat('/summon EnderDragon');
-    });
-    describe("can use /tp",function() {
-      it("can tp myself",function(done) {
-          bot.once('forcedMove', function () {
-            assertPosEqual(bot.entity.position,new Vec3(2, 3, 4));
+      await new Promise((done) => {
+        var listener=(entity) => {
+          if(entity.name=="EnderDragon") {
+            bot.removeListener('entitySpawn',listener);
             done();
-          });
-          bot.chat('/tp 2 3 4');
-        });
-      it("can tp somebody else",function(done) {
-        bot2.once('forcedMove', function () {
-          assertPosEqual(bot2.entity.position,new Vec3(2, 3, 4));
-          done();
-        });
+          }
+        };
+        bot.on('entitySpawn',listener);
+      });
+    });
+    describe("can use /tp",() => {
+      it("can tp myself", async () => {
+        bot.chat('/tp 2 3 4');
+        await once(bot,'forcedMove');
+        assertPosEqual(bot.entity.position, new Vec3(2, 3, 4));
+      });
+      it("can tp somebody else",async () => {
         bot.chat('/tp bot2 2 3 4');
+        await once(bot2,'forcedMove');
+        assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4));
       });
-      it("can tp to somebody else",function(done) {
-        bot2.once('forcedMove', function () {
-          assertPosEqual(bot2.entity.position,bot.entity.position);
-          done();
-        });
+      it("can tp to somebody else",async () => {
         bot.chat('/tp bot2 bot');
+        await once(bot2,'forcedMove');
+        assertPosEqual(bot2.entity.position, bot.entity.position);
       });
-      it("can tp with relative positions",function(done) {
+      it("can tp with relative positions",async () => {
         var initialPosition=bot.entity.position.clone();
-        bot.once('forcedMove', function () {
-          assertPosEqual(bot.entity.position,initialPosition.offset(1,-2,3));
-          done();
-        });
         bot.chat('/tp ~1 ~-2 ~3');
+        await once(bot,'forcedMove');
+        assertPosEqual(bot.entity.position,initialPosition.offset(1,-2,3));
       });
-      it("can tp somebody else with relative positions",function(done) {
+      it("can tp somebody else with relative positions",async () => {
         var initialPosition=bot2.entity.position.clone();
-        bot2.once('forcedMove', function () {
-          assertPosEqual(bot2.entity.position,initialPosition.offset(1,-2,3));
-          done();
-        });
         bot.chat('/tp bot2 ~1 ~-2 ~3');
+        await once(bot2,'forcedMove');
+        assertPosEqual(bot2.entity.position,initialPosition.offset(1,-2,3));
       });
     });
   });
-  it("can use /deop",function(done) {
-    bot.once('message',function(message){
-      assert.equal(message.text,'bot is deopped');
-      bot.once('message',function(message){
-        assert.equal(message.text,'You do not have permission to use this command');
-        serv.getPlayer("bot").op=true;
-        done();
-      });
-    });
+  it("can use /deop",async () => {
     bot.chat('/deop bot');
+    let msg1=await once(bot,'message');
+    assert.equal(msg1.text,'bot is deopped');
     bot.chat('/op bot');
+    let msg2=await once(bot,'message');
+    assert.equal(msg2.text,'You do not have permission to use this command');
+    serv.getPlayer("bot").op=true;
   });
 });
