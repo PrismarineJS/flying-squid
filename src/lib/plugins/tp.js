@@ -15,37 +15,19 @@ module.exports.player = (player, serv) => {
         if(!(player_from = serv.getPlayer(args[0])) || !(player_to = serv.getPlayer(args[1])))
           return false;
 
-        player_from._client.write('position', {
-          x: player_to.position.x/32,
-          y: player_to.position.x/32,
-          z: player_to.position.x/32,
-          yaw: player_to.yaw,
-          pitch: player_to.pitch,
-          flags: 0x00
-        });
+        player_from.position = new Vec3(player_to.position.x/32, player_to.position.y/32, player_to.position.z/32);
+        player_from.sendPosition();
       } else if(args.length === 3) {
-        player._client.write('position', {
-          x: args[0],
-          y: args[1],
-          z: args[2],
-          yaw: player.yaw,
-          pitch: player.pitch,
-          flags: 0x00
-        });
+        player.position = new Vec3(args[0], args[1], args[2]);
+        player.sendPosition();
       } else if(args.length === 4) {
         let player_from;
 
         if(!(player_from = serv.getPlayer(args[0])))
           return false;
 
-        player_from._client.write('position', {
-          x: args[1],
-          y: args[2],
-          z: args[3],
-          yaw: player_from.yaw,
-          pitch: player_from.pitch,
-          flags: 0x00
-        });
+        player_from.position = new Vec3(args[1], args[2], args[3]);
+        player_from.sendPosition();
       }
     }
   });
