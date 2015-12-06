@@ -139,4 +139,38 @@ module.exports.player=function(player,serv)
         .catch(err => player.chat(nick + " is not banned"));
     }
   });
+
+  player.commands.add({
+    base: 'op',
+    info: 'op any player',
+    usage: '/op <player>',
+    op: true,
+    parse(str) {
+      if (!str.match(/([a-zA-Z0-9_]+)/)) return false;
+      return str;
+    },
+    action(username) {
+      var user = serv.getPlayer(username);
+      if (!user) return 'That player is not on the server.'
+      user.op = true;
+      player.chat(username + ' is opped');
+    }
+  });
+
+  player.commands.add({
+    base: 'deop',
+    info: 'deop any player',
+    usage: '/deop <player>',
+    op: true,
+    parse(str) {
+      if (!str.match(/([a-zA-Z0-9_]+)/)) return false;
+      return str;
+    },
+    action(username) {
+      var user = serv.getPlayer(username);
+      if (!user) return 'That player is not on the server.'
+      user.op = false;
+      player.chat(username + ' is deopped');
+    }
+  });
 };
