@@ -44,10 +44,10 @@ module.exports.player=function(player)
   }
 
   player._client.on('position', ({x,y,z,onGround} = {}) =>
-    sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround));
+    player.sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround));
 
   player._client.on('position_look', ({x,y,z,onGround,yaw,pitch} = {}) => {
-    sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround);
+    player.sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround);
     sendLook(yaw,pitch,onGround);
   });
 
