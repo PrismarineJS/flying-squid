@@ -29,7 +29,7 @@ module.exports.server = function(serv, settings) {
         throw new Error('Cannot find plugin "' + p + '"');
       }
       serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p]);
-      continue;
+      return;
     }
     serv.addPlugin(p, require(p), settings.plugins[p]);
   });
