@@ -1,3 +1,5 @@
+var Vec3 = require("vec3").Vec3;
+
 module.exports.player = (player, serv) => {
   player.commands.add({
     base: 'teleport',
