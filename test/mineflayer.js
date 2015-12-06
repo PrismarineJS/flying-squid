@@ -10,7 +10,7 @@ function assertPosEqual(pos1,pos2) {
 }
 var once = require('event-promise');
 
-describe("Server with mineflayer connection", () =>  {
+describe("Server with mineflayer connection", function()  {
   this.timeout(10 * 60 * 1000);
   var bot;
   var bot2;
