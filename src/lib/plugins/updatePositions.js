@@ -55,16 +55,16 @@ module.exports.player=function(player)
     return player.behavior('move', {
       onGround: onGround,
       position: newPosition
-    }, async () => {
+    }, async ({onGround, position}) => {
       if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
-        var diff = newPosition.minus(player.position);
+        var diff = position.minus(player.position);
         if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
         {
           player._writeOthersNearby('entity_teleport', {
             entityId:player.id,
-            x: newPosition.x,
-            y: newPosition.y,
-            z: newPosition.z,
+            x: position.x,
+            y: position.y,
+            z: position.z,
             yaw: player.yaw,
             pitch: player.pitch,
             onGround: onGround
@@ -80,7 +80,7 @@ module.exports.player=function(player)
           });
         }
       }
-      player.position = newPosition;
+      player.position = position;
       player.onGround = onGround;
     }, () => {
       player.sendPosition();
