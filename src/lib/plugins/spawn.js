@@ -182,6 +182,7 @@ module.exports.entity=function(entity,serv) {
     entity.lastPositionPlayersUpdated = entity.position.clone();
     entity.nearbyEntities = [];
     entity.viewDistance = 150;
+    entity.score = {};
 
     entity.bornTime = Date.now();
     serv.entities[entity.id] = entity;
