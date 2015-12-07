@@ -118,5 +118,10 @@ describe("Server with mineflayer connection", () =>  {
       let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
       assert.equal(newBlock.type,95);
     });
+    it("can use /xp",async() => {
+      bot.chat('/xp 100');
+      await once(bot,"experience");
+      assert.equal(bot.experience.points,100);
+    });
   });
 });
