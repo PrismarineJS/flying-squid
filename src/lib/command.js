@@ -8,42 +8,33 @@ class Command {
   }
 
   find(command) {
-    var res;
-    for(var key in this.hash) {
-      var space = this.hash[key].space(true);
-      if(space) space += '?';
-
-      var ended = space + '(.*)';
-
-      var found = command.match(new RegExp('^' + key + ended));
-      if(found) {
-        res = [this.hash[key], found];
-      }
-    }
-
-    return res;
+    var parts=command.split(" ");
+    var c=parts.shift();
+    var pars=parts.join(" ");
+    if(this.hash[c])
+      return [this.hash[c], pars];
+    return undefined;
   }
 
   async use(command, op=true) {
     var res = this.find(command);
 
     if(res) {
-      if (res[0].params.op && !op) return 'You do not have permission to use this command';
-      var parse = res[0].params.parse;
+      var [com,pars]=res;
+      if (com.params.op && !op) return 'You do not have permission to use this command';
+      var parse = com.params.parse;
       if(parse) {
         if(typeof parse == 'function') {
-          res[1] = parse(res[1][1]);
-          if(res[1] === false) {
-            return res[0].params.usage ? 'Usage: ' + res[0].params.usage : 'Bad syntax';
+          pars = parse(pars);
+          if(pars === false) {
+            return com.params.usage ? 'Usage: ' + com.params.usage : 'Bad syntax';
           }
         } else {
-          res[1] = res[1][1].match(parse);
+          pars = pars.match(parse);
         }
-      } else {
-        res[1].shift();
       }
 
-      res = await res[0].params.action(res[1]);
+      res = await com.params.action(pars);
       if(res) return '' + res;
     } else {
       return 'Command not found';

@@ -49,7 +49,7 @@ module.exports.server=function(serv)
   
   serv.pardonIP = (IP) => {
     return serv.bannedIPs[IP] ? delete serv.bannedIPs[IP] : false
-  }
+  };
 
   function pardon(uuid) {
     if (serv.bannedPlayers[uuid]) {
@@ -145,12 +145,12 @@ module.exports.player=function(player,serv)
   });
   
   player.commands.add({
-    base: 'ipban',
+    base: 'ban-ip',
     info: 'bans a specific IP',
     usage: '/ban-ip <ip> [reason]',
     op: true,
     parse(str){
-      var argv = str.split(' ')
+      var argv = str.split(' ');
       if(argv.length < 1) return;
       
       return {
@@ -159,10 +159,21 @@ module.exports.player=function(player,serv)
       }
     },
     action({IP, reason}){
-      serv.banIP(IP, reason)
+      serv.banIP(IP, reason);
       player.chat("" + IP + " was IP banned")
     }
-  })
+  });
+
+  player.commands.add({
+    base: 'pardon-ip',
+    info: 'to pardon a player by ip',
+    usage: '/pardon-ip <ip>',
+    op: true,
+    action(IP) {
+      var result=serv.pardonIP(IP);
+      player.chat(result ? IP + " was IP pardonned" : IP+" is not banned");
+    }
+  });
 
   player.commands.add({
     base: 'pardon',
