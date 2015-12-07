@@ -8,9 +8,20 @@ module.exports.server=function(serv)
   serv.ban = (uuid, reason) => {
     serv.bannedPlayers[uuid] = {
       time: +moment(),
-      reason: reason || "You are banned!"
+      reason: reason || "Your account is banned!"
     };
   };
+  serv.banIP = (IP, reason) => {
+    serv.bannedIPs[IP] = {
+      time: +moment(),
+      reason: reason || "Your IP is banned!"
+    }
+    for(var uuid in serv.players){
+      if(serv.players[uuid]._client.socket.remoteAddress == IP){
+        serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason)
+      }
+    }
+  }
 
   function uuidInParts(plainUUID)
   {
@@ -35,6 +46,10 @@ module.exports.server=function(serv)
     return serv.getUUIDFromUsername(username)
       .then(pardon);
   };
+  
+  serv.pardonIP = (IP) => {
+    return serv.bannedIPs[IP] ? delete serv.bannedIPs[IP] : false
+  }
 
   function pardon(uuid) {
     if (serv.bannedPlayers[uuid]) {
@@ -45,6 +60,7 @@ module.exports.server=function(serv)
   }
 
   serv.bannedPlayers = {};
+  serv.bannedIPs = {};
 };
 
 module.exports.player=function(player,serv)
@@ -62,6 +78,11 @@ module.exports.player=function(player,serv)
     var uuid=player._client.uuid;
     serv.ban(uuid, reason);
   };
+  player.banIP = reason => {
+    reason = reason || "You were IP banned!"
+    player.kick(reason)
+    serv.banIP(player._client.socket.remoteAddress)
+  }
 
   player.pardon = () => serv.pardon(player._client.uuid);
 
@@ -122,6 +143,26 @@ module.exports.player=function(player,serv)
       }
     }
   });
+  
+  player.commands.add({
+    base: 'ipban',
+    info: 'bans a specific IP',
+    usage: '/ban-ip <ip> [reason]',
+    op: true,
+    parse(str){
+      var argv = str.split(' ')
+      if(argv.length < 1) return;
+      
+      return {
+        IP: argv.shift(),
+        reason: argv.shift()
+      }
+    },
+    action({IP, reason}){
+      serv.banIP(IP, reason)
+      player.chat("" + IP + " was IP banned")
+    }
+  })
 
   player.commands.add({
     base: 'pardon',

@@ -149,6 +149,10 @@ module.exports.player=function(player,serv)
       player.kick(serv.bannedPlayers[player._client.uuid].reason);
       return;
     }
+    if(serv.bannedIPs[player._client.socket.remoteAddress]){
+        player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason)
+        return
+    }
 
     addPlayer();
     sendLogin();

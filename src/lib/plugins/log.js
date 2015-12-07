@@ -47,7 +47,7 @@ module.exports.server=function(serv,settings)
 module.exports.player=function(player,serv)
 {
 
-  player.on("connected",() => serv.log("[INFO]: " + player.username + ' connected'));
+  player.on("connected",() => serv.log("[INFO]: " + player.username + ' (' + player._client.socket.remoteAddress + ') connected'));
 
   player.on("spawned",() => serv.log("[INFO]: position written, player spawning..."));
 
