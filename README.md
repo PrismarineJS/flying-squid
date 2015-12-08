@@ -62,17 +62,22 @@ var mcServer = require("flying-squid");
 mcServer.createMCServer({
   "motd": "A Minecraft Server \nRunning flying-squid",
   "port": 25565,
-  "maxPlayers": 10,
-  "onlineMode": true,
+  "max-players": 10,
+  "online-mode": true,
   "logging": true,
   "gameMode": 1,
   "generation": {
-    "name":"diamond_square",
+    "name": "diamond_square",
     "options":{
-      "worldHeight":80
+      "worldHeight": 80
     }
   },
-  "modpe": false
+  "kickTimeout": 10000,
+  "plugins": {
+
+  },
+  "modpe": false,
+  "view-distance": 10
 });
 ```
 
