@@ -89,7 +89,7 @@ module.exports.player=function(player, serv) {
       else if (arr == null) return 'Could not find player';
       else player.chat(JSON.stringify(arr.map(a => a.id)));
     }
-  })
+  });
 
 
   player.handleCommand = async (str) => {

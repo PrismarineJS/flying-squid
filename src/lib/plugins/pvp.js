@@ -36,12 +36,19 @@ module.exports.player=function(player,serv)
   });
 
   player.commands.add({
-    base: 'killall',
-    info: 'Kill everything',
-    usage: '/killall',
+    base: 'kill',
+    info: 'Kill entities',
+    usage: '/kill <selector>',
     op: true,
-    action() {
-      Object.keys(serv.entities).forEach(key => serv.entities[key].takeDamage({damage:20}));
+    parse(str) {
+      return str || false;
+    },
+    action(sel) {
+      var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
+      if (arr instanceof Error) return arr.toString();
+      if (arr == null) return 'Could not find player';
+
+      arr.map(entity => entity.takeDamage({damage:20}));
     }
   });
 
