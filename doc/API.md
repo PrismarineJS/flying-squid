@@ -60,6 +60,7 @@
       - [entity.world](#entityworld)
       - [entity.type](#entitytype)
       - [entity.entityType](#entityentitytype)
+      - [entity.name](#entityname)
       - [entity.nearbyEntities](#entitynearbyentities)
       - [entity.viewDistance](#entityviewdistance)
       - [entity.health](#entityhealth)
@@ -423,6 +424,10 @@ World object entity is in
 Either "player", "mob", or "object" (currently)
 
 #### entity.entityType
+
+Numerical type of the entity.
+
+#### entity.name
 
 Sub-category of entity. For mobs, this is which mob (Zombie/Skeleton, etc). For objects, this is which object (Arrow/Dropped item, etc)
 
