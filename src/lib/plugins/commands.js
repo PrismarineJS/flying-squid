@@ -184,7 +184,7 @@ module.exports.server = function(serv) {
 
       if (!checkOption(opt.team, s.team)) return false;
       if (!checkOption(opt.name, s.username)) return false;
-      if (!checkOption(opt.type, s.type)) return false; // "type" option of selector needs fixing
+      if (!checkOption(opt.type, s.name)) return false;
 
       var fail = false;
       scores.max.forEach(m => {

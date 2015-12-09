@@ -1,5 +1,6 @@
 var version = require("../version");
 var entitiesByName=require("minecraft-data")(version).entitiesByName;
+var entitiesById=require("minecraft-data")(version).entities;
 var Entity = require("prismarine-entity");
 var path = require('path');
 var requireIndex = require('requireindex');
@@ -44,6 +45,7 @@ module.exports.server=function(serv,options) {
 
   serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=new Vec3(0,0,0),metadata=[]}={}) => {
     var mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
+    mob.name=entitiesById[type].name;
     mob.velocity = velocity.scaled(32).floored();
     mob.pitch = pitch;
     mob.headPitch = headPitch;
