@@ -13,7 +13,8 @@ module.exports = {
   Command:require("./lib/command"),
   version:require("./lib/version"),
   generations:require("./lib/generations"),
-  experience:require("./lib/experience")
+  experience:require("./lib/experience"),
+  UserError:require("./lib/UserError")
 };
 
 function createMCServer(options) {

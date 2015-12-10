@@ -1,5 +1,5 @@
 var Vec3 = require("vec3").Vec3;
-var UserError = require('../UserError');
+var UserError = require('flying-squid').UserError;
 
 module.exports.player=function(player, serv) {
 
