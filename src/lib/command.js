@@ -3,6 +3,8 @@ class Command {
     this.params = params;
     this.parent = parent;
     this.hash = parent ? parent.hash : {};
+    this.parentBase = (this.parent && this.parent.base && this.parent.base + ' ') || '';
+    this.base = this.parentBase + (this.params.base || '');
 
     this.updateHistory();
   }
@@ -44,9 +46,9 @@ class Command {
   updateHistory() {
     var all = '(.+?)';
 
-    var list = [this.params.base];
+    var list = [this.base];
     if(this.params.aliases && this.params.aliases.length) {
-      this.params.aliases.forEach(al => list.unshift(al));
+      this.params.aliases.forEach(al => list.unshift(this.parentBase + al));
     }
 
     list.forEach((command) => {

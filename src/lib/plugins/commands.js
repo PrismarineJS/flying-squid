@@ -7,29 +7,45 @@ module.exports.player=function(player, serv) {
     base: 'help',
     info: 'to show all commands',
     usage: '/help [command]',
-    action(params) {
-      var c = params[0];
+    parse(str) {
+      var params = str.split(' ');
+      var page = parseInt(params[params.length-1]);
+      var search = '';
+      if (page) {
+        params.pop();
+      }
+      search = params.join(' ');
+      return { search: search, page: (page && page - 1) || 0 };
+    },
+    action({search, page}) {
+      if (page < 0) return 'Page # must be >= 1';
       var hash = player.commands.hash;
 
-      if(c) {
-        var f=player.commands.find(c);
-        if(f==undefined || f.length==0) return 'Command '+c+' not found';
-        return f[0].params.usage + ' ' + f[0].params.info;
+      var PAGE_LENGTH = 8;
+
+      var found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
+      var totalPages = Math.floor(found.length / PAGE_LENGTH);
+      if (found.length > 1 && totalPages < page) {
+       return 'There are only ' + (totalPages + 1) + ' help pages.';
+      }
+
+      if (found.indexOf(search) != -1) {
+        var cmd = hash[search];
+        player.chat('/' + cmd.base + ' -' + ((cmd.params && ' ' + cmd.params.info) || '=-=-=-=-=-=-=-=-'));
+        if (cmd.params && cmd.params.usage) player.chat(cmd.params.usage);
+      } else if (found.length > 1) {
+        player.chat('Help -=-=-=-=-=-=-=-=-');
+      }
+
+      if (found.length == 0) {
+        return 'Could not find any matches';
       } else {
-        var used = [];
-        for(var key in hash) {
-          if(used.indexOf(hash[key]) > -1) continue;
-          used.push(hash[key]);
-
-          if(hash[key].params.info && (player.op || !hash[key].params.op)) {
-            var str = hash[key].params.usage + ' ' + hash[key].params.info;
-            if(hash[key].params.aliases && hash[key].params.aliases.length) {
-              str += ' (aliases: ' + hash[key].params.aliases.join(', ') + ')';
-            }
-
-            player.chat(str);
-          }
+        found = found.sort();
+        for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
+          var cmd = hash[found[i]];
+          player.chat(cmd.params.base + ': ' + cmd.params.info);
         }
+        player.chat('--=[Page ' + (page + 1) + ' of ' + (totalPages + 1) + ']=--')
       }
     }
   });
