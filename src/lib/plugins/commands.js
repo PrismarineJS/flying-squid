@@ -21,7 +21,7 @@ module.exports.player=function(player, serv) {
       if (page < 0) return 'Page # must be >= 1';
       var hash = player.commands.uniqueHash;
 
-      var PAGE_LENGTH = 8;
+      var PAGE_LENGTH = 7;
 
       var found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
 
