@@ -1,32 +1,55 @@
+var Vec3 = require("vec3").Vec3;
+var UserError = require('flying-squid').UserError;
+
 module.exports.player=function(player, serv) {
 
   player.commands.add({
     base: 'help',
     info: 'to show all commands',
     usage: '/help [command]',
-    action(params) {
-      var c = params[0];
-      var hash = player.commands.hash;
+    parse(str) {
+      var params = str.split(' ');
+      var page = parseInt(params[params.length-1]);
+      var search = '';
+      if (page) {
+        params.pop();
+      }
+      search = params.join(' ');
+      return { search: search, page: (page && page - 1) || 0 };
+    },
+    action({search, page}) {
+      if (page < 0) return 'Page # must be >= 1';
+      var hash = player.commands.uniqueHash;
 
-      if(c) {
-        var f=player.commands.find(c);
-        if(f==undefined || f.length==0) return 'Command '+c+' not found';
-        return f[0].params.usage + ' ' + f[0].params.info;
-      } else {
-        var used = [];
-        for(var key in hash) {
-          if(used.indexOf(hash[key]) > -1) continue;
-          used.push(hash[key]);
+      var PAGE_LENGTH = 8;
 
-          if(hash[key].params.info && (player.op || !hash[key].params.op)) {
-            var str = hash[key].params.usage + ' ' + hash[key].params.info;
-            if(hash[key].params.aliases && hash[key].params.aliases.length) {
-              str += ' (aliases: ' + hash[key].params.aliases.join(', ') + ')';
-            }
+      var found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
 
-            player.chat(str);
-          }
+      if (found.length == 0) { // None found
+        return 'Could not find any matches';
+      } else if (found.length == 1) { // Single command found, giev info on command
+        var cmd = hash[found[0]];
+        var usage = (cmd.params && cmd.params.usage) || cmd.base;
+        var info = (cmd.params && cmd.params.info) || 'No info';
+        player.chat(usage + ': ' + info);
+      } else { // Multiple commands found, give list with pages
+        var totalPages = Math.ceil((found.length-1) / PAGE_LENGTH);
+        if (page >= totalPages) return 'There are only' + totalPages + ' help pages';
+        found = found.sort();
+        if (found.indexOf('search') != -1) {
+          var baseCmd = hash[search];
+          player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'));
+        } else {
+          player.chat('Help -=-=-=-=-=-=-=-=-');
         }
+        for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
+          if (i == search) continue;
+          var cmd = hash[found[i]];
+          var usage = (cmd.params && cmd.params.usage) || cmd.base;
+          var info = (cmd.params && cmd.params.info) || 'No info';
+          player.chat(usage + ': ' + info);
+        }
+        player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
       }
     }
   });
@@ -83,8 +106,7 @@ module.exports.player=function(player, serv) {
     },
     action(sel) {
       var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
-      if (arr instanceof Error) return arr.toString();
-      else if (arr == null) return 'Could not find player';
+      if (arr == null) return 'Could not find player';
       else player.chat(JSON.stringify(arr.map(a => a.id)));
     }
   });
@@ -96,10 +118,15 @@ module.exports.player=function(player, serv) {
       if (res) player.chat('' + res);
     }
     catch(err) {
-      setTimeout(() => {throw err;}, 0);
+      if (err instanceof UserError) player.chat('Error: ' + err.toString());
+      else setTimeout(() => {throw err;}, 0);
     }
   }
 };
+
+module.exports.entity = function(entity, serv) {
+  entity.selectorString = (str) => serv.selectorString(str, entity.position.scaled(1/32), entity.world);
+}
 
 module.exports.server = function(serv) {
 
@@ -126,7 +153,7 @@ module.exports.server = function(serv) {
 
   serv.selector = (type, opt) => {
     if (['all', 'random', 'near', 'entity'].indexOf(type) == -1)
-      return new Error('serv.selector(): type must be either [all, random, near, or entity]');
+      throw new UserError('serv.selector(): type must be either [all, random, near, or entity]');
 
     var count = typeof opt.count != 'undefined' ?
                   count :
@@ -209,12 +236,13 @@ module.exports.server = function(serv) {
     else return sample.slice(count); // Negative, returns from end
   }
 
-  serv.selectorString = (str, pos, world) => {
+  serv.selectorString = (str, pos, world, allowUser=true) => {
     pos = pos.clone();
     var player = serv.getPlayer(str);
     if (!player && str[0] != '@') return null;
+    else if (player) return allowUser ? [player] : null;
     var match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
-    if (match == null) return new Error('Invalid selector format');
+    if (match == null) throw new UserError('Invalid selector format');
     var typeConversion = {
       a: 'all',
       r: 'random',
@@ -227,10 +255,10 @@ module.exports.server = function(serv) {
     var err;
     opt.forEach(o => {
       var match = o.match(/^([^=]+)=([^=]+)$/);
-      if (match == null) err = new Error('Invalid selector option format: "' + o + '"');
+      if (match == null) err = new UserError('Invalid selector option format: "' + o + '"');
       else optPair.push({key: match[1], val: match[2]});
     });
-    if (err) return err;
+    if (err) throw err;
 
     var optConversion = {
       type: 'type',
@@ -269,4 +297,11 @@ module.exports.server = function(serv) {
 
     return serv.selector(type, data);
   }
+
+  serv.posFromString = (str, pos) => {
+    if (parseInt(str)) return parseInt(str);
+    if (str.match(/~-?\d+/)) return parseInt(str.slice(1)) + pos;
+    else if (str == '~') return pos;
+    else throw new UserError('Invalid position');
+  };
 }

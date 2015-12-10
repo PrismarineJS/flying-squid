@@ -13,7 +13,8 @@ module.exports = {
   Command:require("./lib/command"),
   version:require("./lib/version"),
   generations:require("./lib/generations"),
-  experience:require("./lib/experience")
+  experience:require("./lib/experience"),
+  UserError:require("./lib/UserError")
 };
 
 function createMCServer(options) {
@@ -39,5 +40,7 @@ class MCServer extends EventEmitter {
     this._server.on('error', error => this.emit('error',error));
     this._server.on('listening', () => this.emit('listening',this._server.socketServer.address().port));
     this.emit('asap');
+
+    process.on('unhandledRejection', err => this.emit('error',err));
   }
 }

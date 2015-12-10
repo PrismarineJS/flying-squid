@@ -27,14 +27,14 @@ module.exports.entity=function(entity){
       entity.velocity.z = getFriction(entity.velocity.z, entity.friction.z, delta);
     }
 
-    var oldPos = entity.position.clone();
+    var newPos = entity.position.clone();
 
-    entity.position.x += getMoveAmount('x', xBlock, entity, delta, sizeSigned.x);
-    entity.position.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
-    entity.position.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z);
+    newPos.x += getMoveAmount('x', xBlock, entity, delta, sizeSigned.x);
+    newPos.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
+    newPos.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z);
 
     //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: new Vec3(0, 0, 0) });
-    return { oldPos: oldPos, onGround: yBlock}
+    return { position: newPos, onGround: yBlock}
   };
 
 

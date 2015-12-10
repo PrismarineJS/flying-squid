@@ -19,9 +19,8 @@ module.exports.server=function(serv,options) {
           }
         }
         if (!entity.velocity || !entity.size) return;
-        var oldPosAndOnGround = await entity.calculatePhysics(delta);
-        if (!oldPosAndOnGround.oldPos.equals(new Vec3(0,0,0)))
-          if (entity.type == 'mob') entity.sendPosition(oldPosAndOnGround);
+        var posAndOnGround = await entity.calculatePhysics(delta);
+        if (entity.type == 'mob') entity.sendPosition(posAndOnGround.position, posAndOnGround.onGround);
       })
     ).catch((err)=> setTimeout(() => {throw err;},0));
   });
