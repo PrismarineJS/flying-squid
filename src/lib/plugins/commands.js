@@ -212,10 +212,11 @@ module.exports.server = function(serv) {
     else return sample.slice(count); // Negative, returns from end
   }
 
-  serv.selectorString = (str, pos, world) => {
+  serv.selectorString = (str, pos, world, allowUser=true) => {
     pos = pos.clone();
     var player = serv.getPlayer(str);
     if (!player && str[0] != '@') return null;
+    else if (player) return allowUser ? [player] : null;
     var match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
     if (match == null) throw new UserError('Invalid selector format');
     var typeConversion = {

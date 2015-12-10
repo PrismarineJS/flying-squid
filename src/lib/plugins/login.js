@@ -158,7 +158,7 @@ module.exports.player=function(player,serv)
     sendLogin();
     await player.sendMap();
     player.sendSpawnPosition();
-    player.sendPosition();
+    player.sendSelfPosition();
     player.updateHealth(player.health);
 
 

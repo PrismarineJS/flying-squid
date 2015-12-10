@@ -39,55 +39,21 @@ module.exports.player=function(player)
         headYaw: convYaw
       });
     }, () => {
-      player.sendPosition();
+      player.sendSelfPosition();
     });
   }
 
-  player._client.on('position', ({x,y,z,onGround} = {}) =>
-    player.sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround));
+  player._client.on('position', ({x,y,z,onGround} = {}) => {
+    console.log(x,y,z);
+    player.sendPosition((new Vec3(x, y, z)).toFixedPosition(), onGround);
+  });
 
   player._client.on('position_look', ({x,y,z,onGround,yaw,pitch} = {}) => {
-    player.sendRelativePositionChange((new Vec3(x, y, z)).toFixedPosition(), onGround);
+    player.sendPosition((new Vec3(x, y, z)).toFixedPosition(), onGround);
     sendLook(yaw,pitch,onGround);
   });
 
-  player.sendRelativePositionChange = (newPosition, onGround) => {
-    return player.behavior('move', {
-      onGround: onGround,
-      position: newPosition
-    }, async ({onGround, position}) => {
-      if (player.position.distanceTo(new Vec3(0, 0, 0)) != 0) {
-        var diff = position.minus(player.position);
-        if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
-        {
-          player._writeOthersNearby('entity_teleport', {
-            entityId:player.id,
-            x: position.x,
-            y: position.y,
-            z: position.z,
-            yaw: player.yaw,
-            pitch: player.pitch,
-            onGround: onGround
-          });
-        }
-        else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) {
-          player._writeOthersNearby('rel_entity_move', {
-            entityId: player.id,
-            dX: diff.x,
-            dY: diff.y,
-            dZ: diff.z,
-            onGround: onGround
-          });
-        }
-      }
-      player.position = position;
-      player.onGround = onGround;
-    }, () => {
-      player.sendPosition();
-    });
-  };
-
-  player.sendPosition = () => {
+  player.sendSelfPosition = () => {
     player._client.write('position', {
       x: player.position.x/32,
       y: player.position.y/32,
@@ -99,25 +65,25 @@ module.exports.player=function(player)
   };
 
   player.teleport = async (position) => {
-    await player.sendRelativePositionChange(position.scaled(32).floored(), false);
-    player.sendPosition();
+    var notCancelled = await player.sendSelfPosition(position.scaled(32).floored(), false, true);
+    if (notCancelled) player.sendSelfPosition();
   }
 };
 
 module.exports.entity=function(entity,serv){
-  entity.sendPosition = ({oldPos,onGround}) => {
-    entity.behavior('move', {
-      old: oldPos,
+  entity.sendPosition = (position, onGround, teleport=false) => {
+    if (entity.position.equals(position) && entity.onGround == onGround) return Promise.resolve();
+    return entity.behavior(teleport ? 'teleport' : 'move', {
+      position: position,
       onGround: onGround
-    }, ({old,onGround}) => {
-      var diff = entity.position.minus(old);
-
+    }, ({position,onGround}) => {
+      var diff = position.minus(entity.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
         entity._writeOthersNearby('entity_teleport', {
           entityId: entity.id,
-          x: entity.position.x,
-          y: entity.position.y,
-          z: entity.position.z,
+          x: position.x,
+          y: position.y,
+          z: position.z,
           yaw: entity.yaw,
           pitch: entity.pitch,
           onGround: onGround
@@ -129,12 +95,13 @@ module.exports.entity=function(entity,serv){
         dZ: diff.z,
         onGround: onGround
       }, entity);
+
+      entity.position = position;
+      entity.onGround = onGround;
     }, () => {
-      entity.position = oldPos;
+      if (entity.type == 'player') player.sendSelfPosition();
     });
   };
-
-
 
   entity.sendVelocity = (vel, maxVel) => {
     var velocity = vel.scaled(32).floored(); // Make fixed point
@@ -151,6 +118,10 @@ module.exports.entity=function(entity,serv){
       else entity.velocity.add(velocity);
     }
   };
+
+  entity.teleport = (pos) => { // Overwritten in players inject above
+    entity.sendPosition(entity.position, false, true);
+  }
 
   function addVelocityWithMax(current, newVel, max) {
     var x, y, z;

@@ -159,7 +159,7 @@ module.exports.player=function(player,serv,settings) {
 
     await player.sendMap();
 
-    player.sendPosition();
+    player.sendSelfPosition();
     player.emit('change_world');
 
     await player.waitPlayerLogin();

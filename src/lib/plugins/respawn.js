@@ -9,7 +9,7 @@ module.exports.player=function(player)
           gamemode:player.gameMode,
           levelType:'default'
         });
-        player.sendPosition();
+        player.sendSelfPosition();
         player.updateHealth(20);
         player.nearbyEntities=[];
         player.updateAndSpawn();
