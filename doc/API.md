@@ -5,6 +5,16 @@
 - [API](#api)
   - [Classes](#classes)
     - [Entity](#entity)
+    - [flying-squid.Command](#flying-squidcommand)
+    - [flying-squid.Behavior](#flying-squidbehavior)
+    - [Libs](#libs)
+    - [flying-squid.generations](#flying-squidgenerations)
+    - [flying-squid.version](#flying-squidversion)
+    - [flying-squid.experience](#flying-squidexperience)
+      - [getXpLevel(xp)](#getxplevelxp)
+      - [getXpRequired(level, toLevel=level+1)](#getxprequiredlevel-tolevellevel1)
+      - [getBaseXpFromLevel(level)](#getbasexpfromlevellevel)
+      - [distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)](#distancetoxplevelxp-tolevelstartlevel1-startlevelxp-level)
   - [MCServer](#mcserver)
     - [Flying-squid.createMCServer(options)](#flying-squidcreatemcserveroptions)
     - [Properties](#properties)
@@ -45,10 +55,6 @@
       - [server.playNoteBlock(world, position, pitch)](#serverplaynoteblockworld-position-pitch)
       - [server.getNote(note)](#servergetnotenote)
       - [server.emitParticle(particle, world, position, opt)](#serveremitparticleparticle-world-position-opt)
-      - [serv.getXpLevel(xp)](#servgetxplevelxp)
-      - [serv.getXpRequired(level, toLevel=level+1)](#servgetxprequiredlevel-tolevellevel1)
-      - [serv.getBaseXpFromLevel(level)](#servgetbasexpfromlevellevel)
-      - [serv.distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)](#servdistancetoxplevelxp-tolevelstartlevel1-startlevelxp-level)
     - [Low level methods](#low-level-methods)
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
@@ -156,6 +162,42 @@
 
 ### Entity
 See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
+
+### flying-squid.Command
+
+### flying-squid.Behavior
+
+### Libs
+
+Collections of pure functions
+
+### flying-squid.generations
+
+### flying-squid.version
+
+### flying-squid.experience
+
+#### getXpLevel(xp)
+
+Get level given XP amount
+
+#### getXpRequired(level, toLevel=level+1)
+
+Get's the amount of xp required to get from level to toLevel (or level to level+1)
+
+#### getBaseXpFromLevel(level)
+
+Gets the minimum amount of xp required to be at that level (or "base xp" for that level)
+
+#### distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)
+
+Gets a number between 0 and 1 (used in player.displayXp as the green bar at the bottom) that is the progress of xp between startLevel and toLevel.
+
+By default, startLevel will be the xp's lowest possible level: getXpLevel(xp)
+
+By default, toLevel is startLevel + 1.
+
+This means when startLevel and toLevel are at their defaults, this function returns the progress to the next level of XP (from 0.0 to 1.0)
 
 ## MCServer
 
@@ -365,27 +407,6 @@ Opt:
 - size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense)
 - count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)
 
-#### serv.getXpLevel(xp)
-
-Get level given XP amount
-
-#### serv.getXpRequired(level, toLevel=level+1)
-
-Get's the amount of xp required to get from level to toLevel (or level to level+1)
-
-#### serv.getBaseXpFromLevel(level)
-
-Gets the minimum amount of xp required to be at that level (or "base xp" for that level)
-
-#### serv.distanceToXpLevel(xp, toLevel=startLevel+1, startLevel=xp level)
-
-Gets a number between 0 and 1 (used in player.displayXp as the green bar at the bottom) that is the progress of xp between startLevel and toLevel.
-
-By default, startLevel will be the xp's lowest possible level: serv.getXpLevel(xp)
-
-By default, toLevel is startLevel + 1.
-
-This means when startLevel and toLevel are at their defaults, this function returns the progress to the next level of XP (from 0.0 to 1.0)
 
 ### Low level methods
 

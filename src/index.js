@@ -12,7 +12,8 @@ module.exports = {
   Behavior:require("./lib/behavior"),
   Command:require("./lib/command"),
   version:require("./lib/version"),
-  generations:require("./lib/generations")
+  generations:require("./lib/generations"),
+  experience:require("./lib/experience")
 };
 
 function createMCServer(options) {
