@@ -1,4 +1,4 @@
-var blocks=require("minecraft-data")(require("../version")).blocks;
+var blocks=require("minecraft-data")(require("flying-squid").version).blocks;
 var Vec3 = require("vec3").Vec3;
 
 module.exports.entity=function(entity){

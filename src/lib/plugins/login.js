@@ -4,7 +4,7 @@ var Vec3 = require("vec3").Vec3;
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-var Command = require('../command');
+var Command = require('flying-squid').Command;
 
 module.exports.server=function(serv,options)
 {

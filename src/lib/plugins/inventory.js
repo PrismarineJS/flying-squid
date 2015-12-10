@@ -1,4 +1,4 @@
-var version = require("../version");
+var version = require("flying-squid").version;
 var windows = require("prismarine-windows")(version).windows;
 var Item = require("prismarine-item")(version);
 

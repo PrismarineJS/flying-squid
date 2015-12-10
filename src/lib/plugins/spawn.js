@@ -1,4 +1,4 @@
-var version = require("../version");
+var version = require("flying-squid").version;
 var entitiesByName=require("minecraft-data")(version).entitiesByName;
 var entitiesById=require("minecraft-data")(version).entities;
 var Entity = require("prismarine-entity");

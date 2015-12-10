@@ -1,5 +1,3 @@
-var Vec3 = require("vec3").Vec3;
-
 module.exports.player=function(player, serv) {
 
   player.commands.add({

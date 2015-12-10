@@ -1,5 +1,5 @@
 var net = require('net');
-var mcServer=require("../");
+var mcServer=require("flying-squid");
 var settings = require('../config/default-settings');
 var mineflayer = require("mineflayer");
 var assert = require('chai').assert;

@@ -1,17 +1,9 @@
-var Vec3 = require("vec3").Vec3;
 var spiralloop = require('spiralloop');
 
-var Chunk = require('prismarine-chunk')(require("../version"));
 var World = require('prismarine-world');
 var WorldSync = require("prismarine-world-sync");
 
-var generations={
-  'grass_field':require("../worldGenerations/grass_field"),
-  'diamond_square':require("../worldGenerations/diamond_square"),
-  'superflat':require("../worldGenerations/superflat"),
-  'all_the_blocks':require("../worldGenerations/all_the_blocks"),
-  'nether':require("../worldGenerations/nether")
-};
+var generations=require("flying-squid").generations;
 
 module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
