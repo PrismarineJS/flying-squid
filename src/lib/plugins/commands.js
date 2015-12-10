@@ -19,33 +19,37 @@ module.exports.player=function(player, serv) {
     },
     action({search, page}) {
       if (page < 0) return 'Page # must be >= 1';
-      var hash = player.commands.hash;
+      var hash = player.commands.uniqueHash;
 
       var PAGE_LENGTH = 8;
 
       var found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
-      var totalPages = Math.floor(found.length / PAGE_LENGTH);
-      if (found.length > 1 && totalPages < page) {
-       return 'There are only ' + (totalPages + 1) + ' help pages.';
-      }
 
-      if (found.indexOf(search) != -1) {
-        var cmd = hash[search];
-        player.chat('/' + cmd.base + ' -' + ((cmd.params && ' ' + cmd.params.info) || '=-=-=-=-=-=-=-=-'));
-        if (cmd.params && cmd.params.usage) player.chat(cmd.params.usage);
-      } else if (found.length > 1) {
-        player.chat('Help -=-=-=-=-=-=-=-=-');
-      }
-
-      if (found.length == 0) {
+      if (found.length == 0) { // None found
         return 'Could not find any matches';
-      } else {
+      } else if (found.length == 1) { // Single command found, giev info on command
+        var cmd = hash[found[0]];
+        var usage = (cmd.params && cmd.params.usage) || cmd.base;
+        var info = (cmd.params && cmd.params.info) || 'No info';
+        player.chat(usage + ': ' + info);
+      } else { // Multiple commands found, give list with pages
+        var totalPages = Math.ceil((found.length-1) / PAGE_LENGTH);
+        if (page >= totalPages) return 'There are only' + totalPages + ' help pages';
         found = found.sort();
-        for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
-          var cmd = hash[found[i]];
-          player.chat(cmd.params.base + ': ' + cmd.params.info);
+        if (found.indexOf('search') != -1) {
+          var baseCmd = hash[search];
+          player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'));
+        } else {
+          player.chat('Help -=-=-=-=-=-=-=-=-');
         }
-        player.chat('--=[Page ' + (page + 1) + ' of ' + (totalPages + 1) + ']=--')
+        for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
+          if (i == search) continue;
+          var cmd = hash[found[i]];
+          var usage = (cmd.params && cmd.params.usage) || cmd.base;
+          var info = (cmd.params && cmd.params.info) || 'No info';
+          player.chat(usage + ': ' + info);
+        }
+        player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
       }
     }
   });

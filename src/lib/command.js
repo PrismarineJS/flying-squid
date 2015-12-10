@@ -3,6 +3,7 @@ class Command {
     this.params = params;
     this.parent = parent;
     this.hash = parent ? parent.hash : {};
+    this.uniqueHash = parent ? parent.uniqueHash : {};
     this.parentBase = (this.parent && this.parent.base && this.parent.base + ' ') || '';
     this.base = this.parentBase + (this.params.base || '');
 
@@ -58,6 +59,7 @@ class Command {
 
       if(this.path) this.hash[this.path] = this;
     });
+    this.uniqueHash[this.base] = this;
   }
 
   add(params) {
