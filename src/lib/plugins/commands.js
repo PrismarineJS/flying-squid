@@ -120,6 +120,10 @@ module.exports.player=function(player, serv) {
   }
 };
 
+module.exports.entity = function(entity, serv) {
+  entity.selectorString = (str) => serv.selectorString(str, entity.position.scaled(1/32), entity.world);
+}
+
 module.exports.server = function(serv) {
 
   function shuffleArray(array) {
