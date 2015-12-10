@@ -5,8 +5,8 @@ var mineflayer = require("mineflayer");
 var assert = require('chai').assert;
 var Vec3 = require('vec3').Vec3;
 
-function assertPosEqual(pos1,pos2) {
-  assert.isBelow(pos1.distanceTo(pos2),0.1);
+function assertPosEqual(actual,expected) {
+  assert.isBelow(actual.distanceTo(expected),0.1,"expected: "+expected+", actual: "+actual+"\n");
 }
 var once = require('event-promise');
 
