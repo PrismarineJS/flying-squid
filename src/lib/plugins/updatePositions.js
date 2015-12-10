@@ -99,7 +99,7 @@ module.exports.player=function(player)
   };
 
   player.teleport = async (position) => {
-    await player.sendRelativePositionChange(position, false);
+    await player.sendRelativePositionChange(position.scaled(32).floored(), false);
     player.sendPosition();
   }
 };

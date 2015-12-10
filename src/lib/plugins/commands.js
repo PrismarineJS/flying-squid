@@ -1,3 +1,6 @@
+var Vec3 = require("vec3").Vec3;
+var UserError = require('../UserError');
+
 module.exports.player=function(player, serv) {
 
   player.commands.add({
@@ -83,8 +86,7 @@ module.exports.player=function(player, serv) {
     },
     action(sel) {
       var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
-      if (arr instanceof Error) return arr.toString();
-      else if (arr == null) return 'Could not find player';
+      if (arr == null) return 'Could not find player';
       else player.chat(JSON.stringify(arr.map(a => a.id)));
     }
   });
@@ -96,7 +98,8 @@ module.exports.player=function(player, serv) {
       if (res) player.chat('' + res);
     }
     catch(err) {
-      setTimeout(() => {throw err;}, 0);
+      if (err instanceof UserError) player.chat('Error: ' + err.toString());
+      else setTimeout(() => {throw err;}, 0);
     }
   }
 };
@@ -126,7 +129,7 @@ module.exports.server = function(serv) {
 
   serv.selector = (type, opt) => {
     if (['all', 'random', 'near', 'entity'].indexOf(type) == -1)
-      return new Error('serv.selector(): type must be either [all, random, near, or entity]');
+      throw new UserError('serv.selector(): type must be either [all, random, near, or entity]');
 
     var count = typeof opt.count != 'undefined' ?
                   count :
@@ -214,7 +217,7 @@ module.exports.server = function(serv) {
     var player = serv.getPlayer(str);
     if (!player && str[0] != '@') return null;
     var match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
-    if (match == null) return new Error('Invalid selector format');
+    if (match == null) throw new UserError('Invalid selector format');
     var typeConversion = {
       a: 'all',
       r: 'random',
@@ -227,10 +230,10 @@ module.exports.server = function(serv) {
     var err;
     opt.forEach(o => {
       var match = o.match(/^([^=]+)=([^=]+)$/);
-      if (match == null) err = new Error('Invalid selector option format: "' + o + '"');
+      if (match == null) err = new UserError('Invalid selector option format: "' + o + '"');
       else optPair.push({key: match[1], val: match[2]});
     });
-    if (err) return err;
+    if (err) throw err;
 
     var optConversion = {
       type: 'type',
@@ -269,4 +272,11 @@ module.exports.server = function(serv) {
 
     return serv.selector(type, data);
   }
+
+  serv.posFromString = (str, pos) => {
+    if (parseInt(str)) return parseInt(str);
+    if (str.match(/~-?\d+/)) return parseInt(str.slice(1)) + pos;
+    else if (str == '~') return pos;
+    else throw new UserError('Invalid position');
+  };
 }

@@ -30,24 +30,18 @@ module.exports.player=function(player,serv)
 
   player.commands.add({
     base: 'setblock',
-    info: 'to put a block',
-    usage: '/setblock <x> <y> <z> <id> <data>',
+    info: 'set a block at a position',
+    usage: '/setblock <x> <y> <z> <id> [data]',
     op: true,
     parse(str) {
-      var results = str.match(/^(~|~?-?[0-9]*) (~|~?-?[0-9]*) (~|~?-?[0-9]*) ([0-9]{1,3}) ([0-9]{1,3})/);
+      var results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([0-9]{1,3})(?: ([0-9]{1,3}))?/);
       if(!results) return false;
       return results;
     },
     action(params) {
-      var res = params.map((num, i) => { // parseInt parameters
-        if (num.indexOf('~') == 0) {
-          return (player.position[['', 'x', 'y', 'z'][i]] >> 5) + parseInt(num.slice(1) || 0);
-        } else {
-          return parseInt(num); // return parseInt>>5 if position, not id
-        }
-      });
-
-      player.setBlock(new Vec3(res[1], res[2], res[3]), res[4],res[5]);
+      var res = params.slice(1, 4);
+      res = res.map((val, i) => serv.posFromString(val, player.position[['x','y','z'][i]] / 32))
+      player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0);
     }
   });
 };

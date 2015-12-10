@@ -2,11 +2,6 @@ var Vec3 = require("vec3").Vec3;
 
 module.exports.player = (player, serv) => {
 
-  var getPos = (num, dir='x', p=player) => {
-    if (num[0] == '~') return p.position[dir] + parseInt(num.slice(1, num.length) || 0)*32;
-    else return parseInt(num)*32;
-  }
-
   player.commands.add({
     base: 'teleport',
     aliases: ['tp'],
@@ -26,9 +21,9 @@ module.exports.player = (player, serv) => {
 
         player_from.teleport(player_to.position.clone());
       } else if(args.length === 3) {
-        let x = getPos(args[0], 'x');
-        let y = getPos(args[1], 'y');
-        let z = getPos(args[2], 'z');
+        let x = serv.posFromString(args[0], player.position.x / 32);
+        let y = serv.posFromString(args[1], player.position.y / 32);
+        let z = serv.posFromString(args[2], player.position.z / 32);
         
         player.teleport(new Vec3(x, y, z));
       } else if(args.length === 4) {
@@ -37,9 +32,9 @@ module.exports.player = (player, serv) => {
         if(!(player_from = serv.getPlayer(args[0])))
           return false;
 
-        let x = getPos(args[1], 'x', player_from);
-        let y = getPos(args[2], 'y', player_from);
-        let z = getPos(args[3], 'z', player_from);
+        let x = serv.posFromString(args[1], player_from.x / 32);
+        let y = serv.posFromString(args[2], player_from.y / 32);
+        let z = serv.posFromString(args[3], player_from.z / 32);
 
         player_from.teleport(new Vec3(x, y, z));
       }
