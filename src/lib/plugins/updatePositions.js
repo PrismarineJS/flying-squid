@@ -64,17 +64,19 @@ module.exports.player=function(player)
   };
 
   player.teleport = async (position) => {
-    var notCancelled = await player.sendSelfPosition(position.scaled(32).floored(), false, true);
+    var notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true);
     if (notCancelled) player.sendSelfPosition();
   }
 };
 
 module.exports.entity=function(entity,serv){
   entity.sendPosition = (position, onGround, teleport=false) => {
+    if (typeof position == 'undefined') throw new Error('undef');
     if (entity.position.equals(position) && entity.onGround == onGround) return Promise.resolve();
-    return entity.behavior(teleport ? 'teleport' : 'move', {
+    return entity.behavior('move', {
       position: position,
-      onGround: onGround
+      onGround: onGround,
+      teleport: teleport
     }, ({position,onGround}) => {
       var diff = position.minus(entity.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
@@ -87,7 +89,7 @@ module.exports.entity=function(entity,serv){
           pitch: entity.pitch,
           onGround: onGround
         });
-      else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) serv._writeOthersNearby('rel_entity_move', {
+      else if (diff.distanceTo(new Vec3(0, 0, 0)) != 0) entity._writeOthersNearby('rel_entity_move', {
         entityId: entity.id,
         dX: diff.x,
         dY: diff.y,
@@ -119,7 +121,7 @@ module.exports.entity=function(entity,serv){
   };
 
   entity.teleport = (pos) => { // Overwritten in players inject above
-    entity.sendPosition(entity.position, false, true);
+    entity.sendPosition(pos.scaled(32), false, true);
   }
 
   function addVelocityWithMax(current, newVel, max) {

@@ -20,7 +20,7 @@ module.exports.server=function(serv,options) {
         }
         if (!entity.velocity || !entity.size) return;
         var posAndOnGround = await entity.calculatePhysics(delta);
-        if (entity.type == 'mob') entity.sendPosition(posAndOnGround);
+        if (entity.type == 'mob') entity.sendPosition(posAndOnGround.position, posAndOnGround.onGround);
       })
     ).catch((err)=> setTimeout(() => {throw err;},0));
   });

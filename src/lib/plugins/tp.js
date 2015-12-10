@@ -23,14 +23,15 @@ module.exports.player = (player, serv) => {
         let z = serv.posFromString(args[2], player.position.z / 32);
         
         player.teleport(new Vec3(x, y, z));
+
       } else if(args.length === 4) {
         let entities_from = player.selectorString(args[0]);
 
-        let x = serv.posFromString(args[1], player_from.x / 32);
-        let y = serv.posFromString(args[2], player_from.y / 32);
-        let z = serv.posFromString(args[3], player_from.z / 32);
-
-        entities_from.forEach(e => e.teleport(new Vec3(x, y, z)));
+        entities_from.forEach(e => e.teleport(new Vec3(
+          serv.posFromString(args[1], e.position.x / 32),
+          serv.posFromString(args[2], e.position.y / 32),
+          serv.posFromString(args[3], e.position.z / 32)
+        )));
       }
     }
   });

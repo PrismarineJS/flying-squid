@@ -19,14 +19,16 @@ module.exports = (obj) => {
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err)=> setTimeout(() => {throw err;},0));
 
     if (!hiddenCancelled && !cancelled) {
-      resp = await func(data).catch((err)=> setTimeout(() => {throw err;},0));
+      resp = func(data);
+      if (resp instanceof Promise) resp = await resp.catch((err)=> setTimeout(() => {throw err;},0));
       if (typeof resp == 'undefined') resp = true;
     } else if (cancelFunc && defaultCancel) {
-      resp = await cancelFunc(data).catch((err)=> setTimeout(() => {throw err;},0));
+      resp = cancelFunc(data);
+      if (resp instanceof Promise) resp = await resp.catch((err)=> setTimeout(() => {throw err;},0));
       if (typeof resp == 'undefined') resp = false;
     }
-
     await obj.emitThen(eventName + '_done', data, cancelled).catch((err)=> setTimeout(() => {throw err;},0));
+
     return resp;
   }
 };
