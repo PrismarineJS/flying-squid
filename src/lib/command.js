@@ -7,7 +7,7 @@ class Command {
     this.parentBase = (this.parent && this.parent.base && this.parent.base + ' ') || '';
     this.base = this.parentBase + (this.params.base || '');
 
-    this.updateHistory();
+    if(this.params.base) this.updateHistory();
   }
 
   find(command) {

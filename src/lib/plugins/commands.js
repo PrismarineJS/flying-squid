@@ -43,7 +43,7 @@ module.exports.player=function(player, serv) {
           player.chat('Help -=-=-=-=-=-=-=-=-');
         }
         for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
-          if (i == search) continue;
+          if (found[i] === search) continue;
           var cmd = hash[found[i]];
           var usage = (cmd.params && cmd.params.usage) || cmd.base;
           var info = (cmd.params && cmd.params.info) || 'No info';
