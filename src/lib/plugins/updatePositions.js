@@ -67,6 +67,18 @@ module.exports.player=function(player)
     var notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true);
     if (notCancelled) player.sendSelfPosition();
   }
+
+  player.sendAbilities = () => {
+    var f = (+(player.gameMode == 1)*1) + (+(player.gameMode == 1 || player.gameMode == 3)*2) + (+(player.gameMode == 1 || player.gamemode == 3)*4);
+    var walkingSpeed = 1.0 + ((player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    var flyingSpeed = 0.2;
+    console.log(walkingSpeed, flyingSpeed);
+    player._client.write('abilities', {
+      flags: f,
+      walkingSpeed: walkingSpeed,
+      flyingSpeed: flyingSpeed
+    });
+  }
 };
 
 module.exports.entity=function(entity,serv){

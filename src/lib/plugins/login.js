@@ -173,5 +173,6 @@ module.exports.player=function(player,serv)
     await player.waitPlayerLogin();
     player.sendRestMap();
     sendChunkWhenMove();
+    player.sendAbilities();
   };
 };

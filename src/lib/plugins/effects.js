@@ -7,6 +7,7 @@ module.exports.entity = function(entity, serv) {
 
   entity.sendEffect = (effectId, {amplifier=0,duration=30*20,particles=true,whitelist,blacklist=[]}={}) => {
     if (!whitelist) whitelist = serv.getNearby(entity);
+    if (entity.type == 'player' && [1].indexOf(effectId) != -1) entity.sendAbilities();
     var sendTo = whitelist.filter(p => blacklist.indexOf(p) == -1);
     var data = {
       entityId: entity.id,
