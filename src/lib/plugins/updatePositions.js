@@ -69,9 +69,13 @@ module.exports.player=function(player)
   }
 
   player.sendAbilities = () => {
-    var f = (+(player.gameMode == 1)*1) + (+(player.gameMode == 1 || player.gameMode == 3)*2) + (+(player.gameMode == 1 || player.gamemode == 3)*4);
-    var walkingSpeed = 1.0 + ((player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
-    var flyingSpeed = 0.2;
+    var godmode = player.gameMode == 1 || player.gameMode == 3;
+    var canFly = player.gameMode == 1 || player.gameMode == 3;
+    var isFlying = !player.onGround && canFly;
+    var creativeMode = player.gameMode == 1;
+    var f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
+    var walkingSpeed = 4.3/20 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    var flyingSpeed = 1.0/20;
     console.log(walkingSpeed, flyingSpeed);
     player._client.write('abilities', {
       flags: f,
@@ -114,22 +118,6 @@ module.exports.entity=function(entity,serv){
     }, () => {
       if (entity.type == 'player') player.sendSelfPosition();
     });
-  };
-
-  entity.sendVelocity = (vel, maxVel) => {
-    var velocity = vel.scaled(32).floored(); // Make fixed point
-    var maxVelocity = maxVel.scaled(32).floored();
-    var scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
-    entity._writeOthersNearby('entity_velocity', {
-      entityId: entity.id,
-      velocityX: scaledVelocity.x,
-      velocityY: scaledVelocity.y,
-      velocityZ: scaledVelocity.z
-    });
-    if (entity.type != 'player') {
-      if (maxVelocity) entity.velocity = addVelocityWithMax(entity.velocity, velocity, maxVelocity);
-      else entity.velocity.add(velocity);
-    }
   };
 
   entity.teleport = (pos) => { // Overwritten in players inject above

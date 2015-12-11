@@ -48,4 +48,7 @@ module.exports.entity=function(entity,serv)
 
   entity._writeOthersNearby = (packetName, packetFields) =>
     serv._writeArray(packetName, packetFields, entity.getNearbyPlayers());
+
+  entity._writeNearby = (packetName, packetFields) =>
+    serv._writeArray(packetName, packetFields, entity.getNearbyPlayers().concat(entity.type == 'player' ? [entity] : []));
 };

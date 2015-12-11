@@ -37,6 +37,22 @@ module.exports.entity=function(entity){
     return { position: newPos, onGround: yBlock}
   };
 
+  entity.sendVelocity = (vel, maxVel) => {
+    var velocity = vel.scaled(32).floored(); // Make fixed point
+    var maxVelocity = maxVel.scaled(32).floored();
+    var scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    entity._writeNearby('entity_velocity', {
+      entityId: entity.id,
+      velocityX: scaledVelocity.x,
+      velocityY: scaledVelocity.y,
+      velocityZ: scaledVelocity.z
+    });
+    if (entity.type != 'player') {
+      if (maxVelocity) entity.velocity = addVelocityWithMax(entity.velocity, velocity, maxVelocity);
+      else entity.velocity.add(velocity);
+    }
+  };
+
 
   function getMoveAmount(dir, block, entity, delta, sizeSigned) {
     if (block) {
@@ -71,3 +87,20 @@ module.exports.entity=function(entity){
     return Math.max(a, Math.min(b, c));
   }
 };
+
+module.exports.player = function(player, serv) {
+  player.commands.add({
+    base: 'velocity',
+    info: 'Push velocity on player(s)',
+    usage: '/velocity <player> <x> <y> <z>',
+    op: true,
+    parse(str) {
+      return str.match(/(.+?) (\d+) (\d+) (\d+)/) || false;
+    },
+    action(params) {
+      var selector = player.selectorString(params[1]);
+      var vec = new Vec3(parseInt(params[2]), parseInt(params[3]), parseInt(params[4]));
+      selector.forEach(e => e.sendVelocity(vec, vec.scaled(5)));
+    }
+  })
+}

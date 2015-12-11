@@ -121,8 +121,6 @@ module.exports.player=function(player, serv) {
       else setTimeout(() => {throw err;}, 0);
     }
   }
-
-  player.selectorString = (str) => serv.selectorString(str, player.position.scaled(1/32), player.world);
 };
 
 module.exports.entity = function(entity, serv) {
