@@ -1,4 +1,5 @@
 var Vec3 = require("vec3").Vec3;
+var UserError = require('flying-squid').UserError;
 
 module.exports.player=function(player,serv)
 {
@@ -45,8 +46,7 @@ module.exports.player=function(player,serv)
     },
     action(sel) {
       var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
-      if (arr instanceof Error) return arr.toString();
-      if (arr == null) return 'Could not find player';
+      if (arr.length==0) throw new UserError('Could not find player');
 
       arr.map(entity => entity.takeDamage({damage:20}));
     }
