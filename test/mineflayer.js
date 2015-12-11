@@ -16,7 +16,7 @@ describe("Server with mineflayer connection", function()  {
   var bot2;
   var serv;
 
-  async function onGround()
+  async function onGround(bot)
   {
     await new Promise((cb) => {
     var l=() => {
@@ -29,7 +29,7 @@ describe("Server with mineflayer connection", function()  {
   });
   }
 
-  before(async function () {
+  beforeEach(async function () {
     this.timeout(10 * 60 * 1000);
     var options = settings;
     options["online-mode"]=false;
@@ -50,10 +50,10 @@ describe("Server with mineflayer connection", function()  {
       username: "bot2"
     });
 
-    await onGround();
+    return Promise.all([once(bot,'login'),once(bot2,'login')]);
   });
 
-  after(() => {
+  afterEach(() => {
     serv._server.close();
     return once(serv._server,"close");
   });
@@ -61,15 +61,17 @@ describe("Server with mineflayer connection", function()  {
 
 
   describe("actions",() => {
+
     it("can dig",async function () {
+      await onGround(bot);
       this.timeout(10 * 60 * 1000);
       var pos=bot.entity.position.offset(0,-1,0);
       bot.dig(bot.blockAt(pos));
       let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+pos,{array:true});
       assert.equal(newBlock.type,0);
-      await onGround();
     });
     it.skip("can place a block",async function () {
+      await onGround(bot);
 
       this.timeout(10 * 60 * 1000);
       var pos=bot.entity.position.offset(0,-2,0);
@@ -104,9 +106,10 @@ describe("Server with mineflayer connection", function()  {
       bot.chat('/playsound ambient.weather.rain');
       await once(bot,'soundEffectHeard');
     });
-    it("can use /summon",async () => {
-      bot.chat('/summon EnderDragon');
-      await new Promise((done) => {
+
+    function waitDragon()
+    {
+      return new Promise((done) => {
         var listener=(entity) => {
           if(entity.name=="EnderDragon") {
             bot.removeListener('entitySpawn',listener);
@@ -115,13 +118,21 @@ describe("Server with mineflayer connection", function()  {
         };
         bot.on('entitySpawn',listener);
       });
+    }
+
+    it("can use /summon",async () => {
+      bot.chat('/summon EnderDragon');
+      await waitDragon();
     });
     it("can use /kill",async () => {
+      bot.chat('/summon EnderDragon');
+      await waitDragon();
       bot.chat('/kill @e[type=EnderDragon]');
       const entity=await once(bot,'entityDead');
       assert.equal(entity.name,"EnderDragon");
     });
     describe("can use /tp",() => {
+      beforeEach(() => Promise.all([onGround(bot),onGround(bot2)]));
       it("can tp myself", async () => {
         bot.chat('/tp 2 3 4');
         await once(bot,'forcedMove');
@@ -160,6 +171,7 @@ describe("Server with mineflayer connection", function()  {
       serv.getPlayer("bot").op=true;
     });
     it("can use /setblock",async() => {
+      await once(bot,'chunkColumnLoad');
       bot.chat('/setblock 1 2 3 95 0');
       let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
       assert.equal(newBlock.type,95);
