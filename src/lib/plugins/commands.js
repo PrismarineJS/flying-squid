@@ -106,8 +106,7 @@ module.exports.player=function(player, serv) {
     },
     action(sel) {
       var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
-      if (arr == null) return 'Could not find player';
-      else player.chat(JSON.stringify(arr.map(a => a.id)));
+      player.chat(JSON.stringify(arr.map(a => a.id)));
     }
   });
 
@@ -234,13 +233,13 @@ module.exports.server = function(serv) {
 
     if (count > 0) return sample.slice(0, count);
     else return sample.slice(count); // Negative, returns from end
-  }
+  };
 
   serv.selectorString = (str, pos, world, allowUser=true) => {
     pos = pos.clone();
     var player = serv.getPlayer(str);
-    if (!player && str[0] != '@') return null;
-    else if (player) return allowUser ? [player] : null;
+    if (!player && str[0] != '@') return [];
+    else if (player) return allowUser ? [player] : [];
     var match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
     if (match == null) throw new UserError('Invalid selector format');
     var typeConversion = {
@@ -296,7 +295,7 @@ module.exports.server = function(serv) {
     });
 
     return serv.selector(type, data);
-  }
+  };
 
   serv.posFromString = (str, pos) => {
     if (parseInt(str)) return parseInt(str);
@@ -304,4 +303,4 @@ module.exports.server = function(serv) {
     else if (str == '~') return pos;
     else throw new UserError('Invalid position');
   };
-}
+};

@@ -59,6 +59,7 @@ module.exports.server=function(serv,options) {
     mob.metadata = metadata;
 
     mob.updateAndSpawn();
+    return mob;
   };
 
   serv.destroyEntity = entity => {
@@ -127,6 +128,32 @@ module.exports.player=function(player,serv){
   });
 
   player.commands.add({
+    base: 'pile',
+    info: 'make a pile of entities',
+    usage: '/pile <entities types>',
+    op: true,
+    parse(str)  {
+      var args=str.split(' ');
+      if(args.length==0)
+        return false;
+      return args
+        .map(name => entitiesByName[name])
+        .filter(entity => !!entity);
+    },
+    action(entityTypes) {
+      entityTypes.map(entity =>
+        serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+        }))
+        .reduce((prec,entity) => {
+          if(prec!=null)
+            prec.attach(entity);
+          return entity;
+        },null);
+    }
+  });
+
+  player.commands.add({
     base: 'attach',
     info: 'attach an entity on an other entity',
     usage: '/attach <carrier> <attached>',
@@ -144,13 +171,7 @@ module.exports.player=function(player,serv){
       return {carrier:carrier[0],attached:attached[0]};
     },
     action({carrier,attached}) {
-      var p={
-        entityId:attached.id,
-        vehicleId:carrier.id,
-        leash:false
-      };
-      player._client.write('attach_entity',p);
-      player._writeOthersNearby('attach_entity',p);
+      carrier.attach(attached);
     }
   });
 
@@ -280,5 +301,17 @@ module.exports.entity=function(entity,serv) {
   entity.destroy = () => {
     serv.destroyEntity(entity);
   };
+
+  entity.attach= (attachedEntity,leash=false) =>
+  {
+    var p={
+      entityId:attachedEntity.id,
+      vehicleId:entity.id,
+      leash:leash
+    };
+    if(entity.type=='player')
+      entity._client.write('attach_entity',p);
+    entity._writeOthersNearby('attach_entity',p);
+  }
 
 };
