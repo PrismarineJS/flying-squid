@@ -65,12 +65,8 @@ module.exports.server=function(serv)
 
 module.exports.player=function(player,serv)
 {
-  player.kick = reason =>
-  {
-    player._client.write('kick_disconnect', {
-      reason: reason ? JSON.stringify(reason) : '"You were kicked!"'
-    });
-  };
+  player.kick = (reason="You were kicked!") =>
+    player._client.end(reason);
 
   player.ban = reason => {
     reason = reason || "You were banned!";
@@ -82,7 +78,7 @@ module.exports.player=function(player,serv)
     reason = reason || "You were IP banned!"
     player.kick(reason)
     serv.banIP(player._client.socket.remoteAddress)
-  }
+  };
 
   player.pardon = () => serv.pardon(player._client.uuid);
 

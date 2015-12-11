@@ -1,3 +1,17 @@
+var once = require('event-promise');
+
+module.exports.server=function(serv)
+{
+  serv.quit=async(reason="Going down") => {
+    await Promise.all(serv.players.map((player) => {
+      player.kick(reason);
+      return once(player,'disconnected');
+    }));
+    serv._server.close();
+    await once(serv._server,"close");
+  };
+};
+
 module.exports.player=function(player,serv)
 {
   player.despawnEntities = entities => player._client.write('entity_destroy', {

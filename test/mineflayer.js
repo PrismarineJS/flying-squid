@@ -19,14 +19,45 @@ describe("Server with mineflayer connection", function()  {
   async function onGround(bot)
   {
     await new Promise((cb) => {
-    var l=() => {
-      if(bot.entity.onGround) {
-        bot.removeListener("move",l);
-        cb();
-      }
-    };
-    bot.on("move",l);
-  });
+      var l=() => {
+        if(bot.entity.onGround) {
+          bot.removeListener("move",l);
+          cb();
+        }
+      };
+      bot.on("move",l);
+    });
+  }
+
+  async function waitMessage(bot,message) {
+    let msg1=await once(bot,'message');
+    assert.equal(msg1.text,message);
+  }
+
+  async function waitMessages(bot,messages) {
+    var toReceive=messages.reduce((acc,message) => {
+      acc[message]=1;
+      return acc;
+    },{});
+    var received={};
+    return new Promise(cb => {
+      var listener=msg => {
+          var message=msg.text;
+          if(!toReceive[message]) throw new Error("Received "+message+" , expected to receive one of "+messages);
+          if(received[message]) throw new Error("Received "+message+" two times");
+          received[message]=1;
+          if(Object.keys(received).length==messages.length)
+          {
+            bot.removeListener('message',listener);
+            cb();
+          }
+        };
+      bot.on('message',listener);
+    });
+  }
+
+  async function waitLoginMessage(bot) {
+    return Promise.all([waitMessages(bot,['bot joined the game.','bot2 joined the game.'])]);
   }
 
   beforeEach(async function () {
@@ -50,12 +81,11 @@ describe("Server with mineflayer connection", function()  {
       username: "bot2"
     });
 
-    return Promise.all([once(bot,'login'),once(bot2,'login')]);
+    await Promise.all([once(bot,'login'),once(bot2,'login')]);
   });
 
-  afterEach(() => {
-    serv._server.close();
-    return once(serv._server,"close");
+  afterEach(async () => {
+    await serv.quit();
   });
 
 
@@ -94,7 +124,9 @@ describe("Server with mineflayer connection", function()  {
   });
 
   describe("commands",() => {
+
     it("has an help command", async () => {
+      await waitLoginMessage(bot);
       bot.chat("/help");
       await once(bot,"message");
     });
@@ -162,12 +194,11 @@ describe("Server with mineflayer connection", function()  {
       });
     });
     it("can use /deop",async () => {
+      await waitLoginMessage(bot);
       bot.chat('/deop bot');
-      let msg1=await once(bot,'message');
-      assert.equal(msg1.text,'bot is deopped');
+      await waitMessage(bot,'bot is deopped');
       bot.chat('/op bot');
-      let msg2=await once(bot,'message');
-      assert.equal(msg2.text,'You do not have permission to use this command');
+      await waitMessage(bot,'You do not have permission to use this command');
       serv.getPlayer("bot").op=true;
     });
     it("can use /setblock",async() => {

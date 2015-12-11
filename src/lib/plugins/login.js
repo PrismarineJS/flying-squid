@@ -143,7 +143,7 @@ module.exports.player=function(player,serv)
   player.login = async () =>
   {
     if (serv.uuidToPlayer[player._client.uuid]) {
-      player._client.end("You are already connected");
+      player.kick("You are already connected");
       return;
     }
     if (serv.bannedPlayers[player._client.uuid]) {
