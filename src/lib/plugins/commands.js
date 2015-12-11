@@ -118,7 +118,7 @@ module.exports.player=function(player, serv) {
       if (res) player.chat('' + res);
     }
     catch(err) {
-      if (err instanceof UserError) player.chat('Error: ' + err.toString());
+      if (err instanceof UserError) player.chat('Error: ' + err.message);
       else setTimeout(() => {throw err;}, 0);
     }
   }

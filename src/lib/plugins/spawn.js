@@ -6,6 +6,7 @@ var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
 var Item = require("prismarine-item")(version);
+var UserError = require('flying-squid').UserError;
 
 var Vec3 = require("vec3").Vec3;
 
@@ -128,19 +129,24 @@ module.exports.player=function(player,serv){
   player.commands.add({
     base: 'attach',
     info: 'attach an entity on an other entity',
-    usage: '/attach <carrierId> <attachedId>',
+    usage: '/attach <carrier> <attached>',
     op: true,
     parse(str)  {
-      var pars=str.split(' ');
-      if(pars.length!=2)
+      var args=str.split(' ');
+      if(args.length!=2)
         return false;
-      var [carrierId,attachedId]=pars.map(a => parseInt(a));
-      return {carrierId:carrierId,attachedId:attachedId};
+
+      let carrier = player.selectorString(args[0]);
+      if(carrier.length==0) throw new UserError("one carrier");
+      let attached = player.selectorString(args[1]);
+      if(attached.length==0) throw new UserError("one attached");
+
+      return {carrier:carrier[0],attached:attached[0]};
     },
-    action({carrierId,attachedId}) {
+    action({carrier,attached}) {
       var p={
-        entityId:attachedId,
-        vehicleId:carrierId,
+        entityId:attached.id,
+        vehicleId:carrier.id,
         leash:false
       };
       player._client.write('attach_entity',p);
