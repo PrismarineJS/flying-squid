@@ -121,7 +121,7 @@ module.exports.player=function(player,serv,settings) {
 
   player.sendMap = () =>
   {
-    return player.sendNearbyChunks(3)
+    return player.sendNearbyChunks(Math.min(3,settings["view-distance"]))
       .catch((err) => setTimeout(() => { throw err; }), 0);
   };
 
