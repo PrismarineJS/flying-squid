@@ -16,7 +16,7 @@ module.exports.player = (player, serv) => {
       if(args.length === 2) {
         let entities_from = player.selectorString(args[0]);
         let entity_to = player.selectorString(args[1]);
-        if(entity_to.length==0) throw new UserError("at least one target");
+        if(entity_to.length==0) throw new UserError('Invalid target');
         entity_to = entity_to[0];
 
         entities_from.forEach(e => e.teleport(entity_to.position.scaled(1/32)));
