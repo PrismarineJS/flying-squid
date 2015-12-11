@@ -1,3 +1,24 @@
+## 0.3.0
+
+* sounds
+* lot of use of destructuring in the code
+* handle view distance properly
+* entities : spawning, physics, some sounds
+* block drops
+* refactoring : serv/player/entity plugins together
+* lot of new commands : 
+/summon, /spawn, /spawnObject, /kill, /attach, /teleport (thanks @azastrael), /op, /deop, /ban-ip, /pardon-ip, /xp
+* entity properties directly in player
+* proper plugins handling
+* behaviors
+* player inventory (thanks @109C)
+* tests using mineflayer
+* unload chunks
+* xp
+* selectors
+* ip ban (thanks @109C)
+* improve /help command
+
 ## 0.2.0
 *First functional release*
 
