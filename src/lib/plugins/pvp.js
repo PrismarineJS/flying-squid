@@ -68,13 +68,8 @@ module.exports.entity=function(entity,serv)
           entityId: entity.id,
           entityStatus: 3
         });
-      if(entity.type!="player") {
+      if(entity.type!="player")
         delete serv.entities[entity.id];
-        setTimeout(() => {
-          entity.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([entity]));
-        },2000);
-        // this is the duration of the despawning animation, it should change for every entity (see EnderDragon)
-      }
     }
     else if (animation)
       entity._writeOthers('animation',{
