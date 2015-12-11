@@ -201,6 +201,7 @@ describe("Server with mineflayer connection", function()  {
         assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4));
       });
       it("can tp to somebody else",async () => {
+        await onGround(bot);
         bot.chat('/tp bot2 bot');
         await once(bot2,'forcedMove');
         assertPosEqual(bot2.entity.position, bot.entity.position);
