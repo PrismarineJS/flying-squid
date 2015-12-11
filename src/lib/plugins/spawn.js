@@ -190,7 +190,6 @@ module.exports.player=function(player,serv){
       }]);
     }
     entity.equipment.forEach((equipment,slot) => {
-      console.log(equipment+" "+slot);
         if (equipment != undefined) player._client.write("entity_equipment", {
           entityId: entity.id,
           slot: slot,
