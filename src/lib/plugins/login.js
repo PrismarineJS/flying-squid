@@ -12,7 +12,7 @@ module.exports.server=function(serv,options)
     client.on('error',error => serv.emit('clientError',client,error)));
 
   serv._server.on('login', async (client) => {
-    if(client.socket.listenerCount('end')==0) return; // TODO: should be fixed properly in nmp instead
+    if(client.socket.listeners('end').length==0) return; // TODO: should be fixed properly in nmp instead
     try {
       var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
       player._client=client;
