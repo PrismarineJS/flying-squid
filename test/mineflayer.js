@@ -116,7 +116,7 @@ describe("Server with mineflayer connection", function()  {
         bot.on('entitySpawn',listener);
       });
     });
-    it.skip("can use /kill",async () => { // TODO: figure out why that fails : mineflayer doesn't seem to emit entityDead
+    it("can use /kill",async () => {
       bot.chat('/kill @e[type=EnderDragon]');
       const entity=await once(bot,'entityDead');
       assert.equal(entity.name,"EnderDragon");
