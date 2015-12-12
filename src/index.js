@@ -14,7 +14,8 @@ module.exports = {
   version:require("./lib/version"),
   generations:require("./lib/generations"),
   experience:require("./lib/experience"),
-  UserError:require("./lib/user_error")
+  UserError:require("./lib/user_error"),
+  portal_detector:require('./lib/portal_detector')
 };
 
 function createMCServer(options) {
