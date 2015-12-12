@@ -1,3 +1,11 @@
+## 0.3.1
+ * don't login if the client is already ended
+ * make /attach use the selectors, fix UserError, check /tp has one target
+ * create an entity.attach, and add a /pile command
+ * improve tests
+ * fix player.kick, add serv.quit(reason)
+ * fix badges on npm
+
 ## 0.3.0
 
 * sounds

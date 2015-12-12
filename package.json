@@ -1,7 +1,7 @@
 {
   "name": "flying-squid",
   "description": "A minecraft server written in node.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "index.js",
   "author": "mhsjlw <mhsjlw@aol.com>",
   "contributors": [
