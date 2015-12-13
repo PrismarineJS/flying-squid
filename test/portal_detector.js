@@ -2,25 +2,95 @@ var {detectFrame,findPotentialLines,findBorder,getAir}=require("flying-squid").p
 var World = require('prismarine-world');
 var Chunk = require('prismarine-chunk')(require("flying-squid").version);
 var Vec3 = require("vec3").Vec3;
-var assert = require('assert');
+var assert = require('chai').assert;
 var range = require('range').range;
+var flatMap = require('flatmap');
 
+function generateLine(startingPoint,direction,length) {
+  return range(0,length).map(i => startingPoint.plus(direction.scaled(i)));
+}
+
+function generatePortal(bottomLeft,direction,width,height){
+  var directionV=new Vec3(0,1,0);
+  return {
+    bottom:generateLine(bottomLeft.plus(direction),direction,width-2),
+    left:generateLine(bottomLeft.plus(directionV),directionV,height-2),
+    right:generateLine(bottomLeft.plus(direction.scaled(width-1)).plus(directionV),directionV,height-2),
+    top:generateLine(bottomLeft.plus(directionV.scaled(height-1).plus(direction)),direction,width-2),
+    air:flatMap(generateLine(bottomLeft.plus(direction).plus(directionV),direction,width-2),
+      p => generateLine(p,directionV,height-2))
+  }
+}
+
+describe("Generate portal",function(){
+  it("generate a line",() => {
+    assert.deepEqual(generateLine(new Vec3(3,1,1),new Vec3(1,0,0),2),[new Vec3(3, 1, 1), new Vec3(4, 1, 1)])
+  });
+  it("generate a portal", () => {
+    assert.deepEqual(generatePortal(new Vec3(2,1,1),new Vec3(1,0,0),4,5),{
+      bottom:generateLine(new Vec3(3,1,1),new Vec3(1,0,0),2),
+      left:generateLine(new Vec3(2,2,1),new Vec3(0,1,0),3),
+      right:generateLine(new Vec3(5,2,1),new Vec3(0,1,0),3),
+      top:generateLine(new Vec3(3,5,1),new Vec3(1,0,0),2),
+      air:generateLine(new Vec3(3,2,1),new Vec3(0,1,0),3).concat(generateLine(new Vec3(4,2,1),new Vec3(0,1,0),3))
+    })
+  });
+});
 
 describe("Detect portal", function() {
+
 
   var portalData=[];
   portalData.push({
     name:"simple portal frame x",
-    bottom:[new Vec3(3, 1, 1), new Vec3(4, 1, 1)],
-    left:[new Vec3(2, 2, 1), new Vec3(2, 3, 1), new Vec3(2, 4, 1)],
-    right:[new Vec3(5, 2, 1), new Vec3(5, 3, 1), new Vec3(5, 4, 1)],
-    top:[new Vec3(3, 5, 1), new Vec3(4, 5, 1)],
-    air:[new Vec3(3, 2, 1),new Vec3(3, 3, 1),new Vec3(3, 4, 1),new Vec3(4, 2, 1),new Vec3(4, 3, 1),new Vec3(4, 4, 1)],
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(1,0,0),
+    width:4,
+    height:5,
     additionalAir:[],
     additionalObsidian:[]
   });
+  portalData.push({
+    name:"simple portal frame z",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(0,0,1),
+    width:4,
+    height:5,
+    additionalAir:[],
+    additionalObsidian:[]
+  });
+  portalData.push({
+    name:"big simple portal frame x",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(1,0,0),
+    width:10,
+    height:10,
+    additionalAir:[],
+    additionalObsidian:[]
+  });
+  portalData.push({
+    name:"simple portal frame x with borders",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(1,0,0),
+    width:4,
+    height:5,
+    additionalAir:[],
+    additionalObsidian:[new Vec3(2,1,1),new Vec3(5,1,1),new Vec3(2,6,1),new Vec3(5,6,1)]
+  });
+  var {bottom,left,right,top,air}=generatePortal(new Vec3(2,1,2),new Vec3(1,0,0),4,5);
 
-  portalData.forEach(({name,bottom,left,right,top,air,additionalAir,additionalObsidian}) => {
+  portalData.push({
+    name:"2 portals",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(1,0,0),
+    width:4,
+    height:5,
+    additionalAir:air,
+    additionalObsidian:[].concat.apply([], [bottom, left, right,top])
+  });
+
+  portalData.forEach(({name,bottomLeft,direction,width,height,additionalAir,additionalObsidian}) => {
+    var {bottom,left,right,top,air}=generatePortal(bottomLeft,direction,width,height);
     describe("Detect "+name,() => {
       var expectedBorder=[
         bottom,
@@ -48,63 +118,51 @@ describe("Detect portal", function() {
       describe("detect potential first lines",function(){
         it("detect potential first lines from bottom left", async function() {
           let potentialLines=await findPotentialLines(world,bottom[0],new Vec3(0,1,0));
-          assert.deepEqual(potentialLines,[
-            {
-              "direction": new Vec3(1,0,0),
+          assert.include(potentialLines,{
+              "direction": direction,
               "line": bottom
-            }
-          ]);
+            });
         });
 
         it("detect potential first lines from bottom right", async function() {
           let potentialLines=await findPotentialLines(world,bottom[bottom.length-1],new Vec3(0,1,0));
-          assert.deepEqual(potentialLines,[
-            {
-              "direction": new Vec3(1,0,0),
+          assert.include(potentialLines,{
+              "direction": direction,
               "line": bottom
-            }
-          ]);
+            });
         });
 
 
         it("detect potential first lines from top left", async function() {
           let potentialLines=await findPotentialLines(world,top[0],new Vec3(0,-1,0));
-          assert.deepEqual(potentialLines,[
-            {
-              "direction": new Vec3(1,0,0),
+          assert.include(potentialLines,{
+              "direction": direction,
               "line": top
-            }
-          ]);
+            });
         });
 
         it("detect potential first lines from top right", async function() {
           let potentialLines=await findPotentialLines(world,top[top.length-1],new Vec3(0,-1,0));
-          assert.deepEqual(potentialLines,[
-            {
-              "direction": new Vec3(1,0,0),
+          assert.include(potentialLines,{
+              "direction": direction,
               "line": top
-            }
-          ]);
+            });
         });
 
         it("detect potential first lines from left top", async function() {
-          let potentialLines=await findPotentialLines(world,left[left.length-1],new Vec3(1,0,0));
-          assert.deepEqual(potentialLines,[
-            {
+          let potentialLines=await findPotentialLines(world,left[left.length-1],direction);
+          assert.include(potentialLines,{
               "direction": new Vec3(0,1,0),
               "line": left
-            }
-          ]);
+            });
         });
 
         it("detect potential first lines from right bottom", async function() {
-          let potentialLines=await findPotentialLines(world,right[0],new Vec3(-1,0,0));
-          assert.deepEqual(potentialLines,[
-            {
+          let potentialLines=await findPotentialLines(world,right[0],direction.scaled(-1));
+          assert.include(potentialLines,{
               "direction": new Vec3(0,1,0),
               "line": right
-            }
-          ]);
+            });
         });
       });
 
@@ -112,7 +170,7 @@ describe("Detect portal", function() {
       describe("find borders",function() {
         it("find borders from bottom", async function () {
           var border = await findBorder(world, {
-            "direction": new Vec3(1, 0, 0),
+            "direction": direction,
             "line": bottom
           }, new Vec3(0, 1, 0));
           assert.deepEqual(border, expectedBorder)
@@ -120,7 +178,7 @@ describe("Detect portal", function() {
 
         it("find borders from top", async function () {
           var border = await findBorder(world, {
-            "direction": new Vec3(1, 0, 0),
+            "direction": direction,
             "line": top
           }, new Vec3(0, -1, 0));
           assert.deepEqual(border, expectedBorder)
@@ -130,14 +188,14 @@ describe("Detect portal", function() {
           var border = await findBorder(world, {
             "direction": new Vec3(0, 1, 0),
             "line": left
-          }, new Vec3(1, 0, 0));
+          },direction);
           assert.deepEqual(border, expectedBorder)
         });
         it("find borders from right", async function () {
           var border = await findBorder(world, {
             "direction": new Vec3(0, 1, 0),
             "line": right
-          }, new Vec3(-1, 0, 0));
+          }, direction.scaled(-1));
           assert.deepEqual(border, expectedBorder)
         });
       });
@@ -147,8 +205,12 @@ describe("Detect portal", function() {
           var portals=await detectFrame(world,bottom[0],new Vec3(0,1,0));
           assert.deepEqual(portals,[expectedBorder])
         });
+        it("detect portals from top left",async function() {
+          var portals=await detectFrame(world,top[0],new Vec3(0,-1,0));
+          assert.deepEqual(portals,[expectedBorder])
+        });
         it("detect portals from right top",async function() {
-          var portals=await detectFrame(world,right[right.length-1],new Vec3(-1,0,0));
+          var portals=await detectFrame(world,right[right.length-1],direction.scaled(-1));
           assert.deepEqual(portals,[expectedBorder])
         })
       });

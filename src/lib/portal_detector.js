@@ -49,13 +49,14 @@ async function findBorder(world,{line,direction},directionV)
     return [];
   var left=await findLineInDirection(world,bottom[0].plus(direction.scaled(-1).plus(directionV)),'obsidian',directionV,direction);
   var right=await findLineInDirection(world,bottom[line.length-1].plus(direction).plus(directionV),'obsidian',
-    directionV,direction);
-  if(left.length!=right.length)
+    directionV,direction.scaled(-1));
+  if(left.length==0 || left.length!=right.length)
     return null;
   var top=await findLineInDirection(world,left[left.length-1].plus(direction).plus(directionV),'obsidian',
-    direction,directionV);
+    direction,directionV.scaled(-1));
   if(bottom.length!=top.length)
     return null;
+
   left=positiveOrder(left,directionV);
   right=positiveOrder(right,directionV);
   top=positiveOrder(top,direction);
@@ -67,6 +68,9 @@ async function findBorder(world,{line,direction},directionV)
   [bottom,top]=directionV.y<0 ? [top,bottom] : [bottom,top];
   var horDir=direction.x!=0 || directionV.x!=0 ? 'x' :'z';
   [left,right]=direction[horDir]<0 || directionV[horDir]<0 ? [right,left] : [left,right];
+
+  if(bottom.length<2 || top.length<2 || left.length<3 || right.length<3)
+    return null;
 
   return [bottom,left,right,top];
 }
