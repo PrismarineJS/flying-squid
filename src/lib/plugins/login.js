@@ -94,6 +94,7 @@ module.exports.player=function(player,serv)
         gamemode: player.gameMode
       }]
     });
+    player.sendAbilities();
   };
 
   function fillTabList()
@@ -161,6 +162,7 @@ module.exports.player=function(player,serv)
     player.sendSpawnPosition();
     player.sendSelfPosition();
     player.updateHealth(player.health);
+    player.sendAbilities();
 
 
     updateTime();

@@ -840,7 +840,7 @@ Emitted when a player places a block
 - position: Position they're attempting to place the block
 - id: Id of block being placed
 - damage: Data of block being placed
-- reference (u): Reference block that was placed on
+- reference (u): Reference block (position) that was placed on
 - direction (u): Direction vector from reference to position
 - playSound: Which sound to play (Default: true)
 - sound: Sound to play (Default: default sound for that material)

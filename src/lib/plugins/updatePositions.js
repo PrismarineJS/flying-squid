@@ -67,6 +67,22 @@ module.exports.player=function(player)
     var notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true);
     if (notCancelled) player.sendSelfPosition();
   }
+
+  player.sendAbilities = () => { // TODO: Fix all of this...
+    var godmode = player.gameMode == 1 || player.gameMode == 3;
+    var canFly = player.gameMode == 1 || player.gameMode == 3;
+    var isFlying = !player.onGround && canFly;
+    var creativeMode = player.gameMode == 1;
+    var f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
+    var walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    var flyingSpeed = 0.1;
+    /*console.log(walkingSpeed, flyingSpeed);
+    player._client.write('abilities', { // FIIIIXXXXXXX
+      flags: f,
+      walkingSpeed: walkingSpeed,
+      flyingSpeed: flyingSpeed
+    });*/ 
+  }
 };
 
 module.exports.entity=function(entity,serv){
@@ -104,34 +120,7 @@ module.exports.entity=function(entity,serv){
     });
   };
 
-  entity.sendVelocity = (vel, maxVel) => {
-    var velocity = vel.scaled(32).floored(); // Make fixed point
-    var maxVelocity = maxVel.scaled(32).floored();
-    var scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
-    entity._writeOthersNearby('entity_velocity', {
-      entityId: entity.id,
-      velocityX: scaledVelocity.x,
-      velocityY: scaledVelocity.y,
-      velocityZ: scaledVelocity.z
-    });
-    if (entity.type != 'player') {
-      if (maxVelocity) entity.velocity = addVelocityWithMax(entity.velocity, velocity, maxVelocity);
-      else entity.velocity.add(velocity);
-    }
-  };
-
   entity.teleport = (pos) => { // Overwritten in players inject above
     entity.sendPosition(pos.scaled(32), false, true);
-  }
-
-  function addVelocityWithMax(current, newVel, max) {
-    var x, y, z;
-    if (current.x > max.x || current.x < -max.x) x = current.x;
-    else x = Math.max(-max.x, Math.min(max.x, current.x + newVel.x));
-    if (current.y > max.y || current.y < -max.y) y = current.y;
-    else y = Math.max(-max.y, Math.min(max.y, current.y + newVel.y));
-    if (current.z > max.z || current.z < -max.z) z = current.z;
-    else z = Math.max(-max.z, Math.min(max.z, current.z + newVel.z));
-    return new Vec3(x, y, z);
   }
 };

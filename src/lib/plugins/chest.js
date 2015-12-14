@@ -2,13 +2,13 @@ var Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player)
 {
-  player._client.on('block_place', async ({location} = {}) => {
-    var referencePosition=new Vec3(location.x,location.y,location.z);
+  player.on('placeBlock_cancel', async (opt, cancel) => {
     if (player.crouching) return;
     try {
-      var id = await player.world.getBlockType(referencePosition);
-      var blockAbove = await player.world.getBlockType(referencePosition.clone().add(new Vec3(0, 1, 0)));
+      var id = await player.world.getBlockType(opt.reference);
+      var blockAbove = await player.world.getBlockType(opt.reference.plus(new Vec3(0, 1, 0)));
       if (id == 54) {
+        opt.playSound = false;
         if (blockAbove) {
           return;
         }
@@ -18,6 +18,7 @@ module.exports.player=function(player)
           windowTitle: JSON.stringify("Chest"),
           slotCount: 9 * 3 + 8 // 3 rows, make nicer later
         });
+        cancel();
       }
     }
     catch(err) {
