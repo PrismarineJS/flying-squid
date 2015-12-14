@@ -14,7 +14,6 @@ module.exports.server=function(serv) {
       var t=Date.now();
       var time = (t - serv.lastTickTime) / 1000;
       serv.tick(time, 1);
-      
       serv.lastTickTime = t;
     }, 1000/ticksPerSecond);
   };
@@ -24,13 +23,13 @@ module.exports.server=function(serv) {
     serv.tickInterval = null;
   };
 
-  serv.tick = (time, amt) => {
+  serv.tick = async (time, amt) => {
     while(amt > 0) {
       amt--;
       serv.tickCount++;
       serv.prepareScheduledTicks();
-      serv.emit('tick', time, serv.tickCount);
-      serv.emit('tick_done', time, serv.tickCount);
+      await serv.emitThen('tick', time, serv.tickCount);
+      await serv.emitThen('tick_done', time, serv.tickCount);
       this.currentTick = [];
     }
   };
@@ -50,10 +49,9 @@ module.exports.server=function(serv) {
       type: type,
       position: position,
       world: world,
-      ticks: time
+      ticks: time + 1
     };
-    if (time == 0) serv.currentTick.push(data);
-    else serv.scheduledTicks.push(data);
+    serv.scheduledTicks.push(data);
   };
 
 
