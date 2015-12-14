@@ -72,20 +72,37 @@ async function findBorder(world,{line,direction},directionV)
   if(bottom.length<2 || top.length<2 || left.length<3 || right.length<3)
     return null;
 
-  return [bottom,left,right,top];
+  return {bottom,left,right,top};
 }
 
 async function detectFrame(world,startingPoint,directionV)
 {
   let potentialLines=await findPotentialLines(world,startingPoint,directionV);
 
-  return (await Promise.all(potentialLines
+  return asyncFilter((await Promise.all(potentialLines
     .map(line => findBorder(world,line,directionV))))
-    .filter(border => border!=null);
+    .filter(border => border!=null)
+    .map(({bottom,left,right,top}) => ({bottom,left,right,top,air:getAir({bottom,left,right,top})})),
+    async ({air}) => await isAllAir(world,air));
+}
+
+async function asyncEvery(array,pred) {
+  return Promise.all(array.map(x => pred(x).then(y => y ? true : Promise.reject(false))))
+    .then(results => true)
+    .catch(x => false);
+}
+
+function asyncFilter(array,pred) {
+  return Promise.all(array.map(e => pred(e).then(a => a ? e : null))).then(r => r.filter(a => a!=null));
+}
+
+async function isAllAir(world,blocks)
+{
+  return asyncEvery(blocks,async block => (await world.getBlockType(block))==0);
 }
 
 function getAir(border)
 {
-  var [bottom,,,top]=border;
+  var {bottom,top}=border;
   return flatMap(bottom,pos => range(1,top[0].y-bottom[0].y).map(i => pos.offset(0,i,0)));
 }

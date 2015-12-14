@@ -22,6 +22,24 @@ function generatePortal(bottomLeft,direction,width,height){
   }
 }
 
+
+async function makeWorldWithPortal(portal,additionalAir,additionalObsidian)
+{
+  var {bottom,left,right,top,air}=portal;
+  var world=new World();
+  var chunk=new Chunk();
+
+  [bottom,left,right,top].forEach(border => border.forEach(pos => chunk.setBlockType(pos,49)));
+  air.forEach(pos => chunk.setBlockType(pos,0));
+
+  additionalAir.forEach(pos => chunk.setBlockType(pos,0));
+  additionalObsidian.forEach(pos => chunk.setBlockType(pos,49));
+
+
+  await world.setColumn(0,0,chunk);
+  return world;
+}
+
 describe("Generate portal",function(){
   it("generate a line",() => {
     assert.deepEqual(generateLine(new Vec3(3,1,1),new Vec3(1,0,0),2),[new Vec3(3, 1, 1), new Vec3(4, 1, 1)])
@@ -38,8 +56,6 @@ describe("Generate portal",function(){
 });
 
 describe("Detect portal", function() {
-
-
   var portalData=[];
   portalData.push({
     name:"simple portal frame x",
@@ -89,29 +105,16 @@ describe("Detect portal", function() {
     additionalObsidian:[].concat.apply([], [bottom, left, right,top])
   });
 
+
   portalData.forEach(({name,bottomLeft,direction,width,height,additionalAir,additionalObsidian}) => {
-    var {bottom,left,right,top,air}=generatePortal(bottomLeft,direction,width,height);
+    var portal=generatePortal(bottomLeft,direction,width,height);
+    var {bottom,left,right,top,air}=portal;
     describe("Detect "+name,() => {
-      var expectedBorder=[
-        bottom,
-        left,
-        right,
-        top
-      ];
+      var expectedBorder={bottom,left,right,top};
 
       var world;
-      before(function(){
-        world=new World();
-        var chunk=new Chunk();
-
-        expectedBorder.forEach(border => border.forEach(pos => chunk.setBlockType(pos,49)));
-        air.forEach(pos => chunk.setBlockType(pos,0));
-
-        additionalAir.forEach(pos => chunk.setBlockType(pos,0));
-        additionalObsidian.forEach(pos => chunk.setBlockType(pos,49));
-
-
-        return world.setColumn(0,0,chunk);
+      before(async function(){
+        world=await makeWorldWithPortal(portal,additionalAir,additionalObsidian);
       });
 
 
@@ -203,15 +206,15 @@ describe("Detect portal", function() {
       describe("detect portals",function(){
         it("detect portals from bottom left",async function() {
           var portals=await detectFrame(world,bottom[0],new Vec3(0,1,0));
-          assert.deepEqual(portals,[expectedBorder])
+          assert.deepEqual(portals,[portal])
         });
         it("detect portals from top left",async function() {
           var portals=await detectFrame(world,top[0],new Vec3(0,-1,0));
-          assert.deepEqual(portals,[expectedBorder])
+          assert.deepEqual(portals,[portal])
         });
         it("detect portals from right top",async function() {
           var portals=await detectFrame(world,right[right.length-1],direction.scaled(-1));
-          assert.deepEqual(portals,[expectedBorder])
+          assert.deepEqual(portals,[portal])
         })
       });
 
@@ -223,4 +226,46 @@ describe("Detect portal", function() {
   });
 
 
+});
+
+
+describe("Doesn't detect non-portal",function() {
+  var portalData=[];
+
+  portalData.push({
+    name:"simple portal frame x with one obsidian in the middle",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(1,0,0),
+    width:5,
+    height:5,
+    additionalAir:[],
+    additionalObsidian:[new Vec3(4,3,1)]
+  });
+
+  portalData.forEach(({name,bottomLeft,direction,width,height,additionalAir,additionalObsidian}) => {
+    var portal = generatePortal(bottomLeft, direction, width, height);
+    var {bottom,left,right,top,air}=portal;
+    describe("Doesn't detect detect " + name, () => {
+      var world;
+      before(async function () {
+        world=await makeWorldWithPortal(portal, additionalAir, additionalObsidian);
+      });
+
+      describe("doesn't detect portals",function(){
+        it("doesn't detect portals from bottom left",async function() {
+          var portals=await detectFrame(world,bottom[0],new Vec3(0,1,0));
+          assert.deepEqual(portals,[])
+        });
+        it("doesn't detect portals from top left",async function() {
+          var portals=await detectFrame(world,top[0],new Vec3(0,-1,0));
+          assert.deepEqual(portals,[])
+        });
+        it("doesn't detect portals from right top",async function() {
+          var portals=await detectFrame(world,right[right.length-1],direction.scaled(-1));
+          assert.deepEqual(portals,[])
+        })
+      });
+
+    });
+  });
 });
