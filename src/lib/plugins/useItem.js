@@ -29,16 +29,30 @@ module.exports.player=function(player,serv)
   };
 
   player.on("dug",({position,block}) => {
+
+    function destroyPortal(portal,positionAlreadyDone=null)
+    {
+      portal
+        .air
+        .filter(ap => positionAlreadyDone==null || !ap.equals(positionAlreadyDone))
+        .forEach(ap => serv.setBlock(player.world,ap,0,0));
+      player.world.portals=player.world.portals.splice(player.world.portals.indexOf(portal),1);
+    }
+
+    if(block.name=="obsidian")
+    {
+      const p=player.world.portals.filter(({bottom,top,left,right}) =>
+        [].concat.apply([], [bottom, left, right,top])
+          .reduce((acc,pos) => acc || pos.equals(position),false));
+      if(p.length>0)
+        destroyPortal(p[0],position);
+    }
+
     if(block.name=="portal")
     {
-      var p=player.world.portals.filter(portal => portal.air.reduce((acc,pos) => acc || pos.equals(position),false));
+      const p=player.world.portals.filter(({air}) => air.reduce((acc,pos) => acc || pos.equals(position),false));
       if(p.length>0)
-      {
-        p[0]
-          .air
-          .filter(ap => !ap.equals(position))
-          .forEach(ap => serv.setBlock(player.world,ap,0,0));
-      }
+        destroyPortal(p[0],position);
     }
   });
 };
