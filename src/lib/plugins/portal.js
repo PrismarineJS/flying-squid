@@ -58,7 +58,7 @@ module.exports.player=function(player,serv) {
       const bottomLeft=new Vec3(x,y,z);
       if(direction!="x" && direction!="z")
         throw new UserError('Wrong Direction');
-      direction=direction=='x' ? new Vec3(1,0,0) : Vec3(0,0,1);
+      direction=direction=='x' ? new Vec3(1,0,0) : new Vec3(0,0,1);
       return {bottomLeft,direction,width,height};
     },
     async action({bottomLeft,direction,width,height}) {
