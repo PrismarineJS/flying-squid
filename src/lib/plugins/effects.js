@@ -16,7 +16,6 @@ module.exports.entity = function(entity, serv) {
       duration: duration,
       hideParticles: !particles
     };
-    console.log(data);
     serv._writeArray('entity_effect', data, sendTo);
   };
 
@@ -36,6 +35,7 @@ module.exports.entity = function(entity, serv) {
         amplifier: opt.amplifier || 0,
         duration: opt.duration || 30*20,
         particles: opt.particles || true,
+        end: Date.now() + (opt.duration || 30*20)*1000/20 // 1000/20 == convert from ticks to milliseconds
       };
       entity.sendEffect(effectId, opt);
       return true;
@@ -46,6 +46,13 @@ module.exports.entity = function(entity, serv) {
     entity.effects[effectId] = null;
     entity.sendRemoveEffect(effectId, opt);
   };
+
+  serv.on('tick', () => {
+    Object.keys(entity.effects).forEach(effectId => {
+      var e = entity.effects[effectId];
+      if (e && e.end <= Date.now()) entity.removeEffect(effectId);
+    });
+  });
 };
 
 module.exports.player = function(player, serv) {

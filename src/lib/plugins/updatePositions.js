@@ -68,20 +68,20 @@ module.exports.player=function(player)
     if (notCancelled) player.sendSelfPosition();
   }
 
-  player.sendAbilities = () => {
+  player.sendAbilities = () => { // TODO: Fix all of this...
     var godmode = player.gameMode == 1 || player.gameMode == 3;
     var canFly = player.gameMode == 1 || player.gameMode == 3;
     var isFlying = !player.onGround && canFly;
     var creativeMode = player.gameMode == 1;
     var f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
-    var walkingSpeed = 4.3/20 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
-    var flyingSpeed = 1.0/20;
-    console.log(walkingSpeed, flyingSpeed);
-    player._client.write('abilities', {
+    var walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    var flyingSpeed = 0.1;
+    /*console.log(walkingSpeed, flyingSpeed);
+    player._client.write('abilities', { // FIIIIXXXXXXX
       flags: f,
       walkingSpeed: walkingSpeed,
       flyingSpeed: flyingSpeed
-    });
+    });*/ 
   }
 };
 
