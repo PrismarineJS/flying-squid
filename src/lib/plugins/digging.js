@@ -21,7 +21,7 @@ module.exports.player=function(player,serv)
         block=facedBlock;
         pos=facedPos;
       }
-      else block=player.world.getBlock(pos);
+      else block=await player.world.getBlock(pos);
 
       currentlyDugBlock = block;
       if (currentlyDugBlock.type == 0) return;
