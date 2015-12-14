@@ -123,15 +123,4 @@ module.exports.entity=function(entity,serv){
   entity.teleport = (pos) => { // Overwritten in players inject above
     entity.sendPosition(pos.scaled(32), false, true);
   }
-
-  function addVelocityWithMax(current, newVel, max) {
-    var x, y, z;
-    if (current.x > max.x || current.x < -max.x) x = current.x;
-    else x = Math.max(-max.x, Math.min(max.x, current.x + newVel.x));
-    if (current.y > max.y || current.y < -max.y) y = current.y;
-    else y = Math.max(-max.y, Math.min(max.y, current.y + newVel.y));
-    if (current.z > max.z || current.z < -max.z) z = current.z;
-    else z = Math.max(-max.z, Math.min(max.z, current.z + newVel.z));
-    return new Vec3(x, y, z);
-  }
 };
