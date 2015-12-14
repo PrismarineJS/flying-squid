@@ -31,7 +31,7 @@ describe("Server with mineflayer connection", function()  {
 
   async function waitMessage(bot,message) {
     let msg1=await once(bot,'message');
-    assert.equal(msg1.text,message);
+    assert.equal(msg1.extra[0].text,message);
   }
 
   async function waitMessages(bot,messages) {
@@ -42,7 +42,7 @@ describe("Server with mineflayer connection", function()  {
     var received={};
     return new Promise(cb => {
       var listener=msg => {
-          var message=msg.text;
+          var message=msg.extra[0].text;
           if(!toReceive[message]) throw new Error("Received "+message+" , expected to receive one of "+messages);
           if(received[message]) throw new Error("Received "+message+" two times");
           received[message]=1;
