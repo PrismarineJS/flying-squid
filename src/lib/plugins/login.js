@@ -157,6 +157,7 @@ module.exports.player=function(player,serv)
     }
 
     addPlayer();
+    await player.findSpawnPoint();
     sendLogin();
     await player.sendMap();
     player.sendSpawnPosition();
