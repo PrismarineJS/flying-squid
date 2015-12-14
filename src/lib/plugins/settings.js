@@ -17,7 +17,7 @@ module.exports.server=function(serv,settings)
     while(true)
     {
       var p=await world.getBlockType(point);
-      if(p.type!=8 && p.type!=9)
+      if(p!=8 && p!=9)
         break;
       point=point.offset(1,0,0);
     }
