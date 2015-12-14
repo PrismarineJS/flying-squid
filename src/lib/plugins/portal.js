@@ -65,8 +65,8 @@ module.exports.player=function(player,serv) {
     },
     async action({bottomLeft,direction,width,height}) {
       var portal=generatePortal(bottomLeft,direction,width,height);
-      await addPortalToWorld(player.world,portal,[],[],(pos,type) => {
-        serv.setBlock(player.world,pos,type,0);
+      await addPortalToWorld(player.world,portal,[],[],async (pos,type) => {
+        await serv.setBlock(player.world,pos,type,0);
       });
     }
   });

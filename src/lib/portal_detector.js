@@ -145,10 +145,7 @@ function addPortalToWorld(world,portal,additionalAir,additionalObsidian,setBlock
 
 async function makeWorldWithPortal(portal,additionalAir,additionalObsidian)
 {
-
-  var world=new World();
-  var chunk=new Chunk();
-  await world.setColumn(0,0,chunk);
+  var world=new World(() => new Chunk());
   await addPortalToWorld(world,portal,additionalAir,additionalObsidian);
 
   return world;

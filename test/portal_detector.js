@@ -70,6 +70,17 @@ describe("Detect portal", function() {
   });
 
 
+  portalData.push({
+    name:"huge simple portal frame z",
+    bottomLeft:new Vec3(2,1,1),
+    direction:new Vec3(0,0,1),
+    width:50,
+    height:50,
+    additionalAir:[],
+    additionalObsidian:[]
+  });
+
+
   portalData.forEach(({name,bottomLeft,direction,width,height,additionalAir,additionalObsidian}) => {
     var portal=generatePortal(bottomLeft,direction,width,height);
     var {bottom,left,right,top,air}=portal;
