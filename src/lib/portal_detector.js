@@ -3,7 +3,7 @@ var assert = require('assert');
 var flatMap = require('flatmap');
 var range = require('range').range;
 
-module.exports={detectFrame,findPotentialLines,findBorder,getAir};
+module.exports={detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal};
 
 async function findLineInDirection(world,startingPoint,type,direction,directionV)
 {
@@ -105,4 +105,51 @@ function getAir(border)
 {
   var {bottom,top}=border;
   return flatMap(bottom,pos => range(1,top[0].y-bottom[0].y).map(i => pos.offset(0,i,0)));
+}
+
+
+var World = require('prismarine-world');
+var Chunk = require('prismarine-chunk')(require("./version"));
+
+function generateLine(startingPoint,direction,length) {
+  return range(0,length).map(i => startingPoint.plus(direction.scaled(i)));
+}
+
+function generatePortal(bottomLeft,direction,width,height){
+  var directionV=new Vec3(0,1,0);
+  return {
+    bottom:generateLine(bottomLeft.plus(direction),direction,width-2),
+    left:generateLine(bottomLeft.plus(directionV),directionV,height-2),
+    right:generateLine(bottomLeft.plus(direction.scaled(width-1)).plus(directionV),directionV,height-2),
+    top:generateLine(bottomLeft.plus(directionV.scaled(height-1).plus(direction)),direction,width-2),
+    air:flatMap(generateLine(bottomLeft.plus(direction).plus(directionV),direction,width-2),
+      p => generateLine(p,directionV,height-2))
+  }
+}
+
+function addPortalToWorld(world,portal,additionalAir,additionalObsidian,setBlockType=null)
+{
+  if(setBlockType==null)
+    setBlockType=world.setBlockType.bind(world);
+  let {bottom,left,right,top,air}=portal;
+
+  var p=flatMap([bottom,left,right,top],border => border.map(pos => setBlockType(pos,49)));
+  p.push(air.map(pos => setBlockType(pos,0)));
+
+  p.push(additionalAir.map(pos => setBlockType(pos,0)));
+  p.push(additionalObsidian.map(pos => setBlockType(pos,49)));
+
+  return Promise.all(p);
+}
+
+
+async function makeWorldWithPortal(portal,additionalAir,additionalObsidian)
+{
+
+  var world=new World();
+  var chunk=new Chunk();
+  await world.setColumn(0,0,chunk);
+  await addPortalToWorld(world,portal,additionalAir,additionalObsidian);
+
+  return world;
 }

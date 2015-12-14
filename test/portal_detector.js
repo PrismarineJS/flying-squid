@@ -1,44 +1,8 @@
-var {detectFrame,findPotentialLines,findBorder,getAir}=require("flying-squid").portal_detector;
-var World = require('prismarine-world');
-var Chunk = require('prismarine-chunk')(require("flying-squid").version);
+var {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal}=require("flying-squid").portal_detector;
 var Vec3 = require("vec3").Vec3;
 var assert = require('chai').assert;
 var range = require('range').range;
-var flatMap = require('flatmap');
 
-function generateLine(startingPoint,direction,length) {
-  return range(0,length).map(i => startingPoint.plus(direction.scaled(i)));
-}
-
-function generatePortal(bottomLeft,direction,width,height){
-  var directionV=new Vec3(0,1,0);
-  return {
-    bottom:generateLine(bottomLeft.plus(direction),direction,width-2),
-    left:generateLine(bottomLeft.plus(directionV),directionV,height-2),
-    right:generateLine(bottomLeft.plus(direction.scaled(width-1)).plus(directionV),directionV,height-2),
-    top:generateLine(bottomLeft.plus(directionV.scaled(height-1).plus(direction)),direction,width-2),
-    air:flatMap(generateLine(bottomLeft.plus(direction).plus(directionV),direction,width-2),
-      p => generateLine(p,directionV,height-2))
-  }
-}
-
-
-async function makeWorldWithPortal(portal,additionalAir,additionalObsidian)
-{
-  var {bottom,left,right,top,air}=portal;
-  var world=new World();
-  var chunk=new Chunk();
-
-  [bottom,left,right,top].forEach(border => border.forEach(pos => chunk.setBlockType(pos,49)));
-  air.forEach(pos => chunk.setBlockType(pos,0));
-
-  additionalAir.forEach(pos => chunk.setBlockType(pos,0));
-  additionalObsidian.forEach(pos => chunk.setBlockType(pos,49));
-
-
-  await world.setColumn(0,0,chunk);
-  return world;
-}
 
 describe("Generate portal",function(){
   it("generate a line",() => {
