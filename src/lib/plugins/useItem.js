@@ -23,7 +23,7 @@ module.exports.player=function(player,serv)
       if(frames.length==0)
         return;
       var air=getAir(frames[0]);
-      air.forEach(pos => player.setBlock(pos,81,0))
+      air.forEach(pos => player.setBlock(pos,90,(frames[0].bottom[0].x-frames[0].bottom[1].x)!=0 ? 1 : 2));
     }
   };
 };
