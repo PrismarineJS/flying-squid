@@ -22,9 +22,24 @@ module.exports.player=function(player,serv)
       var frames=await detectFrame(player.world,referencePosition,direction);
       if(frames.length==0)
         return;
-      var air=getAir(frames[0]);
+      var air=frames[0].air;
       air.forEach(pos => player.setBlock(pos,90,(frames[0].bottom[0].x-frames[0].bottom[1].x)!=0 ? 1 : 2));
+      player.world.portals.push(frames[0]);
     }
   };
+
+  player.on("dug",({position,block}) => {
+    if(block.name=="portal")
+    {
+      var p=player.world.portals.filter(portal => portal.air.reduce((acc,pos) => acc || pos.equals(position),false));
+      if(p.length>0)
+      {
+        p[0]
+          .air
+          .filter(ap => !ap.equals(position))
+          .forEach(ap => serv.setBlock(player.world,ap,0,0));
+      }
+    }
+  });
 };
 var directionToVector=[new Vec3(0,-1,0),new Vec3(0,1,0),new Vec3(0,0,-1),new Vec3(0,0,1),new Vec3(-1,0,0),new Vec3(1,0,0)];

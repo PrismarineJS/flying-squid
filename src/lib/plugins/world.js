@@ -17,6 +17,8 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {};
   serv.netherworld.blockEntityData = {};
+  serv.overworld.portals = [];
+  serv.netherworld.portals = [];
   //////////////
 
   serv.pregenWorld = (world, size=3) => {
