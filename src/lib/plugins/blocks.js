@@ -4,12 +4,7 @@ module.exports.player=function(player,serv)
 {
   player.changeBlock=async (position,blockType,blockData) =>
   {
-    serv.players
-      .filter(p => p.world==player.world && player!=p)
-      .forEach(p => p.sendBlock(position, blockType, blockData));
-
-    await player.world.setBlockType(position,blockType);
-    await player.world.setBlockData(position,blockData);
+    serv.setBlock(player.world, position, blockType, blockData);
   };
   
   player.sendBlock = (position, blockType, blockData) =>  // Call from player.setBlock unless you want "local" fake blocks

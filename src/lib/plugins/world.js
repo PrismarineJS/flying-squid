@@ -37,6 +37,12 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
 
     await world.setBlockType(position,blockType);
     await world.setBlockData(position,blockData);
+    serv.emit('setBlock', {
+      world: world,
+      position: position,
+      type: blockType,
+      data: blockData
+    });
   };
 
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));

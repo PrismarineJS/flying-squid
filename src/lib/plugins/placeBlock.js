@@ -14,7 +14,7 @@ var materialToSound = {
 module.exports.player=function(player,serv)
 {
   player._client.on("block_place",({direction,heldItem,location} = {}) => {
-    if(direction==-1 || heldItem.blockId==-1 || !blocks[heldItem.blockId]) return;
+    if(direction==-1 || heldItem.blockId==-1) return;
     var referencePosition=new Vec3(location.x,location.y,location.z);
     var directionVector=directionToVector[direction];
     var placedPosition=referencePosition.plus(directionVector);
@@ -26,8 +26,9 @@ module.exports.player=function(player,serv)
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
+      sound: 'dig.' + ((blocks[heldItem.blockId] && materialToSound[blocks[heldItem.blockId].material]) || 'stone')
     }, ({direction, heldItem, position, playSound, sound, id, damage}) => {
+      if (!blocks[id]) return false;
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8
