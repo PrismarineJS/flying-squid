@@ -11,7 +11,7 @@ module.exports.player=function(player,serv)
 
     var item= items[heldItem.blockId];
     if(item.name=="flint_and_steel")
-      player.use_flint_and_steel(referencePosition,directionVector);
+      player.use_flint_and_steel(referencePosition,directionVector,position);
   });
 };
 var directionToVector=[new Vec3(0,-1,0),new Vec3(0,1,0),new Vec3(0,0,-1),new Vec3(0,0,1),new Vec3(-1,0,0),new Vec3(1,0,0)];

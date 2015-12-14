@@ -7,32 +7,46 @@ module.exports.player=function(player,serv)
     player.sendBlock(position, block.type, block.metadata);
   }
 
-  player._client.on("block_dig",({location,status} = {}) => {
+  player._client.on("block_dig",async ({location,status,face}) => {
     var pos=new Vec3(location.x,location.y,location.z);
-    player.world.getBlock(pos)
-      .then(block => {
-        currentlyDugBlock=block;
-        if(currentlyDugBlock.type==0) return;
-        if(status==0 && player.gameMode!=1)
-          player.behavior('dig', { // Start dig survival
-            position: pos,
-            block: block
-          }, ({position}) => {
-            return startDigging(position);
-          }, cancelDig);
-        else if(status==2)
-          completeDigging(pos);
-        else if(status==1)
-          player.behavior('cancelDig', { // Cancel dig survival
-            position: pos,
-            block: block
-          }, ({position}) => {
-            return cancelDigging(position);
-          });
-        else if(status==0 && player.gameMode==1)
-          return creativeDigging(pos);
-      })
-    .catch((err)=> setTimeout(() => {throw err;},0))
+
+    var directionVector=directionToVector[face];
+    var facedPos=pos.plus(directionVector);
+
+    try {
+      let facedBlock = await player.world.getBlock(facedPos);
+      let block;
+      if(facedBlock.name=="fire")
+      {
+        block=facedBlock;
+        pos=facedPos;
+      }
+      else block=player.world.getBlock(pos);
+
+      currentlyDugBlock = block;
+      if (currentlyDugBlock.type == 0) return;
+      if (status == 0 && player.gameMode != 1)
+        player.behavior('dig', { // Start dig survival
+          position: pos,
+          block: block
+        }, ({position}) => {
+          return startDigging(position);
+        }, cancelDig);
+      else if (status == 2)
+        completeDigging(pos);
+      else if (status == 1)
+        player.behavior('cancelDig', { // Cancel dig survival
+          position: pos,
+          block: block
+        }, ({position}) => {
+          return cancelDigging(position);
+        });
+      else if (status == 0 && player.gameMode == 1)
+        return creativeDigging(pos);
+    }
+    catch(err) {
+      setTimeout(() => {throw err;},0);
+    }
   });
 
   function diggingTime()
@@ -160,3 +174,5 @@ module.exports.player=function(player,serv)
   }
 
 };
+
+var directionToVector=[new Vec3(0,-1,0),new Vec3(0,1,0),new Vec3(0,0,-1),new Vec3(0,0,1),new Vec3(-1,0,0),new Vec3(1,0,0)];

@@ -3,17 +3,19 @@ var Vec3 = require("vec3").Vec3;
 var UserError=require("flying-squid").UserError;
 
 module.exports.player=function(player,serv) {
-  player.use_flint_and_steel=async (referencePosition,direction) => {
+  player.use_flint_and_steel=async (referencePosition,direction,position) => {
     let block=await player.world.getBlock(referencePosition);
     if(block.name=="obsidian")
     {
       var frames=await detectFrame(player.world,referencePosition,direction);
-      if(frames.length==0)
+      if(frames.length!=0) {
+        var air = frames[0].air;
+        air.forEach(pos => player.setBlock(pos, 90, (frames[0].bottom[0].x - frames[0].bottom[1].x) != 0 ? 1 : 2));
+        player.world.portals.push(frames[0]);
         return;
-      var air=frames[0].air;
-      air.forEach(pos => player.setBlock(pos,90,(frames[0].bottom[0].x-frames[0].bottom[1].x)!=0 ? 1 : 2));
-      player.world.portals.push(frames[0]);
+      }
     }
+    player.changeBlock(position, 51, 0);
   };
 
   player.on("dug",({position,block}) => {
