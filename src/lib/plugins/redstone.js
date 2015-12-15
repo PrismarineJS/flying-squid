@@ -27,17 +27,46 @@ module.exports.server = function(serv) {
   }
 
   serv.on('setBlock', ({world, position, type, data}) => {
-    updateAdjacent(world, position);
+    //console.log('setBlock Action Update');
+    testNearby(world, position);
   });
+
+  async function testNearby(world, position, self=true) {
+    actionOnEach(allAdjacentSides, position, async (pos) => {
+      var id = await world.getBlockType(pos);
+      if (id != 0) serv.newAction({
+        world: world,
+        position: pos,
+        type: 'redstone'
+      });
+    });
+    if (self) {
+      var id = await world.getBlockType(position);
+      if (id != 0) {
+        serv.newAction({
+          world: world,
+          position: position,
+          type: 'redstone'
+        });
+      }
+    }
+  }
 
   serv.on('tick', async (time, ticknum) => {
     await updateRedstone();
   });
 
   async function updateRedstone(blocksToChange=[]) {
-    //if (blocksToChange.length) console.log(blocksToChange);
     var redstoneUpdates = serv.currentTick.filter(t => t.type == 'redstone');
     serv.currentTick = serv.currentTick.filter(t => t.type != 'redstone');
+
+    redstoneUpdates = redstoneUpdates.filter((r, j) => { // Remove duplicates
+      for (var i = j+1; i < redstoneUpdates.length; i++) {
+        if (r.position.equals(redstoneUpdates[i].position) && r.world == redstoneUpdates[i].world) return false;
+      }
+      return true;
+    });
+
     //if (redstoneUpdates.length != 0) console.log('Have ' + redstoneUpdates.length + ' updates!');
     if (!redstoneUpdates.length) {
       var worlds = [];
@@ -65,10 +94,18 @@ module.exports.server = function(serv) {
         return await serv.tickRedstoneDust(action.world, action.position, blocksToChange);
       }
     }).then((results) => {
+      results = results.filter(r => typeof r != 'undefined'); // Remove undefineds
+      results = results.filter((r, j) => { // Remove duplicates
+        for (var i = j+1; i < results.length; i++) {
+          if (r.position.equals(results[i].position) && r.world == results[i].world) return false;
+        }
+        return true;
+      });
+      //console.log('Results',results,'blocks',blocksToChange);
       blocksToChange = blocksToChange.filter(b => {
         var getRid = false;
         results.forEach(r => {
-          if (b.position == r.position && b.world == r.world) getRid = true;
+          if (b.position.equals(r.position) && b.world == r.world) getRid = true;
         });
         return !getRid;
       });
@@ -77,32 +114,35 @@ module.exports.server = function(serv) {
   }
 
   serv.tickRedstoneDust = async (world, pos, extras) => {
-    var currentPower = await getBlock(world, pos, extras).metadata;
+    var currentPower = (await getBlock(world, pos, extras)).metadata;
     var aboveBlock = await getBlock(world, pos.plus(new Vec3(0, 1, 0)), extras);
     var sides = levelSides.map(s => pos.plus(s));
     var sidesUp = sides.map(s => s.plus(new Vec3(0, 1, 0)));
     var check = sides;
     if (aboveBlock.boundingBox != 'block') check = check.concat(sidesUp);
-    sides.forEach(async (s) => {
+    await async.map(sides, async (s) => {
       var block = await getBlock(world, s, extras);
+      //console.log(s, block);
       if (block.boundingBox == 'block') return;
-      var blockBelowId = await getBlock(world, pos.plus(s).plus(new Vec3(0, -1, 0)), extras).type;
-      if (blockBelowId == '55') check.push(s.plus(new Vec3(0, -1, 0)));
+      var blockBelowId = (await getBlock(world, s.plus(new Vec3(0, -1, 0)), extras)).type;
+      if (blockBelowId == 55) check.push(s.plus(new Vec3(0, -1, 0)));
+      //console.log(blockBelowId,'meh');
     });
     var maxPower = 0;
     var redstoneDusts = [];
     await async.map(check, async(c) => {
-      var id = await getBlock(world, c, extras).id;
-      if (id == 5) redstoneDusts.push(c);
+      var id = (await getBlock(world, c, extras)).type;
+      if (id == 55) redstoneDusts.push(c);
     });
     await async.map(check, async (c) => {
       var power = await getPower(world, c, extras, true, true);
       if (power > maxPower) maxPower = power;
     });
     //console.log(check);
-    //console.log('POWR',maxPower,currentPower);
+    //console.log('POWR',maxPower,currentPower,pos);
     if (maxPower != currentPower) {
-      //updateAdjacent(world, pos);
+      //console.log('Updating',redstoneDusts.length);
+      updateArray(world, redstoneDusts);
       return {
         world: world,
         position: pos,
@@ -110,16 +150,6 @@ module.exports.server = function(serv) {
         data: maxPower
       };
     }
-  }
-
-  function updateAdjacent(world, position) {
-    actionOnEach(allAdjacentSides, position, (pos) => {
-      serv.newAction({
-        world: world,
-        position: pos,
-        type: 'redstone'
-      });
-    });
   }
 
   function updateArray(world, positions) {
@@ -134,27 +164,22 @@ module.exports.server = function(serv) {
 
   async function getBlock(world, position, extras) {
     if (extras) {
-      var index = findInArray({ world: world, position: position }, extras);
-      console.log(extras, position);
+      var index = findInfoInArray(world, position, extras);
+      //console.log('getBlock',extras, position);
       if (index != -1) return {
         type: extras[index].type,
         metadata: extras[index].data,
         redstone: extras[index].redstone
       }
     }
-    console.log('else');
     return await world.getBlock(position);
   }
 
-  function findInArray(item, arr) {
+  function findInfoInArray(world, position, arr) {
     var ind = -1;
     arr.forEach((a, index) => {
       if (ind != -1) return;
-      var success = true;
-      Object.keys(item).forEach(key => {
-        if (a[key] != item[key]) success = false;
-      });
-      if (success) ind = index;
+      if (a.world == world && a.position.equals(position)) ind = index;
     });
     return ind;
   }
@@ -194,28 +219,5 @@ module.exports.player = function(player, serv) {
       var below = await player.world.getBlock(opt.position.plus(new Vec3(0, -1, 0)));
       if (below.boundingBox != 'block') cancel();
     }
-    await testNearby(opt.position);
   });
-
-  player.on('dug', async ({position}) => {
-    await testNearby(position);
-  });
-
-  async function testNearby(position, self=true) {
-    actionOnEach(allAdjacentSides, position, async (pos) => {
-      var id = await player.world.getBlockType(pos);
-      if (redstoneRelated.indexOf(id) != -1) serv.newAction({
-        world: player.world,
-        position: pos,
-        type: 'redstone'
-      });
-    });
-    if (self) {
-      serv.newAction({
-        world: player.world,
-        position: position,
-        type: 'redstone'
-      });
-    }
-  }
 }

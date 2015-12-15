@@ -20,7 +20,7 @@ module.exports.player=function(player,serv)
     });
     
 
-  player.setBlock = (position,blockType,blockData) => serv.setBlock(player.world,position,blockType,blockData);
+  player.setBlock = (position,blockType,blockData) => serv.setBlock(player.world,position,blockType,blockData,{blacklist: [player]});
 
 
   player.commands.add({
