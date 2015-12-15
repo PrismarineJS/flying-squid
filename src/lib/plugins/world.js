@@ -31,14 +31,21 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
     return Promise.all(promises);
   };
 
-  serv.setBlock = async (world,position,blockType,blockData) =>
+  serv.setBlock = async (world,position,blockType,blockData,{whitelist,blacklist=[]}={}) =>
   {
-    serv.players
-      .filter(p => p.world==world)
+    if (!whitelist) whitelist = serv.players.filter(p => p.world == world);
+    var players = whitelist.filter(w => blacklist.indexOf(w) == -1);
+    players
       .forEach(player => player.sendBlock(position, blockType, blockData));
 
     await world.setBlockType(position,blockType);
     await world.setBlockData(position,blockData);
+    serv.emit('setBlock', {
+      world: world,
+      position: position,
+      type: blockType,
+      data: blockData
+    });
   };
 
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));

@@ -22,6 +22,7 @@
     "type": "MIT"
   },
   "dependencies": {
+    "async-q": "^0.2.2",
     "babel-runtime": "^5.4.4",
     "emit-then": "^1.0.2",
     "event-promise": "0.0.1",
