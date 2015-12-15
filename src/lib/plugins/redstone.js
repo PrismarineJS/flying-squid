@@ -80,11 +80,10 @@ module.exports.server = function(serv) {
         }
         posList[d.position.toString() + ',' + worldId] = d;
       });
-      Object.keys(posList).forEach(pos => {
+      return async.map(Object.keys(posList), (pos) => {
         var d = posList[pos];
         serv.setBlock(d.world, d.position, d.type, d.data);
-      });
-      return Promise.resolve();
+      },Promise.resolve());
     }
     return async.map(redstoneUpdates, async (action) => {
       var block = await getBlock(action.world, action.position, blocksToChange);
@@ -162,8 +161,14 @@ module.exports.server = function(serv) {
     });
   }
 
+  var totalCheckBlock = 0;
+  var totalGetBlock = 0;
+
   async function getBlock(world, position, extras) {
+    totalCheckBlock++;
+    console.log(totalCheckBlock,totalGetBlock);
     if (extras) {
+      totalGetBlock++;
       var index = findInfoInArray(world, position, extras);
       //console.log('getBlock',extras, position);
       if (index != -1) return {
