@@ -8,8 +8,8 @@ module.exports.server=function(serv) {
 
     serv.tickInterval = setInterval(() => {
       serv.tickCount++;
-      var t=Date.now();
-      var time = (t - serv.lastTickTime) / 1000;
+      const t=Date.now();
+      let time = (t - serv.lastTickTime) / 1000;
       if (time > 100) time = 0;
       serv.emit('tick', time, serv.tickCount);
       serv.lastTickTime = t;

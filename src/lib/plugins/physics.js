@@ -1,5 +1,5 @@
-var blocks=require("minecraft-data")(require("flying-squid").version).blocks;
-var Vec3 = require("vec3").Vec3;
+const blocks=require("minecraft-data")(require("flying-squid").version).blocks;
+const Vec3 = require("vec3").Vec3;
 
 module.exports.entity=function(entity){
   entity.calculatePhysics = async (delta) => {
@@ -9,17 +9,17 @@ module.exports.entity=function(entity){
       addGravity(entity, 'z', delta);
     }
 
-    var vSign = getSign(entity.velocity);
-    var sizeSigned = new Vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z);
+    const vSign = getSign(entity.velocity);
+    const sizeSigned = new Vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z);
 
-    var xVec = entity.position.offset(entity.velocity.x*delta + sizeSigned.x/2, 0, 0).scaled(1/32).floored();
-    var yVec = entity.position.offset(0, entity.velocity.y*delta + sizeSigned.y/2, 0).scaled(1/32).floored();
-    var zVec = entity.position.offset(0, 0, entity.velocity.z*delta + sizeSigned.z/2).scaled(1/32).floored();
+    const xVec = entity.position.offset(entity.velocity.x*delta + sizeSigned.x/2, 0, 0).scaled(1/32).floored();
+    const yVec = entity.position.offset(0, entity.velocity.y*delta + sizeSigned.y/2, 0).scaled(1/32).floored();
+    const zVec = entity.position.offset(0, 0, entity.velocity.z*delta + sizeSigned.z/2).scaled(1/32).floored();
 
     // Get block for each (x/y/z)Vec, check to avoid duplicate getBlockTypes
-    var xBlock = blocks[await entity.world.getBlockType(xVec)].boundingBox == 'block';
-    var yBlock = yVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(yVec)].boundingBox == 'block';
-    var zBlock = zVec.equals(yVec) ? yBlock : (zVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(zVec)].boundingBox == 'block');
+    const xBlock = blocks[await entity.world.getBlockType(xVec)].boundingBox == 'block';
+    const yBlock = yVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(yVec)].boundingBox == 'block';
+    const zBlock = zVec.equals(yVec) ? yBlock : (zVec.equals(xVec) ? xBlock : blocks[await entity.world.getBlockType(zVec)].boundingBox == 'block');
 
 
     if (xBlock || yBlock || zBlock) {
@@ -27,7 +27,7 @@ module.exports.entity=function(entity){
       entity.velocity.z = getFriction(entity.velocity.z, entity.friction.z, delta);
     }
 
-    var newPos = entity.position.clone();
+    const newPos = entity.position.clone();
 
     newPos.x += getMoveAmount('x', xBlock, entity, delta, sizeSigned.x);
     newPos.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
@@ -38,9 +38,9 @@ module.exports.entity=function(entity){
   };
 
   entity.sendVelocity = (vel, maxVel) => {
-    var velocity = vel.scaled(32).floored(); // Make fixed point
-    var maxVelocity = maxVel.scaled(32).floored();
-    var scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    const velocity = vel.scaled(32).floored(); // Make fixed point
+    const maxVelocity = maxVel.scaled(32).floored();
+    const scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
     entity._writeNearby('entity_velocity', {
       entityId: entity.id,
       velocityX: scaledVelocity.x,
@@ -88,7 +88,7 @@ module.exports.entity=function(entity){
   }
 
   function addVelocityWithMax(current, newVel, max) {
-    var x, y, z;
+    let x, y, z;
     if (current.x > max.x || current.x < -max.x) x = current.x;
     else x = Math.max(-max.x, Math.min(max.x, current.x + newVel.x));
     if (current.y > max.y || current.y < -max.y) y = current.y;
@@ -109,9 +109,9 @@ module.exports.player = function(player, serv) {
       return str.match(/(.+?) (\d+) (\d+) (\d+)/) || false;
     },
     action(params) {
-      var selector = player.selectorString(params[1]);
-      var vec = new Vec3(parseInt(params[2]), parseInt(params[3]), parseInt(params[4]));
+      const selector = player.selectorString(params[1]);
+      const vec = new Vec3(parseInt(params[2]), parseInt(params[3]), parseInt(params[4]));
       selector.forEach(e => e.sendVelocity(vec, vec.scaled(5)));
     }
   });
-}
+};

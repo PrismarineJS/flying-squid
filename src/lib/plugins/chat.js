@@ -46,17 +46,17 @@ module.exports.server=function(serv)
 
   serv.parseClassic = (message) => {
     if (typeof message == 'object') return message;
-    var messageList = [];
-    var text = '';
-    var nextChanged = false;
-    var color = 'white';
-    var bold = false;
-    var italic = false;
-    var underlined = false;
-    var strikethrough = false;
-    var random = false;
-    var colors = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f', 'k','l','m','n','o','r','&']
-    var convertColor = ['black', 'dark_blue','dark_green','dark_cyan','dark_red','dark_purple','gold',
+    const messageList = [];
+    let text = '';
+    let nextChanged = false;
+    let color = 'white';
+    let bold = false;
+    let italic = false;
+    let underlined = false;
+    let strikethrough = false;
+    let random = false;
+    const colors = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f', 'k','l','m','n','o','r','&']
+    const convertColor = ['black', 'dark_blue','dark_green','dark_cyan','dark_red','dark_purple','gold',
                         'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white',
                         'random', 'bold', 'strikethrough', 'underlined', 'italic', 'reset', '&'];
 
@@ -75,9 +75,9 @@ module.exports.server=function(serv)
     }
 
     while (message != '') {
-      var currChar = message[0];
+      const currChar = message[0];
       if (nextChanged) {
-        var newColor = convertColor[colors.indexOf(currChar)];
+        const newColor = convertColor[colors.indexOf(currChar)];
         if (newColor) {
           if (newColor == 'bold') bold = true;
           else if (newColor == 'strikethrough') strikethrough = true;
@@ -133,7 +133,7 @@ module.exports.player=function(player,serv)
         whitelist: serv.players,
         blacklist: []
       }, ({message, prefix, text, whitelist, blacklist}) => {
-        var obj = serv.parseClassic(prefix);
+        const obj = serv.parseClassic(prefix);
         if (!obj.extra) obj.extra = [];
         obj.extra.push(serv.parseClassic(text));
         serv.broadcast(obj, {
@@ -150,7 +150,7 @@ module.exports.player=function(player,serv)
   };
 
   player.emptyChat = (count=1) => {
-    for (var i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       player.chat('');
     }
   }

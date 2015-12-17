@@ -1,6 +1,6 @@
-var moment=require("moment");
-var rp=require("request-promise");
-var nodeUuid=require('node-uuid');
+const moment=require("moment");
+const rp=require("request-promise");
+const nodeUuid=require('node-uuid');
 
 module.exports.server=function(serv)
 {
@@ -15,13 +15,11 @@ module.exports.server=function(serv)
     serv.bannedIPs[IP] = {
       time: +moment(),
       reason: reason || "Your IP is banned!"
-    }
-    for(var uuid in serv.players){
-      if(serv.players[uuid]._client.socket.remoteAddress == IP){
-        serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason)
-      }
-    }
-  }
+    };
+    Object.keys(serv.players)
+      .filter(uuid => serv.players[uuid]._client.socket.remoteAddress == IP)
+      .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason));
+  };
 
   function uuidInParts(plainUUID)
   {
@@ -71,7 +69,7 @@ module.exports.player=function(player,serv)
   player.ban = reason => {
     reason = reason || "You were banned!";
     player.kick(reason);
-    var uuid=player._client.uuid;
+    const uuid=player._client.uuid;
     serv.ban(uuid, reason);
   };
   player.banIP = reason => {
@@ -92,14 +90,14 @@ module.exports.player=function(player,serv)
     parse(str) {
       if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
         return false;
-      var parts = str.split(' ');
+      const parts = str.split(' ');
       return {
         username:parts.shift(),
         reason:parts.join(' ')
       };
     },
     action({username,reason}) {
-      var kickPlayer = serv.getPlayer(username);
+      const kickPlayer = serv.getPlayer(username);
       if (!kickPlayer) {
         player.chat(username + " is not on this server!");
       } else {
@@ -117,14 +115,14 @@ module.exports.player=function(player,serv)
     parse(str) {
       if(!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/))
         return false;
-      var parts = str.split(' ');
+      const parts = str.split(' ');
       return {
         username:parts.shift(),
         reason:parts.join(' ')
       };
     },
     action({username,reason}) {
-      var banPlayer = serv.getPlayer(username);
+      const banPlayer = serv.getPlayer(username);
 
       if (!banPlayer) {
         serv.banUsername(username, reason)
@@ -146,7 +144,7 @@ module.exports.player=function(player,serv)
     usage: '/ban-ip <ip> [reason]',
     op: true,
     parse(str){
-      var argv = str.split(' ');
+      const argv = str.split(' ');
       if(argv.length < 1) return;
       
       return {
@@ -166,7 +164,7 @@ module.exports.player=function(player,serv)
     usage: '/pardon-ip <ip>',
     op: true,
     action(IP) {
-      var result=serv.pardonIP(IP);
+      const result=serv.pardonIP(IP);
       player.chat(result ? IP + " was IP pardonned" : IP+" is not banned");
     }
   });
@@ -198,7 +196,7 @@ module.exports.player=function(player,serv)
       return str;
     },
     action(username) {
-      var user = serv.getPlayer(username);
+      const user = serv.getPlayer(username);
       if (!user) return 'That player is not on the server.'
       user.op = true;
       player.chat(username + ' is opped');
@@ -215,7 +213,7 @@ module.exports.player=function(player,serv)
       return str;
     },
     action(username) {
-      var user = serv.getPlayer(username);
+      const user = serv.getPlayer(username);
       if (!user) return 'That player is not on the server.'
       user.op = false;
       player.chat(username + ' is deopped');

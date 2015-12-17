@@ -1,6 +1,6 @@
-var net = require('net');
+const net = require('net');
 describe("Server", function() {
-  var serv;
+  let serv;
   before(function(done){
     serv=require("../app");
     serv.on("listening",function(){
@@ -15,7 +15,7 @@ describe("Server", function() {
     });
   });
   it("Is running", function(done) {
-    var client = net.Socket();
+    const client = net.Socket();
     client.connect(serv._server.socketServer.address().port, '127.0.0.1', done);
     client.on('error', done);
   });

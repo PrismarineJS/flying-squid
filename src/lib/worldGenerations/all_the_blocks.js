@@ -1,15 +1,15 @@
-var Chunk = require('prismarine-chunk')(require("../version"));
-var Vec3 = require('vec3').Vec3;
-var blocks=require("minecraft-data")(require("../version")).blocks;
+const Chunk = require('prismarine-chunk')(require("../version"));
+const Vec3 = require('vec3').Vec3;
+const blocks=require("minecraft-data")(require("../version")).blocks;
 
 function generation() {
   function generateSimpleChunk() {
-    var chunk = new Chunk();
+    const chunk = new Chunk();
 
-    var i=2;
-    for (var x = 0; x < 16;x++) {
-      for (var z = 0; z < 16; z++) {
-        var y;
+    let i=2;
+    for (let x = 0; x < 16;x++) {
+      for (let z = 0; z < 16; z++) {
+        let y;
         for(y=47;y<=50;y++)
         {
           chunk.setBlockType(new Vec3(x,y,z), i);

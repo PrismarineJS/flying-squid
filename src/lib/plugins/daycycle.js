@@ -41,7 +41,7 @@ module.exports.player=function(player,serv){
     usage: '/time <add|query|set> <value>',
     op: true,
     parse(str) {
-      var data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/);
+      const data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/);
       if(!data) return false;
       return {
         action: data[1],
@@ -52,7 +52,7 @@ module.exports.player=function(player,serv){
       if(action == "query") {
         player.chat("It is "+serv.time);
       } else {
-        var newTime;
+        let newTime;
 
         if(action == "set") {
           newTime = value;

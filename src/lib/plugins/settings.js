@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 
 function randomInt (low, high) {
@@ -11,12 +11,12 @@ module.exports.server=function(serv,settings)
 
   async function findSpawnZone(world,initialPoint)
   {
-    var point=initialPoint;
+    let point=initialPoint;
     while((await (world.getBlockType(point)))==0)
       point=point.offset(0,-1,0);
     while(true)
     {
-      var p=await world.getBlockType(point);
+      const p=await world.getBlockType(point);
       if(p!=8 && p!=9)
         break;
       point=point.offset(1,0,0);

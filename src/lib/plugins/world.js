@@ -1,9 +1,9 @@
-var spiralloop = require('spiralloop');
+const spiralloop = require('spiralloop');
 
-var World = require('prismarine-world');
-var WorldSync = require("prismarine-world-sync");
+const World = require('prismarine-world');
+const WorldSync = require("prismarine-world-sync");
 
-var generations=require("flying-squid").generations;
+const generations=require("flying-squid").generations;
 
 module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
@@ -22,9 +22,9 @@ module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_sq
   //////////////
 
   serv.pregenWorld = (world, size=3) => {
-    var promises = [];
-    for (var x = -size; x < size; x++) {
-      for (var z = -size; z < size; z++) {
+    const promises = [];
+    for (let x = -size; x < size; x++) {
+      for (let z = -size; z < size; z++) {
         promises.push(world.getColumn(x, z));
       }
     }
@@ -79,7 +79,7 @@ module.exports.player=function(player,serv,settings) {
 
   function spiral(arr)
   {
-    var t=[];
+    const t=[];
     spiralloop(arr,(x,z) => {
       t.push([x,z]);
     });
@@ -89,8 +89,8 @@ module.exports.player=function(player,serv,settings) {
   player.sendNearbyChunks = (view,group) =>
   {
     player.lastPositionChunkUpdated=player.position;
-    var playerChunkX=Math.floor(player.position.x/16/32);
-    var playerChunkZ=Math.floor(player.position.z/16/32);
+    const playerChunkX=Math.floor(player.position.x/16/32);
+    const playerChunkZ=Math.floor(player.position.z/16/32);
 
     Object.keys(player.loadedChunks)
       .map((key) => key.split(",").map(a => parseInt(a)))
@@ -103,13 +103,13 @@ module.exports.player=function(player,serv,settings) {
         chunkZ:playerChunkZ+t[1]-view
       }))
       .filter(({chunkX,chunkZ}) => {
-        var key=chunkX+","+chunkZ;
-        var loaded=player.loadedChunks[key];
+        const key=chunkX+","+chunkZ;
+        const loaded=player.loadedChunks[key];
         if(!loaded) player.loadedChunks[key]=1;
         return !loaded;
       })
       .reduce((acc,{chunkX,chunkZ})=> {
-          var p=acc
+          const p=acc
             .then(() => player.world.getColumn(chunkX, chunkZ))
             .then((column) => player.sendChunk(chunkX, chunkZ, column));
            return group ? p.then(() => sleep(5)) : p;

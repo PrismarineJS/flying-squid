@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 Vec3.prototype.toFixedPosition=function() {
   return this.scaled(32).floored();
@@ -10,7 +10,7 @@ module.exports.player=function(player)
 
   // float (degrees) --> byte (1/256 "degrees")
   function conv(f){
-    var b = Math.floor((f % 360) * 256 / 360);
+    let b = Math.floor((f % 360) * 256 / 360);
     if (b < -128) b += 256;
     else if (b > 127) b -= 256;
     return b;
@@ -22,8 +22,8 @@ module.exports.player=function(player)
       pitch: pitch,
       onGround: onGround
     }, () => {
-      var convYaw=conv(yaw);
-      var convPitch=conv(pitch);
+      const convYaw=conv(yaw);
+      const convPitch=conv(pitch);
       if (convYaw == player.yaw && convPitch == player.pitch) return;
       player._writeOthersNearby("entity_look", {
         entityId: player.id,
@@ -64,18 +64,18 @@ module.exports.player=function(player)
   };
 
   player.teleport = async (position) => {
-    var notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true);
+    const notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true);
     if (notCancelled) player.sendSelfPosition();
-  }
+  };
 
   player.sendAbilities = () => { // TODO: Fix all of this...
-    var godmode = player.gameMode == 1 || player.gameMode == 3;
-    var canFly = player.gameMode == 1 || player.gameMode == 3;
-    var isFlying = !player.onGround && canFly;
-    var creativeMode = player.gameMode == 1;
-    var f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
-    var walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
-    var flyingSpeed = 0.1;
+    const godmode = player.gameMode == 1 || player.gameMode == 3;
+    const canFly = player.gameMode == 1 || player.gameMode == 3;
+    const isFlying = !player.onGround && canFly;
+    const creativeMode = player.gameMode == 1;
+    const f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
+    const walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    const flyingSpeed = 0.1;
     /*console.log(walkingSpeed, flyingSpeed);
     player._client.write('abilities', { // FIIIIXXXXXXX
       flags: f,
@@ -94,7 +94,7 @@ module.exports.entity=function(entity,serv){
       onGround: onGround,
       teleport: teleport
     }, ({position,onGround}) => {
-      var diff = position.minus(entity.position);
+      const diff = position.minus(entity.position);
       if(diff.abs().x>127 || diff.abs().y>127 || diff.abs().z>127)
         entity._writeOthersNearby('entity_teleport', {
           entityId: entity.id,

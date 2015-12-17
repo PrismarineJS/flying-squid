@@ -1,15 +1,13 @@
-var Vec3 = require("vec3").Vec3;
-
 module.exports.server=function(serv,options) {
   serv.on('tick', function(delta) {
     Promise.all(
       Object.keys(serv.entities).map(async (id) => {
-        var entity = serv.entities[id];
+        const entity = serv.entities[id];
         if (entity.deathTime && Date.now() - entity.bornTime >= entity.deathTime) {
           entity.destroy();
           return;
         } else if (entity.pickupTime && Date.now() - entity.bornTime >= entity.pickupTime) {
-          var players = serv.getNearby({
+          const players = serv.getNearby({
             world: entity.world,
             position: entity.position,
             radius: 1.5*32 // Seems good for now
@@ -19,7 +17,7 @@ module.exports.server=function(serv,options) {
           }
         }
         if (!entity.velocity || !entity.size) return;
-        var posAndOnGround = await entity.calculatePhysics(delta);
+        const posAndOnGround = await entity.calculatePhysics(delta);
         if (entity.type == 'mob') entity.sendPosition(posAndOnGround.position, posAndOnGround.onGround);
       })
     ).catch((err)=> setTimeout(() => {throw err;},0));

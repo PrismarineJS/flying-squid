@@ -1,4 +1,4 @@
-var {distanceToXpLevel,getXpLevel,getBaseXpFromLevel}=require("flying-squid").experience;
+const {distanceToXpLevel,getXpLevel,getBaseXpFromLevel}=require("flying-squid").experience;
 
 module.exports.player = function(player) {
   player.xp = 0;
@@ -39,18 +39,18 @@ module.exports.player = function(player) {
       return str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) || false;
     },
     action(args) {
-      var isLevel = !!args[2];
-      var amt = parseInt(args[1]);
-      var user = args[3] ? serv.getPlayer(args[3]) : player;
+      const isLevel = !!args[2];
+      const amt = parseInt(args[1]);
+      const user = args[3] ? serv.getPlayer(args[3]) : player;
       if (!user) return args[3] + ' is not on this server!';
 
       if (!isLevel) {
         user.setXp(user.xp + amt);
         player.chat('Gave ' + user.username + ' ' + amt + ' xp');
       } else {
-        var currLevel = getXpLevel(player.xp);
-        var baseCurrLevel = getBaseXpFromLevel(currLevel);
-        var extraXp = player.xp - baseCurrLevel;
+        const currLevel = getXpLevel(player.xp);
+        const baseCurrLevel = getBaseXpFromLevel(currLevel);
+        const extraXp = player.xp - baseCurrLevel;
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp);
         player.chat('Gave ' + user.username + ' ' + amt + ' levels');
       }

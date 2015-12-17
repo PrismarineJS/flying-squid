@@ -1,10 +1,9 @@
-var Entity=require("prismarine-entity");
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
-var path = require('path');
-var requireIndex = require('requireindex');
-var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-var Command = require('flying-squid').Command;
+const path = require('path');
+const requireIndex = require('requireindex');
+const plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
+const Command = require('flying-squid').Command;
 
 module.exports.server=function(serv,options)
 {
@@ -14,7 +13,7 @@ module.exports.server=function(serv,options)
   serv._server.on('login', async (client) => {
     if(client.socket.listeners('end').length==0) return; // TODO: should be fixed properly in nmp instead
     try {
-      var player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
+      const player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
       player._client=client;
 
       player.profileProperties=player._client.profile ? player._client.profile.properties : [];
@@ -129,10 +128,10 @@ module.exports.player=function(player,serv)
   }
 
   player.waitPlayerLogin = () => {
-    var events=["flying","look"];
+    const events=["flying","look"];
     return new Promise(function(resolve){
 
-      var listener=()=> {
+      const listener=()=> {
         events.map(event => player._client.removeListener(event,listener));
         resolve();
       };

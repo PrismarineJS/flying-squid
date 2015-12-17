@@ -1,6 +1,6 @@
-var version = require("flying-squid").version;
-var windows = require("prismarine-windows")(version).windows;
-var Item = require("prismarine-item")(version);
+const version = require("flying-squid").version;
+const windows = require("prismarine-windows")(version).windows;
+const Item = require("prismarine-item")(version);
 
 module.exports.player = function(player,serv)
 {
@@ -138,14 +138,14 @@ module.exports.player = function(player,serv)
       player.inventory.updateSlot(slot, undefined);
       return;
     }
-    
-    var newItem = Item.fromNotch(item);
+
+    const newItem = Item.fromNotch(item);
     player.inventory.updateSlot(slot, newItem);
   });
   
   player.inventory.on("windowUpdate", function(slot,oldItem,newItem){
 
-    var equipments={
+    const equipments={
       5:4,
       6:3,
       7:2,
@@ -173,8 +173,8 @@ module.exports.player = function(player,serv)
   player.collect = (collectEntity) => {
 
     // Add it to a stack already in the player's inventory if possible
-    for(var itemKey=0;itemKey<player.inventory.slots.length;itemKey++) {
-      var item = player.inventory.slots[itemKey];
+    for(let itemKey=0;itemKey<player.inventory.slots.length;itemKey++) {
+      const item = player.inventory.slots[itemKey];
       if(item == undefined) continue;
       if(item.type == collectEntity.itemId){
         item.count += 1;
@@ -190,7 +190,7 @@ module.exports.player = function(player,serv)
     }
 
     // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
-    var emptySlot = player.inventory.firstEmptyInventorySlot();
+    const emptySlot = player.inventory.firstEmptyInventorySlot();
     if(emptySlot != null){
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
@@ -198,7 +198,7 @@ module.exports.player = function(player,serv)
       });
       player.playSoundAtSelf('random.pop');
 
-      var newItem =  new Item(collectEntity.itemId, 1, collectEntity.damage);
+      const newItem =  new Item(collectEntity.itemId, 1, collectEntity.damage);
       player.inventory.updateSlot(emptySlot, newItem);
       collectEntity.destroy()
     }
