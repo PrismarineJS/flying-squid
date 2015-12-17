@@ -6,9 +6,9 @@ module.exports.server=function(serv)
   serv.entities={};
 
   serv.getPlayer = username => {
-    for (var p in serv.players) {
-      if (serv.players[p].username == username) return serv.players[p]
-    }
+    const found=serv.players.filter(pl => pl.username == username);
+    if(found.length>0)
+      return found[0];
     return null;
   };
 };
@@ -21,7 +21,7 @@ module.exports.player=function(player){
     usage: '/gamemode <0-3>',
     op: true,
     parse(str) {
-      var results;
+      let results;
       if(!(results = str.match(/^([0-3])$/)))
         return false;
       return parseInt(str);

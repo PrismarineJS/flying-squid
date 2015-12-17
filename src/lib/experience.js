@@ -1,18 +1,18 @@
 module.exports={distanceToXpLevel,getXpLevel,getXpRequired,getBaseXpFromLevel};
 
 function distanceToXpLevel(xp, toLevel) {
-  var level = getXpLevel(xp);
+  const level = getXpLevel(xp);
   if (!toLevel) toLevel = level+1;
-  var levelBaseXp = getBaseXpFromLevel(level);
-  var requiredXp = getXpRequired(level, toLevel);
+  const levelBaseXp = getBaseXpFromLevel(level);
+  const requiredXp = getXpRequired(level, toLevel);
   return (xp - levelBaseXp) / requiredXp;
 }
 
 function getXpLevel(xp) {
   // I have to use quadratic equation to reverse the equation from getBaseXpFromLevel(). Ugh.
-  var a;
-  var b;
-  var c;
+  let a;
+  let b;
+  let c;
   if (xp < 352) { // 352 == Experience at level 16
     a = 1;
     b = 6;

@@ -39,7 +39,7 @@ module.exports.server = function(serv, settings) {
   });
 
   serv.on('asap', () => {
-    for (var p in serv.plugins) {
+    for (let p in serv.plugins) {
       serv.log('[PLUGINS] Loaded "' + serv.plugins[p].name + '"');
     }
   });
@@ -49,7 +49,7 @@ module.exports.server = function(serv, settings) {
 
 module.exports.player = function(player, serv) {
   Object.keys(serv.plugins).forEach(p => {
-    var plugin = serv.plugins[p];
+    const plugin = serv.plugins[p];
     if (plugin.player) plugin.player.call(plugin, player, serv);
   });
 };
@@ -67,7 +67,7 @@ module.exports.entity = function(entity, serv) {
   };
 
   Object.keys(serv.plugins).forEach(p => {
-    var plugin = serv.plugins[p];
+    const plugin = serv.plugins[p];
     if (plugin.entity) plugin.entity.call(plugin, entity, serv);
   });
 };

@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player,serv)
 {
@@ -34,12 +34,12 @@ module.exports.player=function(player,serv)
     usage: '/setblock <x> <y> <z> <id> [data]',
     op: true,
     parse(str) {
-      var results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([0-9]{1,3})(?: ([0-9]{1,3}))?/);
+      const results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([0-9]{1,3})(?: ([0-9]{1,3}))?/);
       if(!results) return false;
       return results;
     },
     action(params) {
-      var res = params.slice(1, 4);
+      let res = params.slice(1, 4);
       res = res.map((val, i) => serv.posFromString(val, player.position[['x','y','z'][i]] / 32))
       player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0);
     }

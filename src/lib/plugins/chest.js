@@ -1,12 +1,12 @@
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player)
 {
   player.on('placeBlock_cancel', async (opt, cancel) => {
     if (player.crouching) return;
     try {
-      var id = await player.world.getBlockType(opt.reference);
-      var blockAbove = await player.world.getBlockType(opt.reference.plus(new Vec3(0, 1, 0)));
+      const id = await player.world.getBlockType(opt.reference);
+      const blockAbove = await player.world.getBlockType(opt.reference.plus(new Vec3(0, 1, 0)));
       if (id == 54) {
         opt.playSound = false;
         if (blockAbove) {

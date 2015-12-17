@@ -1,15 +1,15 @@
-var {detectFrame,generatePortal,addPortalToWorld}=require("flying-squid").portal_detector;
-var Vec3 = require("vec3").Vec3;
-var UserError=require("flying-squid").UserError;
+const {detectFrame,generatePortal,addPortalToWorld}=require("flying-squid").portal_detector;
+const Vec3 = require("vec3").Vec3;
+const UserError=require("flying-squid").UserError;
 
 module.exports.player=function(player,serv) {
   player.use_flint_and_steel=async (referencePosition,direction,position) => {
     let block=await player.world.getBlock(referencePosition);
     if(block.name=="obsidian")
     {
-      var frames=await detectFrame(player.world,referencePosition,direction);
+      const frames=await detectFrame(player.world,referencePosition,direction);
       if(frames.length!=0) {
-        var air = frames[0].air;
+        const air = frames[0].air;
         air.forEach(pos => player.setBlock(pos, 90, (frames[0].bottom[0].x - frames[0].bottom[1].x) != 0 ? 1 : 2));
         player.world.portals.push(frames[0]);
         return;
@@ -52,7 +52,7 @@ module.exports.player=function(player,serv) {
     usage: '/portal <bottomLeft:<x> <y> <z>> <direction:x|z> <width> <height>',
     op: true,
     parse(str) {
-      var pars=str.split(' ');
+      const pars=str.split(' ');
       if(pars.length!=6)
         return false;
       let [x,y,z,direction,width,height]=pars;
@@ -64,7 +64,7 @@ module.exports.player=function(player,serv) {
       return {bottomLeft,direction,width,height};
     },
     async action({bottomLeft,direction,width,height}) {
-      var portal=generatePortal(bottomLeft,direction,width,height);
+      const portal=generatePortal(bottomLeft,direction,width,height);
       await addPortalToWorld(player.world,portal,[],[],async (pos,type) => {
         await serv.setBlock(player.world,pos,type,0);
       });

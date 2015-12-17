@@ -1,10 +1,10 @@
 module.exports = (obj) => {
   return async (eventName, data, func, cancelFunc) => {
-    var hiddenCancelled = false;
-    var cancelled = false;
-    var cancelCount = 0;
-    var defaultCancel = true;
-    var cancel = (dC=true, hidden=false) => { // Hidden shouldn't be used often but it's not hard to implement so meh
+    let hiddenCancelled = false;
+    let cancelled = false;
+    let cancelCount = 0;
+    let defaultCancel = true;
+    const cancel = (dC=true, hidden=false) => { // Hidden shouldn't be used often but it's not hard to implement so meh
       if (hidden) hiddenCancelled = true;
       else {
         cancelled = true;
@@ -13,7 +13,7 @@ module.exports = (obj) => {
       defaultCancel = dC;
     };
     
-    var resp;
+    let resp;
 
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err)=> setTimeout(() => {throw err;},0));
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err)=> setTimeout(() => {throw err;},0));

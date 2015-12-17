@@ -11,21 +11,21 @@ class Command {
   }
 
   find(command) {
-    var parts=command.split(" ");
-    var c=parts.shift();
-    var pars=parts.join(" ");
+    const parts=command.split(" ");
+    const c=parts.shift();
+    const pars=parts.join(" ");
     if(this.hash[c])
       return [this.hash[c], pars];
     return undefined;
   }
 
   async use(command, op=true) {
-    var res = this.find(command);
+    let res = this.find(command);
 
     if(res) {
-      var [com,pars]=res;
+      let [com,pars]=res;
       if (com.params.op && !op) return 'You do not have permission to use this command';
-      var parse = com.params.parse;
+      const parse = com.params.parse;
       if(parse) {
         if(typeof parse == 'function') {
           pars = parse(pars);
@@ -46,15 +46,15 @@ class Command {
   }
 
   updateHistory() {
-    var all = '(.+?)';
+    const all = '(.+?)';
 
-    var list = [this.base];
+    const list = [this.base];
     if(this.params.aliases && this.params.aliases.length) {
       this.params.aliases.forEach(al => list.unshift(this.parentBase + al));
     }
 
     list.forEach((command) => {
-      var parentBase = this.parent ? (this.parent.path || '') : '';
+      const parentBase = this.parent ? (this.parent.path || '') : '';
       this.path = parentBase + this.space() + (command || all);
       if(this.path == all && !this.parent) this.path = '';
 
@@ -68,7 +68,7 @@ class Command {
   }
 
   space(end) {
-    var first = !(this.parent && this.parent.parent);
+    const first = !(this.parent && this.parent.parent);
     return this.params.merged || (!end && first) ? '' : ' ';
   }
 

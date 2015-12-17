@@ -1,14 +1,14 @@
-var Vec3 = require("vec3").Vec3;
-var assert = require('assert');
-var flatMap = require('flatmap');
-var range = require('range').range;
+const Vec3 = require("vec3").Vec3;
+const assert = require('assert');
+const flatMap = require('flatmap');
+const range = require('range').range;
 
 module.exports={detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal};
 
 async function findLineInDirection(world,startingPoint,type,direction,directionV)
 {
-  var line=[];
-  var point=startingPoint;
+  const line=[];
+  let point=startingPoint;
   while((await world.getBlock(point)).name==type && (await world.getBlockType(point.plus(directionV)))==0)
   {
     line.push(point);
@@ -19,15 +19,15 @@ async function findLineInDirection(world,startingPoint,type,direction,directionV
 
 async function findLine(world,startingPoint,type,direction,directionV)
 {
-  var firstSegment=(await findLineInDirection(world,startingPoint.plus(direction.scaled(-1)),type,direction.scaled(-1),directionV)).reverse();
-  var secondSegment=await findLineInDirection(world,startingPoint,type,direction,directionV);
+  const firstSegment=(await findLineInDirection(world,startingPoint.plus(direction.scaled(-1)),type,direction.scaled(-1),directionV)).reverse();
+  const secondSegment=await findLineInDirection(world,startingPoint,type,direction,directionV);
   return firstSegment.concat(secondSegment);
 }
 
 
 async function findPotentialLines(world,startingPoint,directionV)
 {
-  var firstLineDirection=directionV.y!=0 ? [new Vec3(1,0,0),new Vec3(0,0,1)] :
+  const firstLineDirection=directionV.y!=0 ? [new Vec3(1,0,0),new Vec3(0,0,1)] :
     [new Vec3(0,1,0)];
   return (await Promise.all(firstLineDirection
     .map(async d => ({direction:d,line:(await findLine(world,startingPoint,'obsidian',d,directionV))}))))
@@ -44,15 +44,15 @@ function positiveOrder(line,direction)
 
 async function findBorder(world,{line,direction},directionV)
 {
-  var bottom=line;
+  let bottom=line;
   if(bottom.length==0)
     return [];
-  var left=await findLineInDirection(world,bottom[0].plus(direction.scaled(-1).plus(directionV)),'obsidian',directionV,direction);
-  var right=await findLineInDirection(world,bottom[line.length-1].plus(direction).plus(directionV),'obsidian',
+  let left=await findLineInDirection(world,bottom[0].plus(direction.scaled(-1).plus(directionV)),'obsidian',directionV,direction);
+  let right=await findLineInDirection(world,bottom[line.length-1].plus(direction).plus(directionV),'obsidian',
     directionV,direction.scaled(-1));
   if(left.length==0 || left.length!=right.length)
     return null;
-  var top=await findLineInDirection(world,left[left.length-1].plus(direction).plus(directionV),'obsidian',
+  let top=await findLineInDirection(world,left[left.length-1].plus(direction).plus(directionV),'obsidian',
     direction,directionV.scaled(-1));
   if(bottom.length!=top.length)
     return null;
@@ -66,7 +66,7 @@ async function findBorder(world,{line,direction},directionV)
     [bottom,left,right,top]=[left,bottom,top,right];
 
   [bottom,top]=directionV.y<0 ? [top,bottom] : [bottom,top];
-  var horDir=direction.x!=0 || directionV.x!=0 ? 'x' :'z';
+  const horDir=direction.x!=0 || directionV.x!=0 ? 'x' :'z';
   [left,right]=direction[horDir]<0 || directionV[horDir]<0 ? [right,left] : [left,right];
 
   if(bottom.length<2 || top.length<2 || left.length<3 || right.length<3)
@@ -103,20 +103,20 @@ async function isAllAir(world,blocks)
 
 function getAir(border)
 {
-  var {bottom,top}=border;
+  const {bottom,top}=border;
   return flatMap(bottom,pos => range(1,top[0].y-bottom[0].y).map(i => pos.offset(0,i,0)));
 }
 
 
-var World = require('prismarine-world');
-var Chunk = require('prismarine-chunk')(require("./version"));
+const World = require('prismarine-world');
+const Chunk = require('prismarine-chunk')(require("./version"));
 
 function generateLine(startingPoint,direction,length) {
   return range(0,length).map(i => startingPoint.plus(direction.scaled(i)));
 }
 
 function generatePortal(bottomLeft,direction,width,height){
-  var directionV=new Vec3(0,1,0);
+  const directionV=new Vec3(0,1,0);
   return {
     bottom:generateLine(bottomLeft.plus(direction),direction,width-2),
     left:generateLine(bottomLeft.plus(directionV),directionV,height-2),
@@ -131,9 +131,9 @@ function addPortalToWorld(world,portal,additionalAir,additionalObsidian,setBlock
 {
   if(setBlockType==null)
     setBlockType=world.setBlockType.bind(world);
-  let {bottom,left,right,top,air}=portal;
+  const {bottom,left,right,top,air}=portal;
 
-  var p=flatMap([bottom,left,right,top],border => border.map(pos => setBlockType(pos,49)));
+  const p=flatMap([bottom,left,right,top],border => border.map(pos => setBlockType(pos,49)));
   p.push(air.map(pos => setBlockType(pos,0)));
 
   p.push(additionalAir.map(pos => setBlockType(pos,0)));
@@ -145,7 +145,7 @@ function addPortalToWorld(world,portal,additionalAir,additionalObsidian,setBlock
 
 async function makeWorldWithPortal(portal,additionalAir,additionalObsidian)
 {
-  var world=new World(() => new Chunk());
+  const world=new World(() => new Chunk());
   await addPortalToWorld(world,portal,additionalAir,additionalObsidian);
 
   return world;

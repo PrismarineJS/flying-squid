@@ -1,4 +1,4 @@
-var once = require('event-promise');
+const once = require('event-promise');
 
 module.exports.server=function(serv)
 {
@@ -30,7 +30,7 @@ module.exports.player=function(player,serv)
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]));
       delete serv.entities[player.id];
       player.emit('disconnected');
-      var index = serv.players.indexOf(player);
+      const index = serv.players.indexOf(player);
       if (index > -1) {
         serv.players.splice(index, 1);
       }

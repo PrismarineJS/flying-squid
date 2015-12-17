@@ -1,19 +1,19 @@
-var version = require("flying-squid").version;
-var entitiesByName=require("minecraft-data")(version).entitiesByName;
-var entitiesById=require("minecraft-data")(version).entities;
-var Entity = require("prismarine-entity");
-var path = require('path');
-var requireIndex = require('requireindex');
-var plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-var Item = require("prismarine-item")(version);
-var UserError = require('flying-squid').UserError;
+const version = require("flying-squid").version;
+const entitiesByName=require("minecraft-data")(version).entitiesByName;
+const entitiesById=require("minecraft-data")(version).entities;
+const Entity = require("prismarine-entity");
+const path = require('path');
+const requireIndex = require('requireindex');
+const plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
+const Item = require("prismarine-item")(version);
+const UserError = require('flying-squid').UserError;
 
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 module.exports.server=function(serv,options) {
   serv.initEntity = (type, entityType, world, position) => {
     serv.entityMaxId++;
-    var entity = new Entity(serv.entityMaxId);
+    const entity = new Entity(serv.entityMaxId);
 
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].entity!=undefined)
@@ -27,7 +27,7 @@ module.exports.server=function(serv,options) {
   };
 
   serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=undefined,deathTime=undefined}) => {
-    var object = serv.initEntity('object', type, world, position.scaled(32).floored());
+    const object = serv.initEntity('object', type, world, position.scaled(32).floored());
     object.data = data;
     object.velocity = velocity.scaled(32).floored();
     object.pitch = pitch;
@@ -45,7 +45,7 @@ module.exports.server=function(serv,options) {
   };
 
   serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=new Vec3(0,0,0),metadata=[]}={}) => {
-    var mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
+    const mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
     mob.name=entitiesById[type].name;
     mob.velocity = velocity.scaled(32).floored();
     mob.pitch = pitch;
@@ -78,7 +78,7 @@ module.exports.player=function(player,serv){
     usage: '/spawn <entity_id>',
     op: true,
     parse(str) {
-      var results=str.match(/(\d+)/);
+      const results=str.match(/(\d+)/);
       if (!results) return false;
       return {
         id: parseInt(results[1])
@@ -97,7 +97,7 @@ module.exports.player=function(player,serv){
     usage: '/spawnObject <entity_id>',
     op: true,
     parse(str) {
-      var results=str.match(/(\d+)/);
+      const results=str.match(/(\d+)/);
       if (!results) return false;
       return {
         id: parseInt(results[1])
@@ -116,7 +116,7 @@ module.exports.player=function(player,serv){
     usage: '/summon <entity_name>',
     op: true,
     action(name) {
-      var entity=entitiesByName[name];
+      const entity=entitiesByName[name];
       if(!entity) {
         player.chat("No entity named "+name);
         return;
@@ -133,7 +133,7 @@ module.exports.player=function(player,serv){
     usage: '/pile <entities types>',
     op: true,
     parse(str)  {
-      var args=str.split(' ');
+      const args=str.split(' ');
       if(args.length==0)
         return false;
       return args
@@ -159,7 +159,7 @@ module.exports.player=function(player,serv){
     usage: '/attach <carrier> <attached>',
     op: true,
     parse(str)  {
-      var args=str.split(' ');
+      const args=str.split(' ');
       if(args.length!=2)
         return false;
 
@@ -221,7 +221,7 @@ module.exports.entity=function(entity,serv) {
   };
 
   entity.getSpawnPacket = () => {
-    var scaledVelocity = entity.velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    const scaledVelocity = entity.velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
     if (entity.type == 'player') {
       return {
         entityId: entity.id,
@@ -271,17 +271,17 @@ module.exports.entity=function(entity,serv) {
 
 
   entity.updateAndSpawn = () => {
-    var updatedEntities=entity.getNearby();
-    var entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
-    var entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
+    const updatedEntities=entity.getNearby();
+    const entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
+    const entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
     if (entity.type == 'player') {
       entity.despawnEntities(entitiesToRemove);
       entitiesToAdd.forEach(entity.spawnEntity);
     }
     entity.lastPositionPlayersUpdated=entity.position.clone();
 
-    var playersToAdd = entitiesToAdd.filter(e => e.type == 'player');
-    var playersToRemove = entitiesToRemove.filter(e => e.type == 'player');
+    const playersToAdd = entitiesToAdd.filter(e => e.type == 'player');
+    const playersToRemove = entitiesToRemove.filter(e => e.type == 'player');
 
     playersToRemove.forEach(p => p.despawnEntities([entity]));
     playersToRemove.forEach(p => p.nearbyEntities=p.getNearby());
@@ -303,7 +303,7 @@ module.exports.entity=function(entity,serv) {
 
   entity.attach= (attachedEntity,leash=false) =>
   {
-    var p={
+    const p={
       entityId:attachedEntity.id,
       vehicleId:entity.id,
       leash:leash

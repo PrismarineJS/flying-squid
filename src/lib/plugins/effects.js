@@ -1,15 +1,15 @@
 
 module.exports.entity = function(entity, serv) {
   entity.effects = {};
-  for (var i = 1; i <= 23; i++) { // 23 in 1.8, 27 in 1.9
+  for (let i = 1; i <= 23; i++) { // 23 in 1.8, 27 in 1.9
     entity.effects[i] = null; // Just so we know it's a real potion and not undefined/not existant
   }
 
   entity.sendEffect = (effectId, {amplifier=0,duration=30*20,particles=true,whitelist,blacklist=[]}={}) => {
     if (!whitelist) whitelist = serv.getNearby(entity);
     if (entity.type == 'player' && [1].indexOf(effectId) != -1) entity.sendAbilities();
-    var sendTo = whitelist.filter(p => blacklist.indexOf(p) == -1);
-    var data = {
+    const sendTo = whitelist.filter(p => blacklist.indexOf(p) == -1);
+    const data = {
       entityId: entity.id,
       effectId: effectId,
       amplifier: amplifier,
@@ -21,7 +21,7 @@ module.exports.entity = function(entity, serv) {
 
   entity.sendRemoveEffect = (effectId, {whitelist,blacklist=[]}={}) => {
     if (!whitelist) whitelist = serv.getNearby(entity);
-    var sendTo = whitelist.filter(p => blacklist.indexOf(p) == -1);
+    const sendTo = whitelist.filter(p => blacklist.indexOf(p) == -1);
     serv._writeArray('remove_entity_effect', {
       entityId: entity.id,
       effectId: effectId
@@ -29,7 +29,7 @@ module.exports.entity = function(entity, serv) {
   };
 
   entity.addEffect = (effectId, opt={}) => {
-    var amp = typeof opt.amplifier == 'undefined' ? 0 : opt.amplifier;
+    const amp = typeof opt.amplifier == 'undefined' ? 0 : opt.amplifier;
     if (!entity.effects[effectId] || opt.override || amp < entity.effects[effectId].amplifier) {
       entity.effects[effectId] = {
         amplifier: opt.amplifier || 0,
@@ -40,7 +40,7 @@ module.exports.entity = function(entity, serv) {
       entity.sendEffect(effectId, opt);
       return true;
     } else return false;
-  }
+  };
 
   entity.removeEffect = (effectId, opt) => {
     entity.effects[effectId] = null;
@@ -49,7 +49,7 @@ module.exports.entity = function(entity, serv) {
 
   serv.on('tick', () => {
     Object.keys(entity.effects).forEach(effectId => {
-      var e = entity.effects[effectId];
+      const e = entity.effects[effectId];
       if (e && e.end <= Date.now()) entity.removeEffect(effectId);
     });
   });
@@ -64,14 +64,14 @@ module.exports.player = function(player, serv) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false;
     },
     action(params) {
-      var targets = player.selectorString(params[1]);
+      const targets = player.selectorString(params[1]);
       if (params[2] == 'clear') {
         targets.forEach(e => Object.keys(e.effects).forEach(effectId => {
           if (e.effects[effectId] != null) e.removeEffect(effectId);
         }));
       } else {
         targets.forEach(e => {
-          var effId = parseInt(params[2]);
+          const effId = parseInt(params[2]);
           if (e.effects[effId]) {
             e.removeEffect(effId);
           }
@@ -82,10 +82,10 @@ module.exports.player = function(player, serv) {
           });
         });
       }
-      var chatSelect = (targets.length == 1 ? (targets[0].type == 'player' ? targets[0].username : 'entity') : 'entities');
+      const chatSelect = (targets.length == 1 ? (targets[0].type == 'player' ? targets[0].username : 'entity') : 'entities');
       if (params[2] == 'clear') player.chat('Remove all effects from ' + chatSelect + '.' );
       else player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' + 
                         (parseInt(params[3]) || 30) + ' seconds');
     }
   });
-}
+};

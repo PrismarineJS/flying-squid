@@ -1,15 +1,15 @@
-var Vec3 = require('vec3').Vec3;
+const Vec3 = require('vec3').Vec3;
 
 module.exports.server=function(serv) {
   serv.playSound = (sound, world, position, {whitelist,blacklist=[],radius=32*32,volume=1.0,pitch=1.0}={}) => {
-    var players = (typeof whitelist != 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
+    const players = (typeof whitelist != 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position.scaled(32).floored(),
       radius: radius // 32 blocks, fixed position
     }));
     players.filter(player => blacklist.indexOf(player) == -1)
       .forEach(player => {
-        var pos = (position || player.position.scaled(1/32)).scaled(8).floored();
+        const pos = (position || player.position.scaled(1/32)).scaled(8).floored();
         player._client.write('named_sound_effect', {
           soundName: sound,
           x: pos.x,
@@ -42,11 +42,11 @@ module.exports.player=function(player,serv) {
 
   player.on('placeBlock_cancel', async ({reference}, cancel) => {
     if (player.crouching) return;
-    var id = await player.world.getBlockType(reference);
+    const id = await player.world.getBlockType(reference);
     if (id != 25) return;
     cancel(false);
     if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {};
-    var data = player.world.blockEntityData[reference.toString()];
+    const data = player.world.blockEntityData[reference.toString()];
     if (typeof data.note == 'undefined') data.note = -1;
     data.note++;
     data.note %= 25;
@@ -54,11 +54,11 @@ module.exports.player=function(player,serv) {
   });
 
   player.on('dig_cancel', async ({position}, cancel) => {
-    var id = await player.world.getBlockType(position);
+    const id = await player.world.getBlockType(position);
     if (id != 25) return;
     cancel(false);
     if (!player.world.blockEntityData[position.toString()]) player.world.blockEntityData[position.toString()] = {};
-    var data = player.world.blockEntityData[position.toString()];
+    const data = player.world.blockEntityData[position.toString()];
     if (typeof data.note == 'undefined') data.note = 0;
     serv.playNoteBlock(data.note ,player.world, position);
   });
@@ -70,7 +70,7 @@ module.exports.player=function(player,serv) {
     usage: '/playsound <sound_name> [volume] [pitch]',
     op: true,
     parse(str) {
-      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      const results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
       if(!results) return false;
       return {
         sound_name:results[1],
@@ -90,7 +90,7 @@ module.exports.player=function(player,serv) {
     usage: '/playsoundforall <sound_name> [volume] [pitch]',
     op: true,
     parse(str) {
-      var results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
+      const results=str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/);
       if(!results) return false;
       return {
         sound_name:results[1],

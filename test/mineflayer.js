@@ -1,25 +1,25 @@
-var net = require('net');
-var mcServer=require("flying-squid");
-var settings = require('../config/default-settings');
-var mineflayer = require("mineflayer");
-var assert = require('chai').assert;
-var Vec3 = require('vec3').Vec3;
+const net = require('net');
+const mcServer=require("flying-squid");
+const settings = require('../config/default-settings');
+const mineflayer = require("mineflayer");
+const assert = require('chai').assert;
+const Vec3 = require('vec3').Vec3;
 
 function assertPosEqual(actual,expected) {
   assert.isBelow(actual.distanceTo(expected),1,"expected: "+expected+", actual: "+actual+"\n");
 }
-var once = require('event-promise');
+const once = require('event-promise');
 
 describe("Server with mineflayer connection", function()  {
   this.timeout(10 * 60 * 1000);
-  var bot;
-  var bot2;
-  var serv;
+  let bot;
+  let bot2;
+  let serv;
 
   async function onGround(bot)
   {
     await new Promise((cb) => {
-      var l=() => {
+      const l=() => {
         if(bot.entity.onGround) {
           bot.removeListener("move",l);
           cb();
@@ -30,19 +30,19 @@ describe("Server with mineflayer connection", function()  {
   }
 
   async function waitMessage(bot,message) {
-    let msg1=await once(bot,'message');
+    const msg1=await once(bot,'message');
     assert.equal(msg1.extra[0].text,message);
   }
 
   async function waitMessages(bot,messages) {
-    var toReceive=messages.reduce((acc,message) => {
+    const toReceive=messages.reduce((acc,message) => {
       acc[message]=1;
       return acc;
     },{});
-    var received={};
+    const received={};
     return new Promise(cb => {
-      var listener=msg => {
-          var message=msg.extra[0].text;
+      const listener=msg => {
+          const message=msg.extra[0].text;
           if(!toReceive[message]) throw new Error("Received "+message+" , expected to receive one of "+messages);
           if(received[message]) throw new Error("Received "+message+" two times");
           received[message]=1;
@@ -62,7 +62,7 @@ describe("Server with mineflayer connection", function()  {
 
   beforeEach(async function () {
     this.timeout(10 * 60 * 1000);
-    var options = settings;
+    const options = settings;
     options["online-mode"]=false;
     options["port"]=25566;
     options["view-distance"]=2;
@@ -94,10 +94,10 @@ describe("Server with mineflayer connection", function()  {
 
     function waitSpawnZone(bot,view)
     {
-      var nbChunksExpected=(view*2)*(view*2);
-      var c=0;
+      const nbChunksExpected=(view*2)*(view*2);
+      let c=0;
       return new Promise(cb => {
-        var listener=() => {
+        const listener=() => {
           c++;
           if(c==nbChunksExpected)
           {
@@ -113,7 +113,7 @@ describe("Server with mineflayer connection", function()  {
       this.timeout(10 * 60 * 1000);
       await Promise.all([waitSpawnZone(bot,2),waitSpawnZone(bot2,2),onGround(bot),onGround(bot2)]);
 
-      var pos=bot.entity.position.offset(0,-1,0).floored();
+      const pos=bot.entity.position.offset(0,-1,0).floored();
       bot.dig(bot.blockAt(pos));
 
       let [oldBlock,newBlock]=await once(bot2,'blockUpdate',{array:true});
@@ -126,7 +126,7 @@ describe("Server with mineflayer connection", function()  {
       this.timeout(10 * 60 * 1000);
       await Promise.all([waitSpawnZone(bot,2),waitSpawnZone(bot2,2),onGround(bot),onGround(bot2)]);
 
-      var pos=bot.entity.position.offset(0,-2,0).floored();
+      const pos=bot.entity.position.offset(0,-2,0).floored();
       bot.dig(bot.blockAt(pos));
 
       let [oldBlock,newBlock]=await once(bot2,'blockUpdate',{array:true});
@@ -168,7 +168,7 @@ describe("Server with mineflayer connection", function()  {
     function waitDragon()
     {
       return new Promise((done) => {
-        var listener=(entity) => {
+        const listener=(entity) => {
           if(entity.name=="EnderDragon") {
             bot.removeListener('entitySpawn',listener);
             done();
@@ -208,14 +208,14 @@ describe("Server with mineflayer connection", function()  {
       });
       it("can tp with relative positions",async () => {
         await onGround(bot);
-        var initialPosition=bot.entity.position.clone();
+        const initialPosition=bot.entity.position.clone();
         bot.chat('/tp ~1 ~-2 ~3');
         await once(bot,'forcedMove');
         assertPosEqual(bot.entity.position,initialPosition.offset(1,-2,3));
       });
       it("can tp somebody else with relative positions",async () => {
         await Promise.all([onGround(bot),onGround(bot2)]);
-        var initialPosition=bot2.entity.position.clone();
+        const initialPosition=bot2.entity.position.clone();
         bot.chat('/tp bot2 ~1 ~-2 ~3');
         await once(bot2,'forcedMove');
         assertPosEqual(bot2.entity.position,initialPosition.offset(1,-2,3));

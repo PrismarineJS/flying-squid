@@ -1,6 +1,6 @@
-var Chunk = require('prismarine-chunk')(require("../version"));
-var Vec3 = require('vec3').Vec3;
-var rand = require('random-seed');
+const Chunk = require('prismarine-chunk')(require("../version"));
+const Vec3 = require('vec3').Vec3;
+const rand = require('random-seed');
 
 class DiamondSquare {
   constructor(size, roughness, seed) {
@@ -33,7 +33,7 @@ class DiamondSquare {
 
       if (this.data[x + '_' + y] == null) {
         this.opCountN++;
-        var base = 1;
+        let base = 1;
         while (((x & base) == 0) && ((y & base) == 0))
           base <<= 1;
 
@@ -47,13 +47,14 @@ class DiamondSquare {
   }
 
   randFromPair(x, y) {
-    for (var i = 0; i < 80; i++) {
-      var xm7 = x % 7;
-      var xm13 = x % 13;
-      var xm1301081 = x % 1301081;
-      var ym8461 = y % 8461;
-      var ym105467 = y % 105467;
-      var ym105943 = y % 105943;
+    let xm7,xm13,xm1301081,ym8461,ym105467,ym105943;
+    for (let i = 0; i < 80; i++) {
+      xm7 = x % 7;
+      xm13 = x % 13;
+      xm1301081 = x % 1301081;
+      ym8461 = y % 8461;
+      ym105467 = y % 105467;
+      ym105943 = y % 105943;
       //y = (i < 40 ? seed : x);
       y = x + this.seed;
       x += (xm7 + xm13 + xm1301081 + ym8461 + ym105467 + ym105943);
@@ -89,27 +90,27 @@ class DiamondSquare {
 
 function generation({seed,worldHeight=80,waterline=20}={}) {
   // Selected empirically
-  var size = 10000000;
-  var space = new DiamondSquare(size, size / 500, seed);
+  const size = 10000000;
+  const space = new DiamondSquare(size, size / 500, seed);
 
   function generateSimpleChunk(chunkX, chunkZ) {
-    var chunk = new Chunk();
-    var seedRand = rand.create(seed+':'+chunkX+':'+chunkZ);
+    const chunk = new Chunk();
+    const seedRand = rand.create(seed+':'+chunkX+':'+chunkZ);
 
-    var worldX = chunkX * 16 + size / 2;
-    var worldZ = chunkZ * 16 + size / 2;
+    const worldX = chunkX * 16 + size / 2;
+    const worldZ = chunkZ * 16 + size / 2;
 
-    for (var x = 0; x < 16; x++) {
-      for (var z = 0; z < 16; z++) {
-        var level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight);
-        var dirtheight = level - 4 + seedRand(3);
-        var bedrockheight = 1 + seedRand(4);
-        for (var y = 0; y < 256; y++) {
+    for (let x = 0; x < 16; x++) {
+      for (let z = 0; z < 16; z++) {
+        const level = Math.floor(space.value(worldX + x, worldZ + z) * worldHeight);
+        const dirtheight = level - 4 + seedRand(3);
+        const bedrockheight = 1 + seedRand(4);
+        for (let y = 0; y < 256; y++) {
           let block;
           let data;
 
-          var surfaceblock = level < waterline ? 12 : 2; // Sand below water, grass
-          var belowblock = level < waterline ? 12 : 3; // 3-5 blocks below surface
+          const surfaceblock = level < waterline ? 12 : 2; // Sand below water, grass
+          const belowblock = level < waterline ? 12 : 3; // 3-5 blocks below surface
 
           if (y < bedrockheight) block = 7; // Solid bedrock at bottom
           else if (y < level && y >= dirtheight) block = belowblock; // Dirt/sand below surface
@@ -121,7 +122,7 @@ function generation({seed,worldHeight=80,waterline=20}={}) {
             data = 1;
           }
 
-          var pos = new Vec3(x, y, z);
+          const pos = new Vec3(x, y, z);
           if (block) chunk.setBlockType(pos, block);
           if (data) chunk.setBlockData(pos, data);
           chunk.setSkyLight(pos, 15);

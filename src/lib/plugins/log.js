@@ -1,8 +1,8 @@
-var fs = require('fs');
-var timeStarted = Math.floor(new Date() / 1000).toString();
-var path = require('path');
-var mkdirp = require('mkdirp');
-var moment=require("moment");
+const fs = require('fs');
+const timeStarted = Math.floor(new Date() / 1000).toString();
+const path = require('path');
+const mkdirp = require('mkdirp');
+const moment=require("moment");
 
 module.exports.server=function(serv,settings)
 {
@@ -16,7 +16,7 @@ module.exports.server=function(serv,settings)
 
   serv.on("seed", (seed) => serv.log("seed: "+seed));
 
-  var logFile=path.join("logs",timeStarted + ".log");
+  const logFile=path.join("logs",timeStarted + ".log");
 
   serv.log = message => {
     message=moment().format('MMMM Do YYYY, HH:mm:ss')+" "+message;

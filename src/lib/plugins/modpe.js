@@ -1,20 +1,20 @@
-var Vec3 = require("vec3").Vec3;
-var dir = require("node-dir");
-var fs = require("fs");
+const Vec3 = require("vec3").Vec3;
+const dir = require("node-dir");
+const fs = require("fs");
 
 function requireFromString(src, filename) {
-  var Module = module.constructor;
-  var m = new Module();
+  let Module = module.constructor;
+  let m = new Module();
   m._compile(src, filename);
   return m.exports;
 }
 
 function modpeApi() {
-  var Vec3 = null;
-  var vec3 = null;
+  let Vec3 = null;
+  let vec3 = null;
 
-  var server = null;
-  var player = null;
+  let server = null;
+  let player = null;
 
   module.exports.startDestroyBlock = startDestroyBlock;
   module.exports.destroyBlock = destroyBlock;
@@ -75,12 +75,12 @@ function modpeApi() {
     return player.heldItem.blockId;
   }
 
-  var Player = {
+  let Player = {
     getCarriedItem: function () {
       return player.heldItem.blockId;
     }
   };
-  var Entity = {
+  let Entity = {
     getPitch: function () {
       return 1;
     }
@@ -88,7 +88,7 @@ function modpeApi() {
       return 1;
     }
   };
-  var Level = {
+  let Level = {
     getGameMode: function () {
       return player.gameMode;
     }
@@ -99,18 +99,18 @@ function modpeApi() {
 }
 
 function convert(code) {
-  var api = modpeApi.toString()
+  let api = modpeApi.toString()
     .split("\n");
   api[0] = "";
   api[api.length - 1] = "";
-  var finapi = api.join("\n");
+  let finapi = api.join("\n");
   code = finapi + code;
   return code;
 }
 
 module.exports.server=function(serv,settings)
 {
-  var verboseMPE=false;
+  let verboseMPE=false;
   function log(msg){
     if(verboseMPE) serv.log("[MPE]:  "+msg);
   }
@@ -119,10 +119,10 @@ module.exports.server=function(serv,settings)
     return;
   }
   log("Modpe injection start...");
-  var modPePluginsDir = __dirname+"/../../../modpePlugins";
+  let modPePluginsDir = __dirname+"/../../../modpePlugins";
   log("Place your scripts in " + modPePluginsDir);
-  var modCount = 0;
-  var mods = [];
+  let modCount = 0;
+  let mods = [];
   dir.readFiles(modPePluginsDir, {
       match: /.js/
       , exclude: /^\./
@@ -130,7 +130,7 @@ module.exports.server=function(serv,settings)
       if (err) throw err;
       log("Converting " + fname);
       content = convert(content);
-      var modname = fname.split("/")[fname.split("/")
+      let modname = fname.split("/")[fname.split("/")
         .length - 1].split(".")[0];
       log("Loading mod " + modname);
       mods.push(requireFromString(content));
@@ -153,7 +153,7 @@ module.exports.server=function(serv,settings)
     newLevel();
 
     player._client.on("block_dig", function (packet) {
-      var pos = new Vec3(packet.location.x,packet.location.y,packet.location.z);
+      let pos = new Vec3(packet.location.x,packet.location.y,packet.location.z);
       if (packet.status == 0 && player.gameMode != 1)
         startDestroyBlock(pos.x, pos.y, pos.z, 0);
       else if (packet.status == 2)

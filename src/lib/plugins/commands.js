@@ -1,5 +1,4 @@
-var Vec3 = require("vec3").Vec3;
-var UserError = require('flying-squid').UserError;
+const UserError = require('flying-squid').UserError;
 
 module.exports.player=function(player, serv) {
 
@@ -8,45 +7,44 @@ module.exports.player=function(player, serv) {
     info: 'to show all commands',
     usage: '/help [command]',
     parse(str) {
-      var params = str.split(' ');
-      var page = parseInt(params[params.length-1]);
-      var search = '';
+      const params = str.split(' ');
+      const page = parseInt(params[params.length-1]);
       if (page) {
         params.pop();
       }
-      search = params.join(' ');
+      const search = params.join(' ');
       return { search: search, page: (page && page - 1) || 0 };
     },
     action({search, page}) {
       if (page < 0) return 'Page # must be >= 1';
-      var hash = player.commands.uniqueHash;
+      const hash = player.commands.uniqueHash;
 
-      var PAGE_LENGTH = 7;
+      const PAGE_LENGTH = 7;
 
-      var found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
+      let found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') == 0);
 
       if (found.length == 0) { // None found
         return 'Could not find any matches';
       } else if (found.length == 1) { // Single command found, giev info on command
-        var cmd = hash[found[0]];
-        var usage = (cmd.params && cmd.params.usage) || cmd.base;
-        var info = (cmd.params && cmd.params.info) || 'No info';
+        const cmd = hash[found[0]];
+        const usage = (cmd.params && cmd.params.usage) || cmd.base;
+        const info = (cmd.params && cmd.params.info) || 'No info';
         player.chat(usage + ': ' + info);
       } else { // Multiple commands found, give list with pages
-        var totalPages = Math.ceil((found.length-1) / PAGE_LENGTH);
+        const totalPages = Math.ceil((found.length-1) / PAGE_LENGTH);
         if (page >= totalPages) return 'There are only' + totalPages + ' help pages';
         found = found.sort();
         if (found.indexOf('search') != -1) {
-          var baseCmd = hash[search];
+          const baseCmd = hash[search];
           player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'));
         } else {
           player.chat('Help -=-=-=-=-=-=-=-=-');
         }
-        for (var i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
+        for (let i = PAGE_LENGTH*page; i < Math.min(PAGE_LENGTH*(page + 1), found.length); i++) {
           if (found[i] === search) continue;
-          var cmd = hash[found[i]];
-          var usage = (cmd.params && cmd.params.usage) || cmd.base;
-          var info = (cmd.params && cmd.params.info) || 'No info';
+          const cmd = hash[found[i]];
+          const usage = (cmd.params && cmd.params.usage) || cmd.base;
+          const info = (cmd.params && cmd.params.info) || 'No info';
           player.chat(usage + ': ' + info);
         }
         player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
@@ -59,9 +57,9 @@ module.exports.player=function(player, serv) {
     info: 'to pong!',
     usage: '/ping [number]',
     action(params) {
-      var num = params[0] * 1 + 1;
+      const num = params[0] * 1 + 1;
 
-      var str = 'pong';
+      let str = 'pong';
       if(!isNaN(num)) str += ' [' + num + ']';
 
       player.chat(str + '!');
@@ -105,7 +103,7 @@ module.exports.player=function(player, serv) {
       return str || false;
     },
     action(sel) {
-      var arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
+      const arr = serv.selectorString(sel, player.position.scaled(1/32), player.world);
       player.chat(JSON.stringify(arr.map(a => a.id)));
     }
   });
@@ -113,7 +111,7 @@ module.exports.player=function(player, serv) {
 
   player.handleCommand = async (str) => {
     try {
-      var res = await player.commands.use(str, player.op);
+      const res = await player.commands.use(str, player.op);
       if (res) player.chat(serv.color.red + res);
     }
     catch(err) {
@@ -130,7 +128,7 @@ module.exports.entity = function(entity, serv) {
 module.exports.server = function(serv) {
 
   function shuffleArray(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex ;
+    let currentIndex = array.length, temporaryValue, randomIndex ;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
@@ -148,39 +146,39 @@ module.exports.server = function(serv) {
     return array;
   }
 
-  var notudf = i => typeof i != 'undefined';
+  const notudf = i => typeof i != 'undefined';
 
   serv.selector = (type, opt) => {
     if (['all', 'random', 'near', 'entity'].indexOf(type) == -1)
       throw new UserError('serv.selector(): type must be either [all, random, near, or entity]');
 
-    var count = typeof opt.count != 'undefined' ?
+    const count = typeof opt.count != 'undefined' ?
                   count :
                   (type == 'all' || type == 'entity' ?serv.entities.length : 1);
-    var pos = opt.pos;
-    var sample;
+    const pos = opt.pos;
+    let sample;
     if (type == 'all') sample = serv.players;
     else if (type == 'random' || type == 'near') sample = serv.players.filter(p => p.health != 0);
     else if (type == 'entity') sample = Object.keys(serv.entities).map(k => serv.entities[k]);
 
-    var checkOption = (val, compare) => {
+    const checkOption = (val, compare) => {
       if (!val) return true;
-      var not = val[0] == '!';
-      var v = val;
+      const not = val[0] == '!';
+      let v = val;
       if (not) v = v.slice(1, v.length);
       if (not && compare == v) return false;
       if (!not && compare != v) return false;
       return true;
-    }
+    };
 
-    var scores = {
+    const scores = {
       max: [],
       min: []
     };
 
     Object.keys(opt).forEach(o => {
       if (o.indexOf('score_') != 0) return;
-      var score = o.replace('score_', '');
+      const score = o.replace('score_', '');
       if (score.indexOf('_min') == score.length - 1) {
         scores.min.push({
           score: score.replace('_min' ,''),
@@ -210,7 +208,7 @@ module.exports.server = function(serv) {
       if (!checkOption(opt.name, s.username)) return false;
       if (!checkOption(opt.type, s.name)) return false;
 
-      var fail = false;
+      let fail = false;
       scores.max.forEach(m => {
         if (fail) return;
         if (!notudf(s.scores[m.score])) fail = true;
@@ -237,29 +235,29 @@ module.exports.server = function(serv) {
 
   serv.selectorString = (str, pos, world, allowUser=true) => {
     pos = pos.clone();
-    var player = serv.getPlayer(str);
+    const player = serv.getPlayer(str);
     if (!player && str[0] != '@') return [];
     else if (player) return allowUser ? [player] : [];
-    var match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
+    const match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
     if (match == null) throw new UserError('Invalid selector format');
-    var typeConversion = {
+    const typeConversion = {
       a: 'all',
       r: 'random',
       p: 'near',
       e: 'entity'
     };
-    var type = typeConversion[match[1]];
-    var opt = match[2] ? match[2].split(',') : [];
-    var optPair = [];
-    var err;
+    const type = typeConversion[match[1]];
+    const opt = match[2] ? match[2].split(',') : [];
+    const optPair = [];
+    let err;
     opt.forEach(o => {
-      var match = o.match(/^([^=]+)=([^=]+)$/);
+      const match = o.match(/^([^=]+)=([^=]+)$/);
       if (match == null) err = new UserError('Invalid selector option format: "' + o + '"');
       else optPair.push({key: match[1], val: match[2]});
     });
     if (err) throw err;
 
-    var optConversion = {
+    const optConversion = {
       type: 'type',
       r: 'radius',
       rm: 'minRadius',
@@ -274,9 +272,9 @@ module.exports.server = function(serv) {
       ry: 'pitch',
       rym: 'minPitch'
     };
-    var convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym'];
+    const convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym'];
 
-    var data = {
+    const data = {
       pos: pos,
       world: world,
       scores: [],

@@ -1,4 +1,4 @@
-var Vec3 = require("vec3").Vec3;
+const Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player,serv)
 {
@@ -8,13 +8,13 @@ module.exports.player=function(player,serv)
   }
 
   player._client.on("block_dig",async ({location,status,face}) => {
-    var pos=new Vec3(location.x,location.y,location.z);
+    let pos=new Vec3(location.x,location.y,location.z);
 
-    var directionVector=directionToVector[face];
-    var facedPos=pos.plus(directionVector);
+    const directionVector=directionToVector[face];
+    const facedPos=pos.plus(directionVector);
 
     try {
-      let facedBlock = await player.world.getBlock(facedPos);
+      const facedBlock = await player.world.getBlock(facedPos);
       let block;
       if(facedBlock.name=="fire")
       {
@@ -55,12 +55,12 @@ module.exports.player=function(player,serv)
     return currentlyDugBlock.digTime();
   }
 
-  var currentlyDugBlock;
-  var startDiggingTime;
-  var animationInterval;
-  var expectedDiggingTime;
-  var lastDestroyState;
-  var currentAnimationId;
+  let currentlyDugBlock;
+  let startDiggingTime;
+  let animationInterval;
+  let expectedDiggingTime;
+  let lastDestroyState;
+  let currentAnimationId;
   function startDigging(location)
   {
     serv.entityMaxId++;
@@ -72,8 +72,8 @@ module.exports.player=function(player,serv)
     animationInterval=setInterval(updateAnimation,100);
     function updateAnimation()
     {
-      var currentDiggingTime=new Date()-startDiggingTime;
-      var newDestroyState=Math.floor(9*currentDiggingTime/expectedDiggingTime);
+      const currentDiggingTime=new Date()-startDiggingTime;
+      let newDestroyState=Math.floor(9*currentDiggingTime/expectedDiggingTime);
       newDestroyState=newDestroyState>9 ? 9 : newDestroyState;
       if(newDestroyState!=lastDestroyState)
       {
@@ -108,8 +108,8 @@ module.exports.player=function(player,serv)
   async function completeDigging(location)
   {
     clearInterval(animationInterval);
-    var diggingTime=new Date()-startDiggingTime;
-    var stop = false;
+    const diggingTime=new Date()-startDiggingTime;
+    let stop = false;
     if(expectedDiggingTime-diggingTime<100) {
       stop = player.behavior('forceCancelDig', {
         stop: true,
@@ -175,4 +175,4 @@ module.exports.player=function(player,serv)
 
 };
 
-var directionToVector=[new Vec3(0,-1,0),new Vec3(0,1,0),new Vec3(0,0,-1),new Vec3(0,0,1),new Vec3(-1,0,0),new Vec3(1,0,0)];
+const directionToVector=[new Vec3(0,-1,0),new Vec3(0,1,0),new Vec3(0,0,-1),new Vec3(0,0,1),new Vec3(-1,0,0),new Vec3(1,0,0)];

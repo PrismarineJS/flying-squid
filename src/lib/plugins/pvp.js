@@ -1,5 +1,5 @@
-var Vec3 = require("vec3").Vec3;
-var UserError = require('flying-squid').UserError;
+const Vec3 = require("vec3").Vec3;
+const UserError = require('flying-squid').UserError;
 
 module.exports.player=function(player,serv)
 {
@@ -15,7 +15,7 @@ module.exports.player=function(player,serv)
 
   function attackEntity(entityId) 
   {
-    var attackedEntity = serv.entities[entityId];
+    const attackedEntity = serv.entities[entityId];
     if(!attackedEntity || (attackedEntity.gameMode != 0 && attackedEntity.type == 'player')) return;
 
     player.behavior('attack', {
@@ -27,7 +27,7 @@ module.exports.player=function(player,serv)
   player._client.on("use_entity", ({mouse,target} = {}) => {
     if(!serv.entities[target])
     {
-      var dragon;
+      let dragon;
       for(dragon=target-1;dragon>=target-7 && !serv.entities[dragon];dragon--){}
       if(serv.entities[dragon] && serv.entities[dragon].entityType==63)
          target=dragon;
@@ -45,7 +45,7 @@ module.exports.player=function(player,serv)
       return str || false;
     },
     action(sel) {
-      var arr = player.selectorString(sel);
+      let arr = player.selectorString(sel);
       if (arr.length==0) throw new UserError('Could not find player');
 
       arr.map(entity => entity.takeDamage({damage:20}));
