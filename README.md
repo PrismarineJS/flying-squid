@@ -2,11 +2,11 @@ flying-squid
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
-[![Join the chat at https://gitter.im/mhsjlw/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mhsjlw/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/PrismarineJS/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
-[![Github issues](https://img.shields.io/github/issues/mhsjlw/flying-squid.svg)](https://img.shields.io/github/issues/mhsjlw/flying-squid.svg)
-[![Build Status](https://img.shields.io/circleci/project/mhsjlw/flying-squid/master.svg)](https://circleci.com/gh/mhsjlw/flying-squid)
+[![Github issues](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)
+[![Build Status](https://img.shields.io/circleci/project/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
 [![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
 
 A semi-functional minecraft server in Node.js

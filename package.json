@@ -49,10 +49,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mhsjlw/flying-squid.git"
+    "url": "git://github.com/PrismarineJS/flying-squid.git"
   },
   "bugs": {
-    "url": "http://github.com/mhsjlw/flying-squid/issues"
+    "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
     "babel": "5.8.23",

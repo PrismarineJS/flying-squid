@@ -90,7 +90,7 @@ module.exports.player=function(player, serv) {
     info: 'to bug report',
     usage: '/bug',
     action() {
-      return 'Report bugs / issues here: https://github.com/mhsjlw/flying-squid/issues';
+      return 'Report bugs / issues here: https://github.com/PrismarineJS/flying-squid/issues';
     }
   });
 
