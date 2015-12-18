@@ -964,7 +964,7 @@ Sets and sends the player's new level
 
 #### player.setDisplayXp(num)
 
-Sets and sends the palyer's new display amount. num should be from 0 to 1.0
+Sets and sends the player's new display amount. num should be from 0 to 1.0
 
 ### Low level properties
 

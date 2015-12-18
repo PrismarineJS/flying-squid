@@ -145,7 +145,7 @@ module.exports.player=function(player,serv,settings) {
   player.changeWorld = async (world, opt) => {
     if(player.world == world) return Promise.resolve();
     opt = opt || {};
-    player.world = world
+    player.world = world;
     player.loadedChunks={};
     if (typeof opt.gamemode != 'undefined') player.gameMode = opt.gamemode;
     player._client.write("respawn",{

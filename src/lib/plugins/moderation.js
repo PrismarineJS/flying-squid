@@ -73,8 +73,8 @@ module.exports.player=function(player,serv)
     serv.ban(uuid, reason);
   };
   player.banIP = reason => {
-    reason = reason || "You were IP banned!"
-    player.kick(reason)
+    reason = reason || "You were IP banned!";
+    player.kick(reason);
     serv.banIP(player._client.socket.remoteAddress)
   };
 
@@ -165,7 +165,7 @@ module.exports.player=function(player,serv)
     op: true,
     action(IP) {
       const result=serv.pardonIP(IP);
-      player.chat(result ? IP + " was IP pardonned" : IP+" is not banned");
+      player.chat(result ? IP + " was IP pardoned" : IP+" is not banned");
     }
   });
 
@@ -197,7 +197,7 @@ module.exports.player=function(player,serv)
     },
     action(username) {
       const user = serv.getPlayer(username);
-      if (!user) return 'That player is not on the server.'
+      if (!user) return 'That player is not on the server.';
       user.op = true;
       player.chat(username + ' is opped');
     }
@@ -214,7 +214,7 @@ module.exports.player=function(player,serv)
     },
     action(username) {
       const user = serv.getPlayer(username);
-      if (!user) return 'That player is not on the server.'
+      if (!user) return 'That player is not on the server.';
       user.op = false;
       player.chat(username + ' is deopped');
     }

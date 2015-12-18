@@ -1,4 +1,4 @@
-module.exports.server=function(serv,options) {
+module.exports.server=function(serv) {
   serv.on('tick', function(delta) {
     Promise.all(
       Object.keys(serv.entities).map(async (id) => {

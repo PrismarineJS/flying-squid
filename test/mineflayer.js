@@ -116,7 +116,7 @@ describe("Server with mineflayer connection", function()  {
       const pos=bot.entity.position.offset(0,-1,0).floored();
       bot.dig(bot.blockAt(pos));
 
-      let [oldBlock,newBlock]=await once(bot2,'blockUpdate',{array:true});
+      let [,newBlock]=await once(bot2,'blockUpdate',{array:true});
       assertPosEqual(newBlock.position,pos);
       assert.equal(newBlock.type,0,"block "+pos+" should have been dug");
     });
@@ -232,7 +232,7 @@ describe("Server with mineflayer connection", function()  {
     it("can use /setblock",async() => {
       await once(bot,'chunkColumnLoad');
       bot.chat('/setblock 1 2 3 95 0');
-      let [oldBlock,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
+      let [,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
       assert.equal(newBlock.type,95);
     });
     it("can use /xp",async() => {

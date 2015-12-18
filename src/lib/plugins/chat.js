@@ -9,7 +9,7 @@ module.exports.server=function(serv)
       if (!system) player.chat(message);
       else player.system(message);
     });
-  }
+  };
 
   serv.color = {
     'black': '&0',
@@ -55,7 +55,7 @@ module.exports.server=function(serv)
     let underlined = false;
     let strikethrough = false;
     let random = false;
-    const colors = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f', 'k','l','m','n','o','r','&']
+    const colors = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f', 'k','l','m','n','o','r','&'];
     const convertColor = ['black', 'dark_blue','dark_green','dark_cyan','dark_red','dark_purple','gold',
                         'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white',
                         'random', 'bold', 'strikethrough', 'underlined', 'italic', 'reset', '&'];
@@ -114,7 +114,7 @@ module.exports.server=function(serv)
     if (messageList.length > 0) return {
       text: '',
       extra: messageList
-    }
+    };
     else return { text: '' }
   }
 };
@@ -132,7 +132,7 @@ module.exports.player=function(player,serv)
         text: message,
         whitelist: serv.players,
         blacklist: []
-      }, ({message, prefix, text, whitelist, blacklist}) => {
+      }, ({prefix, text, whitelist, blacklist}) => {
         const obj = serv.parseClassic(prefix);
         if (!obj.extra) obj.extra = [];
         obj.extra.push(serv.parseClassic(text));
@@ -153,7 +153,7 @@ module.exports.player=function(player,serv)
     for (let i = 0; i < count; i++) {
       player.chat('');
     }
-  }
+  };
 
   player.system = message => {
     if (typeof message == 'string') message = serv.parseClassic(message);

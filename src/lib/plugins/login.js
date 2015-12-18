@@ -151,7 +151,7 @@ module.exports.player=function(player,serv)
       return;
     }
     if(serv.bannedIPs[player._client.socket.remoteAddress]){
-        player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason)
+        player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason);
         return
     }
 

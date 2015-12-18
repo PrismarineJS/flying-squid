@@ -123,7 +123,7 @@ module.exports.player=function(player, serv) {
 
 module.exports.entity = function(entity, serv) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position.scaled(1/32), entity.world);
-}
+};
 
 module.exports.server = function(serv) {
 
@@ -217,12 +217,12 @@ module.exports.server = function(serv) {
       if (fail) return false;
       scores.min.forEach(m => {
         if (fail) return;
-        if (!notudf(s.scores[m.score])) faii = true;
+        if (!notudf(s.scores[m.score])) fail = true;
         else if (s.scores[m] < m.val) fail = true;
       });
-      if (fail) return false;
+      return !fail;
 
-      return true;
+
     });
 
     if (type == 'near') sample.sort((a,b) => a.position.distanceTo(opt.pos) > b.position.distanceTo(opt.pos));
@@ -238,7 +238,7 @@ module.exports.server = function(serv) {
     const player = serv.getPlayer(str);
     if (!player && str[0] != '@') return [];
     else if (player) return allowUser ? [player] : [];
-    const match = str.match(/^@([a,r,p,e])(?:\[([^\]]+)\])?$/);
+    const match = str.match(/^@([arpe])(?:\[([^\]]+)\])?$/);
     if (match == null) throw new UserError('Invalid selector format');
     const typeConversion = {
       a: 'all',

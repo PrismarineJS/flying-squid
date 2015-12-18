@@ -13,7 +13,7 @@ function generation({opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thick
           else if (y < middle_thickness + 1) chunk.setBlockType(new Vec3(x, y, z), middle_id);
           else chunk.setBlockType(new Vec3(x, y, z), top_id);
         }
-        for (y = 0; y < 256; y++) {
+        for (let y = 0; y < 256; y++) {
           chunk.setSkyLight(new Vec3(x, y, z), 15);
         }
       }

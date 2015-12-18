@@ -1,4 +1,4 @@
-const {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal}=require("flying-squid").portal_detector;
+const {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,makeWorldWithPortal}=require("flying-squid").portal_detector;
 const Vec3 = require("vec3").Vec3;
 const assert = require('chai').assert;
 const range = require('range').range;
@@ -219,7 +219,7 @@ describe("Doesn't detect non-portal",function() {
 
   portalData.forEach(({name,bottomLeft,direction,width,height,additionalAir,additionalObsidian}) => {
     const portal = generatePortal(bottomLeft, direction, width, height);
-    const {bottom,left,right,top,air}=portal;
+    const {bottom,left,right,top}=portal;
     describe("Doesn't detect detect " + name, () => {
       let world;
       before(async function () {

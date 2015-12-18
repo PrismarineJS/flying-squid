@@ -73,8 +73,8 @@ module.exports.player=function(player)
     const canFly = player.gameMode == 1 || player.gameMode == 3;
     const isFlying = !player.onGround && canFly;
     const creativeMode = player.gameMode == 1;
-    const f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode*1);
-    const walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2)
+    const f = (+godmode*8) + (+canFly*4) + (+isFlying*2) + (+creativeMode);
+    const walkingSpeed = 0.2 * (1 + (player.effects[1] != null ? (player.effects[1].amplifier + 1) : 0) * 0.2);
     const flyingSpeed = 0.1;
     /*console.log(walkingSpeed, flyingSpeed);
     player._client.write('abilities', { // FIIIIXXXXXXX
@@ -85,7 +85,7 @@ module.exports.player=function(player)
   }
 };
 
-module.exports.entity=function(entity,serv){
+module.exports.entity=function(entity){
   entity.sendPosition = (position, onGround, teleport=false) => {
     if (typeof position == 'undefined') throw new Error('undef');
     if (entity.position.equals(position) && entity.onGround == onGround) return Promise.resolve();

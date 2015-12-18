@@ -18,7 +18,7 @@ module.exports.player = function(player) {
     player.sendXp();
   };
 
-  player.setDisplayXp = (num) => {
+  player.setDisplayXp = () => {
     player.displayXp = Math.max(0, Math.min(1, player.displayXp));
     player.sendXp();
   };

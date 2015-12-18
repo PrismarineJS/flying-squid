@@ -40,7 +40,7 @@ module.exports.player=function(player,serv)
     },
     action(params) {
       let res = params.slice(1, 4);
-      res = res.map((val, i) => serv.posFromString(val, player.position[['x','y','z'][i]] / 32))
+      res = res.map((val, i) => serv.posFromString(val, player.position[['x','y','z'][i]] / 32));
       player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0);
     }
   });

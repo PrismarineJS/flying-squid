@@ -10,7 +10,7 @@ Directory architecture :
 * src/index.js: contain the generic server implementation
 * src/lib: contain the classes and functions used in the plugins
   * plugins/: All of the default plugins made to simulate vanilla
-  * worldGeneraions/: Contains default world generations, however plugins can use their own
+  * worldGenerations/: Contains default world generations, however plugins can use their own
   
 ## Structure of a plugin
 

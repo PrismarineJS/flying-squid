@@ -55,7 +55,7 @@ module.exports.entity = function(entity, serv) {
   });
 };
 
-module.exports.player = function(player, serv) {
+module.exports.player = function(player) {
   player.commands.add({
     base: 'effect',
     info: 'Give player an effect',
