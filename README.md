@@ -7,7 +7,6 @@ flying-squid
 [![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
 [![Github issues](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)
 [![Build Status](https://img.shields.io/circleci/project/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
-[![Gratipay](https://img.shields.io/gratipay/mhsjlw.svg)](https://gratipay.com/~mhsjlw/)
 
 A semi-functional minecraft server in Node.js
 
