@@ -39,7 +39,7 @@ module.exports.server = function(serv, settings) {
   });
 
   serv.on('asap', () => {
-    Objet.keys(serv.plugins).map(plugin -> serv.log('[PLUGINS] Loaded "' + plugin + '"'));
+    Object.keys(serv.plugins).map(plugin => serv.log('[PLUGINS] Loaded "' + plugin + '"'));
   });
   
   serv.externalPluginsLoaded = true;
