@@ -20,6 +20,7 @@ describe("Generate portal",function(){
 });
 
 describe("Detect portal", function() {
+  this.timeout(60 * 1000);
   const portalData=[];
   portalData.push({
     name:"simple portal frame x",
