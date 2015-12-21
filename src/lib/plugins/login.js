@@ -105,7 +105,7 @@ module.exports.player=function(player,serv)
         name: player.username,
         properties: player.profileProperties,
         gamemode: player.gameMode,
-        ping: 1
+        ping: player._client.latency
       }]
     });
 
@@ -116,9 +116,16 @@ module.exports.player=function(player,serv)
         name: otherPlayer.username,
         properties: otherPlayer.profileProperties,
         gamemode: otherPlayer.gameMode,
-        ping: 1
+        ping: otherPlayer._client.latency
       }))
     });
+    setInterval(() => player._client.write('player_info',{
+      action:2,
+      data:serv.players.map(otherPlayer => ({
+        UUID: otherPlayer._client.uuid,
+        ping:otherPlayer._client.latency
+      }))
+    }),5000);
   }
 
   function announceJoin()
