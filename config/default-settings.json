@@ -5,6 +5,7 @@
   "online-mode": true,
   "logging": true,
   "gameMode": 1,
+  "regionFolder":"world/region",
   "generation": {
     "name": "diamond_square",
     "options":{
