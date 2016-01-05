@@ -66,6 +66,7 @@ describe("Server with mineflayer connection", function()  {
     options["online-mode"]=false;
     options["port"]=25566;
     options["view-distance"]=2;
+    options["regionFolder"]=undefined;
 
     serv=mcServer.createMCServer(options);
 
