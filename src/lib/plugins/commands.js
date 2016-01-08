@@ -296,8 +296,8 @@ module.exports.server = function(serv) {
   };
 
   serv.posFromString = (str, pos) => {
-    if (parseInt(str)) return parseInt(str);
-    if (str.match(/~-?\d+/)) return parseInt(str.slice(1)) + pos;
+    if (str.indexOf("~")==-1) return parseFloat(str);
+    if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos;
     else if (str == '~') return pos;
     else throw new UserError('Invalid position');
   };
