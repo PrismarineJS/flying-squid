@@ -17,5 +17,9 @@
     
   },
   "modpe": false,
-  "view-distance": 10
+  "view-distance": 10,
+  "player-list-text": {
+    "header":"Flying squid",
+    "footer":"Test server"
+  }
 }

@@ -226,6 +226,10 @@ Options is an object containing the following properties:
 }
 ```
 * modpe: defaults to false, wether or not modpe should be enabled.
+* regionFolder : the region folder of the saved world
+* plugins
+* view-distance
+* player-list-text : an object with keys header and footer, displayed on the player list
 
 ### Properties
 

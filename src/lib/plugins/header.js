@@ -1,4 +1,4 @@
-module.exports.player=function(player)
+module.exports.player=function(player,serv,settings)
 {
   player.playerlistUpdateText = (header, footer) =>
     player._client.write('playerlist_header', {
@@ -6,5 +6,5 @@ module.exports.player=function(player)
       footer: JSON.stringify(footer)
     });
 
-  player.playerlistUpdateText("Flying squid", "Test server");
+  player.playerlistUpdateText(settings["player-list-text"]["header"], settings["player-list-text"]["footer"]);
 };
