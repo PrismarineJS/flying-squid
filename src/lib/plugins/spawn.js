@@ -128,6 +128,31 @@ module.exports.player=function(player,serv){
   });
 
   player.commands.add({
+    base: 'summonMany',
+    info: 'Summon many entities',
+    usage: '/summonMany <number> <entity_name>',
+    op: true,
+    parse(str) {
+      var args=str.split(" ");
+      if(args.length!=2)
+        return false;
+      return {number:args[0],name:args[1]};
+    },
+    action({number,name}) {
+      const entity=entitiesByName[name];
+      if(!entity) {
+        player.chat("No entity named "+name);
+        return;
+      }
+      let s=Math.floor(Math.sqrt(number));
+      for(let i=0;i<number;i++)
+        serv.spawnMob(entity.id, player.world, player.position.scaled(1/32).offset(Math.floor(i/s*10),0,i%s*10), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+        });
+    }
+  });
+
+  player.commands.add({
     base: 'pile',
     info: 'make a pile of entities',
     usage: '/pile <entities types>',
