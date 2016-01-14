@@ -1,3 +1,9 @@
+## 0.5.0
+* improve ticks performance a bit
+* add /summonMany
+* load/save the seed
+* takes worldFolder instead of regionFolder as option to load the world
+
 ## 0.4.0
 
 * fix last problems with portal frame detection
