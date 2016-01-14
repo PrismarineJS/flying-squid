@@ -1,5 +1,9 @@
 module.exports.server=function(serv) {
+  let ticking=false;
   serv.on('tick', function(delta) {
+    if(ticking || delta>1)
+      return;
+    ticking=true;
     Promise.all(
       Object.keys(serv.entities).map(async (id) => {
         const entity = serv.entities[id];
@@ -20,7 +24,9 @@ module.exports.server=function(serv) {
         const posAndOnGround = await entity.calculatePhysics(delta);
         if (entity.type == 'mob') entity.sendPosition(posAndOnGround.position, posAndOnGround.onGround);
       })
-    ).catch((err)=> setTimeout(() => {throw err;},0));
+    )
+    .then(() => ticking=false)
+    .catch((err)=> setTimeout(() => {throw err;},0));
   });
 };
 
