@@ -4,9 +4,28 @@ const World = require('prismarine-world');
 const WorldSync = require("prismarine-world-sync");
 
 const generations=require("flying-squid").generations;
+import {fs} from 'node-promise-es6';
+import {level} from 'prismarine-provider-anvil';
 
-module.exports.server=function(serv,{regionFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
-  generation.options.seed=generation.options.seed || Math.random()*Math.pow(2, 32);
+module.exports.server=async function(serv,{worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
+  const regionFolder=worldFolder+"/region";
+  try {
+    const stats = await fs.stat(regionFolder);
+  }
+  catch(err) {
+    await fs.mkdir(regionFolder);
+  }
+
+  let seed;
+  try {
+    const levelData=await level.readLevel(worldFolder+"/level.dat");
+    seed=levelData["RandomSeed"][0];
+  }
+  catch(err){
+    seed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
+    await level.writeLevel(worldFolder+"/level.dat",{"RandomSeed":[seed,0]});
+  }
+  generation.options.seed=seed;
   serv.emit("seed",generation.options.seed);
   serv.overworld = new World(generations[generation.name](generation.options), regionFolder);
   serv.netherworld = new World(generations["nether"]({}));
