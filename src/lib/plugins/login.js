@@ -32,7 +32,7 @@ module.exports.server=function(serv,options)
   });
 };
 
-module.exports.player=function(player,serv)
+module.exports.player=function(player,serv,settings)
 {
   function addPlayer()
   {
@@ -40,7 +40,7 @@ module.exports.player=function(player,serv)
     player.health = 20;
     player.food = 20;
     player.crouching = false; // Needs added in prismarine-entity later
-    player.op = true; // REMOVE THIS WHEN OUT OF TESTING
+    player.op = settings["everybody-op"]; // REMOVE THIS WHEN OUT OF TESTING
     player.username=player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;

@@ -230,6 +230,7 @@ Options is an object containing the following properties:
 * plugins
 * view-distance
 * player-list-text : an object with keys header and footer, displayed on the player list
+* everybody-op : true or false, makes everybody op
 
 ### Properties
 

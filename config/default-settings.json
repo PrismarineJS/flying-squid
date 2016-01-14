@@ -21,5 +21,6 @@
   "player-list-text": {
     "header":"Flying squid",
     "footer":"Test server"
-  }
+  },
+  "everybody-op":true
 }
