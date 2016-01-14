@@ -1,4 +1,9 @@
+## 0.5.1
+
+* makes worldFolder option optional
+
 ## 0.5.0
+
 * improve ticks performance a bit
 * add /summonMany
 * load/save the seed
