@@ -6,5 +6,5 @@ logs/
 src/plugins/*
 !src/plugins/README.md
 distTest
-world/region/*
-!world/region/.gitkeep
+world/*
+!world/.gitkeep
