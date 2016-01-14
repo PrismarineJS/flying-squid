@@ -1,4 +1,17 @@
+## 0.4.0
+
+* fix last problems with portal frame detection
+* add effects and abilities
+* add colors to chat function
+* don't spawn in water
+* implement portal creation (no teleporting yet)
+* implement latency
+* use prismarine-world 0.4.0 to implement loading/saving
+* add player-list-text config option
+* add everybody-op option
+
 ## 0.3.1
+
  * don't login if the client is already ended
  * make /attach use the selectors, fix UserError, check /tp has one target
  * create an entity.attach, and add a /pile command
