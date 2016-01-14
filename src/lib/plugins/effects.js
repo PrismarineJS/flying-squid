@@ -35,7 +35,8 @@ module.exports.entity = function(entity, serv) {
         amplifier: opt.amplifier || 0,
         duration: opt.duration || 30*20,
         particles: opt.particles || true,
-        end: Date.now() + (opt.duration || 30*20)*1000/20 // 1000/20 == convert from ticks to milliseconds
+        end: Date.now() + (opt.duration || 30*20)*1000/20, // 1000/20 == convert from ticks to milliseconds,
+        timeout:setTimeout(() => entity.removeEffect(effectId),(opt.duration || 30*20)*1000/20)
       };
       entity.sendEffect(effectId, opt);
       return true;
@@ -43,16 +44,10 @@ module.exports.entity = function(entity, serv) {
   };
 
   entity.removeEffect = (effectId, opt) => {
+    clearTimeout(entity.effects[effectId].timeout);
     entity.effects[effectId] = null;
     entity.sendRemoveEffect(effectId, opt);
   };
-
-  serv.on('tick', () => {
-    Object.keys(entity.effects).forEach(effectId => {
-      const e = entity.effects[effectId];
-      if (e && e.end <= Date.now()) entity.removeEffect(effectId);
-    });
-  });
 };
 
 module.exports.player = function(player) {
