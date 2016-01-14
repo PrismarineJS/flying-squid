@@ -8,23 +8,29 @@ import {fs} from 'node-promise-es6';
 import {level} from 'prismarine-provider-anvil';
 
 module.exports.server=async function(serv,{worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
-  const regionFolder=worldFolder+"/region";
-  try {
-    const stats = await fs.stat(regionFolder);
-  }
-  catch(err) {
-    await fs.mkdir(regionFolder);
-  }
-
+  const newSeed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
   let seed;
-  try {
-    const levelData=await level.readLevel(worldFolder+"/level.dat");
-    seed=levelData["RandomSeed"][0];
+  let regionFolder;
+  if(worldFolder) {
+    regionFolder = worldFolder + "/region";
+    try {
+      const stats = await fs.stat(regionFolder);
+    }
+    catch (err) {
+      await fs.mkdir(regionFolder);
+    }
+
+    try {
+      const levelData = await level.readLevel(worldFolder + "/level.dat");
+      seed = levelData["RandomSeed"][0];
+    }
+    catch (err) {
+      seed = newSeed;
+      await level.writeLevel(worldFolder + "/level.dat", {"RandomSeed": [seed, 0]});
+    }
   }
-  catch(err){
-    seed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
-    await level.writeLevel(worldFolder+"/level.dat",{"RandomSeed":[seed,0]});
-  }
+  else
+    seed=newSeed;
   generation.options.seed=seed;
   serv.emit("seed",generation.options.seed);
   serv.overworld = new World(generations[generation.name](generation.options), regionFolder);
