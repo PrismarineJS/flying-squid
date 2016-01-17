@@ -66,6 +66,17 @@ module.exports.server=async function(serv,{worldFolder,generation={"name":"diamo
     await world.setBlockData(position,blockData);
   };
 
+  serv.reloadChunks = (world,chunks) => {
+    serv.players
+      .filter(player => player.world==world)
+      .forEach(oPlayer => {
+      chunks
+        .filter(({chunkX,chunkZ}) => oPlayer.loadedChunks[chunkX+","+chunkZ]!==undefined)
+        .forEach(({chunkX,chunkZ}) => oPlayer.unloadChunk(chunkX,chunkZ));
+      oPlayer.sendRestMap();
+    })
+  };
+
   //serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   //serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
 };
