@@ -40,6 +40,9 @@ and then run it with `flying-squid` command.
 
 * [flying-squid-irc](https://github.com/rom1504/flying-squid-irc) a bridge between a irc chan and the minecraft server.
 Currently used between our test server (rom1504.fr) and our gitter room (through the official gitter irc bridge)
+* [flying-squid-schematic](https://github.com/rom1504/flying-squid-schematic) Flying-squid plugin providing /listSchemas and /loadSchema commands. 
+You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
+Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
 
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
