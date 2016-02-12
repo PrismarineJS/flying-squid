@@ -21,6 +21,9 @@
   "licenses": {
     "type": "MIT"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "dependencies": {
     "babel-runtime": "^6.5.0",
     "diamond-square": "0.0.0",
