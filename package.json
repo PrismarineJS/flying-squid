@@ -31,7 +31,7 @@
     "event-promise": "^0.0.1",
     "flatmap": "^0.0.3",
     "minecraft-data": "^0.19.1",
-    "minecraft-protocol": "^0.16.6",
+    "minecraft-protocol": "^0.17.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "node-dir": "^0.1.9",
