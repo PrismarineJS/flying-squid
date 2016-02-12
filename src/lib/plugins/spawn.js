@@ -1,6 +1,7 @@
 const version = require("flying-squid").version;
 const entitiesByName=require("minecraft-data")(version).entitiesByName;
-const entitiesById=require("minecraft-data")(version).entities;
+const mobsById=require("minecraft-data")(version).mobs;
+const objectsById=require("minecraft-data")(version).objects;
 const Entity = require("prismarine-entity");
 const path = require('path');
 const requireIndex = require('requireindex');
@@ -28,6 +29,7 @@ module.exports.server=function(serv,options) {
 
   serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=undefined,deathTime=undefined}) => {
     const object = serv.initEntity('object', type, world, position.scaled(32).floored());
+    object.name=objectsById[type].name;
     object.data = data;
     object.velocity = velocity.scaled(32).floored();
     object.pitch = pitch;
@@ -46,7 +48,7 @@ module.exports.server=function(serv,options) {
 
   serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=new Vec3(0,0,0),metadata=[]}={}) => {
     const mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
-    mob.name=entitiesById[type].name;
+    mob.name=mobsById[type].name;
     mob.velocity = velocity.scaled(32).floored();
     mob.pitch = pitch;
     mob.headPitch = headPitch;
@@ -121,7 +123,10 @@ module.exports.player=function(player,serv){
         player.chat("No entity named "+name);
         return;
       }
-      serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
+      if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      });
+      else if(entity.type=="object") serv.spawnObject(entity.id, player.world, player.position.scaled(1/32), {
         velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
       });
     }
@@ -145,10 +150,16 @@ module.exports.player=function(player,serv){
         return;
       }
       let s=Math.floor(Math.sqrt(number));
-      for(let i=0;i<number;i++)
-        serv.spawnMob(entity.id, player.world, player.position.scaled(1/32).offset(Math.floor(i/s*10),0,i%s*10), {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      for(let i=0;i<number;i++) {
+        if(entity.type=="mob")
+          serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         });
+        else if(entity.type=="object")
+          serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+        });
+      }
     }
   });
 
@@ -166,10 +177,14 @@ module.exports.player=function(player,serv){
         .filter(entity => !!entity);
     },
     action(entityTypes) {
-      entityTypes.map(entity =>
-        serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
+      entityTypes.map(entity => {
+        if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
           velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
-        }))
+        });
+        else if(entity.type=="object") serv.spawnObject(entity.id, player.world, player.position.scaled(1/32), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+        });
+      })
         .reduce((prec,entity) => {
           if(prec!=null)
             prec.attach(entity);

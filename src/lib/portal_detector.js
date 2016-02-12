@@ -62,8 +62,9 @@ async function findBorder(world,{line,direction},directionV)
   top=positiveOrder(top,direction);
 
 
-  if(direction.y!=0)
-    [bottom,left,right,top]=[left,bottom,top,right];
+  if(direction.y!=0) {
+    [bottom, left, right, top] = [left, bottom, top, right];
+  }
 
   [bottom,top]=directionV.y<0 ? [top,bottom] : [bottom,top];
   const horDir=direction.x!=0 || directionV.x!=0 ? 'x' :'z';
