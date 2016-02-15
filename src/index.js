@@ -15,7 +15,8 @@ module.exports = {
   generations:require("./lib/generations"),
   experience:require("./lib/experience"),
   UserError:require("./lib/user_error"),
-  portal_detector:require('./lib/portal_detector')
+  portal_detector:require('./lib/portal_detector'),
+  redstone:require('./lib/redstone')
 };
 
 function createMCServer(options) {
