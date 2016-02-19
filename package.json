@@ -30,8 +30,8 @@
     "emit-then": "^2.0.0",
     "event-promise": "^0.0.1",
     "flatmap": "^0.0.3",
-    "minecraft-data": "^0.19.1",
-    "minecraft-protocol": "^0.17.2",
+    "minecraft-data": "^0.20.4",
+    "minecraft-protocol": "^0.18.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "node-dir": "^0.1.9",
@@ -71,7 +71,7 @@
     "gulp-plumber": "^1.0.1",
     "gulp-sourcemaps": "^1.3.0",
     "longjohn": "^0.2.8",
-    "mineflayer": "^1.5.3",
+    "mineflayer": "^1.7.1",
     "mocha": "^2.3.4",
     "require-self": "^0.1.0"
   }
