@@ -41,7 +41,7 @@
     "prismarine-chunk": "^0.3.2",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^0.0.0",
-    "prismarine-provider-anvil": "^0.2.0",
+    "prismarine-provider-anvil": "^1.0.0",
     "prismarine-windows": "^0.0.0",
     "prismarine-world": "^0.5.4",
     "prismarine-world-sync": "^0.1.0",
