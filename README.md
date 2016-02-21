@@ -43,6 +43,7 @@ Currently used between our test server (rom1504.fr) and our gitter room (through
 * [flying-squid-schematic](https://github.com/rom1504/flying-squid-schematic) Flying-squid plugin providing /listSchemas and /loadSchema commands. 
 You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
 Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
+* [flying-squid-modpe](https://github.com/PrismarineJS/flying-squid-modpe) load modpe plugins
 
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!

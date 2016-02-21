@@ -1,7 +1,6 @@
 const spiralloop = require('spiralloop');
 
 const World = require('prismarine-world');
-const WorldSync = require("prismarine-world-sync");
 
 const generations=require("flying-squid").generations;
 import {fs} from 'node-promise-es6';
@@ -36,8 +35,6 @@ module.exports.server=async function(serv,{worldFolder,generation={"name":"diamo
   serv.overworld = new World(generations[generation.name](generation.options), regionFolder);
   serv.netherworld = new World(generations["nether"]({}));
   //serv.endworld = new World(generations["end"]({}));
-
-  serv._worldSync=new WorldSync(serv.overworld);
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {};
