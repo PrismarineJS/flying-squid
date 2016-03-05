@@ -32,7 +32,8 @@ module.exports.server=async function(serv,{worldFolder,generation={"name":"diamo
     seed=newSeed;
   generation.options.seed=seed;
   serv.emit("seed",generation.options.seed);
-  serv.overworld = new World(generations[generation.name](generation.options), regionFolder);
+  const generationModule=generations[generation.name] ? generations[generation.name] : require(generation.name);
+  serv.overworld = new World(generationModule(generation.options), regionFolder);
   serv.netherworld = new World(generations["nether"]({}));
   //serv.endworld = new World(generations["end"]({}));
 
