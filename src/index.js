@@ -20,6 +20,8 @@ module.exports = {
 
 function createMCServer(options) {
   options = options || {};
+  //TODO: Commit a limitators to node-minecraft-protocol
+  options["max-players"] = options.limits.players || 10;
   const mcServer = new MCServer();
   mcServer.connect(options);
   return mcServer;
