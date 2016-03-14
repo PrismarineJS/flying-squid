@@ -80,6 +80,8 @@ module.exports.player=function(player,serv){
     usage: '/summon <entity_name>',
     op: true,
     action(name) {
+      if(Object.keys(serv.entities).length>100)
+        throw new UserError("Too many mobs !");
       const entity=entitiesByName[name];
       if(!entity) {
         player.chat("No entity named "+name);
@@ -106,6 +108,8 @@ module.exports.player=function(player,serv){
       return {number:args[0],name:args[1]};
     },
     action({number,name}) {
+      if(Object.keys(serv.entities).length>100-number)
+        throw new UserError("Too many mobs !");
       const entity=entitiesByName[name];
       if(!entity) {
         player.chat("No entity named "+name);
@@ -139,6 +143,8 @@ module.exports.player=function(player,serv){
         .filter(entity => !!entity);
     },
     action(entityTypes) {
+      if(Object.keys(serv.entities).length>100-entityTypes.length)
+        throw new UserError("Too many mobs !");
       entityTypes.map(entity => {
         if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
           velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
