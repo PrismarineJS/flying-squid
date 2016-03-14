@@ -1,7 +1,6 @@
 {
   "motd": "A Minecraft Server \nRunning flying-squid",
   "port": 25565,
-  "max-players": 10,
   "online-mode": true,
   "logging": true,
   "gameMode": 1,
@@ -22,5 +21,9 @@
     "header":"Flying squid",
     "footer":"Test server"
   },
-  "everybody-op":true
+  "everybody-op":true,
+  "limits": {
+    "mob-spawn": 10,
+    "players": 10
+  }
 }
