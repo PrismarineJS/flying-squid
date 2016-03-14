@@ -64,6 +64,8 @@ module.exports.player=function(player,serv) {
       return {bottomLeft,direction,width,height};
     },
     async action({bottomLeft,direction,width,height}) {
+      if(width>21 || height>21)
+        throw new UserError("Portals can only be 21x21!");
       const portal=generatePortal(bottomLeft,direction,width,height);
       await addPortalToWorld(player.world,portal,[],[],async (pos,type) => {
         await serv.setBlock(player.world,pos,type,0);
