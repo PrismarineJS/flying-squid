@@ -103,16 +103,20 @@ module.exports.player=function(player,serv){
       var args=str.split(" ");
       if(args.length!=2)
         return false;
-      return {number:args[0],name:args[1]};
+      return {count:args[0],name:args[1]};
     },
-    action({number,name}) {
+    action({count,name}) {
       const entity=entitiesByName[name];
       if(!entity) {
         player.chat("No entity named "+name);
         return;
       }
-      let s=Math.floor(Math.sqrt(number));
-      for(let i=0;i<number;i++) {
+      if(count>(options["mob-spawn"]||10)){
+        player.chat(`Maximum count to spawn is ${options["mob-spawn"]||10}!`);
+        return;
+      }
+      let s=Math.floor(Math.sqrt(count));
+      for(let i=0;i<count;i++) {
         if(entity.type=="mob")
           serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
           velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
