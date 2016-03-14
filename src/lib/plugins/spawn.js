@@ -73,14 +73,14 @@ module.exports.server=function(serv,options) {
 };
 
 
-module.exports.player=function(player,serv){
+module.exports.player=function(player,serv,options){
   player.commands.add({
     base: 'summon',
     info: 'Summon an entity',
     usage: '/summon <entity_name>',
     op: true,
     action(name) {
-      if(Object.keys(serv.entities).length>100)
+      if(Object.keys(serv.entities).length>options["max-entities"])
         throw new UserError("Too many mobs !");
       const entity=entitiesByName[name];
       if(!entity) {
@@ -108,7 +108,7 @@ module.exports.player=function(player,serv){
       return {number:args[0],name:args[1]};
     },
     action({number,name}) {
-      if(Object.keys(serv.entities).length>100-number)
+      if(Object.keys(serv.entities).length>options["max-entities"]-number)
         throw new UserError("Too many mobs !");
       const entity=entitiesByName[name];
       if(!entity) {
@@ -143,7 +143,7 @@ module.exports.player=function(player,serv){
         .filter(entity => !!entity);
     },
     action(entityTypes) {
-      if(Object.keys(serv.entities).length>100-entityTypes.length)
+      if(Object.keys(serv.entities).length>options["max-entities"]-entityTypes.length)
         throw new UserError("Too many mobs !");
       entityTypes.map(entity => {
         if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {

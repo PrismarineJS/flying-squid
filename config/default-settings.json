@@ -22,5 +22,6 @@
     "header":"Flying squid",
     "footer":"Test server"
   },
-  "everybody-op":true
+  "everybody-op":true,
+  "max-entities":100
 }
