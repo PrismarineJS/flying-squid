@@ -115,7 +115,7 @@ module.exports.player=function(player, serv) {
       if (res) player.chat(serv.color.red + res);
     }
     catch(err) {
-      if (err instanceof UserError) player.chat(serv.color.red + 'Error: ' + err.message);
+      if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message);
       else setTimeout(() => {throw err;}, 0);
     }
   }

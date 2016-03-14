@@ -9,6 +9,7 @@ class ExtendableError extends Error {
 
 class UserError extends ExtendableError {
   constructor(message) {
+    this.userError=1;
     super(message);
   }
 }
