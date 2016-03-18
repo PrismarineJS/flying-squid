@@ -13,6 +13,8 @@ const Vec3 = require("vec3").Vec3;
 
 module.exports.server=function(serv,options) {
   serv.initEntity = (type, entityType, world, position) => {
+    if(Object.keys(serv.entities).length>options["max-entities"])
+      throw new Error("Too many mobs !");
     serv.entityMaxId++;
     const entity = new Entity(serv.entityMaxId);
 
