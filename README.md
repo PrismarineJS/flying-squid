@@ -44,6 +44,7 @@ Currently used between our test server (rom1504.fr) and our gitter room (through
 You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
 Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
 * [flying-squid-modpe](https://github.com/PrismarineJS/flying-squid-modpe) load modpe plugins
+* [node-voxel-worldgen](https://github.com/mhsjlw/node-voxel-worldgen) a voxel world generator written in Rust, compatible with flying-squid and allows basic minecraft-like generation including caves.
 
 ## Documentation
 Documentation for how to operate and how to customize your server are coming soon!
