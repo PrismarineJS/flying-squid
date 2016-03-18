@@ -36,6 +36,15 @@ Or try our autoupdating flying-squid server [autonomous-squid](https://github.co
 You can also install flying-squid globally with `sudo npm install -g flying-squid`
 and then run it with `flying-squid` command.
 
+## World generation
+
+There are several modules than can be used to generate the world. The default one is called diamond-square
+
+* [node-voxel-worldgen](https://github.com/mhsjlw/node-voxel-worldgen) a voxel world generator written in Rust, compatible with flying-squid and allows basic minecraft-like generation including caves.
+* [diamond-square](https://github.com/PrismarineJS/diamond-square) a diamond square minecraft generation
+
+To install a world generation, all you have to do is npm install it and then change the generation option in settings.json.
+
 ## Plugins
 
 * [flying-squid-irc](https://github.com/rom1504/flying-squid-irc) a bridge between a irc chan and the minecraft server.
@@ -44,12 +53,9 @@ Currently used between our test server (rom1504.fr) and our gitter room (through
 You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
 Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
 * [flying-squid-modpe](https://github.com/PrismarineJS/flying-squid-modpe) load modpe plugins
-* [node-voxel-worldgen](https://github.com/mhsjlw/node-voxel-worldgen) a voxel world generator written in Rust, compatible with flying-squid and allows basic minecraft-like generation including caves.
+
 
 ## Documentation
-Documentation for how to operate and how to customize your server are coming soon!
-
-## Development Documentation
 For development see [API.md](doc/API.md), [CONTRIBUTE.md](doc/CONTRIBUTE.md) and [HISTORY.md](doc/HISTORY.md)
 
 ## Using as a lib
