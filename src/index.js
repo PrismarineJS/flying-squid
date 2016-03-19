@@ -41,8 +41,5 @@ class MCServer extends EventEmitter {
     this._server.on('error', error => this.emit('error',error));
     this._server.on('listening', () => this.emit('listening',this._server.socketServer.address().port));
     this.emit('asap');
-
-    //process.on('unhandledRejection', err => this.emit('error',err));
-    // TODO better catch all promises: using this make it impossible to run 2 servers in one process
   }
 }
