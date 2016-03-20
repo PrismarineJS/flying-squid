@@ -212,7 +212,7 @@ module.exports.player=function(player,serv,options){
 
 module.exports.entity=function(entity,serv) {
   entity.initEntity=(type, entityType, world, position)=>{
-    position.offset(0.5, 0, 0.5);
+    position = position.offset(0.5, 0, 0.5);
     
     entity.type = type;
     entity.spawnPacketName = '';
