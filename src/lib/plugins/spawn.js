@@ -212,14 +212,11 @@ module.exports.player=function(player,serv,options){
 
 module.exports.entity=function(entity,serv) {
   entity.initEntity=(type, entityType, world, position)=>{
-    position.x += 0.5;
-    position.z += 0.5;
-    
     entity.type = type;
     entity.spawnPacketName = '';
     entity.entityType = entityType;
     entity.world = world;
-    entity.position = position;
+    entity.position = position.offset(0.5, 0, 0.5);
     entity.lastPositionPlayersUpdated = entity.position.clone();
     entity.nearbyEntities = [];
     entity.viewDistance = 150;
