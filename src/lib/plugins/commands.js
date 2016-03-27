@@ -81,7 +81,7 @@ module.exports.player=function(player, serv) {
     info: 'to get version of the server',
     usage: '/version',
     action() {
-      return 'This server is running flying-squid version 0.1.0';
+      return 'This server is running flying-squid version '+require("../../../package").version;
     }
   });
 
