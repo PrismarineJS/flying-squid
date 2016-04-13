@@ -213,7 +213,7 @@ Options is an object containing the following properties:
 * online-mode: defaults to true
 * beforePing: allow customisation of the answer to ping the server does. It takes a function with argument response and client, response is the default json response, and client is client who sent a ping. It can take as third argument a callback. If the callback is passed, the function should pass its result to the callback, if not it should return.
 * motd: the string that players see when looking for the server. Defaults to "A Minecraft server"
-* maxPlayers: the amount of players on the server. Defaults to 20
+* max-players: the amount of players on the server. Defaults to 20
 * logging: defaults to true, enables logging
 * gameMode: defaults to 0, 0 is survival 1 is creative.
 * generation: is an object. contains the name and the options for the generator. example:
