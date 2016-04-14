@@ -33,6 +33,9 @@ module.exports.player=function(player,serv)
           pitch: 0.8
         });
       }
+      
+      player.inventory.selectedItem.count--;
+      
       if(heldItem.blockId!=323){
           player.changeBlock(position, id, damage);
       }else if(direction==1){
