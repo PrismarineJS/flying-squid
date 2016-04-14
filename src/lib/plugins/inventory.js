@@ -67,7 +67,15 @@ module.exports.player = function(player,serv)
           if(clickInfo.mouseButton == 0){
             // Drop one item at slot
             // Inventory handles removing one
-            return;
+            
+            const heldItem = player.inventory.slots[36+player.heldItemSlot];
+            serv.spawnObject(2, player.world, player.position, {
+              velocity: new Vec3(0, 0, 0),
+              itemId: heldItem.type,
+              itemDamage: heldItem.metadata,
+              pickupTime: 500,
+              deathTime: 60 * 5 * 100
+            });
           }else{
             // Drop full stack at slot
             // Inventory handles removing the whole stack

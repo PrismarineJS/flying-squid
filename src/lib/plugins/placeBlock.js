@@ -34,7 +34,7 @@ module.exports.player=function(player,serv)
         });
       }
       
-      player.inventory.selectedItem.count--;
+      player.inventory.slots[36+player.heldItemSlot]--;
       
       if(heldItem.blockId!=323){
           player.changeBlock(position, id, damage);
