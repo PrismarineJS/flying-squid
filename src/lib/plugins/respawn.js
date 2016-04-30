@@ -5,7 +5,7 @@ module.exports.player=function(player)
       player.behavior('requestRespawn', {}, () => {
         player._client.write("respawn",{
           dimension:0,
-          difficulty:0,
+          difficulty:serv.difficulty,
           gamemode:player.gameMode,
           levelType:'default'
         });

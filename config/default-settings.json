@@ -5,6 +5,7 @@
   "online-mode": true,
   "logging": true,
   "gameMode": 1,
+  "difficulty": 1,
   "worldFolder":"world",
   "generation": {
     "name": "diamond_square",
@@ -14,7 +15,7 @@
   },
   "kickTimeout": 10000,
   "plugins": {
-    
+
   },
   "modpe": false,
   "view-distance": 10,

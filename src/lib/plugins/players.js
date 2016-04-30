@@ -30,9 +30,7 @@ module.exports.player=function(player){
       player.setGameMode(mode);
     }
   });
-};
 
-module.exports.player = function(player, serv) {
   player.commands.add({
     base: 'difficulty',
     aliases: ['diff'],
@@ -46,7 +44,7 @@ module.exports.player = function(player, serv) {
       return parseInt(str);
     },
     action(diff){
-      serv._writeAll('difficulty',{difficulty:diff});
+      serv.difficulty = diff;
     }
   });
 };

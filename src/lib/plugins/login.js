@@ -56,7 +56,7 @@ module.exports.player=function(player,serv,settings)
       levelType: 'default',
       gameMode: player.gameMode,
       dimension: 0,
-      difficulty: 0,
+      difficulty: serv.difficulty,
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
