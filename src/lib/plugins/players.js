@@ -46,7 +46,7 @@ module.exports.player = function(player, serv) {
       return parseInt(str);
     },
     action(diff){
-      player.changeWorld(serv.overworld, diff);
+      serv._writeAll('difficulty',{difficulty:diff});
     }
   });
 };
