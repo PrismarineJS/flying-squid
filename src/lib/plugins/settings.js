@@ -8,6 +8,7 @@ function randomInt (low, high) {
 module.exports.server=function(serv,settings)
 {
   serv.gameMode=settings.gameMode;
+  serv.difficulty=settings.difficulty;
 
   async function findSpawnZone(world,initialPoint)
   {
