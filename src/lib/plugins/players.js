@@ -13,7 +13,7 @@ module.exports.server=function(serv)
   };
 };
 
-module.exports.player=function(player){
+module.exports.player=function(player, serv){
   player.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
