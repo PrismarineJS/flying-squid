@@ -44,6 +44,7 @@ module.exports.player=function(player){
       return parseInt(str);
     },
     action(diff){
+      serv._writeAll('difficulty', {difficulty: diff});
       serv.difficulty = diff;
     }
   });
