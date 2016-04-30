@@ -184,7 +184,7 @@ module.exports.player=function(player,serv,settings) {
     if (typeof opt.gamemode != 'undefined') player.gameMode = opt.gamemode;
     player._client.write("respawn",{
       dimension: opt.dimension || 0,
-      difficulty: opt.difficulty || 0,
+      difficulty: opt.difficulty || serv.difficulty,
       gamemode: opt.gamemode || player.gameMode,
       levelType:'default'
     });

@@ -13,7 +13,7 @@ module.exports.server=function(serv)
   };
 };
 
-module.exports.player=function(player){
+module.exports.player=function(player, serv){
   player.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
@@ -28,6 +28,24 @@ module.exports.player=function(player){
     },
     action(mode) {
       player.setGameMode(mode);
+    }
+  });
+
+  player.commands.add({
+    base: 'difficulty',
+    aliases: ['diff'],
+    info: 'Sets the difficulty level',
+    usage: '/difficulty <difficulty>',
+    op: true,
+    parse(str){
+      let results;
+      if(!(results = str.match(/^([0-3])$/)))
+        return false;
+      return parseInt(str);
+    },
+    action(diff){
+      serv._writeAll('difficulty', {difficulty: diff});
+      serv.difficulty = diff;
     }
   });
 };
