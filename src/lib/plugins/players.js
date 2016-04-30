@@ -31,3 +31,22 @@ module.exports.player=function(player){
     }
   });
 };
+
+module.exports.player = function(player, serv) {
+  player.commands.add({
+    base: 'difficulty',
+    aliases: ['diff'],
+    info: 'Sets the difficulty level',
+    usage: '/difficulty <difficulty>',
+    op: true,
+    parse(str){
+      let results;
+      if(!(results = str.match(/^([0-3])$/)))
+        return false;
+      return parseInt(str);
+    },
+    action(diff){
+      player.changeWorld(serv.overworld, diff);
+    }
+  });
+};
