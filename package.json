@@ -71,7 +71,7 @@
     "gulp-sourcemaps": "^1.3.0",
     "longjohn": "^0.2.8",
     "mineflayer": "^1.7.2",
-    "mocha": "^2.3.4",
+    "mocha": "^2.5.0",
     "require-self": "^0.1.0"
   }
 }
