@@ -1,3 +1,18 @@
+## 1.0.0
+
+* implement difficulty (thanks @theskiier14)
+* weather Command (thanks @OverloadedWolf)
+* remove block from inventory when placing it (thanks @109C)
+* add node-voxel-worldgen generation to generation list
+* limit /portal command to 21x21
+* fix undefined disconnected
+* limit the number of entities to options["max-entities"]
+* remove /spawn and /spawnObject
+* update dependencies
+* move diamond-square to its own package
+* add flying-squid-schematic plugin to plugins list
+* add serv.reloadChunk
+
 ## 0.5.1
 
 * makes worldFolder option optional
