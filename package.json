@@ -33,7 +33,7 @@
     "minecraft-data": "^2.0.0",
     "minecraft-protocol": "^1.0.0",
     "mkdirp": "^0.5.1",
-    "moment": "^2.10.6",
+    "moment": "^2.14.0",
     "node-dir": "^0.1.9",
     "node-promise-es6": "^0.3.0",
     "node-uuid": "^1.4.3",
