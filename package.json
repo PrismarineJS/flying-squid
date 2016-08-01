@@ -28,7 +28,7 @@
     "babel-runtime": "^6.5.0",
     "diamond-square": "1.0.0",
     "emit-then": "^2.0.0",
-    "event-promise": "^0.0.1",
+    "event-promise": "^1.0.0",
     "flatmap": "^0.0.3",
     "minecraft-data": "^2.0.0",
     "minecraft-protocol": "^1.0.0",
