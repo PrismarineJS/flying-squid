@@ -46,7 +46,7 @@ logging uses methods and events from `log.js`. These include `serv.log(message)`
 
 Create a new repo, which will be published to npm when ready to be used. Create a file (probably `index.js`) in which you use a similar format as above (module.exports.xxxx).
 
-In these inject functions you can use everything documented in the [api.md](api.md).
+In these inject functions you can use everything documented in the [api.md](API.md).
 
 Let's say you called your module fs-flying-horses and you published it to npm.
 
