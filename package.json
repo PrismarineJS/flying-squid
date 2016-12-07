@@ -34,7 +34,7 @@
     "minecraft-protocol": "^1.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
-    "node-dir": "^0.1.9",
+    "node-dir": "^0.1.15",
     "node-promise-es6": "^0.3.0",
     "node-uuid": "^1.4.3",
     "prismarine-block": "^1.0.1",
