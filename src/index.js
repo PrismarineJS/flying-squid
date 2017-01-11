@@ -20,6 +20,7 @@ module.exports = {
 
 function createMCServer(options) {
   options = options || {};
+  options.version=require("./lib/version");
   const mcServer = new MCServer();
   mcServer.connect(options);
   return mcServer;
