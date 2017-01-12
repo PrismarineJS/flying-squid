@@ -1,6 +1,6 @@
 const spiralloop = require('spiralloop');
 
-const World = require('prismarine-world');
+const World = require('prismarine-world')(require("../version"));
 
 const generations=require("flying-squid").generations;
 import {fs} from 'node-promise-es6';
