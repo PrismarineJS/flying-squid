@@ -22,7 +22,7 @@
     "type": "MIT"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "dependencies": {
     "babel-runtime": "^6.5.0",
@@ -38,7 +38,7 @@
     "node-promise-es6": "^0.3.0",
     "node-uuid": "^1.4.3",
     "prismarine-block": "^1.0.1",
-    "prismarine-chunk": "Flynnn/prismarine-chunk#master",
+    "prismarine-chunk": "^1.4.0",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.0.1",
     "prismarine-provider-anvil": "^2.0.0",
