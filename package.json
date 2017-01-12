@@ -41,7 +41,7 @@
     "prismarine-chunk": "^1.0.1",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.0.1",
-    "prismarine-provider-anvil": "^1.0.1",
+    "prismarine-provider-anvil": "^2.0.0",
     "prismarine-windows": "^1.0.1",
     "prismarine-world": "^1.0.1",
     "random-seed": "^0.3.0",
