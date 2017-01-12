@@ -1,4 +1,4 @@
-const {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,makeWorldWithPortal}=require("flying-squid").portal_detector;
+const {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,makeWorldWithPortal}=require("flying-squid").portal_detector("1.8");
 const Vec3 = require("vec3").Vec3;
 const assert = require('chai').assert;
 const range = require('range').range;

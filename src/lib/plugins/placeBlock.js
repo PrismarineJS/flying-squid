@@ -1,4 +1,3 @@
-const blocks=require("minecraft-data")(require("flying-squid").version).blocks;
 const Vec3 = require("vec3").Vec3;
 
 const materialToSound = {
@@ -11,8 +10,9 @@ const materialToSound = {
   'wood': 'wood'
 };
 
-module.exports.player=function(player,serv)
+module.exports.player=function(player,serv,{version})
 {
+  const blocks=require("minecraft-data")(version).blocks;
   player._client.on("block_place",({direction,heldItem,location} = {}) => {
     if(direction==-1 || heldItem.blockId==-1 || !blocks[heldItem.blockId]) return;
     const referencePosition=new Vec3(location.x,location.y,location.z);

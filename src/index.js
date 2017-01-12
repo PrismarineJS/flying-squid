@@ -11,7 +11,6 @@ module.exports = {
   createMCServer:createMCServer,
   Behavior:require("./lib/behavior"),
   Command:require("./lib/command"),
-  version:require("./lib/version"),
   generations:require("./lib/generations"),
   experience:require("./lib/experience"),
   UserError:require("./lib/user_error"),
@@ -20,7 +19,6 @@ module.exports = {
 
 function createMCServer(options) {
   options = options || {};
-  options.version=require("./lib/version");
   const mcServer = new MCServer();
   mcServer.connect(options);
   return mcServer;

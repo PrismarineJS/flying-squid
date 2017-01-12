@@ -21,5 +21,6 @@
   "view-distance": 10,
   "player-list-text": {},
   "everybody-op":true,
-  "max-entities":100
+  "max-entities":100,
+  "version":"1.9"
 }

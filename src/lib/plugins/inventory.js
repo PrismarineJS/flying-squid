@@ -1,9 +1,7 @@
-const version = require("flying-squid").version;
-const windows = require("prismarine-windows")(version).windows;
-const Item = require("prismarine-item")(version);
-
-module.exports.player = function(player,serv)
+module.exports.player = function(player,serv,{version})
 {
+  const windows = require("prismarine-windows")(version).windows;
+  const Item = require("prismarine-item")(version);
   player.heldItemSlot = 0;
   player.heldItem = new Item(256, 1);
   player.inventory = new windows.InventoryWindow(0, "Inventory", 44);

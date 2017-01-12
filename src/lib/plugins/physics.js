@@ -1,7 +1,7 @@
-const blocks=require("minecraft-data")(require("flying-squid").version).blocks;
 const Vec3 = require("vec3").Vec3;
 
-module.exports.entity=function(entity){
+module.exports.entity=function(entity,serv,{version}){
+  const blocks=require("minecraft-data")(version).blocks;
   entity.calculatePhysics = async (delta) => {
     if (entity.gravity) {
       addGravity(entity, 'x', delta);

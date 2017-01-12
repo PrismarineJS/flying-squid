@@ -1,6 +1,6 @@
 const UserError = require('flying-squid').UserError;
 
-module.exports.player=function(player, serv) {
+module.exports.player=function(player, serv,{version}) {
 
   player.commands.add({
     base: 'help',
@@ -81,7 +81,7 @@ module.exports.player=function(player, serv) {
     info: 'to get version of the server',
     usage: '/version',
     action() {
-      return 'This server is running flying-squid version '+require("../../../package").version;
+      return 'This server is running flying-squid version '+version;
     }
   });
 

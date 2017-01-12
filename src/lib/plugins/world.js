@@ -1,12 +1,10 @@
 const spiralloop = require('spiralloop');
-
-const World = require('prismarine-world')(require("../version"));
-
 const generations=require("flying-squid").generations;
 import {fs} from 'node-promise-es6';
 import {level} from 'prismarine-provider-anvil';
 
-module.exports.server=async function(serv,{worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
+module.exports.server=async function(serv,{version,worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
+  const World = require('prismarine-world')(version);
   const newSeed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
   let seed;
   let regionFolder;
@@ -31,10 +29,11 @@ module.exports.server=async function(serv,{worldFolder,generation={"name":"diamo
   else
     seed=newSeed;
   generation.options.seed=seed;
+  generation.options.version=version;
   serv.emit("seed",generation.options.seed);
   const generationModule=generations[generation.name] ? generations[generation.name] : require(generation.name);
   serv.overworld = new World(generationModule(generation.options), regionFolder);
-  serv.netherworld = new World(generations["nether"]({}));
+  serv.netherworld = new World(generations["nether"](generation.options));
   //serv.endworld = new World(generations["end"]({}));
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED

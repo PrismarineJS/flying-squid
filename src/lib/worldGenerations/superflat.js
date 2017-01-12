@@ -1,7 +1,7 @@
-const Chunk = require('prismarine-chunk')(require("../version"));
 const Vec3 = require('vec3').Vec3;
 
-function generation({opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thickness=3,debug=false}={}) {
+function generation({version,opt='default',bottom_id=7,middle_id=1,top_id=2,middle_thickness=3,debug=false}={}) {
+  const Chunk = require('prismarine-chunk')(version);
   function generateChunk() {
     const chunk=new Chunk();
     const height = middle_thickness + 1;
