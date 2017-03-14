@@ -1,6 +1,8 @@
 flying-squid
 ================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/PrismarineJS/flying-squid.svg)](https://greenkeeper.io/)
+
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
 [![Join the chat at https://gitter.im/PrismarineJS/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
