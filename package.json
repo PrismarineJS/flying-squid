@@ -70,7 +70,7 @@
     "gulp-plumber": "^1.0.1",
     "gulp-sourcemaps": "^2.0.0",
     "longjohn": "^0.2.8",
-    "mineflayer": "^1.7.5",
+    "mineflayer": "^1.8.0",
     "mocha": "^3.0.0",
     "require-self": "^0.1.0"
   }
