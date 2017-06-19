@@ -14,15 +14,12 @@
     "flying-squid": "./app.js"
   },
   "scripts": {
-    "prepublish": "gulp && require-self",
-    "test": "mocha --reporter spec distTest"
+    "prepare": "require-self",
+    "test": "mocha --reporter spec test"
   },
   "keywords": [],
-  "licenses": {
-    "type": "MIT"
-  },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "dependencies": {
     "babel-runtime": "^6.5.0",
@@ -30,8 +27,8 @@
     "emit-then": "^2.0.0",
     "event-promise": "^0.0.1",
     "flatmap": "^0.0.3",
-    "minecraft-data": "^2.0.0",
-    "minecraft-protocol": "^1.0.0",
+    "minecraft-data": "^2.17.0",
+    "minecraft-protocol": "^1.3.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "node-dir": "^0.1.9",
@@ -60,18 +57,11 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
-    "babel-plugin-transform-runtime": "^6.5.0",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
     "chai": "^3.2.0",
     "doctoc": "^1.0.0",
-    "gulp": "^3.8.11",
-    "gulp-babel": "^6.1.2",
-    "gulp-plumber": "^1.0.1",
-    "gulp-sourcemaps": "^2.0.0",
     "longjohn": "^0.2.8",
-    "mineflayer": "^1.7.5",
+    "mineflayer": "^2.4.0",
     "mocha": "^3.0.0",
-    "require-self": "^0.1.0"
+    "require-self": "^0.2.1"
   }
 }

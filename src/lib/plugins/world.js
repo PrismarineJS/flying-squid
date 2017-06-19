@@ -1,7 +1,7 @@
 const spiralloop = require('spiralloop');
 const generations=require("flying-squid").generations;
-import {fs} from 'node-promise-es6';
-import {level} from 'prismarine-provider-anvil';
+const {fs} = require('node-promise-es6');
+const {level} = require('prismarine-provider-anvil');
 
 module.exports.server=async function(serv,{version,worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   const World = require('prismarine-world')(version);
