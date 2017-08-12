@@ -1,4 +1,4 @@
-const {distanceToXpLevel,getXpLevel,getBaseXpFromLevel}=require("flying-squid").experience;
+const {distanceToXpLevel, getXpLevel, getBaseXpFromLevel} = require("../../").experience;
 
 module.exports.player = function(player) {
   player.xp = 0;
@@ -6,7 +6,7 @@ module.exports.player = function(player) {
   player.xpLevel = 0;
 
   player.sendXp = () => {
-    player._client.write('experience', {
+    player._client.write("experience", {
       experienceBar: player.displayXp,
       level: player.level,
       totalExperience: player.xp
@@ -23,7 +23,7 @@ module.exports.player = function(player) {
     player.sendXp();
   };
 
-  player.setXp = (xp, { setLevel=true, setDisplay=true, send=true }={}) => {
+  player.setXp = (xp, {setLevel = true, setDisplay = true, send = true} = {}) => {
     player.xp = xp;
     if (setLevel) player.level = getXpLevel(xp);
     if (setDisplay) player.displayXp = distanceToXpLevel(xp);
@@ -31,9 +31,9 @@ module.exports.player = function(player) {
   };
 
   player.commands.add({
-    base: 'xp',
-    info: 'Give yourself experience',
-    usage: '/xp <amount> [player] OR /xp <amount>L [player]',
+    base: "xp",
+    info: "Give yourself experience",
+    usage: "/xp <amount> [player] OR /xp <amount>L [player]",
     op: true,
     parse(str) {
       return str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) || false;
@@ -42,17 +42,17 @@ module.exports.player = function(player) {
       const isLevel = !!args[2];
       const amt = parseInt(args[1]);
       const user = args[3] ? serv.getPlayer(args[3]) : player;
-      if (!user) return args[3] + ' is not on this server!';
+      if (!user) return args[3] + " is not on this server!";
 
       if (!isLevel) {
         user.setXp(user.xp + amt);
-        player.chat('Gave ' + user.username + ' ' + amt + ' xp');
+        player.chat("Gave " + user.username + " " + amt + " xp");
       } else {
         const currLevel = getXpLevel(player.xp);
         const baseCurrLevel = getBaseXpFromLevel(currLevel);
         const extraXp = player.xp - baseCurrLevel;
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp);
-        player.chat('Gave ' + user.username + ' ' + amt + ' levels');
+        player.chat("Gave " + user.username + " " + amt + " levels");
       }
     }
   });
