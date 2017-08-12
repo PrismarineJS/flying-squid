@@ -33,7 +33,7 @@
     "moment": "^2.10.6",
     "node-dir": "^0.1.9",
     "node-promise-es6": "^0.3.0",
-    "node-uuid": "^1.4.3",
+    "phin": "^2.2.1",
     "prismarine-block": "^1.0.1",
     "prismarine-chunk": "^1.4.0",
     "prismarine-entity": "^0.2.0",

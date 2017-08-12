@@ -1,6 +1,6 @@
 const moment=require("moment");
-const rp=require("request-promise");
-const nodeUuid=require('node-uuid');
+const util=require("util");
+const p=util.promisify(require("phin"));
 
 module.exports.server=function(serv)
 {
@@ -21,16 +21,27 @@ module.exports.server=function(serv)
       .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason));
   };
 
+  /**
+   * Converts a plain UUID to a UUID in parts, ex. 161debe7d49842408fc2405bfabc3fd4 -> 161debe7-d498-4240-8fc2-405bfabc3fd4
+   * @param {string} plainUUID The UUID to convert
+   */
   function uuidInParts(plainUUID)
   {
-    return nodeUuid.unparse(nodeUuid.parse(plainUUID));
+    function addHypenAtIndex(index) {
+      plainUUID = plainUUID.slice(0, index) + '-' + plainUUID.slice(index);
+    }
+    addHypenAtIndex(8);
+    addHypenAtIndex(13);
+    addHypenAtIndex(18);
+    addHypenAtIndex(23);
+    return plainUUID;
   }
 
   serv.getUUIDFromUsername =  username => {
-    return rp('https://api.mojang.com/users/profiles/minecraft/' + username)
-      .then((body) => {
-        if(!body) throw new Error("username not found");
-        return uuidInParts(JSON.parse(body).id)
+    return p('https://api.mojang.com/users/profiles/minecraft/' + username)
+      .then((req) => {
+        if(!req.body) throw new Error("username not found");
+        return uuidInParts(JSON.parse(req.body).id)
       })
       .catch(err => {throw err;});
   };
