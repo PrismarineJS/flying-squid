@@ -1,4 +1,4 @@
-module.exports.player=function(player)
+module.exports.player = function(player)
 {
-//WIP: temporary removed
+// WIP: temporary removed
 };

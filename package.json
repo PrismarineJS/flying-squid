@@ -1,21 +1,20 @@
 {
   "name": "flying-squid",
-  "description": "A minecraft server written in node.js",
+  "description": "A Minecraft server written in JavaScript, modularized",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "mhsjlw <mhsjlw@aol.com>",
+  "author": "mhsjlw",
   "contributors": [
     {
       "name": "rom1504",
       "email": "romain.rom1@gmail.com"
     }
   ],
-  "bin": {
-    "flying-squid": "./app.js"
-  },
+  "bin": "./app.js",
   "scripts": {
-    "prepare": "require-self",
-    "test": "mocha --reporter spec test"
+    "start": "node app.js",
+    "test": "jest",
+    "lint": "eslint --ext=js ."
   },
   "keywords": [],
   "engines": {
@@ -59,6 +58,8 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "doctoc": "^1.0.0",
+    "eslint": "^4.4.1",
+    "jest": "^20.0.4",
     "longjohn": "^0.2.8",
     "mineflayer": "^2.4.0",
     "mocha": "^3.0.0",
