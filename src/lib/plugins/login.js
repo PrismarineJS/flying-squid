@@ -1,79 +1,79 @@
 const Vec3 = require("vec3").Vec3;
 
-const path = require('path');
-const requireIndex = require('requireindex');
-const plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-const Command = require('flying-squid').Command;
+const path = require("path");
+const requireIndex = require("requireindex");
+const plugins = requireIndex(path.join(__dirname, "..", "plugins"));
+const Command = require("../../").Command;
 
-module.exports.server=function(serv,options)
+module.exports.server = function(serv, options)
 {
-  serv._server.on('connection', client =>
-    client.on('error',error => serv.emit('clientError',client,error)));
+  serv._server.on("connection", client =>
+    client.on("error", error => serv.emit("clientError", client, error)));
 
-  serv._server.on('login', async (client) => {
-    if(client.socket.listeners('end').length==0) return; // TODO: should be fixed properly in nmp instead
+  serv._server.on("login", async (client) => {
+    if(client.socket.listeners("end").length == 0) return; // TODO: should be fixed properly in nmp instead
     try {
-      const player = serv.initEntity('player', null, serv.overworld, new Vec3(0,0,0));
-      player._client=client;
+      const player = serv.initEntity("player", null, serv.overworld, new Vec3(0, 0, 0));
+      player._client = client;
 
-      player.profileProperties=player._client.profile ? player._client.profile.properties : [];
+      player.profileProperties = player._client.profile ? player._client.profile.properties : [];
       player.commands = new Command({});
       Object.keys(plugins)
-        .filter(pluginName => plugins[pluginName].player!=undefined)
+        .filter(pluginName => plugins[pluginName].player != undefined)
         .forEach(pluginName => plugins[pluginName].player(player, serv, options));
 
-      serv.emit("newPlayer",player);
-      player.emit('asap');
+      serv.emit("newPlayer", player);
+      player.emit("asap");
       await player.login();
     }
     catch(err){
-      setTimeout(() => {throw err;},0)
+      setTimeout(() => {throw err;}, 0);
     }
   });
 };
 
-module.exports.player=function(player,serv,settings)
+module.exports.player = function(player, serv, settings)
 {
   function addPlayer()
   {
-    player.type = 'player';
+    player.type = "player";
     player.health = 20;
     player.food = 20;
     player.crouching = false; // Needs added in prismarine-entity later
     player.op = settings["everybody-op"]; // REMOVE THIS WHEN OUT OF TESTING
-    player.username=player._client.username;
+    player.username = player._client.username;
     serv.players.push(player);
     serv.uuidToPlayer[player._client.uuid] = player;
-    player.heldItemSlot=36;
-    player.loadedChunks={};
+    player.heldItemSlot = 36;
+    player.loadedChunks = {};
   }
 
   function sendLogin()
   {
     // send init data so client will start rendering world
-    player._client.write('login', {
+    player._client.write("login", {
       entityId: player.id,
-      levelType: 'default',
+      levelType: "default",
       gameMode: player.gameMode,
       dimension: 0,
       difficulty: serv.difficulty,
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     });
-    player.position=player.spawnPoint.toFixedPosition();
+    player.position = player.spawnPoint.toFixedPosition();
   }
 
   function sendChunkWhenMove()
   {
     player.on("move", () => {
-      if(!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated)>16*32)
+      if(!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16 * 32)
         player.sendRestMap();
     });
   }
 
   function updateTime()
   {
-    player._client.write('update_time', {
+    player._client.write("update_time", {
       age: [0, 0],
       time: [0, serv.time]
     });
@@ -81,12 +81,12 @@ module.exports.player=function(player,serv,settings)
 
   player.setGameMode = gameMode =>
   {
-    player.gameMode=gameMode;
-    player._client.write('game_state_change', {
+    player.gameMode = gameMode;
+    player._client.write("game_state_change", {
       reason: 3,
       gameMode: player.gameMode
     });
-    serv._writeAll('player_info',{
+    serv._writeAll("player_info", {
       action: 1,
       data: [{
         UUID: player._client.uuid,
@@ -98,7 +98,7 @@ module.exports.player=function(player,serv,settings)
 
   function fillTabList()
   {
-    player._writeOthers('player_info',{
+    player._writeOthers("player_info", {
       action: 0,
       data: [{
         UUID: player._client.uuid,
@@ -109,7 +109,7 @@ module.exports.player=function(player,serv,settings)
       }]
     });
 
-    player._client.write('player_info', {
+    player._client.write("player_info", {
       action: 0,
       data: serv.players.map((otherPlayer) => ({
         UUID: otherPlayer._client.uuid,
@@ -119,30 +119,30 @@ module.exports.player=function(player,serv,settings)
         ping: otherPlayer._client.latency
       }))
     });
-    setInterval(() => player._client.write('player_info',{
-      action:2,
-      data:serv.players.map(otherPlayer => ({
+    setInterval(() => player._client.write("player_info", {
+      action: 2,
+      data: serv.players.map(otherPlayer => ({
         UUID: otherPlayer._client.uuid,
-        ping:otherPlayer._client.latency
+        ping: otherPlayer._client.latency
       }))
-    }),5000);
+    }), 5000);
   }
 
   function announceJoin()
   {
-    serv.broadcast(serv.color.yellow + player.username + ' joined the game.');
+    serv.broadcast(serv.color.yellow + player.username + " joined the game.");
     player.emit("connected");
   }
 
   player.waitPlayerLogin = () => {
-    const events=["flying","look"];
+    const events = ["flying", "look"];
     return new Promise(function(resolve){
 
-      const listener=()=> {
-        events.map(event => player._client.removeListener(event,listener));
+      const listener = ()=> {
+        events.map(event => player._client.removeListener(event, listener));
         resolve();
       };
-      events.map(event =>player._client.on(event,listener));
+      events.map(event =>player._client.on(event, listener));
     });
   };
 
@@ -158,8 +158,8 @@ module.exports.player=function(player,serv,settings)
       return;
     }
     if(serv.bannedIPs[player._client.socket.remoteAddress]){
-        player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason);
-        return
+      player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason);
+      return;
     }
 
     addPlayer();

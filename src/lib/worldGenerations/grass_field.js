@@ -1,7 +1,7 @@
-const Vec3 = require('vec3').Vec3;
+const Vec3 = require("vec3").Vec3;
 
 function generation({version}) {
-  const Chunk = require('prismarine-chunk')(version);
+  const Chunk = require("prismarine-chunk")(version);
   function generateSimpleChunk() {
     const chunk = new Chunk();
 
@@ -19,4 +19,4 @@ function generation({version}) {
   return generateSimpleChunk;
 }
 
-module.exports=generation;
+module.exports = generation;

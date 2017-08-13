@@ -1,8 +1,8 @@
 const Vec3 = require("vec3").Vec3;
 
-module.exports.player=function(player)
+module.exports.player = function(player)
 {
-  player.on('placeBlock_cancel', async (opt, cancel) => {
+  player.on("placeBlock_cancel", async (opt, cancel) => {
     if (player.crouching) return;
     try {
       const id = await player.world.getBlockType(opt.reference);
@@ -22,7 +22,7 @@ module.exports.player=function(player)
       }
     }
     catch(err) {
-      setTimeout(() =>{throw err;},0);
+      setTimeout(() =>{throw err;}, 0);
     }
     
   });
