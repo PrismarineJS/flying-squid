@@ -1,6 +1,6 @@
 const spiralloop = require("spiralloop");
 const generations = require("../../").generations;
-const {fs} = require("node-promise-es6");
+const mkdir = require("util").promisify(require("fs").mkdir);
 const {level} = require("prismarine-provider-anvil");
 
 module.exports.server = async function(serv, {version, worldFolder, generation = {"name": "diamond_square", "options": {"worldHeight": 80}}} = {}) {
