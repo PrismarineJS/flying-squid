@@ -1,6 +1,6 @@
-const moment=require("moment");
-const util=require("util");
-const p=util.promisify(require("phin"));
+const moment = require("moment");
+const util = require("util");
+const p = util.promisify(require("phin"));
 
 module.exports.server = function(serv)
 {
@@ -28,7 +28,7 @@ module.exports.server = function(serv)
   function uuidInParts(plainUUID)
   {
     function addHypenAtIndex(index) {
-      plainUUID = plainUUID.slice(0, index) + '-' + plainUUID.slice(index);
+      plainUUID = plainUUID.slice(0, index) + "-" + plainUUID.slice(index);
     }
     addHypenAtIndex(8);
     addHypenAtIndex(13);
@@ -38,10 +38,10 @@ module.exports.server = function(serv)
   }
 
   serv.getUUIDFromUsername =  username => {
-    return p('https://api.mojang.com/users/profiles/minecraft/' + username)
+    return p("https://api.mojang.com/users/profiles/minecraft/" + username)
       .then((req) => {
         if(!req.body) throw new Error("username not found");
-        return uuidInParts(JSON.parse(req.body).id)
+        return uuidInParts(JSON.parse(req.body).id);
       })
       .catch(err => {throw err;});
   };
@@ -55,7 +55,7 @@ module.exports.server = function(serv)
     return serv.getUUIDFromUsername(username)
       .then(pardon);
   };
-  
+
   serv.pardonIP = (IP) => {
     return serv.bannedIPs[IP] ? delete serv.bannedIPs[IP] : false;
   };
@@ -148,7 +148,7 @@ module.exports.player = function(player, serv)
       }
     }
   });
-  
+
   player.commands.add({
     base: "ban-ip",
     info: "bans a specific IP",
@@ -157,7 +157,7 @@ module.exports.player = function(player, serv)
     parse(str){
       const argv = str.split(" ");
       if(argv.length < 1) return;
-      
+
       return {
         IP: argv.shift(),
         reason: argv.shift()
