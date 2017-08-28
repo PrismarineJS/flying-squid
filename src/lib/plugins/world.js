@@ -1,6 +1,7 @@
 const spiralloop = require("spiralloop");
 const generations = require("../../").generations;
 const mkdir = require("util").promisify(require("fs").mkdir);
+const stat = require("util").promisify(require("fs").stat);
 const {level} = require("prismarine-provider-anvil");
 
 module.exports.server = async function(serv, {version, worldFolder, generation = {"name": "diamond_square", "options": {"worldHeight": 80}}} = {}) {
@@ -11,7 +12,7 @@ module.exports.server = async function(serv, {version, worldFolder, generation =
   if(worldFolder) {
     regionFolder = worldFolder + "/region";
     try {
-      const stats = await fs.stat(regionFolder);
+      const stats = await stat(regionFolder);
     }
     catch (err) {
       await fs.mkdir(regionFolder);
