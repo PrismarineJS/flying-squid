@@ -3,8 +3,8 @@ const spiralloop = require('spiralloop');
 const World = require('prismarine-world')(require("../version"));
 
 const generations=require("flying-squid").generations;
-import {fs} from 'node-promise-es6';
-import {level} from 'prismarine-provider-anvil';
+const {fs} = require('node-promise-es6');
+const {level} = require('prismarine-provider-anvil');
 
 module.exports.server=async function(serv,{worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   const newSeed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
@@ -89,7 +89,8 @@ module.exports.player=function(player,serv,settings) {
       z: chunkZ,
       groundUp: true,
       bitMap: 0x0000,
-      chunkData: new Buffer(0)
+      chunkData: new Buffer(0),
+      blockEntities: []
     });
   };
 
@@ -105,7 +106,8 @@ module.exports.player=function(player,serv,settings) {
         z: z,
         groundUp: true,
         bitMap: 0xffff,
-        chunkData: chunk.dump()
+        chunkData: chunk.dump(),
+        blockEntities: []
       });
       return Promise.resolve();
     })

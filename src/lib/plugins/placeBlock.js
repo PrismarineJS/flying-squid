@@ -13,7 +13,9 @@ const materialToSound = {
 
 module.exports.player=function(player,serv)
 {
-  player._client.on("block_place",({direction,heldItem,location} = {}) => {
+  player._client.on("block_place",({location, direction} = {}) => {
+    let {heldItem} = player
+
     if(direction==-1 || heldItem.blockId==-1 || !blocks[heldItem.blockId]) return;
     const referencePosition=new Vec3(location.x,location.y,location.z);
     const directionVector=directionToVector[direction];
@@ -33,9 +35,9 @@ module.exports.player=function(player,serv)
           pitch: 0.8
         });
       }
-      
+
       player.inventory.slots[36+player.heldItemSlot]--;
-      
+
       if(heldItem.blockId!=323){
           player.changeBlock(position, id, damage);
       }else if(direction==1){

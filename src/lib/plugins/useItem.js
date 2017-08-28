@@ -4,7 +4,9 @@ const Vec3 = require("vec3").Vec3;
 
 module.exports.player=function(player,serv)
 {
-  player._client.on("block_place",({direction,heldItem,location} = {}) => {
+  player._client.on("block_place",({location, direction} = {}) => {
+    let {heldItem} = player
+
     if (direction == -1 || heldItem.blockId == -1 || !items[heldItem.blockId]) return;
     const item=Item.fromNotch(heldItem);
     const referencePosition = new Vec3(location.x, location.y, location.z);
