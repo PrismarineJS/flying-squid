@@ -1,4 +1,4 @@
-const UserError = require('flying-squid').UserError;
+const UserError = require('../user_error');
 
 module.exports.player = function(player, serv) {
   player.commands.add({

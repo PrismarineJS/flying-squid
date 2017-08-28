@@ -2,7 +2,7 @@ const spiralloop = require('spiralloop');
 
 const World = require('prismarine-world')(require("../version"));
 
-const generations=require("flying-squid").generations;
+const generations=require("../generations");
 const {fs} = require('node-promise-es6');
 const {level} = require('prismarine-provider-anvil');
 
@@ -215,4 +215,16 @@ module.exports.player=function(player,serv,settings) {
       if(world=="overworld") player.changeWorld(serv.overworld, {dimension: 0});
     }
   });
+
+  player.commands.add({
+    base: 'save',
+    info: 'save changes to world files',
+    usage: '/save',
+    op: true,
+    action() {
+      const {x,y,z} = player.position
+      console.log(player.position)
+      player.world.saveAt({x: x/32, y: y/32, z: z/32})
+    }
+  })
 };

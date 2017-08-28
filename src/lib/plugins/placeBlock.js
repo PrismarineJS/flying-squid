@@ -1,4 +1,4 @@
-const blocks=require("minecraft-data")(require("flying-squid").version).blocks;
+const blocks=require("minecraft-data")(require("../version")).blocks;
 const Vec3 = require("vec3").Vec3;
 
 const materialToSound = {
@@ -16,20 +16,22 @@ module.exports.player=function(player,serv)
   player._client.on("block_place",({location, direction} = {}) => {
     let {heldItem} = player
 
-    if(direction==-1 || heldItem.blockId==-1 || !blocks[heldItem.blockId]) return;
+    if(direction==-1 || heldItem.type==-1 || !blocks[heldItem.type]) return;
+
     const referencePosition=new Vec3(location.x,location.y,location.z);
     const directionVector=directionToVector[direction];
     const placedPosition=referencePosition.plus(directionVector);
     player.behavior('placeBlock', {
       direction: directionVector,
       heldItem: heldItem,
-      id: heldItem.blockId,
-      damage: heldItem.itemDamage,
+      id: heldItem.type,
+      damage: heldItem.metadata,
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
-    }, ({direction, heldItem, position, playSound, sound, id, damage}) => {
+      sound: 'dig.' + (materialToSound[blocks[heldItem.type].material] || 'stone')
+    }, (params = {}) => {
+      let {direction, heldItem, position, playSound, sound, id, damage} = params
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8
@@ -38,7 +40,7 @@ module.exports.player=function(player,serv)
 
       player.inventory.slots[36+player.heldItemSlot]--;
 
-      if(heldItem.blockId!=323){
+      if(heldItem.type!=323){
           player.changeBlock(position, id, damage);
       }else if(direction==1){
         player.setBlock(position, 63, 0);

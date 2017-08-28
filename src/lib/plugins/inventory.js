@@ -1,4 +1,4 @@
-const version = require("flying-squid").version;
+const version = require("../version");
 const windows = require("prismarine-windows")(version).windows;
 const Item = require("prismarine-item")(version);
 
@@ -7,7 +7,7 @@ module.exports.player = function(player,serv)
   player.heldItemSlot = 0;
   player.heldItem = new Item(256, 1);
   player.inventory = new windows.InventoryWindow(0, "Inventory", 44);
-  
+
   player._client.on("held_item_slot", ({slotId} = {}) => {
     player.heldItemSlot = slotId;
     player.setEquipment(0,player.inventory.slots[36 + player.heldItemSlot]);
@@ -18,7 +18,7 @@ module.exports.player = function(player,serv)
         item: Item.toNotch(player.heldItem)
     });
   });
-  
+
   player._client.on("window_click", function(clickInfo){
     // Do other stuff the inventory doesn't do, eg spawn the dropped item.
     // I've left in stuff that inventory handles, because the cancelling hooks
@@ -33,7 +33,7 @@ module.exports.player = function(player,serv)
           // Inventory deals with this
         }
       break;
-      
+
       case 1:
         if(clickInfo.mouseButton == 0){
           // Shift + Left click
@@ -45,20 +45,20 @@ module.exports.player = function(player,serv)
           return;
         }
       break;
-      
+
       case 2:
         // button 0 -> 8, indication hotbar switching items
         // (Nothing to do with held_item_slot)
         // DANGER! crashes because windows.js hasn't implemented it yet.
         return;
       break;
-      
+
       case 3:
         // Middle click
         // DANGER! crashes because windows.js hasn't implemented it yet.
         return;
       break;
-      
+
       case 4:
         if(clickInfo.slot == -999){
           // Click with nothing outside window. Do nothing.
@@ -67,7 +67,7 @@ module.exports.player = function(player,serv)
           if(clickInfo.mouseButton == 0){
             // Drop one item at slot
             // Inventory handles removing one
-            
+
             const heldItem = player.inventory.slots[36+player.heldItemSlot];
             serv.spawnObject(2, player.world, player.position, {
               velocity: new Vec3(0, 0, 0),
@@ -83,7 +83,7 @@ module.exports.player = function(player,serv)
           }
         }
       break;
-      
+
       // Inventory does not support dragging yet, so not implementing yet.
       case 5:
         if(clickInfo.slot == -999){
@@ -92,17 +92,17 @@ module.exports.player = function(player,serv)
               // Start left mouse drag
               return;
             break;
-            
+
             case 4:
               // Start right mouse drag
               return;
             break;
-            
+
             case 2:
               // End left mouse drag
               return;
             break;
-            
+
             case 6:
               // End right mouse drag
               return;
@@ -114,7 +114,7 @@ module.exports.player = function(player,serv)
               // Add slot for left mouse drag
               return;
             break;
-            
+
             case 5:
               // Add slot for right mouse drag
               return;
@@ -122,14 +122,14 @@ module.exports.player = function(player,serv)
           }
         }
       break;
-      
+
       // Inventory does not support double click yet, so not implementing yet.
       case 6:
         // Double click
         return;
       break;
     }
-    
+
     // Let the inventory know of the click.
     // It's important to let it know of the click later, because it destroys
     // information we need about the inventory.
@@ -140,7 +140,7 @@ module.exports.player = function(player,serv)
       serv.emit('error',err);
     }
   });
-  
+
   player._client.on("set_creative_slot", ({slot,item} ={}) => {
     if(item.blockId == -1){
       player.inventory.updateSlot(slot, undefined);
@@ -150,7 +150,7 @@ module.exports.player = function(player,serv)
     const newItem = Item.fromNotch(item);
     player.inventory.updateSlot(slot, newItem);
   });
-  
+
   player.inventory.on("windowUpdate", function(slot,oldItem,newItem){
 
     const equipments={

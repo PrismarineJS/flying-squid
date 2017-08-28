@@ -1,4 +1,4 @@
-module.exports = (obj) => {
+module.exports = function(obj) {
   return async (eventName, data, func, cancelFunc) => {
     let hiddenCancelled = false;
     let cancelled = false;
@@ -12,7 +12,7 @@ module.exports = (obj) => {
       }
       defaultCancel = dC;
     };
-    
+
     let resp;
 
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err)=> setTimeout(() => {throw err;},0));

@@ -1,6 +1,6 @@
-const {detectFrame,generatePortal,addPortalToWorld}=require("flying-squid").portal_detector;
+const {detectFrame,generatePortal,addPortalToWorld}=require("../portal_detector");
 const Vec3 = require("vec3").Vec3;
-const UserError=require("flying-squid").UserError;
+const UserError=require("../user_error");
 
 module.exports.player=function(player,serv) {
   player.use_flint_and_steel=async (referencePosition,direction,position) => {
