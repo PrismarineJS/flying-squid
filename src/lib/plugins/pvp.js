@@ -1,5 +1,5 @@
 const Vec3 = require("vec3").Vec3;
-const UserError = require('flying-squid').UserError;
+const UserError = require('../user_error');
 
 module.exports.player=function(player,serv)
 {
@@ -13,7 +13,7 @@ module.exports.player=function(player,serv)
     });
   };
 
-  function attackEntity(entityId) 
+  function attackEntity(entityId)
   {
     const attackedEntity = serv.entities[entityId];
     if(!attackedEntity || (attackedEntity.gameMode != 0 && attackedEntity.type == 'player')) return;

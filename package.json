@@ -14,19 +14,16 @@
     "flying-squid": "./app.js"
   },
   "scripts": {
-    "prepublish": "gulp && require-self",
-    "test": "mocha --reporter spec distTest"
+    "test": "mocha --reporter spec test"
   },
   "keywords": [],
-  "licenses": {
-    "type": "MIT"
-  },
+  "license": "MIT",
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
+  "enginesStrict": true,
   "dependencies": {
     "babel-runtime": "^6.5.0",
-    "diamond-square": "1.0.0",
     "emit-then": "^2.0.0",
     "event-promise": "^0.0.1",
     "flatmap": "^0.0.3",

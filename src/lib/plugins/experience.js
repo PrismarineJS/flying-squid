@@ -1,4 +1,4 @@
-const {distanceToXpLevel,getXpLevel,getBaseXpFromLevel}=require("flying-squid").experience;
+const {distanceToXpLevel,getXpLevel,getBaseXpFromLevel}=require("../experience");
 
 module.exports.player = function(player) {
   player.xp = 0;

@@ -1,4 +1,4 @@
-const version = require("flying-squid").version;
+const version = require("../version");
 const entitiesByName=require("minecraft-data")(version).entitiesByName;
 const mobsById=require("minecraft-data")(version).mobs;
 const objectsById=require("minecraft-data")(version).objects;
@@ -7,7 +7,7 @@ const path = require('path');
 const requireIndex = require('requireindex');
 const plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
 const Item = require("prismarine-item")(version);
-const UserError = require('flying-squid').UserError;
+const UserError = require('../user_error');
 
 const Vec3 = require("vec3").Vec3;
 

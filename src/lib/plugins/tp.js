@@ -1,5 +1,5 @@
 const Vec3 = require("vec3").Vec3;
-const UserError = require('flying-squid').UserError;
+const UserError = require('../user_error');
 
 module.exports.player = (player, serv) => {
 
@@ -24,7 +24,7 @@ module.exports.player = (player, serv) => {
         let x = serv.posFromString(args[0], player.position.x / 32);
         let y = serv.posFromString(args[1], player.position.y / 32);
         let z = serv.posFromString(args[2], player.position.z / 32);
-        
+
         player.teleport(new Vec3(x, y, z));
 
       } else if(args.length === 4) {
