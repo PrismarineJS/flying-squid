@@ -65,7 +65,12 @@ module.exports.player = function(player, serv) { // 플레이어는 엔티티 �
       - ...
   - myPluginName2.js (직접 파일은 허용되지만 게시가 불가능하므로 테스트 용으로 만 사용하는 것이 가장 좋습니다)
 
-## Conclusion
+## 번역
+
+더 나은 한국어 번역을 위해 기여를 해주시면 감사하겠습니다.
+We would appreciate it if you could contribute to better Korean translation.
+
+## 결론
 
 이 문서에서는 하나의 파일로 간단한 플러그인을 만드는 방법을 설명했지만 코드를 나눌 수 있습니다.
 여러 파일에 여러 가지 기능을 넣고 서로 다른 파일에 넣는 방식으로 만들면, flying-squid을 내부 플러그인 용으로 사용하는 것처럼 됩니다.
