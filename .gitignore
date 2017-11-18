@@ -8,3 +8,4 @@ src/plugins/*
 distTest
 world/*
 !world/.gitkeep
+package-lock.json

@@ -1,45 +1,44 @@
-const version = require("flying-squid").version;
-const entitiesByName=require("minecraft-data")(version).entitiesByName;
-const mobsById=require("minecraft-data")(version).mobs;
-const objectsById=require("minecraft-data")(version).objects;
 const Entity = require("prismarine-entity");
-const path = require('path');
-const requireIndex = require('requireindex');
-const plugins = requireIndex(path.join(__dirname,'..', 'plugins'));
-const Item = require("prismarine-item")(version);
-const UserError = require('flying-squid').UserError;
+const path = require("path");
+const requireIndex = require("requireindex");
+const plugins = requireIndex(path.join(__dirname, "..", "plugins"));
+const UserError = require("../../").UserError;
 
 const Vec3 = require("vec3").Vec3;
 
-module.exports.server=function(serv,options) {
+module.exports.server = function(serv, options) {
+  const version = options.version;
+  const mobsById = require("minecraft-data")(version).mobs;
+  const objectsById = require("minecraft-data")(version).objects;
+
   serv.initEntity = (type, entityType, world, position) => {
-    if(Object.keys(serv.entities).length>options["max-entities"])
+    if(Object.keys(serv.entities).length > options["max-entities"])
       throw new Error("Too many mobs !");
     serv.entityMaxId++;
     const entity = new Entity(serv.entityMaxId);
 
     Object.keys(plugins)
-      .filter(pluginName => plugins[pluginName].entity!=undefined)
+      .filter(pluginName => plugins[pluginName].entity != undefined)
       .forEach(pluginName => plugins[pluginName].entity(entity, serv, options));
 
     entity.initEntity(type, entityType, world, position);
 
-    serv.emit("newEntity",entity);
+    serv.emit("newEntity", entity);
 
     return entity;
   };
 
-  serv.spawnObject = (type, world, position, {pitch=0,yaw=0,velocity=new Vec3(0,0,0),data=1,itemId,itemDamage=0,pickupTime=undefined,deathTime=undefined}) => {
-    const object = serv.initEntity('object', type, world, position.scaled(32).floored());
-    object.name=objectsById[type].name;
+  serv.spawnObject = (type, world, position, {pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined}) => {
+    const object = serv.initEntity("object", type, world, position.scaled(32).floored());
+    object.name = objectsById[type].name;
     object.data = data;
     object.velocity = velocity.scaled(32).floored();
     object.pitch = pitch;
     object.yaw = yaw;
-    object.gravity = new Vec3(0, -20*32, 0);
-    object.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
-    object.friction = new Vec3(15*32, 0, 15*32);
-    object.size = new Vec3(0.25*32, 0.25*32, 0.25*32); // Hardcoded, will be dependent on type!
+    object.gravity = new Vec3(0, -20 * 32, 0);
+    object.terminalvelocity = new Vec3(27 * 32, 27 * 32, 27 * 32);
+    object.friction = new Vec3(15 * 32, 0, 15 * 32);
+    object.size = new Vec3(0.25 * 32, 0.25 * 32, 0.25 * 32); // Hardcoded, will be dependent on type!
     object.deathTime = deathTime;
     object.pickupTime = pickupTime;
     object.itemId = itemId;
@@ -48,16 +47,16 @@ module.exports.server=function(serv,options) {
     object.updateAndSpawn();
   };
 
-  serv.spawnMob = (type, world, position, {pitch=0,yaw=0,headPitch=0,velocity=new Vec3(0,0,0),metadata=[]}={}) => {
-    const mob = serv.initEntity('mob', type, world, position.scaled(32).floored());
-    mob.name=mobsById[type].name;
+  serv.spawnMob = (type, world, position, {pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = []} = {}) => {
+    const mob = serv.initEntity("mob", type, world, position.scaled(32).floored());
+    mob.name = mobsById[type].name;
     mob.velocity = velocity.scaled(32).floored();
     mob.pitch = pitch;
     mob.headPitch = headPitch;
     mob.yaw = yaw;
-    mob.gravity = new Vec3(0, -20*32, 0);
-    mob.terminalvelocity = new Vec3(27*32, 27*32, 27*32);
-    mob.friction = new Vec3(15*32, 0, 15*32);
+    mob.gravity = new Vec3(0, -20 * 32, 0);
+    mob.terminalvelocity = new Vec3(27 * 32, 27 * 32, 27 * 32);
+    mob.friction = new Vec3(15 * 32, 0, 15 * 32);
     mob.size = new Vec3(0.75, 1.75, 0.75);
     mob.health = 20;
     mob.metadata = metadata;
@@ -67,7 +66,7 @@ module.exports.server=function(serv,options) {
   };
 
   serv.destroyEntity = entity => {
-    entity._writeOthersNearby('entity_destroy', {
+    entity._writeOthersNearby("entity_destroy", {
       entityIds: [entity.id]
     });
     delete serv.entities[entity.id];
@@ -75,112 +74,115 @@ module.exports.server=function(serv,options) {
 };
 
 
-module.exports.player=function(player,serv,options){
+module.exports.player = function(player, serv, options){
+  const version = options.version;
+  const entitiesByName = require("minecraft-data")(version).entitiesByName;
+  const Item = require("prismarine-item")(version);
   player.commands.add({
-    base: 'summon',
-    info: 'Summon an entity',
-    usage: '/summon <entity_name>',
+    base: "summon",
+    info: "Summon an entity",
+    usage: "/summon <entity_name>",
     op: true,
     action(name) {
-      if(Object.keys(serv.entities).length>options["max-entities"])
+      if(Object.keys(serv.entities).length > options["max-entities"])
         throw new UserError("Too many mobs !");
-      const entity=entitiesByName[name];
+      const entity = entitiesByName[name];
       if(!entity) {
-        player.chat("No entity named "+name);
+        player.chat("No entity named " + name);
         return;
       }
-      if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
-        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      if(entity.type == "mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
       });
-      else if(entity.type=="object") serv.spawnObject(entity.id, player.world, player.position.scaled(1/32), {
-        velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+      else if(entity.type == "object") serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32), {
+        velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
       });
     }
   });
 
   player.commands.add({
-    base: 'summonMany',
-    info: 'Summon many entities',
-    usage: '/summonMany <number> <entity_name>',
+    base: "summonMany",
+    info: "Summon many entities",
+    usage: "/summonMany <number> <entity_name>",
     op: true,
     parse(str) {
-      var args=str.split(" ");
-      if(args.length!=2)
+      var args = str.split(" ");
+      if(args.length != 2)
         return false;
-      return {number:args[0],name:args[1]};
+      return {number: args[0], name: args[1]};
     },
-    action({number,name}) {
-      if(Object.keys(serv.entities).length>options["max-entities"]-number)
+    action({number, name}) {
+      if(Object.keys(serv.entities).length > options["max-entities"] - number)
         throw new UserError("Too many mobs !");
-      const entity=entitiesByName[name];
+      const entity = entitiesByName[name];
       if(!entity) {
-        player.chat("No entity named "+name);
+        player.chat("No entity named " + name);
         return;
       }
-      let s=Math.floor(Math.sqrt(number));
-      for(let i=0;i<number;i++) {
-        if(entity.type=="mob")
+      let s = Math.floor(Math.sqrt(number));
+      for(let i = 0;i < number;i++) {
+        if(entity.type == "mob")
           serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
-        });
-        else if(entity.type=="object")
+            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+          });
+        else if(entity.type == "object")
           serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
-        });
+            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+          });
       }
     }
   });
 
   player.commands.add({
-    base: 'pile',
-    info: 'make a pile of entities',
-    usage: '/pile <entities types>',
+    base: "pile",
+    info: "make a pile of entities",
+    usage: "/pile <entities types>",
     op: true,
     parse(str)  {
-      const args=str.split(' ');
-      if(args.length==0)
+      const args = str.split(" ");
+      if(args.length == 0)
         return false;
       return args
         .map(name => entitiesByName[name])
         .filter(entity => !!entity);
     },
     action(entityTypes) {
-      if(Object.keys(serv.entities).length>options["max-entities"]-entityTypes.length)
+      if(Object.keys(serv.entities).length > options["max-entities"] - entityTypes.length)
         throw new UserError("Too many mobs !");
       entityTypes.map(entity => {
-        if(entity.type=="mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1/32), {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+        if(entity.type == "mob") serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         });
-        else if(entity.type=="object") serv.spawnObject(entity.id, player.world, player.position.scaled(1/32), {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random()*10 + 10, (Math.random() - 0.5) * 10)
+        else if(entity.type == "object") serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32), {
+          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         });
       })
-        .reduce((prec,entity) => {
-          if(prec!=null)
+        .reduce((prec, entity) => {
+          if(prec != null)
             prec.attach(entity);
           return entity;
-        },null);
+        }, null);
     }
   });
 
   player.commands.add({
-    base: 'attach',
-    info: 'attach an entity on an other entity',
-    usage: '/attach <carrier> <attached>',
+    base: "attach",
+    info: "attach an entity on an other entity",
+    usage: "/attach <carrier> <attached>",
     op: true,
     parse(str)  {
-      const args=str.split(' ');
-      if(args.length!=2)
+      const args = str.split(" ");
+      if(args.length != 2)
         return false;
 
       let carrier = player.selectorString(args[0]);
-      if(carrier.length==0) throw new UserError("one carrier");
+      if(carrier.length == 0) throw new UserError("one carrier");
       let attached = player.selectorString(args[1]);
-      if(attached.length==0) throw new UserError("one attached");
+      if(attached.length == 0) throw new UserError("one attached");
 
-      return {carrier:carrier[0],attached:attached[0]};
+      return {carrier: carrier[0], attached: attached[0]};
     },
-    action({carrier,attached}) {
+    action({carrier, attached}) {
       carrier.attach(attached);
     }
   });
@@ -188,32 +190,32 @@ module.exports.player=function(player,serv,options){
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket());
-    if (typeof entity.itemId != 'undefined') {
+    if (typeof entity.itemId != "undefined") {
       entity.sendMetadata([{
         "key": 10,
         "type": 5,
         "value": {
           blockId: entity.itemId,
           itemDamage: entity.itemDamage,
-          itemCount:1
+          itemCount: 1
         }
       }]);
     }
-    entity.equipment.forEach((equipment,slot) => {
-        if (equipment != undefined) player._client.write("entity_equipment", {
-          entityId: entity.id,
-          slot: slot,
-          item: Item.toNotch(equipment)
-        });
-      }
-    )
+    entity.equipment.forEach((equipment, slot) => {
+      if (equipment != undefined) player._client.write("entity_equipment", {
+        entityId: entity.id,
+        slot: slot,
+        item: Item.toNotch(equipment)
+      });
+    }
+    );
   };
 };
 
-module.exports.entity=function(entity,serv) {
-  entity.initEntity=(type, entityType, world, position)=>{
+module.exports.entity = function(entity, serv, options) {
+  entity.initEntity = (type, entityType, world, position)=>{
     entity.type = type;
-    entity.spawnPacketName = '';
+    entity.spawnPacketName = "";
     entity.entityType = entityType;
     entity.world = world;
     entity.position = position;
@@ -225,14 +227,14 @@ module.exports.entity=function(entity,serv) {
     entity.bornTime = Date.now();
     serv.entities[entity.id] = entity;
 
-    if (entity.type == 'player') entity.spawnPacketName = 'named_entity_spawn';
-    else if (entity.type == 'object') entity.spawnPacketName = 'spawn_entity';
-    else if (entity.type == 'mob') entity.spawnPacketName = 'spawn_entity_living';
+    if (entity.type == "player") entity.spawnPacketName = "named_entity_spawn";
+    else if (entity.type == "object") entity.spawnPacketName = "spawn_entity";
+    else if (entity.type == "mob") entity.spawnPacketName = "spawn_entity_living";
   };
 
   entity.getSpawnPacket = () => {
-    const scaledVelocity = entity.velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
-    if (entity.type == 'player') {
+    const scaledVelocity = entity.velocity.scaled(8000 / 32 / 20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    if (entity.type == "player") {
       return {
         entityId: entity.id,
         playerUUID: entity._client.uuid,
@@ -243,8 +245,8 @@ module.exports.entity=function(entity,serv) {
         pitch: entity.pitch,
         currentItem: 0,
         metadata: entity.metadata
-      }
-    } else if (entity.type == 'object') {
+      };
+    } else if (entity.type == "object") {
       return {
         entityId: entity.id,
         type: entity.entityType,
@@ -259,8 +261,8 @@ module.exports.entity=function(entity,serv) {
           velocityY: scaledVelocity.y,
           velocityZ: scaledVelocity.z
         }
-      }
-    } else if (entity.type == 'mob') {
+      };
+    } else if (entity.type == "mob") {
       return {
         entityId: entity.id,
         type: entity.entityType,
@@ -274,36 +276,36 @@ module.exports.entity=function(entity,serv) {
         velocityY: scaledVelocity.y,
         velocityZ: scaledVelocity.z,
         metadata: entity.metadata
-      }
+      };
     }
   };
 
 
 
   entity.updateAndSpawn = () => {
-    const updatedEntities=entity.getNearby();
-    const entitiesToAdd=updatedEntities.filter(e => entity.nearbyEntities.indexOf(e)==-1);
-    const entitiesToRemove=entity.nearbyEntities.filter(e => updatedEntities.indexOf(e)==-1);
-    if (entity.type == 'player') {
+    const updatedEntities = entity.getNearby();
+    const entitiesToAdd = updatedEntities.filter(e => entity.nearbyEntities.indexOf(e) == -1);
+    const entitiesToRemove = entity.nearbyEntities.filter(e => updatedEntities.indexOf(e) == -1);
+    if (entity.type == "player") {
       entity.despawnEntities(entitiesToRemove);
       entitiesToAdd.forEach(entity.spawnEntity);
     }
-    entity.lastPositionPlayersUpdated=entity.position.clone();
+    entity.lastPositionPlayersUpdated = entity.position.clone();
 
-    const playersToAdd = entitiesToAdd.filter(e => e.type == 'player');
-    const playersToRemove = entitiesToRemove.filter(e => e.type == 'player');
+    const playersToAdd = entitiesToAdd.filter(e => e.type == "player");
+    const playersToRemove = entitiesToRemove.filter(e => e.type == "player");
 
     playersToRemove.forEach(p => p.despawnEntities([entity]));
-    playersToRemove.forEach(p => p.nearbyEntities=p.getNearby());
+    playersToRemove.forEach(p => p.nearbyEntities = p.getNearby());
     playersToAdd.forEach(p => p.spawnEntity(entity));
-    playersToAdd.forEach(p => p.nearbyEntities=p.getNearby());
+    playersToAdd.forEach(p => p.nearbyEntities = p.getNearby());
 
-    entity.nearbyEntities=updatedEntities;
+    entity.nearbyEntities = updatedEntities;
   };
 
 
-  entity.on("move",() => {
-    if(entity.position.distanceTo(entity.lastPositionPlayersUpdated)>2*32)
+  entity.on("move", () => {
+    if(entity.position.distanceTo(entity.lastPositionPlayersUpdated) > 2 * 32)
       entity.updateAndSpawn();
   });
 
@@ -311,16 +313,16 @@ module.exports.entity=function(entity,serv) {
     serv.destroyEntity(entity);
   };
 
-  entity.attach= (attachedEntity,leash=false) =>
+  entity.attach = (attachedEntity, leash = false) =>
   {
-    const p={
-      entityId:attachedEntity.id,
-      vehicleId:entity.id,
-      leash:leash
+    const p = {
+      entityId: attachedEntity.id,
+      vehicleId: entity.id,
+      leash: leash
     };
-    if(entity.type=='player')
-      entity._client.write('attach_entity',p);
-    entity._writeOthersNearby('attach_entity',p);
-  }
+    if(entity.type == "player")
+      entity._client.write("attach_entity", p);
+    entity._writeOthersNearby("attach_entity", p);
+  };
 
 };

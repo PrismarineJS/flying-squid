@@ -1,4 +1,4 @@
-var mcServer=require("flying-squid");
+var mcServer = require("flying-squid");
 
 mcServer.createMCServer({
   "motd": "A Minecraft Server \nRunning flying-squid",
@@ -9,7 +9,7 @@ mcServer.createMCServer({
   "gameMode": 1,
   "generation": {
     "name": "diamond_square",
-    "options":{
+    "options": {
       "worldHeight": 80
     }
   },

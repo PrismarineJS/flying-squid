@@ -1,7 +1,7 @@
-module.exports.player=function(player)
+module.exports.player = function(player)
 {
-  //WIP: Does't work
- /* player._client.write('world_border', {
+  // WIP: Does't work
+  /* player._client.write('world_border', {
         action: 3,
         x: 0,
         z: 0,
