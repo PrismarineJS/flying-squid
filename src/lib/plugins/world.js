@@ -3,8 +3,12 @@ const spiralloop = require('spiralloop');
 const World = require('prismarine-world')(require("../version"));
 
 const generations=require("flying-squid").generations;
-import {fs} from 'node-promise-es6';
-import {level} from 'prismarine-provider-anvil';
+const { promisify } = require('util');
+const fs = require('fs');
+const { level } = require('prismarine-provider-anvil');
+
+const fsStat = promisify(fs.stat);
+const fsMkdir = promisify(fs.mkdir);
 
 module.exports.server=async function(serv,{worldFolder,generation={"name":"diamond_square","options":{"worldHeight":80}}}={}) {
   const newSeed=generation.options.seed || Math.floor(Math.random()*Math.pow(2, 31));
@@ -13,10 +17,10 @@ module.exports.server=async function(serv,{worldFolder,generation={"name":"diamo
   if(worldFolder) {
     regionFolder = worldFolder + "/region";
     try {
-      const stats = await fs.stat(regionFolder);
+      const stats = await fsStat(regionFolder);
     }
     catch (err) {
-      await fs.mkdir(regionFolder);
+      await fsMkdir(regionFolder);
     }
 
     try {
