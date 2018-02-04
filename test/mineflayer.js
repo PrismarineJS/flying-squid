@@ -4,6 +4,7 @@ const settings = require('../config/default-settings');
 const mineflayer = require("mineflayer");
 const assert = require('chai').assert;
 const Vec3 = require('vec3').Vec3;
+const Item = require('prismarine-item')("1.8");
 
 function assertPosEqual(actual,expected) {
   assert.isBelow(actual.distanceTo(expected),1,"expected: "+expected+", actual: "+actual+"\n");
@@ -11,7 +12,7 @@ function assertPosEqual(actual,expected) {
 const once = require('event-promise');
 
 describe("Server with mineflayer connection", function()  {
-  this.timeout(10 * 60 * 1000);
+  this.timeout(60 * 1000);
   let bot;
   let bot2;
   let serv;
@@ -61,7 +62,7 @@ describe("Server with mineflayer connection", function()  {
   }
 
   beforeEach(async function () {
-    this.timeout(10 * 60 * 1000);
+    this.timeout(60 * 1000);
     const options = settings;
     options["online-mode"]=false;
     options["port"]=25566;
@@ -74,12 +75,14 @@ describe("Server with mineflayer connection", function()  {
     bot = mineflayer.createBot({
       host: "localhost",
       port: 25566,
-      username: "bot"
+      username: "bot",
+      version: "1.8"
     });
     bot2 = mineflayer.createBot({
       host: "localhost",
       port: 25566,
-      username: "bot2"
+      username: "bot2",
+      version: "1.8"
     });
 
     await Promise.all([once(bot,'login'),once(bot2,'login')]);
@@ -111,7 +114,7 @@ describe("Server with mineflayer connection", function()  {
     }
 
     it("can dig",async function () {
-      this.timeout(10 * 60 * 1000);
+      this.timeout(60 * 1000);
       await Promise.all([waitSpawnZone(bot,2),waitSpawnZone(bot2,2),onGround(bot),onGround(bot2)]);
 
       const pos=bot.entity.position.offset(0,-1,0).floored();
@@ -124,7 +127,7 @@ describe("Server with mineflayer connection", function()  {
 
 
     it("can place a block",async function () {
-      this.timeout(10 * 60 * 1000);
+      this.timeout(60 * 1000);
       await Promise.all([waitSpawnZone(bot,2),waitSpawnZone(bot2,2),onGround(bot),onGround(bot2)]);
 
       const pos=bot.entity.position.offset(0,-2,0).floored();
@@ -134,7 +137,7 @@ describe("Server with mineflayer connection", function()  {
       assertPosEqual(newBlock.position,pos);
       assert.equal(newBlock.type,0,"block "+pos+" should have been dug");
 
-      bot.creative.setInventorySlot(36,new mineflayer.Item(1,1));
+      bot.creative.setInventorySlot(36, new Item(1,1));
       await new Promise((cb) => {
         bot.inventory.on("windowUpdate",(slot,oldItem,newItem) => {
           if(slot==36 && newItem && newItem.type==1)
@@ -231,7 +234,7 @@ describe("Server with mineflayer connection", function()  {
       serv.getPlayer("bot").op=true;
     });
     it("can use /setblock",async() => {
-      await once(bot,'chunkColumnLoad');
+      await once(bot, 'chunkColumnLoad');
       bot.chat('/setblock 1 2 3 95 0');
       let [,newBlock]=await once(bot,'blockUpdate:'+new Vec3(1,2,3),{array:true});
       assert.equal(newBlock.type,95);

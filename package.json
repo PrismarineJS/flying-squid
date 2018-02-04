@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepare": "require-self",
-    "test": "mocha --reporter spec distTest"
+    "test": "mocha --reporter spec"
   },
   "keywords": [],
   "licenses": {
@@ -59,7 +59,7 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "longjohn": "^0.2.8",
-    "mineflayer": "^1.7.5",
+    "mineflayer": "^2.6.1",
     "mocha": "^3.0.0",
     "require-self": "^0.1.0"
   }
