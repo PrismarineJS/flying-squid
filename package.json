@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepare": "require-self",
-    "test": "mocha --reporter spec"
+    "test": "jest --verbose --runInBand"
   },
   "keywords": [],
   "licenses": {
@@ -57,10 +57,9 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
-    "chai": "^3.2.0",
-    "longjohn": "^0.2.8",
+    "jest": "^22.1.4",
+    "longjohn": "^0.2.12",
     "mineflayer": "^2.6.1",
-    "mocha": "^3.0.0",
-    "require-self": "^0.1.0"
+    "require-self": "^0.2.1"
   }
 }
