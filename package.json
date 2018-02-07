@@ -44,7 +44,6 @@
     "range": "^0.0.3",
     "request": "^2.83.0",
     "request-promise": "^4.1.0",
-    "requireindex": "~1.1.0",
     "spiralloop": "^1.0.2",
     "vec3": "^0.1.3"
   },

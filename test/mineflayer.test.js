@@ -60,7 +60,6 @@ describe('server with mineflayer connection', () => {
   }
 
   beforeEach(async () => {
-    jest.setTimeout(60 * 1000)
     const options = settings
     options['online-mode'] = false
     options['port'] = 25566
@@ -110,7 +109,6 @@ describe('server with mineflayer connection', () => {
     }
 
     test('can dig', async () => {
-      jest.setTimeout(60 * 1000)
       await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
       const pos = bot.entity.position.offset(0, -1, 0).floored()
@@ -122,7 +120,6 @@ describe('server with mineflayer connection', () => {
     })
 
     test('can place a block', async () => {
-      jest.setTimeout(60 * 1000)
       await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
       const pos = bot.entity.position.offset(0, -2, 0).floored()
@@ -147,94 +144,95 @@ describe('server with mineflayer connection', () => {
     })
   })
 
-  // describe('commands', () => {
-  //   test('has an help command', async () => {
-  //     await waitLoginMessage(bot)
-  //     bot.chat('/help')
-  //     await once(bot, 'message')
-  //   })
-  //   test('can use /particle', async () => {
-  //     bot.chat('/particle 5 10 100 100 100')
-  //     await once(bot._client, 'world_particles')
-  //   })
-  //   test('can use /playsound', async () => {
-  //     bot.chat('/playsound ambient.weather.rain')
-  //     await once(bot, 'soundEffectHeard')
-  //   })
-  //
-  //   function waitDragon () {
-  //     return new Promise((done) => {
-  //       const listener = (entity) => {
-  //         if (entity.name == 'EnderDragon') {
-  //           bot.removeListener('entitySpawn', listener)
-  //           done()
-  //         }
-  //       }
-  //       bot.on('entitySpawn', listener)
-  //     })
-  //   }
-  //
-  //   test('can use /summon', async () => {
-  //     bot.chat('/summon EnderDragon')
-  //     await waitDragon()
-  //   })
-  //   test('can use /kill', async () => {
-  //     bot.chat('/summon EnderDragon')
-  //     await waitDragon()
-  //     bot.chat('/kill @e[type=EnderDragon]')
-  //     const entity = await once(bot, 'entityDead')
-  //     expect(entity.name).toEqual('EnderDragon')
-  //   })
-  //   describe('can use /tp', () => {
-  //     test('can tp myself', async () => {
-  //       bot.chat('/tp 2 3 4')
-  //       await once(bot, 'forcedMove')
-  //       assertPosEqual(bot.entity.position, new Vec3(2, 3, 4))
-  //     })
-  //     test('can tp somebody else', async () => {
-  //       bot.chat('/tp bot2 2 3 4')
-  //       await once(bot2, 'forcedMove')
-  //       assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4))
-  //     })
-  //     test('can tp to somebody else', async () => {
-  //       await onGround(bot)
-  //       bot.chat('/tp bot2 bot')
-  //       await once(bot2, 'forcedMove')
-  //       assertPosEqual(bot2.entity.position, bot.entity.position)
-  //     })
-  //     test('can tp with relative positions', async () => {
-  //       await onGround(bot)
-  //       const initialPosition = bot.entity.position.clone()
-  //       bot.chat('/tp ~1 ~-2 ~3')
-  //       await once(bot, 'forcedMove')
-  //       assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3))
-  //     })
-  //     test('can tp somebody else with relative positions', async () => {
-  //       await Promise.all([onGround(bot), onGround(bot2)])
-  //       const initialPosition = bot2.entity.position.clone()
-  //       bot.chat('/tp bot2 ~1 ~-2 ~3')
-  //       await once(bot2, 'forcedMove')
-  //       assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3))
-  //     })
-  //   })
-  //   test('can use /deop', async () => {
-  //     await waitLoginMessage(bot)
-  //     bot.chat('/deop bot')
-  //     await waitMessage(bot, 'bot is deopped')
-  //     bot.chat('/op bot')
-  //     await waitMessage(bot, 'You do not have permission to use this command')
-  //     serv.getPlayer('bot').op = true
-  //   })
-  //   test('can use /setblock', async() => {
-  //     await once(bot, 'chunkColumnLoad')
-  //     bot.chat('/setblock 1 2 3 95 0')
-  //     let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), {array: true})
-  //     expect(newBlock.type).toEqual(95)
-  //   })
-  //   test('can use /xp', async() => {
-  //     bot.chat('/xp 100')
-  //     await once(bot, 'experience')
-  //     expect(bot.experience.points).toEqual(100)
-  //   })
-  // })
+  describe('commands', () => {
+    jest.setTimeout(10 * 1000)
+    test('has an help command', async () => {
+      await waitLoginMessage(bot)
+      bot.chat('/help')
+      await once(bot, 'message')
+    })
+    test('can use /particle', async () => {
+      bot.chat('/particle 5 10 100 100 100')
+      await once(bot._client, 'world_particles')
+    })
+    test('can use /playsound', async () => {
+      bot.chat('/playsound ambient.weather.rain')
+      await once(bot, 'soundEffectHeard')
+    })
+
+    function waitDragon () {
+      return new Promise((done) => {
+        const listener = (entity) => {
+          if (entity.name == 'EnderDragon') {
+            bot.removeListener('entitySpawn', listener)
+            done()
+          }
+        }
+        bot.on('entitySpawn', listener)
+      })
+    }
+
+    test('can use /summon', async () => {
+      bot.chat('/summon EnderDragon')
+      await waitDragon()
+    })
+    test('can use /kill', async () => {
+      bot.chat('/summon EnderDragon')
+      await waitDragon()
+      bot.chat('/kill @e[type=EnderDragon]')
+      const entity = await once(bot, 'entityDead')
+      expect(entity.name).toEqual('EnderDragon')
+    })
+    describe('can use /tp', () => {
+      test('can tp myself', async () => {
+        bot.chat('/tp 2 3 4')
+        await once(bot, 'forcedMove')
+        assertPosEqual(bot.entity.position, new Vec3(2, 3, 4))
+      })
+      test('can tp somebody else', async () => {
+        bot.chat('/tp bot2 2 3 4')
+        await once(bot2, 'forcedMove')
+        assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4))
+      })
+      test('can tp to somebody else', async () => {
+        await onGround(bot)
+        bot.chat('/tp bot2 bot')
+        await once(bot2, 'forcedMove')
+        assertPosEqual(bot2.entity.position, bot.entity.position)
+      })
+      test('can tp with relative positions', async () => {
+        await onGround(bot)
+        const initialPosition = bot.entity.position.clone()
+        bot.chat('/tp ~1 ~-2 ~3')
+        await once(bot, 'forcedMove')
+        assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3))
+      })
+      test('can tp somebody else with relative positions', async () => {
+        await Promise.all([onGround(bot), onGround(bot2)])
+        const initialPosition = bot2.entity.position.clone()
+        bot.chat('/tp bot2 ~1 ~-2 ~3')
+        await once(bot2, 'forcedMove')
+        assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3))
+      })
+    })
+    test('can use /deop', async () => {
+      await waitLoginMessage(bot)
+      bot.chat('/deop bot')
+      await waitMessage(bot, 'bot is deopped')
+      bot.chat('/op bot')
+      await waitMessage(bot, 'You do not have permission to use this command')
+      serv.getPlayer('bot').op = true
+    })
+    test('can use /setblock', async () => {
+      await once(bot, 'chunkColumnLoad')
+      bot.chat('/setblock 1 2 3 95 0')
+      let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), {array: true})
+      expect(newBlock.type).toEqual(95)
+    })
+    test('can use /xp', async () => {
+      bot.chat('/xp 100')
+      await once(bot, 'experience')
+      expect(bot.experience.points).toEqual(100)
+    })
+  })
 })

@@ -1,7 +1,7 @@
 const mc = require('minecraft-protocol');
 const EventEmitter = require('events').EventEmitter;
 const path = require('path');
-const requireIndex = require('requireindex');
+const requireIndex = require('./lib/requireindex');
 require('emit-then').register();
 if (process.env.NODE_ENV === 'dev'){
   require('longjohn');
@@ -33,7 +33,7 @@ class MCServer extends EventEmitter {
 
   connect(options) {
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
-    this._server = mc.createServer(options);
+	  this._server = mc.createServer(options);
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].server!=undefined)
       .forEach(pluginName => plugins[pluginName].server(this, options));

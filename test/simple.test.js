@@ -1,27 +1,35 @@
 const net = require('net')
 const squid = require('flying-squid')
 
+const settings = require('../config/default-settings')
+
 describe('server', () => {
-  let server
+  let serv
 
   beforeAll(done => {
-    server = squid.createMCServer({ logging: false })
+    const options = settings
+    options['online-mode'] = false
+    options['port'] = 25566
+    options['view-distance'] = 2
+    options['worldFolder'] = undefined
+    options['logging'] = false
+    serv = squid.createMCServer(options)
 
-    server.on('listening', () => {
+    serv.on('listening', () => {
       done()
     })
   })
 
   afterAll(done => {
-    server._server.close()
-    server._server.on('close', () => {
+    serv._server.close()
+    serv._server.on('close', () => {
       done()
     })
   })
 
   test('is running', done => {
     const client = net.Socket()
-    client.connect(server._server.socketServer.address().port, '127.0.0.1', done)
+    client.connect(serv._server.socketServer.address().port, '127.0.0.1', done)
     client.on('error', done)
   })
 })
