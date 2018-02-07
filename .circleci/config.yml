@@ -1,0 +1,16 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:carbon
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm i
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: npm test
