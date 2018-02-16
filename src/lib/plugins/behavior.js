@@ -1,6 +1,6 @@
-const Behavior = require("flying-squid").Behavior;
+const { Behavior } = require('flying-squid');
 
-module.exports.server = function(serv) {
+module.exports.server = function (serv) {
   serv.behavior = Behavior(serv);
 };
 

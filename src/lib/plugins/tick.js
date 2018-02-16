@@ -1,19 +1,19 @@
-module.exports.server=function(serv) {
+module.exports.server = function (serv) {
   serv.tickCount = 0;
   serv.lastTickTime = 0;
 
 
-  serv.setTickInterval = ticksPerSecond => {
+  serv.setTickInterval = (ticksPerSecond) => {
     serv.stopTickInterval();
 
     serv.tickInterval = setInterval(() => {
       serv.tickCount++;
-      const t=Date.now();
+      const t = Date.now();
       let time = (t - serv.lastTickTime) / 1000;
       if (time > 100) time = 0;
       serv.emit('tick', time, serv.tickCount);
       serv.lastTickTime = t;
-    }, 1000/ticksPerSecond);
+    }, 1000 / ticksPerSecond);
   };
 
   serv.stopTickInterval = () => {

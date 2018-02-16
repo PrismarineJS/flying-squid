@@ -1,19 +1,17 @@
-module.exports.server=function(serv)
-{
-  serv.entityMaxId=0;
-  serv.players=[];
-  serv.uuidToPlayer={};
-  serv.entities={};
+module.exports.server = function (serv) {
+  serv.entityMaxId = 0;
+  serv.players = [];
+  serv.uuidToPlayer = {};
+  serv.entities = {};
 
-  serv.getPlayer = username => {
-    const found=serv.players.filter(pl => pl.username == username);
-    if(found.length>0)
-      return found[0];
+  serv.getPlayer = (username) => {
+    const found = serv.players.filter(pl => pl.username == username);
+    if (found.length > 0) { return found[0]; }
     return null;
   };
 };
 
-module.exports.player=function(player, serv){
+module.exports.player = function (player, serv) {
   player.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
@@ -22,13 +20,12 @@ module.exports.player=function(player, serv){
     op: true,
     parse(str) {
       let results;
-      if(!(results = str.match(/^([0-3])$/)))
-        return false;
+      if (!(results = str.match(/^([0-3])$/))) { return false; }
       return parseInt(str);
     },
     action(mode) {
       player.setGameMode(mode);
-    }
+    },
   });
 
   player.commands.add({
@@ -37,15 +34,14 @@ module.exports.player=function(player, serv){
     info: 'Sets the difficulty level',
     usage: '/difficulty <difficulty>',
     op: true,
-    parse(str){
+    parse(str) {
       let results;
-      if(!(results = str.match(/^([0-3])$/)))
-        return false;
+      if (!(results = str.match(/^([0-3])$/))) { return false; }
       return parseInt(str);
     },
-    action(diff){
-      serv._writeAll('difficulty', {difficulty: diff});
+    action(diff) {
+      serv._writeAll('difficulty', { difficulty: diff });
       serv.difficulty = diff;
-    }
+    },
   });
 };
