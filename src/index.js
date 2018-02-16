@@ -1,21 +1,22 @@
 const mc = require('minecraft-protocol');
-const EventEmitter = require('events').EventEmitter;
+const { EventEmitter } = require('events');
 const path = require('path');
 const requireIndex = require('./lib/requireindex');
 require('emit-then').register();
-if (process.env.NODE_ENV === 'dev'){
+
+if (process.env.NODE_ENV === 'dev') {
   require('longjohn');
 }
 
 module.exports = {
-  createMCServer:createMCServer,
-  Behavior:require("./lib/behavior"),
-  Command:require("./lib/command"),
-  version:require("./lib/version"),
-  generations:require("./lib/generations"),
-  experience:require("./lib/experience"),
-  UserError:require("./lib/user_error"),
-  portal_detector:require('./lib/portal_detector')
+  createMCServer,
+  Behavior: require('./lib/behavior'),
+  Command: require('./lib/command'),
+  version: require('./lib/version'),
+  generations: require('./lib/generations'),
+  experience: require('./lib/experience'),
+  UserError: require('./lib/user_error'),
+  portal_detector: require('./lib/portal_detector'),
 };
 
 function createMCServer(options) {
@@ -33,13 +34,13 @@ class MCServer extends EventEmitter {
 
   connect(options) {
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
-	  this._server = mc.createServer(options);
+    this._server = mc.createServer(options);
     Object.keys(plugins)
-      .filter(pluginName => plugins[pluginName].server!=undefined)
+      .filter(pluginName => plugins[pluginName].server != undefined)
       .forEach(pluginName => plugins[pluginName].server(this, options));
-    if(options.logging == true) this.createLog();
-    this._server.on('error', error => this.emit('error',error));
-    this._server.on('listening', () => this.emit('listening',this._server.socketServer.address().port));
+    if (options.logging == true) this.createLog();
+    this._server.on('error', error => this.emit('error', error));
+    this._server.on('listening', () => this.emit('listening', this._server.socketServer.address().port));
     this.emit('asap');
   }
 }

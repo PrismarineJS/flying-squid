@@ -1,7 +1,7 @@
-const blocks=require("minecraft-data")(require("flying-squid").version).blocks;
-const Vec3 = require("vec3").Vec3;
+const blocks = require('minecraft-data')(require('flying-squid').version).blocks;
+const { Vec3 } = require('vec3');
 
-module.exports.entity=function(entity){
+module.exports.entity = function (entity) {
   entity.calculatePhysics = async (delta) => {
     if (entity.gravity) {
       addGravity(entity, 'x', delta);
@@ -12,9 +12,9 @@ module.exports.entity=function(entity){
     const vSign = getSign(entity.velocity);
     const sizeSigned = new Vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z);
 
-    const xVec = entity.position.offset(entity.velocity.x*delta + sizeSigned.x/2, 0, 0).scaled(1/32).floored();
-    const yVec = entity.position.offset(0, entity.velocity.y*delta + sizeSigned.y/2, 0).scaled(1/32).floored();
-    const zVec = entity.position.offset(0, 0, entity.velocity.z*delta + sizeSigned.z/2).scaled(1/32).floored();
+    const xVec = entity.position.offset(entity.velocity.x * delta + sizeSigned.x / 2, 0, 0).scaled(1 / 32).floored();
+    const yVec = entity.position.offset(0, entity.velocity.y * delta + sizeSigned.y / 2, 0).scaled(1 / 32).floored();
+    const zVec = entity.position.offset(0, 0, entity.velocity.z * delta + sizeSigned.z / 2).scaled(1 / 32).floored();
 
     // Get block for each (x/y/z)Vec, check to avoid duplicate getBlockTypes
     const xBlock = blocks[await entity.world.getBlockType(xVec)].boundingBox == 'block';
@@ -33,19 +33,19 @@ module.exports.entity=function(entity){
     newPos.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y);
     newPos.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z);
 
-    //serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: new Vec3(0, 0, 0) });
-    return { position: newPos, onGround: yBlock}
+    // serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: new Vec3(0, 0, 0) });
+    return { position: newPos, onGround: yBlock };
   };
 
   entity.sendVelocity = (vel, maxVel) => {
     const velocity = vel.scaled(32).floored(); // Make fixed point
     const maxVelocity = maxVel.scaled(32).floored();
-    const scaledVelocity = velocity.scaled(8000/32/20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
+    const scaledVelocity = velocity.scaled(8000 / 32 / 20).floored(); // from fixed-position/second to unit => 1/8000 blocks per tick
     entity._writeNearby('entity_velocity', {
       entityId: entity.id,
       velocityX: scaledVelocity.x,
       velocityY: scaledVelocity.y,
-      velocityZ: scaledVelocity.z
+      velocityZ: scaledVelocity.z,
     });
     if (entity.type != 'player') {
       if (maxVelocity) entity.velocity = addVelocityWithMax(entity.velocity, velocity, maxVelocity);
@@ -57,10 +57,9 @@ module.exports.entity=function(entity){
   function getMoveAmount(dir, block, entity, delta, sizeSigned) {
     if (block) {
       entity.velocity[dir] = 0;
-      return Math.floor(-1 * (entity.position[dir] + sizeSigned/2 - floorInDirection(entity.position[dir], -sizeSigned)));
-    } else {
-      return Math.floor(entity.velocity[dir] * delta);
+      return Math.floor(-1 * (entity.position[dir] + sizeSigned / 2 - floorInDirection(entity.position[dir], -sizeSigned)));
     }
+    return Math.floor(entity.velocity[dir] * delta);
   }
 
   function getSign(vec) {
@@ -80,7 +79,7 @@ module.exports.entity=function(entity){
   }
 
   function getFriction(vel, fric, delta) {
-    return vel > 0 ? Math.max(0, vel - fric*delta) : Math.min(0, vel + fric*delta);
+    return vel > 0 ? Math.max(0, vel - fric * delta) : Math.min(0, vel + fric * delta);
   }
 
   function clamp(a, b, c) {
@@ -88,7 +87,9 @@ module.exports.entity=function(entity){
   }
 
   function addVelocityWithMax(current, newVel, max) {
-    let x, y, z;
+    let x,
+      y,
+      z;
     if (current.x > max.x || current.x < -max.x) x = current.x;
     else x = Math.max(-max.x, Math.min(max.x, current.x + newVel.x));
     if (current.y > max.y || current.y < -max.y) y = current.y;
@@ -99,7 +100,7 @@ module.exports.entity=function(entity){
   }
 };
 
-module.exports.player = function(player, serv) {
+module.exports.player = function (player, serv) {
   player.commands.add({
     base: 'velocity',
     info: 'Push velocity on player(s)',
@@ -112,6 +113,6 @@ module.exports.player = function(player, serv) {
       const selector = player.selectorString(params[1]);
       const vec = new Vec3(parseInt(params[2]), parseInt(params[3]), parseInt(params[4]));
       selector.forEach(e => e.sendVelocity(vec, vec.scaled(5)));
-    }
+    },
   });
 };

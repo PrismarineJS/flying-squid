@@ -1,6 +1,6 @@
 {
   "name": "flying-squid",
-  "description": "A minecraft server written in node.js",
+  "description": "A Minecraft server written in JavaScript",
   "version": "1.0.0",
   "main": "index.js",
   "author": "mhsjlw <mhsjlw@users.noreply.github.com>",
@@ -15,6 +15,7 @@
   },
   "scripts": {
     "prepare": "require-self",
+    "lint": "eslint --ext=js .",
     "test": "jest --verbose --runInBand"
   },
   "keywords": [],
@@ -56,6 +57,10 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
     "jest": "^22.1.4",
     "longjohn": "^0.2.12",
     "mineflayer": "^2.6.1",

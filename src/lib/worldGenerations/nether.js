@@ -1,11 +1,11 @@
-const Chunk = require('prismarine-chunk')(require("../version"));
-const Vec3 = require('vec3').Vec3;
+const Chunk = require('prismarine-chunk')(require('../version'));
+const { Vec3 } = require('vec3');
 const rand = require('random-seed');
 
-function generation({seed,level=50}={}) {
+function generation({ seed, level = 50 } = {}) {
   function generateChunk(chunkX, chunkZ) {
-    const seedRand = rand.create(seed+':'+chunkX+':'+chunkZ);
-    const chunk=new Chunk();
+    const seedRand = rand.create(`${seed}:${chunkX}:${chunkZ}`);
+    const chunk = new Chunk();
     for (let x = 0; x < 16; x++) {
       for (let z = 0; z < 16; z++) {
         const bedrockheighttop = 1 + seedRand(4);
