@@ -3,7 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = function(dir, basenames) {
+module.exports = function (dir, basenames) {
   let requires = {}
 
   if (arguments.length === 2) {

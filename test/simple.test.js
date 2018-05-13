@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 const net = require('net')
 const squid = require('flying-squid')
 

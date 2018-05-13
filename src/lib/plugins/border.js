@@ -1,7 +1,6 @@
-module.exports.player=function(player)
-{
-  //WIP: Does't work
- /* player._client.write('world_border', {
+module.exports.player = function (player) {
+  // WIP: Does't work
+  /* player._client.write('world_border', {
         action: 3,
         x: 0,
         z: 0,
@@ -15,5 +14,5 @@ module.exports.player=function(player)
     player._client.write('world_border', {
         action: 0,
         radius: 15
-  });*/
-};
+  }); */
+}

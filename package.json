@@ -15,6 +15,7 @@
   },
   "scripts": {
     "prepare": "require-self",
+    "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js *.js",
     "test": "jest --verbose --runInBand"
   },
   "keywords": [],
@@ -59,6 +60,7 @@
     "jest": "^22.1.4",
     "longjohn": "^0.2.12",
     "mineflayer": "^2.6.1",
-    "require-self": "^0.2.1"
+    "require-self": "^0.2.1",
+    "standard": "^11.0.1"
   }
 }

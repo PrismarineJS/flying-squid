@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 const {
   portal_detector: {
     detectFrame,
@@ -11,7 +13,6 @@ const {
 } = require('flying-squid')
 
 const { Vec3 } = require('vec3')
-const { range } = require('range')
 
 describe('generate portal', () => {
   test('generate a line', () => {
@@ -82,7 +83,7 @@ describe('detect portal', () => {
     width: 4,
     height: 5,
     additionalAir: air,
-    additionalObsidian: [].concat.apply([], [bottom, left, right, top])
+    additionalObsidian: [].concat([], [bottom, left, right, top])
   })
 
   portalData.push({
@@ -227,7 +228,7 @@ describe("doesn't detect non-portal", () => {
 
   portalData.forEach(({name, bottomLeft, direction, width, height, additionalAir, additionalObsidian}) => {
     const portal = generatePortal(bottomLeft, direction, width, height)
-    const {bottom, left, right, top} = portal
+    const {bottom, right, top} = portal
     describe("doesn't detect detect " + name, () => {
       let world
       beforeAll(async function () {
