@@ -1,8 +1,9 @@
-const Chunk = require('prismarine-chunk')(require('../version'))
 const Vec3 = require('vec3').Vec3
-const blocks = require('minecraft-data')(require('../version')).blocks
 
-function generation () {
+function generation ({version}) {
+  const Chunk = require('prismarine-chunk')(version)
+  const blocks = require('minecraft-data')(version).blocks
+
   function generateSimpleChunk () {
     const chunk = new Chunk()
 
