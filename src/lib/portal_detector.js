@@ -128,10 +128,10 @@ async function makeWorldWithPortal (portal, additionalAir, additionalObsidian) {
   return world
 }
 
-function loader(version) {
+function loader (version) {
   World = require('prismarine-world')(version)
   Chunk = require('prismarine-chunk')(version)
-  return {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal}
+  return {detectFrame, findPotentialLines, findBorder, getAir, generateLine, generatePortal, addPortalToWorld, makeWorldWithPortal}
 }
 
 module.exports = loader

@@ -1,14 +1,14 @@
 /* eslint-env jest */
 
 const {
-    detectFrame,
-    findPotentialLines,
-    findBorder,
-    getAir,
-    generateLine,
-    generatePortal,
-    makeWorldWithPortal
-  } = require('flying-squid')('1.8').portal_detector
+  detectFrame,
+  findPotentialLines,
+  findBorder,
+  getAir,
+  generateLine,
+  generatePortal,
+  makeWorldWithPortal
+} = require('flying-squid').portal_detector('1.8')
 
 const { Vec3 } = require('vec3')
 

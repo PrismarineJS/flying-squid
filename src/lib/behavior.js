@@ -15,6 +15,8 @@ module.exports = (obj) => {
 
     let resp
 
+    func = func || (() => {})
+
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err) => setTimeout(() => { throw err }, 0))
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err) => setTimeout(() => { throw err }, 0))
 

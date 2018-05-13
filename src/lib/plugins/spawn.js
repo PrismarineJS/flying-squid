@@ -1,17 +1,17 @@
-const version = require('flying-squid').version
-const entitiesByName = require('minecraft-data')(version).entitiesByName
-const mobsById = require('minecraft-data')(version).mobs
-const objectsById = require('minecraft-data')(version).objects
 const Entity = require('prismarine-entity')
 const path = require('path')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
-const Item = require('prismarine-item')(version)
 const UserError = require('flying-squid').UserError
 
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, options) {
+  const version = options.version
+
+  const mobsById = require('minecraft-data')(version).mobs
+  const objectsById = require('minecraft-data')(version).objects
+
   serv.initEntity = (type, entityType, world, position) => {
     if (Object.keys(serv.entities).length > options['max-entities']) { throw new Error('Too many mobs !') }
     serv.entityMaxId++
@@ -74,6 +74,10 @@ module.exports.server = function (serv, options) {
 }
 
 module.exports.player = function (player, serv, options) {
+  const version = options.version
+  const entitiesByName = require('minecraft-data')(version).entitiesByName
+  const Item = require('prismarine-item')(version)
+
   player.commands.add({
     base: 'summon',
     info: 'Summon an entity',

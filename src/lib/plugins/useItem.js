@@ -1,8 +1,9 @@
-const items = require('minecraft-data')(require('flying-squid').version).items
-const Item = require('prismarine-item')(require('flying-squid').version)
 const Vec3 = require('vec3').Vec3
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, {version}) {
+  const items = require('minecraft-data')(version).items
+  const Item = require('prismarine-item')(version)
+
   player._client.on('block_place', ({direction, heldItem, location} = {}) => {
     if (direction === -1 || heldItem.blockId === -1 || !items[heldItem.blockId]) return
     const item = Item.fromNotch(heldItem)
