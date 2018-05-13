@@ -283,7 +283,7 @@ Resets to 0 at 24000. Use `serv.setTime(time)` to set the time.
 #### serv.tickCount
 
 Total number of ticks that have passed since the start of the world.
-Best to use with modulo (e.g. Something every 10 seconds is `serv.tickCount % 20*10 == 0`)
+Best to use with modulo (e.g. Something every 10 seconds is `serv.tickCount % 20*10 === 0`)
 
 #### serv.doDaylightCycle
 

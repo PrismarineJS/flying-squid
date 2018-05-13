@@ -1,15 +1,14 @@
-module.exports.server=function(serv)
-{
-  serv.broadcast = (message, {whitelist=serv.players,blacklist=[],system=false}={}) => {
-    if (whitelist.type == 'player') whitelist = [whitelist];
+module.exports.server = function (serv) {
+  serv.broadcast = (message, {whitelist = serv.players, blacklist = [], system = false} = {}) => {
+    if (whitelist.type === 'player') whitelist = [whitelist]
 
-    if (typeof message == 'string') message = serv.parseClassic(message);
+    if (typeof message === 'string') message = serv.parseClassic(message)
 
-    whitelist.filter(w => blacklist.indexOf(w) == -1).forEach(player => {
-      if (!system) player.chat(message);
-      else player.system(message);
-    });
-  };
+    whitelist.filter(w => blacklist.indexOf(w) === -1).forEach(player => {
+      if (!system) player.chat(message)
+      else player.system(message)
+    })
+  }
 
   serv.color = {
     'black': '&0',
@@ -42,26 +41,26 @@ module.exports.server=function(serv)
     'italic': '&o',
     'italics': '&o',
     'reset': '&r'
-  };
+  }
 
   serv.parseClassic = (message) => {
-    if (typeof message == 'object') return message;
-    const messageList = [];
-    let text = '';
-    let nextChanged = false;
-    let color = 'white';
-    let bold = false;
-    let italic = false;
-    let underlined = false;
-    let strikethrough = false;
-    let random = false;
-    const colors = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f', 'k','l','m','n','o','r','&'];
-    const convertColor = ['black', 'dark_blue','dark_green','dark_cyan','dark_red','dark_purple','gold',
-                        'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white',
-                        'random', 'bold', 'strikethrough', 'underlined', 'italic', 'reset', '&'];
+    if (typeof message === 'object') return message
+    const messageList = []
+    let text = ''
+    let nextChanged = false
+    let color = 'white'
+    let bold = false
+    let italic = false
+    let underlined = false
+    let strikethrough = false
+    let random = false
+    const colors = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'k', 'l', 'm', 'n', 'o', 'r', '&']
+    const convertColor = ['black', 'dark_blue', 'dark_green', 'dark_cyan', 'dark_red', 'dark_purple', 'gold',
+      'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white',
+      'random', 'bold', 'strikethrough', 'underlined', 'italic', 'reset', '&']
 
-    function createJSON() {
-      if (!text.trim()) return;
+    function createJSON () {
+      if (!text.trim()) return
       messageList.push({
         text: text,
         color: color,
@@ -70,62 +69,61 @@ module.exports.server=function(serv)
         underlined: underlined,
         strikethrough: strikethrough,
         obfuscated: random
-      });
-      text = '';
+      })
+      text = ''
     }
 
-    while (message != '') {
-      const currChar = message[0];
+    while (message !== '') {
+      const currChar = message[0]
       if (nextChanged) {
-        const newColor = convertColor[colors.indexOf(currChar)];
+        const newColor = convertColor[colors.indexOf(currChar)]
         if (newColor) {
-          if (newColor == 'bold') bold = true;
-          else if (newColor == 'strikethrough') strikethrough = true;
-          else if (newColor == 'underlined') underlined = true;
-          else if (newColor == 'italic') italic = true;
-          else if (newColor == 'random') random = true;
-          else if (newColor == '&') text += '&';
-          else if (newColor == 'reset') {
-            strikethrough = false;
-            bold = false;
-            underlined = false;
-            random = false;
-            italic = false;
-            color = 'white';
-          } else color = newColor;
+          if (newColor === 'bold') bold = true
+          else if (newColor === 'strikethrough') strikethrough = true
+          else if (newColor === 'underlined') underlined = true
+          else if (newColor === 'italic') italic = true
+          else if (newColor === 'random') random = true
+          else if (newColor === '&') text += '&'
+          else if (newColor === 'reset') {
+            strikethrough = false
+            bold = false
+            underlined = false
+            random = false
+            italic = false
+            color = 'white'
+          } else color = newColor
         }
-        nextChanged = false;
-      } else if (currChar == '&') {
+        nextChanged = false
+      } else if (currChar === '&') {
         if (nextChanged) {
-          text += '&';
-          nextChanged = false;
+          text += '&'
+          nextChanged = false
         } else {
-          nextChanged = true;
-          createJSON();
+          nextChanged = true
+          createJSON()
         }
       } else {
-        text += currChar;
+        text += currChar
       }
 
-      message = message.slice(1, message.length);
+      message = message.slice(1, message.length)
     }
-    createJSON();
+    createJSON()
 
-    if (messageList.length > 0) return {
-      text: '',
-      extra: messageList
-    };
-    else return { text: '' }
+    if (messageList.length > 0) {
+      return {
+        text: '',
+        extra: messageList
+      }
+    } else return { text: '' }
   }
-};
+}
 
-module.exports.player=function(player,serv)
-{
+module.exports.player = function (player, serv) {
   player._client.on('chat', ({message} = {}) => {
-    if(message[0]=="/") {
-      player.behavior('command', {command: message.slice(1)}, ({command}) => player.handleCommand(command));
-    }
-    else {
+    if (message[0] === '/') {
+      player.behavior('command', {command: message.slice(1)}, ({command}) => player.handleCommand(command))
+    } else {
       player.behavior('chat', {
         message: message,
         prefix: '<' + player.username + '> ',
@@ -133,30 +131,30 @@ module.exports.player=function(player,serv)
         whitelist: serv.players,
         blacklist: []
       }, ({prefix, text, whitelist, blacklist}) => {
-        const obj = serv.parseClassic(prefix);
-        if (!obj.extra) obj.extra = [];
-        obj.extra.push(serv.parseClassic(text));
+        const obj = serv.parseClassic(prefix)
+        if (!obj.extra) obj.extra = []
+        obj.extra.push(serv.parseClassic(text))
         serv.broadcast(obj, {
           whitelist: whitelist,
           blacklist: blacklist
-        });
-      });
+        })
+      })
     }
-  });
+  })
 
   player.chat = message => {
-    if (typeof message == 'string') message = serv.parseClassic(message);
-    player._client.write('chat', { message: JSON.stringify(message), position: 0 });
-  };
+    if (typeof message === 'string') message = serv.parseClassic(message)
+    player._client.write('chat', { message: JSON.stringify(message), position: 0 })
+  }
 
-  player.emptyChat = (count=1) => {
+  player.emptyChat = (count = 1) => {
     for (let i = 0; i < count; i++) {
-      player.chat('');
+      player.chat('')
     }
-  };
+  }
 
   player.system = message => {
-    if (typeof message == 'string') message = serv.parseClassic(message);
-    player._client.write('chat', { message: JSON.stringify(message), position: 2 });
-  };
-};
+    if (typeof message === 'string') message = serv.parseClassic(message)
+    player._client.write('chat', { message: JSON.stringify(message), position: 2 })
+  }
+}

@@ -1,4 +1,5 @@
-const net = require('net')
+/* eslint-env jest */
+
 const squid = require('flying-squid')
 const settings = require('../config/default-settings')
 const mineflayer = require('mineflayer')
@@ -18,11 +19,11 @@ describe('server with mineflayer connection', () => {
   let serv
 
   async function onGround (bot) {
-    await new Promise((cb) => {
+    await new Promise((resolve) => {
       const l = () => {
         if (bot.entity.onGround) {
           bot.removeListener('move', l)
-          cb()
+          resolve()
         }
       }
       bot.on('move', l)
@@ -40,15 +41,15 @@ describe('server with mineflayer connection', () => {
       return acc
     }, {})
     const received = {}
-    return new Promise(cb => {
+    return new Promise(resolve => {
       const listener = msg => {
         const message = msg.extra[0].text
         if (!toReceive[message]) throw new Error('Received ' + message + ' , expected to receive one of ' + messages)
         if (received[message]) throw new Error('Received ' + message + ' two times')
         received[message] = 1
-        if (Object.keys(received).length == messages.length) {
+        if (Object.keys(received).length === messages.length) {
           bot.removeListener('message', listener)
-          cb()
+          resolve()
         }
       }
       bot.on('message', listener)
@@ -96,12 +97,12 @@ describe('server with mineflayer connection', () => {
     function waitSpawnZone (bot, view) {
       const nbChunksExpected = (view * 2) * (view * 2)
       let c = 0
-      return new Promise(cb => {
+      return new Promise(resolve => {
         const listener = () => {
           c++
-          if (c == nbChunksExpected) {
+          if (c === nbChunksExpected) {
             bot.removeListener('chunkColumnLoad', listener)
-            cb()
+            resolve()
           }
         }
         bot.on('chunkColumnLoad', listener)
@@ -125,20 +126,20 @@ describe('server with mineflayer connection', () => {
       const pos = bot.entity.position.offset(0, -2, 0).floored()
       bot.dig(bot.blockAt(pos))
 
-      let [oldBlock, newBlock] = await once(bot2, 'blockUpdate', {array: true})
+      let [, newBlock] = await once(bot2, 'blockUpdate', {array: true})
       assertPosEqual(newBlock.position, pos)
       expect(newBlock.type).toEqual(0)
 
       bot.creative.setInventorySlot(36, new Item(1, 1))
-      await new Promise((cb) => {
+      await new Promise((resolve) => {
         bot.inventory.on('windowUpdate', (slot, oldItem, newItem) => {
-          if (slot == 36 && newItem && newItem.type == 1) { cb() }
+          if (slot === 36 && newItem && newItem.type === 1) { resolve() }
         })
       })
 
       bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0));
 
-      [oldBlock, newBlock] = await once(bot2, 'blockUpdate', {array: true})
+      [, newBlock] = await once(bot2, 'blockUpdate', {array: true})
       assertPosEqual(newBlock.position, pos)
       expect(newBlock.type).toEqual(1)
     })
@@ -161,11 +162,11 @@ describe('server with mineflayer connection', () => {
     })
 
     function waitDragon () {
-      return new Promise((done) => {
+      return new Promise((resolve) => {
         const listener = (entity) => {
-          if (entity.name == 'EnderDragon') {
+          if (entity.name === 'EnderDragon') {
             bot.removeListener('entitySpawn', listener)
-            done()
+            resolve()
           }
         }
         bot.on('entitySpawn', listener)
