@@ -24,5 +24,6 @@
     "footer":"Test server"
   },
   "everybody-op":true,
-  "max-entities":100
+  "max-entities":100,
+  "version": "1.8.9"
 }
