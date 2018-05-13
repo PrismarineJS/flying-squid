@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var mcServer = require('./')
+const mcServer = require('./')
 
-var settings
+let settings
 
 try {
   settings = require('./config/settings')

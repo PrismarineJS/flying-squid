@@ -1,4 +1,4 @@
-var mcServer=require("flying-squid");
+const mcServer=require("flying-squid");
 
 mcServer.createMCServer({
   "motd": "A Minecraft Server \nRunning flying-squid",

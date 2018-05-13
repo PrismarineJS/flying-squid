@@ -104,7 +104,7 @@ module.exports.player = function (player, serv, options) {
     usage: '/summonMany <number> <entity_name>',
     op: true,
     parse (str) {
-      var args = str.split(' ')
+      const args = str.split(' ')
       if (args.length !== 2) { return false }
       return {number: args[0], name: args[1]}
     },
