@@ -1,7 +1,6 @@
 /* eslint-env jest */
 
 const {
-  portal_detector: {
     detectFrame,
     findPotentialLines,
     findBorder,
@@ -9,8 +8,7 @@ const {
     generateLine,
     generatePortal,
     makeWorldWithPortal
-  }
-} = require('flying-squid')
+  } = require('flying-squid')('1.8').portal_detector
 
 const { Vec3 } = require('vec3')
 

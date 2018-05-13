@@ -2,8 +2,6 @@ const Vec3 = require('vec3').Vec3
 const flatMap = require('flatmap')
 const range = require('range').range
 
-module.exports = {detectFrame, findPotentialLines, findBorder, getAir, generateLine, generatePortal, addPortalToWorld, makeWorldWithPortal}
-
 async function findLineInDirection (world, startingPoint, type, direction, directionV) {
   const line = []
   let point = startingPoint
@@ -91,8 +89,8 @@ function getAir (border) {
   return flatMap(bottom, pos => range(1, top[0].y - bottom[0].y).map(i => pos.offset(0, i, 0)))
 }
 
-const World = require('prismarine-world')(require('./version'))
-const Chunk = require('prismarine-chunk')(require('./version'))
+let World
+let Chunk
 
 function generateLine (startingPoint, direction, length) {
   return range(0, length).map(i => startingPoint.plus(direction.scaled(i)))
@@ -129,3 +127,11 @@ async function makeWorldWithPortal (portal, additionalAir, additionalObsidian) {
 
   return world
 }
+
+function loader(version) {
+  World = require('prismarine-world')(version)
+  Chunk = require('prismarine-chunk')(version)
+  return {detectFrame,findPotentialLines,findBorder,getAir,generateLine,generatePortal,addPortalToWorld,makeWorldWithPortal}
+}
+
+module.exports = loader
