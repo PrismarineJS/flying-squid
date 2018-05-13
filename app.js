@@ -10,11 +10,10 @@ try {
   settings = require('./config/settings')
 
   Object.keys(defaultSettings).forEach(settingKey => {
-    if(settings[settingKey] === undefined) {
-      settings[settingKey] = defaultSettings[settingKey];
+    if (settings[settingKey] === undefined) {
+      settings[settingKey] = defaultSettings[settingKey]
     }
   })
-
 } catch (err) {
   settings = defaultSettings
 }
