@@ -2,12 +2,21 @@
 
 const mcServer = require('./')
 
+const defaultSettings = require('./config/default-settings')
+
 let settings
 
 try {
   settings = require('./config/settings')
+
+  Object.keys(defaultSettings).forEach(settingKey => {
+    if(settings[settingKey] === undefined) {
+      settings[settingKey] = defaultSettings[settingKey];
+    }
+  })
+
 } catch (err) {
-  settings = require('./config/default-settings')
+  settings = defaultSettings
 }
 
 module.exports = mcServer.createMCServer(settings)
