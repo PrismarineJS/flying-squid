@@ -87,7 +87,8 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       groundUp: true,
       bitMap: 0x0000,
-      chunkData: Buffer.alloc(0)
+      chunkData: Buffer.alloc(0),
+      blockEntities: []
     })
   }
 
@@ -102,7 +103,8 @@ module.exports.player = function (player, serv, settings) {
         z: z,
         groundUp: true,
         bitMap: 0xffff,
-        chunkData: chunk.dump()
+        chunkData: chunk.dump(),
+        blockEntities: []
       })
       return Promise.resolve()
     })
