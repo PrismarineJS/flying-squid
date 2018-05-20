@@ -29,16 +29,16 @@ module.exports.server = function (serv, options) {
   }
 
   serv.spawnObject = (type, world, position, {pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined}) => {
-    const object = serv.initEntity('object', type, world, position.scaled(32).floored())
+    const object = serv.initEntity('object', type, world, position)
     object.name = objectsById[type].name
     object.data = data
-    object.velocity = velocity.scaled(32).floored()
+    object.velocity = velocity
     object.pitch = pitch
     object.yaw = yaw
-    object.gravity = new Vec3(0, -20 * 32, 0)
-    object.terminalvelocity = new Vec3(27 * 32, 27 * 32, 27 * 32)
-    object.friction = new Vec3(15 * 32, 0, 15 * 32)
-    object.size = new Vec3(0.25 * 32, 0.25 * 32, 0.25 * 32) // Hardcoded, will be dependent on type!
+    object.gravity = new Vec3(0, -20, 0)
+    object.terminalvelocity = new Vec3(27, 27, 27)
+    object.friction = new Vec3(15, 0, 15)
+    object.size = new Vec3(0.25, 0.25, 0.25) // Hardcoded, will be dependent on type!
     object.deathTime = deathTime
     object.pickupTime = pickupTime
     object.itemId = itemId
@@ -48,15 +48,15 @@ module.exports.server = function (serv, options) {
   }
 
   serv.spawnMob = (type, world, position, {pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = []} = {}) => {
-    const mob = serv.initEntity('mob', type, world, position.scaled(32).floored())
+    const mob = serv.initEntity('mob', type, world, position)
     mob.name = mobsById[type].name
-    mob.velocity = velocity.scaled(32).floored()
+    mob.velocity = velocity
     mob.pitch = pitch
     mob.headPitch = headPitch
     mob.yaw = yaw
-    mob.gravity = new Vec3(0, -20 * 32, 0)
-    mob.terminalvelocity = new Vec3(27 * 32, 27 * 32, 27 * 32)
-    mob.friction = new Vec3(15 * 32, 0, 15 * 32)
+    mob.gravity = new Vec3(0, -20, 0)
+    mob.terminalvelocity = new Vec3(27, 27, 27)
+    mob.friction = new Vec3(15, 0, 15)
     mob.size = new Vec3(0.75, 1.75, 0.75)
     mob.health = 20
     mob.metadata = metadata
@@ -91,11 +91,11 @@ module.exports.player = function (player, serv, options) {
         return
       }
       if (entity.type === 'mob') {
-        serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32), {
+        serv.spawnMob(entity.id, player.world, player.position, {
           velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         })
       } else if (entity.type === 'object') {
-        serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32), {
+        serv.spawnObject(entity.id, player.world, player.position, {
           velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         })
       }
@@ -122,11 +122,11 @@ module.exports.player = function (player, serv, options) {
       let s = Math.floor(Math.sqrt(number))
       for (let i = 0; i < number; i++) {
         if (entity.type === 'mob') {
-          serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
+          serv.spawnMob(entity.id, player.world, player.position.offset(Math.floor(i / s * 10), 0, i % s * 10), {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         } else if (entity.type === 'object') {
-          serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32).offset(Math.floor(i / s * 10), 0, i % s * 10), {
+          serv.spawnObject(entity.id, player.world, player.position.offset(Math.floor(i / s * 10), 0, i % s * 10), {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
@@ -150,11 +150,11 @@ module.exports.player = function (player, serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities'] - entityTypes.length) { throw new UserError('Too many mobs !') }
       entityTypes.map(entity => {
         if (entity.type === 'mob') {
-          serv.spawnMob(entity.id, player.world, player.position.scaled(1 / 32), {
+          serv.spawnMob(entity.id, player.world, player.position, {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         } else if (entity.type === 'object') {
-          serv.spawnObject(entity.id, player.world, player.position.scaled(1 / 32), {
+          serv.spawnObject(entity.id, player.world, player.position, {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
@@ -234,14 +234,26 @@ module.exports.entity = function (entity, serv) {
   }
 
   entity.getSpawnPacket = () => {
-    const scaledVelocity = entity.velocity.scaled(8000 / 32 / 20).floored() // from fixed-position/second to unit => 1/8000 blocks per tick
+    let scaledVelocity = entity.velocity.scaled(8000 / 20) // from fixed-position/second to unit => 1/8000 blocks per tick
+    if (serv.supportFeature('fixedPointPosition')) {
+      scaledVelocity = scaledVelocity.scaled(1 / 32)
+    }
+    scaledVelocity = scaledVelocity.floored()
+
+    let entityPosition
+    if (serv.supportFeature('fixedPointPosition')) {
+      entityPosition = entity.position.scaled(32).floored()
+    } else if (serv.supportFeature('doublePosition')) {
+      entityPosition = entity.position
+    }
+
     if (entity.type === 'player') {
       return {
         entityId: entity.id,
         playerUUID: entity._client.uuid,
-        x: entity.position.x,
-        y: entity.position.y,
-        z: entity.position.z,
+        x: entityPosition.x,
+        y: entityPosition.y,
+        z: entityPosition.z,
         yaw: entity.yaw,
         pitch: entity.pitch,
         currentItem: 0,
@@ -251,9 +263,9 @@ module.exports.entity = function (entity, serv) {
       return {
         entityId: entity.id,
         type: entity.entityType,
-        x: entity.position.x,
-        y: entity.position.y,
-        z: entity.position.z,
+        x: entityPosition.x,
+        y: entityPosition.y,
+        z: entityPosition.z,
         pitch: entity.pitch,
         yaw: entity.yaw,
         objectData: {
@@ -267,9 +279,9 @@ module.exports.entity = function (entity, serv) {
       return {
         entityId: entity.id,
         type: entity.entityType,
-        x: entity.position.x,
-        y: entity.position.y,
-        z: entity.position.z,
+        x: entityPosition.x,
+        y: entityPosition.y,
+        z: entityPosition.z,
         yaw: entity.yaw,
         pitch: entity.pitch,
         headPitch: entity.headPitch,
@@ -303,7 +315,7 @@ module.exports.entity = function (entity, serv) {
   }
 
   entity.on('move', () => {
-    if (entity.position.distanceTo(entity.lastPositionPlayersUpdated) > 2 * 32) { entity.updateAndSpawn() }
+    if (entity.position.distanceTo(entity.lastPositionPlayersUpdated) > 2) { entity.updateAndSpawn() }
   })
 
   entity.destroy = () => {

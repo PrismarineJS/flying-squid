@@ -55,12 +55,12 @@ module.exports.player = function (player, serv, settings) {
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     })
-    player.position = player.spawnPoint.toFixedPosition()
+    player.position = player.spawnPoint.clone()
   }
 
   function sendChunkWhenMove () {
     player.on('move', () => {
-      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16 * 32) { player.sendRestMap() }
+      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
     })
   }
 

@@ -8,6 +8,8 @@ if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
 }
 
+const supportFeature = require('./lib/supportFeature')
+
 module.exports = {
   createMCServer: createMCServer,
   Behavior: require('./lib/behavior'),
@@ -36,7 +38,7 @@ class MCServer extends EventEmitter {
     if (supportedVersions.indexOf(version.majorVersion) === -1) {
       throw new Error(`Version ${version.minecraftVersion} is not supported.`)
     }
-    this.majorVersion = version.majorVersion
+    this.supportFeature = feature => supportFeature(feature, version.majorVersion)
 
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
     this._server = mc.createServer(options)

@@ -1,9 +1,5 @@
 const Vec3 = require('vec3').Vec3
 
-Vec3.prototype.toFixedPosition = function () {
-  return this.scaled(32).floored()
-}
-
 module.exports.player = function (player) {
   player._client.on('look', ({yaw, pitch, onGround} = {}) => sendLook(yaw, pitch, onGround))
 
@@ -42,19 +38,20 @@ module.exports.player = function (player) {
   }
 
   player._client.on('position', ({x, y, z, onGround} = {}) => {
-    player.sendPosition((new Vec3(x, y, z)).toFixedPosition(), onGround)
+    player.sendPosition((new Vec3(x, y, z)), onGround)
   })
 
   player._client.on('position_look', ({x, y, z, onGround, yaw, pitch} = {}) => {
-    player.sendPosition((new Vec3(x, y, z)).toFixedPosition(), onGround)
+    player.sendPosition((new Vec3(x, y, z)), onGround)
     sendLook(yaw, pitch, onGround)
   })
 
   player.sendSelfPosition = () => {
+    // double position in all versions
     player._client.write('position', {
-      x: player.position.x / 32,
-      y: player.position.y / 32,
-      z: player.position.z / 32,
+      x: player.position.x,
+      y: player.position.y,
+      z: player.position.z,
       yaw: player.yaw,
       pitch: player.pitch,
       flags: 0x00
@@ -62,7 +59,7 @@ module.exports.player = function (player) {
   }
 
   player.teleport = async (position) => {
-    const notCancelled = await player.sendPosition(position.scaled(32).floored(), false, true)
+    const notCancelled = await player.sendPosition(position, false, true)
     if (notCancelled) player.sendSelfPosition()
   }
 
@@ -83,7 +80,7 @@ module.exports.player = function (player) {
   }
 }
 
-module.exports.entity = function (entity) {
+module.exports.entity = function (entity, serv) {
   entity.sendPosition = (position, onGround, teleport = false) => {
     if (typeof position === 'undefined') throw new Error('undef')
     if (entity.position.equals(position) && entity.onGround === onGround) return Promise.resolve()
@@ -92,23 +89,45 @@ module.exports.entity = function (entity) {
       onGround: onGround,
       teleport: teleport
     }, ({position, onGround}) => {
-      const diff = position.minus(entity.position)
-      if (diff.abs().x > 127 || diff.abs().y > 127 || diff.abs().z > 127) {
+      // known position is very important because the diff (/delta) send to players is floored hence is not precise enough
+      // storing the known position allows to compensate next time a diff is sent
+      // without the known position, the error accumulate fast and player position is incorrect from the point of view
+      // of other players
+      entity.knownPosition = entity.knownPosition === undefined ? entity.position : entity.knownPosition
+
+      const diff = position.minus(entity.knownPosition)
+      if (diff.abs().x > 7 || diff.abs().y > 7 || diff.abs().z > 7) {
+        let entityPosition
+
+        if (serv.supportFeature('fixedPointPosition')) {
+          entityPosition = position.scaled(32).floored()
+        } else if (serv.supportFeature('doublePosition')) {
+          entityPosition = position
+        }
         entity._writeOthersNearby('entity_teleport', {
           entityId: entity.id,
-          x: position.x,
-          y: position.y,
-          z: position.z,
+          x: entityPosition.x,
+          y: entityPosition.y,
+          z: entityPosition.z,
           yaw: entity.yaw,
           pitch: entity.pitch,
           onGround: onGround
         })
+        entity.knownPosition = position
       } else if (diff.distanceTo(new Vec3(0, 0, 0)) !== 0) {
+        let delta
+        if (serv.supportFeature('fixedPointDelta')) {
+          delta = diff.scaled(32).floored()
+          entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32))
+        } else if (serv.supportFeature('fixedPointDelta128')) {
+          delta = diff.scaled(32).scaled(128).floored()
+          entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32 / 128))
+        }
         entity._writeOthersNearby('rel_entity_move', {
           entityId: entity.id,
-          dX: diff.x,
-          dY: diff.y,
-          dZ: diff.z,
+          dX: delta.x,
+          dY: delta.y,
+          dZ: delta.z,
           onGround: onGround
         })
       }
@@ -121,6 +140,6 @@ module.exports.entity = function (entity) {
   }
 
   entity.teleport = (pos) => { // Overwritten in players inject above
-    entity.sendPosition(pos.scaled(32), false, true)
+    entity.sendPosition(pos, false, true)
   }
 }

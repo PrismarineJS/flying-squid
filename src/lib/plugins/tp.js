@@ -18,20 +18,20 @@ module.exports.player = (player, serv) => {
         if (entityTo.length === 0) throw new UserError('Invalid target')
         entityTo = entityTo[0]
 
-        entitiesFrom.forEach(e => e.teleport(entityTo.position.scaled(1 / 32)))
+        entitiesFrom.forEach(e => e.teleport(entityTo.position))
       } else if (args.length === 3) {
-        let x = serv.posFromString(args[0], player.position.x / 32)
-        let y = serv.posFromString(args[1], player.position.y / 32)
-        let z = serv.posFromString(args[2], player.position.z / 32)
+        let x = serv.posFromString(args[0], player.position.x)
+        let y = serv.posFromString(args[1], player.position.y)
+        let z = serv.posFromString(args[2], player.position.z)
 
         player.teleport(new Vec3(x, y, z))
       } else if (args.length === 4) {
         let entitiesFrom = player.selectorString(args[0])
 
         entitiesFrom.forEach(e => e.teleport(new Vec3(
-          serv.posFromString(args[1], e.position.x / 32),
-          serv.posFromString(args[2], e.position.y / 32),
-          serv.posFromString(args[3], e.position.z / 32)
+          serv.posFromString(args[1], e.position.x),
+          serv.posFromString(args[2], e.position.y),
+          serv.posFromString(args[3], e.position.z)
         )))
       }
     }

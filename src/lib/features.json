@@ -1,0 +1,32 @@
+[
+  {
+    "name": "unloadChunkByEmptyChunk",
+    "description": "Chunk unloading is done by sending an empty chunk",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "unloadChunkDirect",
+    "description": "Chunk unloading is done by sending directly an unload chunk packet",
+    "versions": ["1.12"]
+  },
+  {
+    "name": "fixedPointPosition",
+    "description": "Entity positions are represented with fixed point numbers",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "doublePosition",
+    "description": "Entity positions are represented with double",
+    "versions": ["1.12"]
+  },
+  {
+    "name": "fixedPointDelta",
+    "description": "Delta of position are represented with fixed point numbers",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "fixedPointDelta128",
+    "description": "Delta of position are represented with fixed point numbers times 128",
+    "versions": ["1.12"]
+  }
+]
