@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
-  serv.playSound = (sound, world, position, {whitelist, blacklist = [], radius = 32 * 32, volume = 1.0, pitch = 1.0} = {}) => {
+  serv.playSound = (sound, world, position, {whitelist, blacklist = [], radius = 32 * 32, volume = 1.0, pitch = 1.0, soundCategory = 0} = {}) => {
     const players = (typeof whitelist !== 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position.scaled(32).floored(),
@@ -12,6 +12,7 @@ module.exports.server = function (serv) {
         const pos = (position || player.position.scaled(1 / 32)).scaled(8).floored()
         player._client.write('named_sound_effect', {
           soundName: sound,
+          soundCategory,
           x: pos.x,
           y: pos.y,
           z: pos.z,
