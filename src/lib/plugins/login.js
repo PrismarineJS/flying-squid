@@ -40,7 +40,7 @@ module.exports.player = function (player, serv, settings) {
     player.username = player._client.username
     serv.players.push(player)
     serv.uuidToPlayer[player._client.uuid] = player
-    player.heldItemSlot = 36
+    player.heldItemSlot = 0
     player.loadedChunks = {}
   }
 
