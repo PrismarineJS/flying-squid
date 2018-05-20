@@ -82,14 +82,21 @@ module.exports.server = async function (serv, {version, worldFolder, generation 
 module.exports.player = function (player, serv, settings) {
   player.unloadChunk = (chunkX, chunkZ) => {
     delete player.loadedChunks[chunkX + ',' + chunkZ]
-    player._client.write('map_chunk', {
-      x: chunkX,
-      z: chunkZ,
-      groundUp: true,
-      bitMap: 0x0000,
-      chunkData: Buffer.alloc(0),
-      blockEntities: []
-    })
+
+    if (serv.majorVersion === '1.8') {
+      player._client.write('map_chunk', {
+        x: chunkX,
+        z: chunkZ,
+        groundUp: true,
+        bitMap: 0x0000,
+        chunkData: Buffer.alloc(0)
+      })
+    } else if (serv.majorVersion === '1.12') {
+      player._client.write('unload_chunk', {
+        chunkX,
+        chunkZ
+      })
+    }
   }
 
   player.sendChunk = (chunkX, chunkZ, column) => {

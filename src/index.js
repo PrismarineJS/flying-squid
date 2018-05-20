@@ -2,6 +2,7 @@ const mc = require('minecraft-protocol')
 const EventEmitter = require('events').EventEmitter
 const path = require('path')
 const requireIndex = require('./lib/requireindex')
+const supportedVersions = require('./lib/version').supportedVersions
 require('emit-then').register()
 if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
@@ -31,6 +32,12 @@ class MCServer extends EventEmitter {
   }
 
   connect (options) {
+    const version = require('minecraft-data')(options.version).version
+    if (supportedVersions.indexOf(version.majorVersion) === -1) {
+      throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+    }
+    this.majorVersion = version.majorVersion
+
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
     this._server = mc.createServer(options)
     Object.keys(plugins)
