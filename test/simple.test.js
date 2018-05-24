@@ -11,7 +11,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
     return
   }
-  const PORT = Math.round(30000 + Math.random() * 20000)
 
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
@@ -22,7 +21,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     beforeAll(done => {
       const options = settings
       options['online-mode'] = false
-      options['port'] = PORT
+      options['port'] = 0
       options['view-distance'] = 2
       options['worldFolder'] = undefined
       options['logging'] = false

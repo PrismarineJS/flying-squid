@@ -16,7 +16,7 @@
   "scripts": {
     "prepare": "require-self",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
-    "test": "jest --verbose --runInBand"
+    "test": "jest --verbose"
   },
   "keywords": [],
   "license": "MIT",

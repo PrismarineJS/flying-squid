@@ -72,10 +72,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     }
 
     beforeEach(async () => {
-      const PORT = Math.round(30000 + Math.random() * 20000)
       const options = settings
       options['online-mode'] = false
-      options['port'] = PORT
+      options['port'] = 0
       options['view-distance'] = 2
       options['worldFolder'] = undefined
       options['logging'] = false
@@ -84,15 +83,16 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       serv = squid.createMCServer(options)
 
       await once(serv, 'listening')
+      const port = serv._server.socketServer.address().port
       bot = mineflayer.createBot({
         host: 'localhost',
-        port: PORT,
+        port: port,
         username: 'bot',
         version: version.minecraftVersion
       })
       bot2 = mineflayer.createBot({
         host: 'localhost',
-        port: PORT,
+        port: port,
         username: 'bot2',
         version: version.minecraftVersion
       })
