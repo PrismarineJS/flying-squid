@@ -96,7 +96,15 @@ module.exports.entity = function (entity, serv) {
       entity.knownPosition = entity.knownPosition === undefined ? entity.position : entity.knownPosition
 
       const diff = position.minus(entity.knownPosition)
-      if (diff.abs().x > 7 || diff.abs().y > 7 || diff.abs().z > 7) {
+
+      let maxDelta
+      if (serv.supportFeature('fixedPointDelta')) {
+        maxDelta = 3
+      } else if (serv.supportFeature('fixedPointDelta128')) {
+        maxDelta = 7
+      }
+
+      if (diff.abs().x > maxDelta || diff.abs().y > maxDelta || diff.abs().z > maxDelta) {
         let entityPosition
 
         if (serv.supportFeature('fixedPointPosition')) {
