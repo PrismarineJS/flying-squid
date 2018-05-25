@@ -28,6 +28,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     let bot
     let bot2
     let serv
+    let entityName
 
     async function onGround (bot) {
       await new Promise((resolve) => {
@@ -81,6 +82,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       options['version'] = version.minecraftVersion
 
       serv = squid.createMCServer(options)
+      if (serv.supportFeature('entityCamelCase')) {
+        entityName = 'EnderDragon'
+      } else {
+        entityName = 'ender_dragon'
+      }
 
       await once(serv, 'listening')
       const port = serv._server.socketServer.address().port
@@ -159,7 +165,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     describe('commands', () => {
-      jest.setTimeout(10 * 1000)
+      jest.setTimeout(20 * 1000)
       test('has an help command', async () => {
         await waitLoginMessage(bot)
         bot.chat('/help')
@@ -177,7 +183,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       function waitDragon () {
         return new Promise((resolve) => {
           const listener = (entity) => {
-            if (entity.name === 'EnderDragon') {
+            if (entity.name === entityName) {
               bot.removeListener('entitySpawn', listener)
               resolve()
             }
@@ -187,15 +193,15 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       }
 
       test('can use /summon', async () => {
-        bot.chat('/summon EnderDragon')
+        bot.chat('/summon ' + entityName)
         await waitDragon()
       })
       test('can use /kill', async () => {
-        bot.chat('/summon EnderDragon')
+        bot.chat('/summon ' + entityName)
         await waitDragon()
-        bot.chat('/kill @e[type=EnderDragon]')
+        bot.chat('/kill @e[type=' + entityName + ']')
         const entity = await once(bot, 'entityDead')
-        expect(entity.name).toEqual('EnderDragon')
+        expect(entity.name).toEqual(entityName)
       })
       describe('can use /tp', () => {
         test('can tp myself', async () => {

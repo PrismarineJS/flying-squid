@@ -3,7 +3,7 @@ const path = require('path')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const UserError = require('flying-squid').UserError
-
+const UUID = require('uuid-1345')
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, options) {
@@ -30,6 +30,7 @@ module.exports.server = function (serv, options) {
 
   serv.spawnObject = (type, world, position, {pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined}) => {
     const object = serv.initEntity('object', type, world, position)
+    object.uuid = UUID.v4()
     object.name = objectsById[type].name
     object.data = data
     object.velocity = velocity
@@ -49,6 +50,7 @@ module.exports.server = function (serv, options) {
 
   serv.spawnMob = (type, world, position, {pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = []} = {}) => {
     const mob = serv.initEntity('mob', type, world, position)
+    mob.uuid = UUID.v4()
     mob.name = mobsById[type].name
     mob.velocity = velocity
     mob.pitch = pitch
@@ -250,7 +252,7 @@ module.exports.entity = function (entity, serv) {
     if (entity.type === 'player') {
       return {
         entityId: entity.id,
-        playerUUID: entity._client.uuid,
+        playerUUID: entity.uuid,
         x: entityPosition.x,
         y: entityPosition.y,
         z: entityPosition.z,
@@ -262,6 +264,7 @@ module.exports.entity = function (entity, serv) {
     } else if (entity.type === 'object') {
       return {
         entityId: entity.id,
+        objectUUID: entity.uuid,
         type: entity.entityType,
         x: entityPosition.x,
         y: entityPosition.y,
@@ -278,6 +281,7 @@ module.exports.entity = function (entity, serv) {
     } else if (entity.type === 'mob') {
       return {
         entityId: entity.id,
+        entityUUID: entity.uuid,
         type: entity.entityType,
         x: entityPosition.x,
         y: entityPosition.y,

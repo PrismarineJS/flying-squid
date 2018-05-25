@@ -60,18 +60,14 @@ module.exports.entity = function (entity, serv, {version}) {
   function getMoveAmount (dir, block, entity, delta, sizeSigned) {
     if (block) {
       entity.velocity[dir] = 0
-      return Math.floor(-1 * (entity.position[dir] + sizeSigned / 2 - floorInDirection(entity.position[dir], -sizeSigned)))
+      return -1 * (entity.position[dir] + sizeSigned / 2 - entity.position[dir])
     } else {
-      return Math.floor(entity.velocity[dir] * delta)
+      return entity.velocity[dir] * delta
     }
   }
 
   function getSign (vec) {
     return new Vec3(Math.sign(vec.x), Math.sign(vec.y), Math.sign(vec.z))
-  }
-
-  function floorInDirection (a, b) {
-    return b < 0 ? Math.floor(a) : Math.ceil(a)
   }
 
   function addGravity (entity, dir, delta) {
