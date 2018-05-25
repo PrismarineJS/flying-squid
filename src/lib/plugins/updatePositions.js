@@ -54,7 +54,8 @@ module.exports.player = function (player) {
       z: player.position.z,
       yaw: player.yaw,
       pitch: player.pitch,
-      flags: 0x00
+      flags: 0x00,
+      teleportId: 1
     })
   }
 
