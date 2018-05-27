@@ -152,15 +152,14 @@ module.exports.player = function (player, serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities'] - entityTypes.length) { throw new UserError('Too many mobs !') }
       entityTypes.map(entity => {
         if (entity.type === 'mob') {
-          serv.spawnMob(entity.id, player.world, player.position, {
+          return serv.spawnMob(entity.id, player.world, player.position, {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         } else if (entity.type === 'object') {
-          serv.spawnObject(entity.id, player.world, player.position, {
+          return serv.spawnObject(entity.id, player.world, player.position, {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
-        return entity
       })
         .reduce((prec, entity) => {
           if (prec !== null) { prec.attach(entity) }
@@ -328,12 +327,22 @@ module.exports.entity = function (entity, serv) {
   }
 
   entity.attach = (attachedEntity, leash = false) => {
-    const p = {
-      entityId: attachedEntity.id,
-      vehicleId: entity.id,
-      leash: leash
+    if (serv.supportFeature('attachStackEntity') || (serv.supportFeature('setPassengerStackEntity') && leash)) {
+      const p = {
+        entityId: attachedEntity.id,
+        vehicleId: entity.id,
+        leash: leash
+      }
+      if (entity.type === 'player') { entity._client.write('attach_entity', p) }
+      entity._writeOthersNearby('attach_entity', p)
     }
-    if (entity.type === 'player') { entity._client.write('attach_entity', p) }
-    entity._writeOthersNearby('attach_entity', p)
+    if (serv.supportFeature('setPassengerStackEntity')) {
+      const p = {
+        entityId: entity.id,
+        passengers: [ attachedEntity.id ]
+      }
+      if (entity.type === 'player') { entity._client.write('set_passengers', p) }
+      entity._writeOthersNearby('set_passengers', p)
+    }
   }
 }

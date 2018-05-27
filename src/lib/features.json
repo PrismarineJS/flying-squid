@@ -38,5 +38,25 @@
     "name": "entitySnakeCase",
     "description": "entity name are in snake case",
     "versions": ["1.12"]
+  },
+  {
+    "name": "respawnIsPayload",
+    "description": "respawn field is payload",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "respawnIsActionId",
+    "description": "respawn field is action id",
+    "versions": ["1.12"]
+  },
+  {
+    "name": "attachStackEntity",
+    "description": "attach is used to stack entities",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "setPassengerStackEntity",
+    "description": "set passengers is used to stack entities",
+    "versions": ["1.12"]
   }
 ]
