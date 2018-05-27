@@ -112,22 +112,22 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       await serv.quit()
     })
 
-    describe('actions', () => {
-      function waitSpawnZone (bot, view) {
-        const nbChunksExpected = (view * 2) * (view * 2)
-        let c = 0
-        return new Promise(resolve => {
-          const listener = () => {
-            c++
-            if (c === nbChunksExpected) {
-              bot.removeListener('chunkColumnLoad', listener)
-              resolve()
-            }
+    function waitSpawnZone (bot, view) {
+      const nbChunksExpected = (view * 2) * (view * 2)
+      let c = 0
+      return new Promise(resolve => {
+        const listener = () => {
+          c++
+          if (c === nbChunksExpected) {
+            bot.removeListener('chunkColumnLoad', listener)
+            resolve()
           }
-          bot.on('chunkColumnLoad', listener)
-        })
-      }
+        }
+        bot.on('chunkColumnLoad', listener)
+      })
+    }
 
+    describe('actions', () => {
       test('can dig', async () => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
@@ -244,7 +244,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         serv.getPlayer('bot').op = true
       })
       test('can use /setblock', async () => {
-        await once(bot, 'chunkColumnLoad')
+        await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         bot.chat('/setblock 1 2 3 95 0')
         let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), {array: true})
         expect(newBlock.type).toEqual(95)
