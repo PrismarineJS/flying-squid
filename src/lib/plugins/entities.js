@@ -13,7 +13,7 @@ module.exports.server = function (serv) {
           const players = serv.getNearby({
             world: entity.world,
             position: entity.position,
-            radius: 1.5 * 32 // Seems good for now
+            radius: 1.5 // Seems good for now
           })
           if (players.length) {
             players[0].collect(entity)

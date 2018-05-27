@@ -82,13 +82,21 @@ module.exports.server = async function (serv, {version, worldFolder, generation 
 module.exports.player = function (player, serv, settings) {
   player.unloadChunk = (chunkX, chunkZ) => {
     delete player.loadedChunks[chunkX + ',' + chunkZ]
-    player._client.write('map_chunk', {
-      x: chunkX,
-      z: chunkZ,
-      groundUp: true,
-      bitMap: 0x0000,
-      chunkData: Buffer.alloc(0)
-    })
+
+    if (serv.supportFeature('unloadChunkByEmptyChunk')) {
+      player._client.write('map_chunk', {
+        x: chunkX,
+        z: chunkZ,
+        groundUp: true,
+        bitMap: 0x0000,
+        chunkData: Buffer.alloc(0)
+      })
+    } else if (serv.supportFeature('unloadChunkDirect')) {
+      player._client.write('unload_chunk', {
+        chunkX,
+        chunkZ
+      })
+    }
   }
 
   player.sendChunk = (chunkX, chunkZ, column) => {
@@ -102,7 +110,8 @@ module.exports.player = function (player, serv, settings) {
         z: z,
         groundUp: true,
         bitMap: 0xffff,
-        chunkData: chunk.dump()
+        chunkData: chunk.dump(),
+        blockEntities: []
       })
       return Promise.resolve()
     })
@@ -118,8 +127,8 @@ module.exports.player = function (player, serv, settings) {
 
   player.sendNearbyChunks = (view, group) => {
     player.lastPositionChunkUpdated = player.position
-    const playerChunkX = Math.floor(player.position.x / 16 / 32)
-    const playerChunkZ = Math.floor(player.position.z / 16 / 32)
+    const playerChunkX = Math.floor(player.position.x / 16)
+    const playerChunkZ = Math.floor(player.position.z / 16)
 
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
@@ -181,7 +190,7 @@ module.exports.player = function (player, serv, settings) {
       levelType: 'default'
     })
     await player.findSpawnPoint()
-    player.position = player.spawnPoint.toFixedPosition()
+    player.position = player.spawnPoint
     player.sendSpawnPosition()
     player.updateAndSpawn()
 

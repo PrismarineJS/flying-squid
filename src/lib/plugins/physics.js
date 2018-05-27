@@ -13,9 +13,9 @@ module.exports.entity = function (entity, serv, {version}) {
     const vSign = getSign(entity.velocity)
     const sizeSigned = new Vec3(vSign.x * entity.size.x, vSign.y * entity.size.y, vSign.z * entity.size.z)
 
-    const xVec = entity.position.offset(entity.velocity.x * delta + sizeSigned.x / 2, 0, 0).scaled(1 / 32).floored()
-    const yVec = entity.position.offset(0, entity.velocity.y * delta + sizeSigned.y / 2, 0).scaled(1 / 32).floored()
-    const zVec = entity.position.offset(0, 0, entity.velocity.z * delta + sizeSigned.z / 2).scaled(1 / 32).floored()
+    const xVec = entity.position.offset(entity.velocity.x * delta + sizeSigned.x / 2, 0, 0)
+    const yVec = entity.position.offset(0, entity.velocity.y * delta + sizeSigned.y / 2, 0)
+    const zVec = entity.position.offset(0, 0, entity.velocity.z * delta + sizeSigned.z / 2)
 
     // Get block for each (x/y/z)Vec, check to avoid duplicate getBlockTypes
     const xBlock = blocks[await entity.world.getBlockType(xVec)].boundingBox === 'block'
@@ -33,14 +33,18 @@ module.exports.entity = function (entity, serv, {version}) {
     newPos.y += getMoveAmount('y', yBlock, entity, delta, sizeSigned.y)
     newPos.z += getMoveAmount('z', zBlock, entity, delta, sizeSigned.z)
 
-    // serv.emitParticle(30, serv.overworld, entity.position.scaled(1/32), { size: new Vec3(0, 0, 0) });
+    // serv.emitParticle(30, serv.overworld, entity.position, { size: new Vec3(0, 0, 0) });
     return { position: newPos, onGround: yBlock }
   }
 
   entity.sendVelocity = (vel, maxVel) => {
-    const velocity = vel.scaled(32).floored() // Make fixed point
-    const maxVelocity = maxVel.scaled(32).floored()
-    const scaledVelocity = velocity.scaled(8000 / 32 / 20).floored() // from fixed-position/second to unit => 1/8000 blocks per tick
+    const velocity = vel
+    const maxVelocity = maxVel
+    let scaledVelocity = velocity.scaled(8000 / 20) // from fixed-position/second to unit => 1/8000 blocks per tick
+    if (serv.supportFeature('fixedPointPosition')) {
+      scaledVelocity = scaledVelocity.scaled(1 / 32)
+    }
+    scaledVelocity = scaledVelocity.floored()
     entity._writeNearby('entity_velocity', {
       entityId: entity.id,
       velocityX: scaledVelocity.x,
@@ -56,18 +60,14 @@ module.exports.entity = function (entity, serv, {version}) {
   function getMoveAmount (dir, block, entity, delta, sizeSigned) {
     if (block) {
       entity.velocity[dir] = 0
-      return Math.floor(-1 * (entity.position[dir] + sizeSigned / 2 - floorInDirection(entity.position[dir], -sizeSigned)))
+      return -1 * (entity.position[dir] + sizeSigned / 2 - entity.position[dir])
     } else {
-      return Math.floor(entity.velocity[dir] * delta)
+      return entity.velocity[dir] * delta
     }
   }
 
   function getSign (vec) {
     return new Vec3(Math.sign(vec.x), Math.sign(vec.y), Math.sign(vec.z))
-  }
-
-  function floorInDirection (a, b) {
-    return b < 0 ? Math.floor(a) : Math.ceil(a)
   }
 
   function addGravity (entity, dir, delta) {

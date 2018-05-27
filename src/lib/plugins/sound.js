@@ -1,17 +1,20 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
-  serv.playSound = (sound, world, position, {whitelist, blacklist = [], radius = 32 * 32, volume = 1.0, pitch = 1.0} = {}) => {
+  serv.playSound = (sound, world, position, {whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0} = {}) => {
     const players = (typeof whitelist !== 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
-      position: position.scaled(32).floored(),
-      radius: radius // 32 blocks, fixed position
+      position: position,
+      radius: radius
     }))
     players.filter(player => blacklist.indexOf(player) === -1)
       .forEach(player => {
-        const pos = (position || player.position.scaled(1 / 32)).scaled(8).floored()
+        const iniPos = position ? position.scaled(1 / 32) : player.position.scaled(1 / 32)
+        const pos = iniPos.scaled(8).floored()
+        // only packet still in fixed position in all versions
         player._client.write('named_sound_effect', {
           soundName: sound,
+          soundCategory,
           x: pos.x,
           y: pos.y,
           z: pos.z,
@@ -99,13 +102,13 @@ module.exports.player = function (player, serv) {
     },
     action (action) {
       player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
-      serv.playSound(action.sound_name, player.world, player.position.scaled(1 / 32), {volume: action.volume, pitch: action.pitch})
+      serv.playSound(action.sound_name, player.world, player.position, {volume: action.volume, pitch: action.pitch})
     }
   })
 }
 
 module.exports.entity = function (entity, serv) {
   entity.playSoundAtSelf = (sound, opt = {}) => {
-    serv.playSound(sound, entity.world, entity.position.scaled(1 / 32), opt)
+    serv.playSound(sound, entity.world, entity.position, opt)
   }
 }

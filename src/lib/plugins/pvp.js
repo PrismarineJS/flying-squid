@@ -50,9 +50,9 @@ module.exports.player = function (player, serv) {
 module.exports.entity = function (entity, serv) {
   entity.takeDamage = ({sound = 'game.player.hurt', damage = 1, velocity = new Vec3(0, 0, 0), maxVelocity = new Vec3(4, 4, 4), animation = true}) => {
     entity.updateHealth(entity.health - damage)
-    serv.playSound(sound, entity.world, entity.position.scaled(1 / 32))
+    serv.playSound(sound, entity.world, entity.position)
 
-    entity.sendVelocity(velocity.scaled(1 / 32), maxVelocity)
+    entity.sendVelocity(velocity, maxVelocity)
 
     if (entity.health <= 0) {
       if (animation) {

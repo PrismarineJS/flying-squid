@@ -38,9 +38,10 @@ module.exports.player = function (player, serv, settings) {
     player.crouching = false // Needs added in prismarine-entity later
     player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
     player.username = player._client.username
+    player.uuid = player._client.uuid
     serv.players.push(player)
-    serv.uuidToPlayer[player._client.uuid] = player
-    player.heldItemSlot = 36
+    serv.uuidToPlayer[player.uuid] = player
+    player.heldItemSlot = 0
     player.loadedChunks = {}
   }
 
@@ -55,12 +56,12 @@ module.exports.player = function (player, serv, settings) {
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     })
-    player.position = player.spawnPoint.toFixedPosition()
+    player.position = player.spawnPoint.clone()
   }
 
   function sendChunkWhenMove () {
     player.on('move', () => {
-      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16 * 32) { player.sendRestMap() }
+      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
     })
   }
 
@@ -80,7 +81,7 @@ module.exports.player = function (player, serv, settings) {
     serv._writeAll('player_info', {
       action: 1,
       data: [{
-        UUID: player._client.uuid,
+        UUID: player.uuid,
         gamemode: player.gameMode
       }]
     })
@@ -91,7 +92,7 @@ module.exports.player = function (player, serv, settings) {
     player._writeOthers('player_info', {
       action: 0,
       data: [{
-        UUID: player._client.uuid,
+        UUID: player.uuid,
         name: player.username,
         properties: player.profileProperties,
         gamemode: player.gameMode,
@@ -102,7 +103,7 @@ module.exports.player = function (player, serv, settings) {
     player._client.write('player_info', {
       action: 0,
       data: serv.players.map((otherPlayer) => ({
-        UUID: otherPlayer._client.uuid,
+        UUID: otherPlayer.uuid,
         name: otherPlayer.username,
         properties: otherPlayer.profileProperties,
         gamemode: otherPlayer.gameMode,
@@ -112,7 +113,7 @@ module.exports.player = function (player, serv, settings) {
     setInterval(() => player._client.write('player_info', {
       action: 2,
       data: serv.players.map(otherPlayer => ({
-        UUID: otherPlayer._client.uuid,
+        UUID: otherPlayer.uuid,
         ping: otherPlayer._client.latency
       }))
     }), 5000)
@@ -135,12 +136,12 @@ module.exports.player = function (player, serv, settings) {
   }
 
   player.login = async () => {
-    if (serv.uuidToPlayer[player._client.uuid]) {
+    if (serv.uuidToPlayer[player.uuid]) {
       player.kick('You are already connected')
       return
     }
-    if (serv.bannedPlayers[player._client.uuid]) {
-      player.kick(serv.bannedPlayers[player._client.uuid].reason)
+    if (serv.bannedPlayers[player.uuid]) {
+      player.kick(serv.bannedPlayers[player.uuid].reason)
       return
     }
     if (serv.bannedIPs[player._client.socket.remoteAddress]) {
@@ -151,11 +152,11 @@ module.exports.player = function (player, serv, settings) {
     addPlayer()
     await player.findSpawnPoint()
     sendLogin()
-    await player.sendMap()
     player.sendSpawnPosition()
     player.sendSelfPosition()
-    player.updateHealth(player.health)
     player.sendAbilities()
+    await player.sendMap()
+    player.updateHealth(player.health)
 
     updateTime()
     fillTabList()

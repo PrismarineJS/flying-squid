@@ -1,6 +1,6 @@
 const moment = require('moment')
 const rp = require('request-promise')
-const nodeUuid = require('node-uuid')
+const UUID = require('uuid-1345')
 
 module.exports.server = function (serv) {
   serv.ban = (uuid, reason) => {
@@ -20,7 +20,7 @@ module.exports.server = function (serv) {
   }
 
   function uuidInParts (plainUUID) {
-    return nodeUuid.unparse(nodeUuid.parse(plainUUID))
+    return UUID.stringify(UUID.parse(plainUUID))
   }
 
   serv.getUUIDFromUsername = username => {
@@ -65,7 +65,7 @@ module.exports.player = function (player, serv) {
   player.ban = reason => {
     reason = reason || 'You were banned!'
     player.kick(reason)
-    const uuid = player._client.uuid
+    const uuid = player.uuid
     serv.ban(uuid, reason)
   }
   player.banIP = reason => {
@@ -74,7 +74,7 @@ module.exports.player = function (player, serv) {
     serv.banIP(player._client.socket.remoteAddress)
   }
 
-  player.pardon = () => serv.pardon(player._client.uuid)
+  player.pardon = () => serv.pardon(player.uuid)
 
   player.commands.add({
     base: 'kick',

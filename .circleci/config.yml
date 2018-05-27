@@ -2,6 +2,7 @@ version: 2
 
 jobs:
   build:
+    parallelism: 2
     docker:
       - image: circleci/node:10
     steps:
