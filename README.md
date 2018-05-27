@@ -4,14 +4,13 @@ flying-squid
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
 [![Join the chat at https://gitter.im/PrismarineJS/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Minecraft version](https://img.shields.io/badge/minecraft%20version-1.8-brightgreen.svg)](http://wiki.vg/Protocol)
 [![Github issues](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)
 [![Build Status](https://img.shields.io/circleci/project/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
 
-A semi-functional minecraft server in Node.js
+Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
 ## Features
-* Support for Minecraft 1.8
+* Support for Minecraft 1.8 and 1.12
 * Players can see the world
 * Players see each other in-game and in tab
 * Digging
@@ -65,34 +64,36 @@ For development see [API.md](doc/API.md), [CONTRIBUTE.md](doc/CONTRIBUTE.md) and
 flying-squid is also a server lib. Here is a basic example of usage:
 
 ```js
-const mcServer = require("flying-squid");
+const mcServer = require('flying-squid')
 
 mcServer.createMCServer({
-  "motd": "A Minecraft Server \nRunning flying-squid",
-  "port": 25565,
-  "max-players": 10,
-  "online-mode": true,
-  "logging": true,
-  "gameMode": 1,
-  "generation": {
-    "name": "diamond_square",
-    "options":{
-      "worldHeight": 80
+  'motd': 'A Minecraft Server \nRunning flying-squid',
+  'port': 25565,
+  'max-players': 10,
+  'online-mode': true,
+  'logging': true,
+  'gameMode': 1,
+  'generation': {
+    'name': 'diamond_square',
+    'options': {
+      'worldHeight': 80
     }
   },
-  "kickTimeout": 10000,
-  "plugins": {
+  'kickTimeout': 10000,
+  'plugins': {
 
   },
-  "modpe": false,
-  "view-distance": 10
-});
+  'modpe': false,
+  'view-distance': 10
+})
+
 ```
 
 You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](doc/CONTRIBUTE.md).
 
 ## Contributors
 
+ - [@mhsjlw](https://github.com/mhsjlw) creator of flying-squid
  - [@roblabla](https://github.com/roblabla) for helping out with the protocols
  - [@rom1504](https://github.com/rom1504) for massive contributions to the code
  - [@demipixel](https://github.com/demipixel) 
