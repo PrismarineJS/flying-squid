@@ -152,11 +152,11 @@ module.exports.player = function (player, serv, settings) {
     addPlayer()
     await player.findSpawnPoint()
     sendLogin()
-    await player.sendMap()
     player.sendSpawnPosition()
     player.sendSelfPosition()
-    player.updateHealth(player.health)
     player.sendAbilities()
+    await player.sendMap()
+    player.updateHealth(player.health)
 
     updateTime()
     fillTabList()

@@ -160,6 +160,7 @@ module.exports.player = function (player, serv, options) {
             velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
+        return entity
       })
         .reduce((prec, entity) => {
           if (prec !== null) { prec.attach(entity) }

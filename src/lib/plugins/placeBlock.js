@@ -35,7 +35,7 @@ module.exports.player = function (player, serv, {version}) {
         })
       }
 
-      player.inventory.slots[36 + player.heldItemSlot]--
+      if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
 
       if (heldItem.type !== 323) {
         player.changeBlock(position, id, damage)
