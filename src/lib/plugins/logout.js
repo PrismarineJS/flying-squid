@@ -22,7 +22,7 @@ module.exports.player = function (player, serv) {
       player._writeOthers('player_info', {
         action: 4,
         data: [{
-          UUID: player._client.uuid
+          UUID: player.uuid
         }]
       })
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]))
@@ -32,7 +32,7 @@ module.exports.player = function (player, serv) {
       if (index > -1) {
         serv.players.splice(index, 1)
       }
-      delete serv.uuidToPlayer[player._client.uuid]
+      delete serv.uuidToPlayer[player.uuid]
     }
   })
 }

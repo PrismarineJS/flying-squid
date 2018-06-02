@@ -49,7 +49,7 @@ module.exports.player = function (player, serv, {version}) {
       const pars = str.split(' ')
       if (pars.length !== 6) { return false }
       let [x, y, z, direction, width, height] = pars;
-      [x, y, z] = [x, y, z].map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]] / 32))
+      [x, y, z] = [x, y, z].map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]]))
       const bottomLeft = new Vec3(x, y, z)
       if (direction !== 'x' && direction !== 'z') { throw new UserError('Wrong Direction') }
       direction = direction === 'x' ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)

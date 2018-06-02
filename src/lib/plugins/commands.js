@@ -102,7 +102,7 @@ module.exports.player = function (player, serv, {version}) {
       return str || false
     },
     action (sel) {
-      const arr = serv.selectorString(sel, player.position.scaled(1 / 32), player.world)
+      const arr = serv.selectorString(sel, player.position, player.world)
       player.chat(JSON.stringify(arr.map(a => a.id)))
     }
   })
@@ -119,7 +119,7 @@ module.exports.player = function (player, serv, {version}) {
 }
 
 module.exports.entity = function (entity, serv) {
-  entity.selectorString = (str) => serv.selectorString(str, entity.position.scaled(1 / 32), entity.world)
+  entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
 }
 
 module.exports.server = function (serv) {
@@ -190,8 +190,8 @@ module.exports.server = function (serv) {
     })
 
     sample = sample.filter(s => {
-      if ((notudf(opt.radius) && s.position.scaled(1 / 32).distanceTo(pos) > opt.radius) ||
-          (notudf(opt.minRadius) && s.position.scaled(1 / 32).distanceTo(pos) < opt.minRadius) ||
+      if ((notudf(opt.radius) && s.position.distanceTo(pos) > opt.radius) ||
+          (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
           (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
           (notudf(opt.level) && s.level > opt.level) ||
           (notudf(opt.minLevel) && s.level < opt.minLevel) ||

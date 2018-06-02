@@ -13,20 +13,21 @@ const materialToSound = {
 module.exports.player = function (player, serv, {version}) {
   const blocks = require('minecraft-data')(version).blocks
 
-  player._client.on('block_place', ({direction, heldItem, location} = {}) => {
-    if (direction === -1 || heldItem.blockId === -1 || !blocks[heldItem.blockId]) return
+  player._client.on('block_place', ({direction, location} = {}) => {
+    const heldItem = player.inventory.slots[36 + player.heldItemSlot]
+    if (direction === -1 || heldItem.type === -1 || !blocks[heldItem.type]) return
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
     player.behavior('placeBlock', {
       direction: directionVector,
       heldItem: heldItem,
-      id: heldItem.blockId,
-      damage: heldItem.itemDamage,
+      id: heldItem.type,
+      damage: heldItem.metadata,
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.blockId].material] || 'stone')
+      sound: 'dig.' + (materialToSound[blocks[heldItem.type].material] || 'stone')
     }, ({direction, heldItem, position, playSound, sound, id, damage}) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
@@ -34,9 +35,9 @@ module.exports.player = function (player, serv, {version}) {
         })
       }
 
-      player.inventory.slots[36 + player.heldItemSlot]--
+      if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
 
-      if (heldItem.blockId !== 323) {
+      if (heldItem.type !== 323) {
         player.changeBlock(position, id, damage)
       } else if (direction === 1) {
         player.setBlock(position, 63, 0)

@@ -16,7 +16,7 @@ function generation ({version, seed, level = 50} = {}) {
           let data
 
           if (y < bedrockheightbottom) block = 7
-          else if (y < level) block = 87
+          else if (y < level) block = seedRand(50) === 0 ? 89 : 87
           else if (y > 127 - bedrockheighttop) block = 7
 
           const pos = new Vec3(x, y, z)

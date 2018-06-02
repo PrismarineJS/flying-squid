@@ -35,7 +35,8 @@ module.exports.server = function (serv, settings) {
   })
 
   Object.keys(serv.plugins).forEach((p) => {
-    if (serv.plugins[p].server) serv.plugins[p].server(serv.plugins[p], serv, settings)
+    const f = serv.plugins[p].server
+    if (serv.plugins[p].server) f.call(serv.plugins[p], serv, settings)
   })
 
   serv.on('asap', () => {
@@ -48,7 +49,8 @@ module.exports.server = function (serv, settings) {
 module.exports.player = function (player, serv) {
   Object.keys(serv.plugins).forEach(p => {
     const plugin = serv.plugins[p]
-    if (plugin.player) plugin.player(plugin, player, serv)
+    const f = plugin.player
+    if (plugin.player) f.call(plugin, player, serv)
   })
 }
 
@@ -66,6 +68,7 @@ module.exports.entity = function (entity, serv) {
 
   Object.keys(serv.plugins).forEach(p => {
     const plugin = serv.plugins[p]
-    if (plugin.entity) plugin.entity(plugin, entity, serv)
+    const f = plugin.entity
+    if (plugin.entity) f.call(plugin, entity, serv)
   })
 }
