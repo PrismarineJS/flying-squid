@@ -1,0 +1,9 @@
+- Getting Started
+  - [Introduction](/)
+  - [Examples](/examples.md)
+- Classes
+  - [Flying-Squid](/classes/flying-squid.md)
+  - [MCServer](/classes/MCServer.md)
+  - [Entity](/classes/Entity.md)
+  - [Player](/classes/Player.md)
+- [Behaviors](/other/Behavior.md)

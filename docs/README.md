@@ -57,7 +57,7 @@ All the basic commands that a server should have
 
 
 ## Documentation
-For development see [API.md](doc/API.md), [CONTRIBUTE.md](doc/CONTRIBUTE.md) and [HISTORY.md](doc/HISTORY.md)
+For development see the [API documentation](https://PrismarineJS.github.io/flying-squid/#), [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md) and [HISTORY.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/HISTORY.md)
 
 ## Using as a lib
 
@@ -86,10 +86,11 @@ mcServer.createMCServer({
   'modpe': false,
   'view-distance': 10
 })
-
 ```
 
-You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](doc/CONTRIBUTE.md).
+You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
+
+For further examples, see the [examples page.](https://PrismarineJS.github.io/flying-squid/#/examples)
 
 ## Contributors
 
