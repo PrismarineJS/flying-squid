@@ -8,10 +8,10 @@ flying-squid
 [![Github issues](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)
 [![Build Status](https://img.shields.io/circleci/project/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
 
-A semi-functional minecraft server in Node.js
+Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
 ## Features
-* Support for Minecraft 1.8
+* Support for Minecraft 1.8 and 1.12
 * Players can see the world
 * Players see each other in-game and in tab
 * Digging
@@ -65,28 +65,28 @@ For development see the [API documentation](https://PrismarineJS.github.io/flyin
 flying-squid is also a server lib. Here is a basic example of usage:
 
 ```js
-const mcServer = require("flying-squid");
+const mcServer = require('flying-squid')
 
 mcServer.createMCServer({
-  "motd": "A Minecraft Server \nRunning flying-squid",
-  "port": 25565,
-  "max-players": 10,
-  "online-mode": true,
-  "logging": true,
-  "gameMode": 1,
-  "generation": {
-    "name": "diamond_square",
-    "options":{
-      "worldHeight": 80
+  'motd': 'A Minecraft Server \nRunning flying-squid',
+  'port': 25565,
+  'max-players': 10,
+  'online-mode': true,
+  'logging': true,
+  'gameMode': 1,
+  'generation': {
+    'name': 'diamond_square',
+    'options': {
+      'worldHeight': 80
     }
   },
-  "kickTimeout": 10000,
-  "plugins": {
+  'kickTimeout': 10000,
+  'plugins': {
 
   },
-  "modpe": false,
-  "view-distance": 10
-});
+  'modpe': false,
+  'view-distance': 10
+})
 ```
 
 You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
@@ -95,6 +95,7 @@ For further examples, see the [examples page.](https://PrismarineJS.github.io/fl
 
 ## Contributors
 
+ - [@mhsjlw](https://github.com/mhsjlw) creator of flying-squid
  - [@roblabla](https://github.com/roblabla) for helping out with the protocols
  - [@rom1504](https://github.com/rom1504) for massive contributions to the code
  - [@demipixel](https://github.com/demipixel) 
