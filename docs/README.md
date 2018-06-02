@@ -10,6 +10,17 @@ flying-squid
 
 A semi-functional minecraft server in Node.js
 
+## Features
+* Support for Minecraft 1.8
+* Players can see the world
+* Players see each other in-game and in tab
+* Digging
+* Placing blocks
+* Player movement
+* World generation
+* Anvil loading
+* Multi-world
+
 ## Test server
 
 * rom1504.fr (Port 25565) using [auto-squid](https://github.com/rom1504/auto-squid)
@@ -45,6 +56,48 @@ Http api available in the test instance at [flying-squid.rom1504.fr](http://flyi
 * [flying-squid-essentials](https://github.com/DeudlyYT/Flying-Squid-Essentials) Plugin that in a future will be like Essentials of bukkit/spigot.
 All the basic commands that a server should have
 
-## Getting Started
 
-Check out our [examples](/examples) and the rest of the documentation to get started writing custom plugins or contributing to the development!
+## Documentation
+For development see the [API documentation](https://PrismarineJS.github.io/flying-squid/#), [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md) and [HISTORY.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/HISTORY.md)
+
+## Using as a lib
+
+flying-squid is also a server lib. Here is a basic example of usage:
+
+```js
+const mcServer = require("flying-squid");
+
+mcServer.createMCServer({
+  "motd": "A Minecraft Server \nRunning flying-squid",
+  "port": 25565,
+  "max-players": 10,
+  "online-mode": true,
+  "logging": true,
+  "gameMode": 1,
+  "generation": {
+    "name": "diamond_square",
+    "options":{
+      "worldHeight": 80
+    }
+  },
+  "kickTimeout": 10000,
+  "plugins": {
+
+  },
+  "modpe": false,
+  "view-distance": 10
+});
+```
+
+You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
+
+For further examples, see the [examples page.](https://PrismarineJS.github.io/flying-squid/#/examples)
+
+## Contributors
+
+ - [@roblabla](https://github.com/roblabla) for helping out with the protocols
+ - [@rom1504](https://github.com/rom1504) for massive contributions to the code
+ - [@demipixel](https://github.com/demipixel) 
+ - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protocol
+ - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
+ - All of our other awesome contributors!

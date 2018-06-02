@@ -8,4 +8,4 @@
 * Supports custom plugins
 
 [GitHub](https://github.com/PrismarineJS/flying-squid)
-[Get Started](#docsify)
+[Get Started](#flying-squid)

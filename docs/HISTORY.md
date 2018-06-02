@@ -1,3 +1,11 @@
+## 1.1.0
+
+* add doc of player.commands
+* Remove babel and unused dependencies
+* Migrate to CircleCI 2 and Jest
+* Add standard linting
+* 1.8 and 1.12 support
+
 ## 1.0.0
 
 * implement difficulty (thanks @theskiier14)
