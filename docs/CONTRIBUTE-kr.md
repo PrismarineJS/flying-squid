@@ -19,14 +19,14 @@
 // 각 개체는 속성, 이벤트, 메소드 또는 데이터를 개체에 주입하기 때문에 "inject"라고 합니다.
 
 module.exports.server = function(serv) { // 여기에 서버이벤트를 작성하십시오.
-  serv.spawnPoint = ...;
-  serv.on('...', ...);
+  serv.spawnPoint = ...
+  serv.on('...', ...)
 }
 
 module.exports.entity = function(entity, serv) { // 엔티티가 생성될 때 실행됩니다. 절대 server.on이 실행될 때가 아닙니다.
   entity.health = 10; // 체력 20중의 10
-  entity.on('...', ...);
-  // serv.on('...', ...); NOOOO
+  entity.on('...', ...)
+  // serv.on('...', ...) NOOOO
 }
 
 module.exports.player = function(player, serv) { // 플레이어는 엔티티 유형이며 추가된 속성 및 기능이 포함된 엔티티입니다.

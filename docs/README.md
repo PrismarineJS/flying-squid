@@ -57,7 +57,7 @@ All the basic commands that a server should have
 
 
 ## Documentation
-For development see the [API documentation](https://PrismarineJS.github.io/flying-squid/#), [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md) and [HISTORY.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/HISTORY.md)
+For development see the [API documentation](API.md), [CONTRIBUTE.md](CONTRIBUTE.md) and [HISTORY.md](HISTORY.md)
 
 ## Using as a lib
 

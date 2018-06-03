@@ -34,10 +34,10 @@ When a block gets a random tick, convert the grass to stone
 ```js
 module.exports.server = function(serv) {
   serv.on('randomTickBlock', ({ world, position, blockType }) => {
-    if (blockType == 2) { // If grass
+    if (blockType === 2) { // If grass
       serv.setBlock(world, position, 1, 0); // Change to stone (id 1, data 0)
     }
-  });
+  })
 }
 ```
 
@@ -64,7 +64,7 @@ module.exports.player = function(player, serv) {
       const number = Math.floor(Math.random()*(maxNumber+1)); // Generate our random number
       player.chat(number); // Send it to the player
     }
-  });
+  })
 }
 ```
 
@@ -81,28 +81,28 @@ const changeBlock = {
   2: [95, 5], // Grass to green glass
   3: [95, 12], // Dirt to brown glass
   9: [95, 11] // Still water to blue glass
-};
+}
 
 module.exports.player = function(player, serv) {
   player.on('sendChunk', async (data, cancelled) => { // When sending chunks, intercept, replace blocks neccesary, then continue sending
     if (cancelled) return;
-    var chunk = new Chunk(); // Duplicate chunk so we don't edit the actual world
+    const chunk = new Chunk(); // Duplicate chunk so we don't edit the actual world
     chunk.load(new Buffer(data.chunk.dump()));
     
     // Go through every block in the chunk
-    for (var x = 0; x < 16; x++) {
-      for (var z = 0; z < 16; z++) {
-        for (var y = 0; y < 256; y++) {
+    for (let x = 0; x < 16; x++) {
+      for (let z = 0; z < 16; z++) {
+        for (let y = 0; y < 256; y++) {
           const vec = new Vec3(x, y, z);
           const id = chunk.getBlockType(vec); // Get id of block at the current location
           if (self.changeBlock[id]) { // If for this block type we have a glass color to convert it to
             chunk.setBlockType(vec, self.changeBlock[id][0]); // Edit block
-            if (self.changeBlock[id].length > 1) chunk.setBlockData(vec, self.changeBlock[id][1]);
+            if (self.changeBlock[id].length > 1) chunk.setBlockData(vec, self.changeBlock[id][1])
           }
         }
       }
     }
     data.chunk = chunk; // Change the chunk being sent to our new chunk
-  });
-});
+  })
+}
 ```

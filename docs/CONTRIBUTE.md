@@ -19,19 +19,19 @@ Directory architecture :
 // Each of these are called an "inject" because you're injecting properties, events, methods, or data into the objects
 
 module.exports.server = function(serv) { // Create your server events here
-  serv.spawnPoint = ...;
-  serv.on('...', ...);
+  serv.spawnPoint = ...
+  serv.on('...', ...)
 }
 
 module.exports.entity = function(entity, serv) { // Called whenever an entity is created, do NOT do serv.on here
   entity.health = 10; // Start with 10 health out of 20
-  entity.on('...', ...);
+  entity.on('...', ...)
   // serv.on('...', ...); NOOOO
 }
 
 module.exports.player = function(player, serv) { // Player is a type of entity (entity inject is called first) with added properties and functions
   player.setXp(100); // Example of a property player entities have but not other entities
-  player.on(',,,', ...);
+  player.on(',,,', ...)
   // serv.on('...', .– don't even think about it
 }
 
