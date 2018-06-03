@@ -1,5 +1,5 @@
 
-# Flying-Squid <small>1.0.0</small>
+# Flying-Squid
 
 > Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
