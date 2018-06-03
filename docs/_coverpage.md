@@ -1,9 +1,8 @@
 
 # Flying-Squid <small>1.0.0</small>
 
-> A Minecraft Server in Node.js
+> Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
-* Simulates vanilla server
 * Minecraft versions 1.8 and 1.12
 * Supports custom plugins
 
