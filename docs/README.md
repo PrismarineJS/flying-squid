@@ -2,10 +2,9 @@ flying-squid
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
-[![Join the chat at https://gitter.im/PrismarineJS/flying-squid](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/flying-squid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Github issues](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)](https://img.shields.io/github/issues/PrismarineJS/flying-squid.svg)
 [![Build Status](https://img.shields.io/circleci/project/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
+[![Discord](https://discordapp.com/api/guilds/413438066984747026/embed.png)](https://discord.gg/GsEFRM8)
+
 
 Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
