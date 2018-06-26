@@ -1,3 +1,9 @@
+## 1.1.1
+
+* fix external.js
+* fix /setblock test, fix #344
+* use docsify for doc and use discord
+
 ## 1.1.0
 
 * add doc of player.commands
