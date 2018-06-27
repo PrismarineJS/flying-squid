@@ -1,3 +1,7 @@
+## 1.1.2
+
+* copy README.md to root, so it's displayed by npm
+
 ## 1.1.1
 
 * fix external.js
