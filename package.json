@@ -15,6 +15,7 @@
   },
   "scripts": {
     "prepare": "require-self",
+    "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "test": "jest --verbose --runInBand"
   },
