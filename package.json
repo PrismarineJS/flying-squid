@@ -55,7 +55,7 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
-    "jest": "^22.1.4",
+    "jest": "^23.6.0",
     "longjohn": "^0.2.12",
     "mineflayer": "^2.7.3",
     "require-self": "^0.2.1",
