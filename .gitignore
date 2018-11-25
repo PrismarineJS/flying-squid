@@ -9,4 +9,4 @@ distTest
 world/*
 !world/.gitkeep
 package-lock.json
-README.md
+/README.md
