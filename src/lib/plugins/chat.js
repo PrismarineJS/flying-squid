@@ -1,5 +1,5 @@
 module.exports.server = function (serv) {
-  serv.broadcast = (message, {whitelist = serv.players, blacklist = [], system = false} = {}) => {
+  serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false } = {}) => {
     if (whitelist.type === 'player') whitelist = [whitelist]
 
     if (typeof message === 'string') message = serv.parseClassic(message)
@@ -120,9 +120,9 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
-  player._client.on('chat', ({message} = {}) => {
+  player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
-      player.behavior('command', {command: message.slice(1)}, ({command}) => player.handleCommand(command))
+      player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
     } else {
       player.behavior('chat', {
         message: message,
@@ -130,7 +130,7 @@ module.exports.player = function (player, serv) {
         text: message,
         whitelist: serv.players,
         blacklist: []
-      }, ({prefix, text, whitelist, blacklist}) => {
+      }, ({ prefix, text, whitelist, blacklist }) => {
         const obj = serv.parseClassic(prefix)
         if (!obj.extra) obj.extra = []
         obj.extra.push(serv.parseClassic(text))

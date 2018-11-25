@@ -1,9 +1,9 @@
 const Vec3 = require('vec3').Vec3
 
-module.exports.player = function (player, serv, {version}) {
+module.exports.player = function (player, serv, { version }) {
   const items = require('minecraft-data')(version).items
 
-  player._client.on('block_place', ({direction, location} = {}) => {
+  player._client.on('block_place', ({ direction, location } = {}) => {
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (direction === -1 || heldItem.type === -1 || !items[heldItem.type]) return
     const item = heldItem

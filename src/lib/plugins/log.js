@@ -49,7 +49,7 @@ module.exports.player = function (player, serv) {
 
   player.on('disconnected', () => serv.log('[INFO]: ' + player.username + ' disconnected'))
 
-  player.on('chat', ({message}) => serv.log('[INFO] ' + '<' + player.username + '>' + ' ' + message))
+  player.on('chat', ({ message }) => serv.log('[INFO] ' + '<' + player.username + '>' + ' ' + message))
 
   player.on('kicked', (kicker, reason) =>
     serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))

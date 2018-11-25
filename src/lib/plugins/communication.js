@@ -8,12 +8,12 @@ module.exports.server = function (serv) {
   serv._writeNearby = (packetName, packetFields, loc) =>
     serv._writeArray(packetName, packetFields, serv.getNearby(loc))
 
-  serv.getNearby = ({world, position, radius = 8 * 16}) => serv.players.filter(player =>
+  serv.getNearby = ({ world, position, radius = 8 * 16 }) => serv.players.filter(player =>
     player.world === world &&
     player.position.distanceTo(position) <= radius
   )
 
-  serv.getNearbyEntities = ({world, position, radius = 8 * 16}) => Object.keys(serv.entities)
+  serv.getNearbyEntities = ({ world, position, radius = 8 * 16 }) => Object.keys(serv.entities)
     .map(eId => serv.entities[eId])
     .filter(entity =>
       entity.world === world &&

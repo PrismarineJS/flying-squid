@@ -1,6 +1,6 @@
 const UserError = require('flying-squid').UserError
 
-module.exports.player = function (player, serv, {version}) {
+module.exports.player = function (player, serv, { version }) {
   player.commands.add({
     base: 'help',
     info: 'to show all commands',
@@ -14,7 +14,7 @@ module.exports.player = function (player, serv, {version}) {
       const search = params.join(' ')
       return { search: search, page: (page && page - 1) || 0 }
     },
-    action ({search, page}) {
+    action ({ search, page }) {
       if (page < 0) return 'Page # must be >= 1'
       const hash = player.commands.uniqueHash
 
@@ -247,7 +247,7 @@ module.exports.server = function (serv) {
     opt.forEach(o => {
       const match = o.match(/^([^=]+)=([^=]+)$/)
       if (match === null) err = new UserError('Invalid selector option format: "' + o + '"')
-      else optPair.push({key: match[1], val: match[2]})
+      else optPair.push({ key: match[1], val: match[2] })
     })
     if (err) throw err
 
@@ -275,7 +275,7 @@ module.exports.server = function (serv) {
       minScores: []
     }
 
-    optPair.forEach(({key, val}) => {
+    optPair.forEach(({ key, val }) => {
       if (['x', 'y', 'z'].indexOf(key) !== -1) pos[key] = val
       else if (!optConversion[key]) {
         data[key] = val

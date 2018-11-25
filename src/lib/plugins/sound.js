@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
-  serv.playSound = (sound, world, position, {whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0} = {}) => {
+  serv.playSound = (sound, world, position, { whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0 } = {}) => {
     const players = (typeof whitelist !== 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position,
@@ -24,7 +24,7 @@ module.exports.server = function (serv) {
       })
   }
 
-  serv.playNoteBlock = (pitch, world, position, {instrument = 'harp', particle = true} = {}) => {
+  serv.playNoteBlock = (pitch, world, position, { instrument = 'harp', particle = true } = {}) => {
     if (particle) {
       serv.emitParticle(23, world, position.clone().add(new Vec3(0.5, 1.5, 0.5)), {
         count: 1,
@@ -43,7 +43,7 @@ module.exports.player = function (player, serv) {
     serv.playSound(sound, player.world, null, opt)
   }
 
-  player.on('placeBlock_cancel', async ({reference}, cancel) => {
+  player.on('placeBlock_cancel', async ({ reference }, cancel) => {
     if (player.crouching) return
     const id = await player.world.getBlockType(reference)
     if (id !== 25) return
@@ -56,7 +56,7 @@ module.exports.player = function (player, serv) {
     serv.playNoteBlock(data.note, player.world, reference)
   })
 
-  player.on('dig_cancel', async ({position}, cancel) => {
+  player.on('dig_cancel', async ({ position }, cancel) => {
     const id = await player.world.getBlockType(position)
     if (id !== 25) return
     cancel(false)
@@ -82,7 +82,7 @@ module.exports.player = function (player, serv) {
     },
     action (action) {
       player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
-      player.playSound(action.sound_name, {volume: action.volume, pitch: action.pitch})
+      player.playSound(action.sound_name, { volume: action.volume, pitch: action.pitch })
     }
   })
 
@@ -102,7 +102,7 @@ module.exports.player = function (player, serv) {
     },
     action (action) {
       player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
-      serv.playSound(action.sound_name, player.world, player.position, {volume: action.volume, pitch: action.pitch})
+      serv.playSound(action.sound_name, player.world, player.position, { volume: action.volume, pitch: action.pitch })
     }
   })
 }

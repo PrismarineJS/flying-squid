@@ -1,4 +1,4 @@
-module.exports = {distanceToXpLevel, getXpLevel, getXpRequired, getBaseXpFromLevel}
+module.exports = { distanceToXpLevel, getXpLevel, getXpRequired, getBaseXpFromLevel }
 
 function distanceToXpLevel (xp, toLevel) {
   const level = getXpLevel(xp)

@@ -31,7 +31,7 @@ module.exports.player = async function (player, serv) {
   player.findSpawnPoint = async () => {
     player.spawnPoint = await serv.getSpawnPoint(player.world)
   }
-  player._client.on('settings', ({viewDistance}) => {
+  player._client.on('settings', ({ viewDistance }) => {
     player.view = viewDistance
   })
 }

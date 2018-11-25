@@ -89,7 +89,7 @@ module.exports.player = function (player, serv) {
         reason: parts.join(' ')
       }
     },
-    action ({username, reason}) {
+    action ({ username, reason }) {
       const kickPlayer = serv.getPlayer(username)
       if (!kickPlayer) {
         player.chat(username + ' is not on this server!')
@@ -113,7 +113,7 @@ module.exports.player = function (player, serv) {
         reason: parts.join(' ')
       }
     },
-    action ({username, reason}) {
+    action ({ username, reason }) {
       const banPlayer = serv.getPlayer(username)
 
       if (!banPlayer) {
@@ -148,7 +148,7 @@ module.exports.player = function (player, serv) {
         reason: argv.shift()
       }
     },
-    action ({IP, reason}) {
+    action ({ IP, reason }) {
       serv.banIP(IP, reason)
       player.chat('' + IP + ' was IP banned')
     }

@@ -1,8 +1,8 @@
 const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
-module.exports.player = function (player, serv, {version}) {
-  const {detectFrame, generatePortal, addPortalToWorld} = require('flying-squid').portal_detector(version)
+module.exports.player = function (player, serv, { version }) {
+  const { detectFrame, generatePortal, addPortalToWorld } = require('flying-squid').portal_detector(version)
 
   player.use_flint_and_steel = async (referencePosition, direction, position) => {
     let block = await player.world.getBlock(referencePosition)
@@ -18,7 +18,7 @@ module.exports.player = function (player, serv, {version}) {
     player.changeBlock(position, 51, 0)
   }
 
-  player.on('dug', ({position, block}) => {
+  player.on('dug', ({ position, block }) => {
     function destroyPortal (portal, positionAlreadyDone = null) {
       player.world.portals = player.world.portals.splice(player.world.portals.indexOf(portal), 1)
       portal
@@ -28,14 +28,14 @@ module.exports.player = function (player, serv, {version}) {
     }
 
     if (block.name === 'obsidian') {
-      const p = player.world.portals.filter(({bottom, top, left, right}) =>
+      const p = player.world.portals.filter(({ bottom, top, left, right }) =>
         [].concat([], [bottom, left, right, top])
           .reduce((acc, pos) => acc || pos.equals(position), false))
       p.forEach(portal => destroyPortal(portal, position))
     }
 
     if (block.name === 'portal') {
-      const p = player.world.portals.filter(({air}) => air.reduce((acc, pos) => acc || pos.equals(position), false))
+      const p = player.world.portals.filter(({ air }) => air.reduce((acc, pos) => acc || pos.equals(position), false))
       p.forEach(portal => destroyPortal(portal, position))
     }
   })
@@ -53,9 +53,9 @@ module.exports.player = function (player, serv, {version}) {
       const bottomLeft = new Vec3(x, y, z)
       if (direction !== 'x' && direction !== 'z') { throw new UserError('Wrong Direction') }
       direction = direction === 'x' ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)
-      return {bottomLeft, direction, width, height}
+      return { bottomLeft, direction, width, height }
     },
-    async action ({bottomLeft, direction, width, height}) {
+    async action ({ bottomLeft, direction, width, height }) {
       if (width > 21 || height > 21) { throw new UserError('Portals can only be 21x21!') }
       const portal = generatePortal(bottomLeft, direction, width, height)
       await addPortalToWorld(player.world, portal, [], [], async (pos, type) => {

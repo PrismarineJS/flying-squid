@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
-  serv.emitParticle = (particle, world, position, {whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1} = {}) => {
+  serv.emitParticle = (particle, world, position, { whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1 } = {}) => {
     const players = (typeof whitelist !== 'undefined' ? (whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
       world: world,
       position: position,
@@ -39,13 +39,13 @@ module.exports.player = function (player, serv) {
         size: results[5] ? new Vec3(parseInt(results[3]), parseInt(results[4]), parseInt(results[5])) : new Vec3(1, 1, 1)
       }
     },
-    action ({particle, amount, size}) {
+    action ({ particle, amount, size }) {
       if (amount >= 100000) {
         player.chat('You cannot emit more than 100,000 particles!')
         return
       }
       player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')')
-      serv.emitParticle(particle, player.world, player.position, {count: amount, size: size})
+      serv.emitParticle(particle, player.world, player.position, { count: amount, size: size })
     }
   })
 }

@@ -134,7 +134,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         bot.dig(bot.blockAt(pos))
 
-        let [, newBlock] = await once(bot2, 'blockUpdate', {array: true})
+        let [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
@@ -145,7 +145,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         const pos = bot.entity.position.offset(0, -2, 0).floored()
         bot.dig(bot.blockAt(pos))
 
-        let [, newBlock] = await once(bot2, 'blockUpdate', {array: true})
+        let [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
 
@@ -158,7 +158,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
 
         bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0));
 
-        [, newBlock] = await once(bot2, 'blockUpdate', {array: true})
+        [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(1)
       })
@@ -246,7 +246,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         bot.chat('/setblock 1 2 3 95 0')
-        let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), {array: true})
+        let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         expect(newBlock.type).toEqual(95)
       })
       test('can use /xp', async () => {

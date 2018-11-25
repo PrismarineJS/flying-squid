@@ -28,7 +28,7 @@ module.exports.server = function (serv, options) {
     return entity
   }
 
-  serv.spawnObject = (type, world, position, {pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined}) => {
+  serv.spawnObject = (type, world, position, { pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined }) => {
     const object = serv.initEntity('object', type, world, position)
     object.uuid = UUID.v4()
     object.name = objectsById[type].name
@@ -48,7 +48,7 @@ module.exports.server = function (serv, options) {
     object.updateAndSpawn()
   }
 
-  serv.spawnMob = (type, world, position, {pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = []} = {}) => {
+  serv.spawnMob = (type, world, position, { pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = [] } = {}) => {
     const mob = serv.initEntity('mob', type, world, position)
     mob.uuid = UUID.v4()
     mob.name = mobsById[type].name
@@ -112,9 +112,9 @@ module.exports.player = function (player, serv, options) {
     parse (str) {
       const args = str.split(' ')
       if (args.length !== 2) { return false }
-      return {number: args[0], name: args[1]}
+      return { number: args[0], name: args[1] }
     },
-    action ({number, name}) {
+    action ({ number, name }) {
       if (Object.keys(serv.entities).length > options['max-entities'] - number) { throw new UserError('Too many mobs !') }
       const entity = entitiesByName[name]
       if (!entity) {
@@ -182,9 +182,9 @@ module.exports.player = function (player, serv, options) {
       let attached = player.selectorString(args[1])
       if (attached.length === 0) throw new UserError('one attached')
 
-      return {carrier: carrier[0], attached: attached[0]}
+      return { carrier: carrier[0], attached: attached[0] }
     },
-    action ({carrier, attached}) {
+    action ({ carrier, attached }) {
       carrier.attach(attached)
     }
   })

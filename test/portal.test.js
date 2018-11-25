@@ -81,7 +81,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       additionalObsidian: [new Vec3(2, 1, 1), new Vec3(5, 1, 1), new Vec3(2, 6, 1), new Vec3(5, 6, 1)]
     })
 
-    const {bottom, left, right, top, air} = generatePortal(new Vec3(2, 1, 2), new Vec3(1, 0, 0), 4, 5)
+    const { bottom, left, right, top, air } = generatePortal(new Vec3(2, 1, 2), new Vec3(1, 0, 0), 4, 5)
 
     portalData.push({
       name: '2 portals',
@@ -103,11 +103,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       additionalObsidian: []
     })
 
-    portalData.forEach(({name, bottomLeft, direction, width, height, additionalAir, additionalObsidian}) => {
+    portalData.forEach(({ name, bottomLeft, direction, width, height, additionalAir, additionalObsidian }) => {
       const portal = generatePortal(bottomLeft, direction, width, height)
-      const {bottom, left, right, top, air} = portal
+      const { bottom, left, right, top, air } = portal
       describe('Detect ' + name, () => {
-        const expectedBorder = {bottom, left, right, top}
+        const expectedBorder = { bottom, left, right, top }
 
         let world
         beforeAll(async function () {
@@ -233,9 +233,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       additionalObsidian: [new Vec3(4, 3, 1)]
     })
 
-    portalData.forEach(({name, bottomLeft, direction, width, height, additionalAir, additionalObsidian}) => {
+    portalData.forEach(({ name, bottomLeft, direction, width, height, additionalAir, additionalObsidian }) => {
       const portal = generatePortal(bottomLeft, direction, width, height)
-      const {bottom, right, top} = portal
+      const { bottom, right, top } = portal
       describe("doesn't detect detect " + name, () => {
         let world
         beforeAll(async function () {

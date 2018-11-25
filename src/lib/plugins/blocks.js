@@ -15,7 +15,7 @@ module.exports.player = function (player, serv) {
       position: position,
       blockType: blockType,
       blockData: blockData
-    }, ({position, blockType, blockData}) => {
+    }, ({ position, blockType, blockData }) => {
       player._client.write('block_change', {
         location: position,
         type: blockType << 4 | blockData

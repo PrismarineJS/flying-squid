@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player) {
-  player._client.on('look', ({yaw, pitch, onGround} = {}) => sendLook(yaw, pitch, onGround))
+  player._client.on('look', ({ yaw, pitch, onGround } = {}) => sendLook(yaw, pitch, onGround))
 
   // float (degrees) --> byte (1/256 "degrees")
   function conv (f) {
@@ -37,11 +37,11 @@ module.exports.player = function (player) {
     })
   }
 
-  player._client.on('position', ({x, y, z, onGround} = {}) => {
+  player._client.on('position', ({ x, y, z, onGround } = {}) => {
     player.sendPosition((new Vec3(x, y, z)), onGround)
   })
 
-  player._client.on('position_look', ({x, y, z, onGround, yaw, pitch} = {}) => {
+  player._client.on('position_look', ({ x, y, z, onGround, yaw, pitch } = {}) => {
     player.sendPosition((new Vec3(x, y, z)), onGround)
     sendLook(yaw, pitch, onGround)
   })
@@ -89,7 +89,7 @@ module.exports.entity = function (entity, serv) {
       position: position,
       onGround: onGround,
       teleport: teleport
-    }, ({position, onGround}) => {
+    }, ({ position, onGround }) => {
       // known position is very important because the diff (/delta) send to players is floored hence is not precise enough
       // storing the known position allows to compensate next time a diff is sent
       // without the known position, the error accumulate fast and player position is incorrect from the point of view

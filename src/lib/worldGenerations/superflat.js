@@ -1,6 +1,6 @@
 const Vec3 = require('vec3').Vec3
 
-function generation ({version, opt = 'default', bottomId = 7, middleId = 1, topId = 2, middleThickness = 3, debug = false} = {}) {
+function generation ({ version, opt = 'default', bottomId = 7, middleId = 1, topId = 2, middleThickness = 3, debug = false } = {}) {
   const Chunk = require('prismarine-chunk')(version)
 
   function generateChunk () {

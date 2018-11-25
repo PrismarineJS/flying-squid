@@ -11,13 +11,13 @@ module.exports.player = function (player, serv) {
       let condition = args[0]
       if (['clear', 'rain'].indexOf(condition) === -1) { return false }
 
-      return {condition: condition}
+      return { condition: condition }
     },
-    action ({condition}) {
+    action ({ condition }) {
       if (condition === 'rain') {
-        serv._writeAll('game_state_change', {reason: 2, gameMode: 0})
+        serv._writeAll('game_state_change', { reason: 2, gameMode: 0 })
       } else if (condition === 'clear') {
-        serv._writeAll('game_state_change', {reason: 1, gameMode: 0})
+        serv._writeAll('game_state_change', { reason: 1, gameMode: 0 })
       }
     }
   })

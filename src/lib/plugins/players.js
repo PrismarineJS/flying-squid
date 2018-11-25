@@ -38,7 +38,7 @@ module.exports.player = function (player, serv) {
       return parseInt(str)
     },
     action (diff) {
-      serv._writeAll('difficulty', {difficulty: diff})
+      serv._writeAll('difficulty', { difficulty: diff })
       serv.difficulty = diff
     }
   })

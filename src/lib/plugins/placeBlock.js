@@ -10,10 +10,10 @@ const materialToSound = {
   'wood': 'wood'
 }
 
-module.exports.player = function (player, serv, {version}) {
+module.exports.player = function (player, serv, { version }) {
   const blocks = require('minecraft-data')(version).blocks
 
-  player._client.on('block_place', ({direction, location} = {}) => {
+  player._client.on('block_place', ({ direction, location } = {}) => {
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (direction === -1 || heldItem.type === -1 || !blocks[heldItem.type]) return
     const referencePosition = new Vec3(location.x, location.y, location.z)
@@ -28,7 +28,7 @@ module.exports.player = function (player, serv, {version}) {
       reference: referencePosition,
       playSound: true,
       sound: 'dig.' + (materialToSound[blocks[heldItem.type].material] || 'stone')
-    }, ({direction, heldItem, position, playSound, sound, id, damage}) => {
+    }, ({ direction, heldItem, position, playSound, sound, id, damage }) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8

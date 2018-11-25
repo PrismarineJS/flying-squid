@@ -17,7 +17,7 @@ module.exports.server = function (serv) {
       serv.behavior('changeTime', {
         old: serv.time,
         newTime: serv.time + 20
-      }, ({newTime}) => {
+      }, ({ newTime }) => {
         serv.setTime(newTime % 24000) // Vanilla only does it every second
       })
     }
@@ -48,7 +48,7 @@ module.exports.player = function (player, serv) {
         value: data[2] === 'day' ? 1000 : (data[2] === 'night' ? 13000 : parseInt(data[2]))
       }
     },
-    action ({action, value}) {
+    action ({ action, value }) {
       if (action === 'query') {
         player.chat('It is ' + serv.time)
       } else {

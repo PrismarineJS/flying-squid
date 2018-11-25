@@ -5,7 +5,7 @@ module.exports.entity = function (entity, serv) {
     entity.effects[i] = null // Just so we know it's a real potion and not undefined/not existant
   }
 
-  entity.sendEffect = (effectId, {amplifier = 0, duration = 30 * 20, particles = true, whitelist, blacklist = []} = {}) => {
+  entity.sendEffect = (effectId, { amplifier = 0, duration = 30 * 20, particles = true, whitelist, blacklist = [] } = {}) => {
     if (!whitelist) whitelist = serv.getNearby(entity)
     if (entity.type === 'player' && [1].indexOf(effectId) !== -1) entity.sendAbilities()
     const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
@@ -19,7 +19,7 @@ module.exports.entity = function (entity, serv) {
     serv._writeArray('entity_effect', data, sendTo)
   }
 
-  entity.sendRemoveEffect = (effectId, {whitelist, blacklist = []} = {}) => {
+  entity.sendRemoveEffect = (effectId, { whitelist, blacklist = [] } = {}) => {
     if (!whitelist) whitelist = serv.getNearby(entity)
     const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
     serv._writeArray('remove_entity_effect', {

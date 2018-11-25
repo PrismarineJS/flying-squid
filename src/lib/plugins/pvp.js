@@ -21,7 +21,7 @@ module.exports.player = function (player, serv) {
     }, (o) => o.attackedEntity.takeDamage(o))
   }
 
-  player._client.on('use_entity', ({mouse, target} = {}) => {
+  player._client.on('use_entity', ({ mouse, target } = {}) => {
     if (!serv.entities[target]) {
       let dragon
       for (dragon = target - 1; dragon >= target - 7 && !serv.entities[dragon]; dragon--) {}
@@ -42,13 +42,13 @@ module.exports.player = function (player, serv) {
       let arr = player.selectorString(sel)
       if (arr.length === 0) throw new UserError('Could not find player')
 
-      arr.map(entity => entity.takeDamage({damage: 20}))
+      arr.map(entity => entity.takeDamage({ damage: 20 }))
     }
   })
 }
 
 module.exports.entity = function (entity, serv) {
-  entity.takeDamage = ({sound = 'game.player.hurt', damage = 1, velocity = new Vec3(0, 0, 0), maxVelocity = new Vec3(4, 4, 4), animation = true}) => {
+  entity.takeDamage = ({ sound = 'game.player.hurt', damage = 1, velocity = new Vec3(0, 0, 0), maxVelocity = new Vec3(4, 4, 4), animation = true }) => {
     entity.updateHealth(entity.health - damage)
     serv.playSound(sound, entity.world, entity.position)
 

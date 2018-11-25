@@ -22,7 +22,7 @@ async function findPotentialLines (world, startingPoint, directionV) {
   const firstLineDirection = directionV.y !== 0 ? [new Vec3(1, 0, 0), new Vec3(0, 0, 1)]
     : [new Vec3(0, 1, 0)]
   return (await Promise.all(firstLineDirection
-    .map(async d => ({direction: d, line: (await findLine(world, startingPoint, 'obsidian', d, directionV))}))))
+    .map(async d => ({ direction: d, line: (await findLine(world, startingPoint, 'obsidian', d, directionV)) }))))
     .filter(line => (line.line.length >= 3 && line.direction.y !== 0) ||
     (line.line.length >= 2 && line.direction.y === 0))
 }
@@ -32,7 +32,7 @@ function positiveOrder (line, direction) {
   return line
 }
 
-async function findBorder (world, {line, direction}, directionV) {
+async function findBorder (world, { line, direction }, directionV) {
   let bottom = line
   if (bottom.length === 0) { return [] }
   let left = await findLineInDirection(world, bottom[0].plus(direction.scaled(-1).plus(directionV)), 'obsidian', directionV, direction)
@@ -57,7 +57,7 @@ async function findBorder (world, {line, direction}, directionV) {
 
   if (bottom.length < 2 || top.length < 2 || left.length < 3 || right.length < 3) { return null }
 
-  return {bottom, left, right, top}
+  return { bottom, left, right, top }
 }
 
 async function detectFrame (world, startingPoint, directionV) {
@@ -66,8 +66,8 @@ async function detectFrame (world, startingPoint, directionV) {
   return asyncFilter((await Promise.all(potentialLines
     .map(line => findBorder(world, line, directionV))))
     .filter(border => border !== null)
-    .map(({bottom, left, right, top}) => ({bottom, left, right, top, air: getAir({bottom, left, right, top})})),
-  async ({air}) => isAllAir(world, air))
+    .map(({ bottom, left, right, top }) => ({ bottom, left, right, top, air: getAir({ bottom, left, right, top }) })),
+  async ({ air }) => isAllAir(world, air))
 }
 
 async function asyncEvery (array, pred) {
@@ -85,7 +85,7 @@ async function isAllAir (world, blocks) {
 }
 
 function getAir (border) {
-  const {bottom, top} = border
+  const { bottom, top } = border
   return flatMap(bottom, pos => range(1, top[0].y - bottom[0].y).map(i => pos.offset(0, i, 0)))
 }
 
@@ -110,7 +110,7 @@ function generatePortal (bottomLeft, direction, width, height) {
 
 function addPortalToWorld (world, portal, additionalAir, additionalObsidian, setBlockType = null) {
   if (setBlockType === null) { setBlockType = world.setBlockType.bind(world) }
-  const {bottom, left, right, top, air} = portal
+  const { bottom, left, right, top, air } = portal
 
   const p = flatMap([bottom, left, right, top], border => border.map(pos => setBlockType(pos, 49)))
   p.push(air.map(pos => setBlockType(pos, 0)))
@@ -131,7 +131,7 @@ async function makeWorldWithPortal (portal, additionalAir, additionalObsidian) {
 function loader (version) {
   World = require('prismarine-world')(version)
   Chunk = require('prismarine-chunk')(version)
-  return {detectFrame, findPotentialLines, findBorder, getAir, generateLine, generatePortal, addPortalToWorld, makeWorldWithPortal}
+  return { detectFrame, findPotentialLines, findBorder, getAir, generateLine, generatePortal, addPortalToWorld, makeWorldWithPortal }
 }
 
 module.exports = loader

@@ -1,6 +1,6 @@
 const Vec3 = require('vec3')
 
-module.exports.player = function (player, serv, {version}) {
+module.exports.player = function (player, serv, { version }) {
   const Item = require('prismarine-item')(version)
   const windows = require('prismarine-windows')(version).windows
 
@@ -8,7 +8,7 @@ module.exports.player = function (player, serv, {version}) {
   player.heldItem = new Item(256, 1)
   player.inventory = new windows.InventoryWindow(0, 'Inventory', 44)
 
-  player._client.on('held_item_slot', ({slotId} = {}) => {
+  player._client.on('held_item_slot', ({ slotId } = {}) => {
     player.heldItemSlot = slotId
     player.setEquipment(0, player.inventory.slots[36 + player.heldItemSlot])
 
@@ -143,7 +143,7 @@ module.exports.player = function (player, serv, {version}) {
     }
   })
 
-  player._client.on('set_creative_slot', ({slot, item} = {}) => {
+  player._client.on('set_creative_slot', ({ slot, item } = {}) => {
     if (item.blockId === -1) {
       player.inventory.updateSlot(slot, undefined)
       return

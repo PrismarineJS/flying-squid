@@ -1,11 +1,11 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv) {
-  function cancelDig ({position, block}) {
+  function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type, block.metadata)
   }
 
-  player._client.on('block_dig', async ({location, status, face}) => {
+  player._client.on('block_dig', async ({ location, status, face }) => {
     let pos = new Vec3(location.x, location.y, location.z)
 
     const directionVector = directionToVector[face]
@@ -25,14 +25,14 @@ module.exports.player = function (player, serv) {
         player.behavior('dig', { // Start dig survival
           position: pos,
           block: block
-        }, ({position}) => {
+        }, ({ position }) => {
           return startDigging(position)
         }, cancelDig)
       } else if (status === 2) { completeDigging(pos) } else if (status === 1) {
         player.behavior('cancelDig', { // Cancel dig survival
           position: pos,
           block: block
-        }, ({position}) => {
+        }, ({ position }) => {
           return cancelDigging(position)
         })
       } else if (status === 0 && player.gameMode === 1) { return creativeDigging(pos) }
@@ -71,7 +71,7 @@ module.exports.player = function (player, serv) {
           start: startDigging,
           timePassed: currentDiggingTime,
           position: location
-        }, ({state}) => {
+        }, ({ state }) => {
           lastDestroyState = state
           player._writeOthersNearby('block_break_animation', {
             'entityId': currentAnimationId,
@@ -127,7 +127,7 @@ module.exports.player = function (player, serv) {
     }
   }
 
-  function dropBlock ({blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropPickup, blockDropDeath}) {
+  function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropPickup, blockDropDeath }) {
     serv.spawnObject(2, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,

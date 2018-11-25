@@ -1,6 +1,6 @@
 const Vec3 = require('vec3').Vec3
 
-module.exports.entity = function (entity, serv, {version}) {
+module.exports.entity = function (entity, serv, { version }) {
   const blocks = require('minecraft-data')(version).blocks
 
   entity.calculatePhysics = async (delta) => {
