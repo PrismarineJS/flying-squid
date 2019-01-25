@@ -1,16 +1,8 @@
 {
   "name": "flying-squid",
-  "version": "1.1.2",
   "description": "A minecraft server written in node.js",
-  "keywords": [],
-  "bugs": {
-    "url": "http://github.com/PrismarineJS/flying-squid/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/PrismarineJS/flying-squid.git"
-  },
-  "license": "MIT",
+  "version": "1.1.2",
+  "main": "index.js",
   "author": "mhsjlw <mhsjlw@users.noreply.github.com>",
   "contributors": [
     {
@@ -18,17 +10,21 @@
       "email": "romain.rom1@gmail.com"
     }
   ],
-  "main": "index.js",
   "bin": {
     "flying-squid": "app.js"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node app.js",
-    "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "prepare": "require-self",
     "prepublishOnly": "cp docs/README.md README.md",
-    "serve": "cross-env NODE_ENV=production node app.js",
-    "test": "jest --verbose --runInBand"
+    "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
+    "test": "jest --verbose --runInBand",
+    "dev": "cross-env NODE_ENV=development node app.js",
+    "serve": "cross-env NODE_ENV=production node app.js"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "engines": {
+    "node": ">=8"
   },
   "dependencies": {
     "diamond-square": "^1.1.0",
@@ -53,6 +49,13 @@
     "uuid-1345": "^0.99.6",
     "vec3": "^0.1.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PrismarineJS/flying-squid.git"
+  },
+  "bugs": {
+    "url": "http://github.com/PrismarineJS/flying-squid/issues"
+  },
   "devDependencies": {
     "cross-env": "^5.2.0",
     "jest": "^23.6.0",
@@ -60,8 +63,5 @@
     "mineflayer": "^2.7.3",
     "require-self": "^0.2.1",
     "standard": "^12.0.1"
-  },
-  "engines": {
-    "node": ">=8"
   }
 }
