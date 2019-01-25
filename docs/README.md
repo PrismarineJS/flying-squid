@@ -28,8 +28,15 @@ Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 ## Building / Running
 Before running or building it is recommended that you configure the server in `config/settings.json`
 
-    npm install
-    node app.js
+```bash
+npm install
+npm run serve
+
+# or use yarn
+
+yarn install
+yarn run serve
+```
 
 Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
