@@ -4,7 +4,10 @@ const path = require('path')
 const requireIndex = require('./lib/requireindex')
 const supportedVersions = require('./lib/version').supportedVersions
 require('emit-then').register()
-if (process.env.NODE_ENV === 'dev') {
+if (
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV !== 'production'
+) {
   require('longjohn')
 }
 
