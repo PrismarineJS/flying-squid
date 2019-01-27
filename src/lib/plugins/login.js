@@ -1,8 +1,6 @@
 const Vec3 = require('vec3').Vec3
 
-const path = require('path')
-const requireIndex = require('../requireindex')
-const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
+const plugins = require('../utils/path').allPlugins
 const Command = require('flying-squid').Command
 
 module.exports.server = function (serv, options) {

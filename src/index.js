@@ -1,7 +1,5 @@
 const mc = require('minecraft-protocol')
 const EventEmitter = require('events').EventEmitter
-const path = require('path')
-const requireIndex = require('./lib/requireindex')
 const supportedVersions = require('./lib/version').supportedVersions
 require('emit-then').register()
 if (
@@ -44,7 +42,7 @@ class MCServer extends EventEmitter {
     }
     this.supportFeature = feature => supportFeature(feature, version.majorVersion)
 
-    const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
+    const plugins = require('./lib/utils/path').allPlugins
     this._server = mc.createServer(options)
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].server !== undefined)

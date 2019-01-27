@@ -1,7 +1,5 @@
 const Entity = require('prismarine-entity')
-const path = require('path')
-const requireIndex = require('../requireindex')
-const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
+const plugins = require('../utils/path').allPlugins
 const UserError = require('flying-squid').UserError
 const UUID = require('uuid-1345')
 const Vec3 = require('vec3').Vec3
