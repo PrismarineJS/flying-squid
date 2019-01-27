@@ -9,7 +9,7 @@ function allPlugins () {
   const plugins = officialPlugins
   // Clone plugin with no namespace conflict
   Object.keys(thirdPartyPlugins)
-    .forEach(pluginName => plugins[`third-${pluginName}`] = thirdPartyPlugins[pluginName])
+    .forEach(pluginName => (plugins[`third-${pluginName}`] = thirdPartyPlugins[pluginName]))
 
   return plugins
 }
