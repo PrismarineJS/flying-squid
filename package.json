@@ -55,8 +55,6 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.13",
-    "@types/node": "^10.12.18",
     "jest": "^23.6.0",
     "longjohn": "^0.2.12",
     "memfs": "^2.14.2",
