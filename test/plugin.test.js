@@ -5,11 +5,12 @@ const rimraf = require('rimraf')
 const path = require('path')
 const fs = require('fs')
 
-describe('mock third-party plugins', () => {
+describe('test import third-party plugins', () => {
   const testPath = path.resolve(__dirname, '../', 'src', 'plugins', 'example')
   beforeAll(() => {
-    if (!fs.existsSync(testPath))
+    if (!fs.existsSync(testPath)) {
       fs.mkdirSync(path.resolve(__dirname, '../', 'src', 'plugins', 'example'))
+    }
     fs.writeFileSync(path.resolve(__dirname, '../', 'src', 'plugins', 'example', 'index.js'), 'module.exports.server = function (serv, options) {\n\n}\n\nmodule.exports.player = function (player, serv, settings) {\n\n}\n')
   })
 
@@ -37,4 +38,3 @@ describe('mock third-party plugins', () => {
     await rimraf(testPath, () => console.log('removed example plugin'))
   })
 })
-
