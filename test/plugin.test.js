@@ -24,17 +24,21 @@ describe('test import third-party plugins', () => {
     serv = squid.createMCServer(options)
   })
 
-  it('should load third-party plugin example', () => {
-    expect(serv.plugins['example']).toBeDefined()
-    expect(serv.plugins['example'].server).toBeInstanceOf(Function)
-    expect(serv.plugins['example'].player).toBeInstanceOf(Function)
-  })
-
   afterEach(async () => {
     await serv.quit()
   })
 
-  afterAll(async () => {
+  afterAll(async (done) => {
+    serv._server.close()
+    serv._server.on('close', () => {
+      done()
+    })
     await rimraf(testPath, () => console.log('removed example plugin'))
+  })
+
+  it('should load third-party plugin example', () => {
+    expect(serv.plugins['example']).toBeDefined()
+    expect(serv.plugins['example'].server).toBeInstanceOf(Function)
+    expect(serv.plugins['example'].player).toBeInstanceOf(Function)
   })
 })
