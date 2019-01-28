@@ -11,7 +11,7 @@ module.exports.player = function (player, serv) {
   }
 
   player.sendBlock = (position, blockType, blockData) => // Call from player.setBlock unless you want "local" fake blocks
-    player.behavior('sendBlock', {
+    player.behavior('sendblock', {
       position: position,
       blockType: blockType,
       blockData: blockData
