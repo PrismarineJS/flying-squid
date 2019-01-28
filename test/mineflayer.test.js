@@ -246,7 +246,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         bot.chat('/setblock 1 2 3 95 0')
-        let [, newBlock] = await once(bot, 'blockUpdate:', { array: true })
+        let [, newBlock] = await once(bot, 'blockUpdate', { array: true })
         expect(newBlock.type).toEqual(95)
       })
       test('can use /xp', async () => {
