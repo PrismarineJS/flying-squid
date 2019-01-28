@@ -1,7 +1,6 @@
 /* eslint-env jest */
 const squid = require('flying-squid')
 const settings = require('../config/default-settings')
-const rimraf = require('rimraf')
 const path = require('path')
 const fs = require('fs')
 
@@ -12,8 +11,9 @@ describe('test import third-party plugins', () => {
     if (!fs.existsSync(pluginPath)) {
       fs.mkdirSync(pluginPath)
     }
-    if (!fs.existsSync(filePath))
+    if (!fs.existsSync(filePath)) {
       fs.writeFileSync(filePath, 'module.exports.server = function (serv, options) {\n\n}\n\nmodule.exports.player = function (player, serv, settings) {\n\n}\n')
+    }
   })
 
   let serv = null
