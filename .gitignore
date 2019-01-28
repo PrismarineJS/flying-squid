@@ -3,7 +3,7 @@ dist/
 modpePlugins/
 config/settings.json
 logs/
-src/plugins/*
+src/plugins/*(!example)
 !src/plugins/README.md
 distTest
 world/*
