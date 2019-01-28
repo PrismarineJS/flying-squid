@@ -243,12 +243,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await waitMessage(bot, 'You do not have permission to use this command')
         serv.getPlayer('bot').op = true
       })
-      test('can use /setblock', async (done) => {
+      test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
-        bot.chat('/setblock 1 2 3 95 0')
         let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
+        bot.chat('/setblock 1 2 3 95 0')
         expect(newBlock.type).toEqual(95)
-        done()
       })
       test('can use /xp', async () => {
         bot.chat('/xp 100')
