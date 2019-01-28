@@ -244,8 +244,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         serv.getPlayer('bot').op = true
       })
       test('can use /setblock', async () => {
+        let [, newBlock] = await once(bot, 'blockUpdate:', { array: true })
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
-        let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         bot.chat('/setblock 1 2 3 95 0')
         expect(newBlock.type).toEqual(95)
       })
