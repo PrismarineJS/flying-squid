@@ -36,7 +36,7 @@ describe('test import third-party plugins', () => {
     await serv.quit()
   })
 
-  afterAll(async (done) => {
+  afterAll((done) => {
     serv._server.close()
     serv._server.on('close', () => {
       done()
