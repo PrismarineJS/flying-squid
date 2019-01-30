@@ -25,9 +25,9 @@ module.exports.player = function (player, serv) {
   player.setBlock = (position, blockType, blockData) => serv.setBlock(player.world, position, blockType, blockData)
 
   player.commands.add({
-    base: 'setblock',
+    base: 'setBlock',
     info: 'set a block at a position',
-    usage: '/setblock <x> <y> <z> <id> [data]',
+    usage: '/setBlock <x> <y> <z> <id> [data]',
     op: true,
     parse (str) {
       const results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([0-9]{1,3})(?: ([0-9]{1,3}))?/)
