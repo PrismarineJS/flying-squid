@@ -248,7 +248,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.chat('/setBlock 1 2 3 95 0')
         let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         expect(newBlock.type).toEqual(95)
-      }, 100000)
+      })
       test('can use /xp', async () => {
         bot.chat('/xp 100')
         await once(bot, 'experience')
