@@ -14,9 +14,6 @@
     }
   },
   "kickTimeout": 10000,
-  "plugins": {
-    "example": {}
-  },
   "modpe": false,
   "view-distance": 10,
   "player-list-text": {
