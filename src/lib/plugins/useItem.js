@@ -4,20 +4,17 @@ module.exports.player = function (player, serv, { version }) {
   const items = require('minecraft-data')(version).items
   const mobs = require('minecraft-data')(version).mobs
 
-  function getEntID(entName)
-  {
-    let foundID = "";
+  function getEntID(entName) {
+    let foundID = '';
 
     Object.keys(mobs).some(mobID => {
       const mob = mobs[mobID];
-      if ("minecraft:" + mob.name == entName)
-      {
+      if ('minecraft:' + mob.name === entName) {
         foundID = mobID;
-        return;
       }
     });
 
-    return foundID;
+    return foundID
   }
 
   player._client.on('block_place', ({ direction, location } = {}) => {
