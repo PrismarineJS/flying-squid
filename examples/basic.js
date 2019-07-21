@@ -7,6 +7,7 @@ mcServer.createMCServer({
   'online-mode': true,
   'logging': true,
   'gameMode': 1,
+  'version': '1.8.8',
   'generation': {
     'name': 'diamond_square',
     'options': {
