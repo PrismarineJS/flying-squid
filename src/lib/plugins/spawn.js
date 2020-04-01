@@ -89,8 +89,7 @@ module.exports.player = function (player, serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities']) { throw new UserError('Too many mobs !') }
       const entity = entitiesByName[name]
       if (!entity) {
-        player.chat('No entity named ' + name)
-        return
+        return 'No entity named ' + name
       }
       if (entity.type === 'mob') {
         serv.spawnMob(entity.id, player.world, player.position, {
@@ -118,8 +117,7 @@ module.exports.player = function (player, serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities'] - number) { throw new UserError('Too many mobs !') }
       const entity = entitiesByName[name]
       if (!entity) {
-        player.chat('No entity named ' + name)
-        return
+        return 'No entity named ' + name
       }
       let s = Math.floor(Math.sqrt(number))
       for (let i = 0; i < number; i++) {
