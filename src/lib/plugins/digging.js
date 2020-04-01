@@ -118,7 +118,7 @@ module.exports.player = function (player, serv) {
       }, async (data) => {
         player.changeBlock(data.position, 0, 0)
         const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
-        if(aboveBlock.material === 'plant') {
+        if (aboveBlock.material === 'plant') {
           await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
         }
         if (data.dropBlock) dropBlock(data)
