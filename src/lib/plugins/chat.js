@@ -157,4 +157,12 @@ module.exports.player = function (player, serv) {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2 })
   }
+
+  player._client.on('tab_complete', function (data) {
+    let playerNames = []
+    for (let player of serv.players) playerNames.push(player.username)
+    player._client.write('tab_complete', {
+      matches: playerNames
+    })
+  })
 }
