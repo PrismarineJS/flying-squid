@@ -24,6 +24,12 @@ module.exports.player = (player, serv) => {
         let y = serv.posFromString(args[1], player.position.y)
         let z = serv.posFromString(args[2], player.position.z)
 
+        // Vanilla behavior: teleport to center of block if decimal not specified
+
+        if (args[0].indexOf('.') === -1) x += 0.5
+        if (args[1].indexOf('.') === -1) y += 0.5
+        if (args[2].indexOf('.') === -1) z += 0.5
+
         player.teleport(new Vec3(x, y, z))
       } else if (args.length === 4) {
         let entitiesFrom = player.selectorString(args[0])

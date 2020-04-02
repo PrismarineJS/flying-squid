@@ -80,6 +80,12 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       options['worldFolder'] = undefined
       options['logging'] = false
       options['version'] = version.minecraftVersion
+      options['generation'] = { // TODO: fix block tests failing at random without manually specifying seed
+        name: 'diamond_square',
+        options: {
+          seed: 2116746182
+        }
+      }
 
       serv = squid.createMCServer(options)
       if (serv.supportFeature('entityCamelCase')) {

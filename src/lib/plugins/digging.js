@@ -115,8 +115,12 @@ module.exports.player = function (player, serv) {
         blockDropDamage: currentlyDugBlock.metadata,
         blockDropPickup: 500,
         blockDropDeath: 60 * 5 * 1000
-      }, (data) => {
+      }, async (data) => {
         player.changeBlock(data.position, 0, 0)
+        const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
+        if (aboveBlock.material === 'plant') {
+          await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
+        }
         if (data.dropBlock) dropBlock(data)
       }, cancelDig)
     } else {
@@ -149,8 +153,12 @@ module.exports.player = function (player, serv) {
       blockDropDamage: currentlyDugBlock.metadata,
       blockDropPickup: 500,
       blockDropDeath: 60 * 5 * 1000
-    }, (data) => {
+    }, async (data) => {
       player.changeBlock(data.position, 0, 0)
+      const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
+      if (aboveBlock.material === 'plant') {
+        await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
+      }
       if (data.dropBlock) dropBlock(data)
     }, cancelDig)
   }

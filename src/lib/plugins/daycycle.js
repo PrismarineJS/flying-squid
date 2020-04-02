@@ -52,16 +52,20 @@ module.exports.player = function (player, serv) {
       if (action === 'query') {
         player.chat('It is ' + serv.time)
       } else {
-        let newTime
+        if (isNaN(value)) {
+          return 'That isn\'t a valid number!'
+        } else {
+          let newTime
 
-        if (action === 'set') {
-          newTime = value
-        } else if (action === 'add') {
-          newTime = value + serv.time
+          if (action === 'set') {
+            newTime = value
+          } else if (action === 'add') {
+            newTime = value + serv.time
+          }
+
+          player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
+          serv.setTime(newTime)
         }
-
-        player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
-        serv.setTime(newTime)
       }
     }
   })
