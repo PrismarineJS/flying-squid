@@ -55,6 +55,7 @@ Http api available in the test instance at [flying-squid.rom1504.fr](http://flyi
 * [flying-squid-modpe](https://github.com/PrismarineJS/flying-squid-modpe) load modpe plugins
 * [flying-squid-essentials](https://github.com/DeudlyYT/Flying-Squid-Essentials) Plugin that in a future will be like Essentials of bukkit/spigot.
 All the basic commands that a server should have
+* [squidcord](https://github.com/dada513/SquidCord) a bridge between a discord channel and the minecraft server.
 
 
 ## Documentation
