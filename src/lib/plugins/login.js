@@ -10,7 +10,7 @@ const convertInventorySlotId = require('../convertInventorySlotId')
 const Command = require('flying-squid').Command
 
 const fsReadFile = promisify(fs.readFile)
-const nbtParse = promisify(nbt.parse);
+const nbtParse = promisify(nbt.parse)
 
 module.exports.server = function (serv, options) {
   serv._server.on('connection', client =>
@@ -41,12 +41,12 @@ module.exports.player = function (player, serv, settings) {
   const Item = require('prismarine-item')(settings.version)
   const mcData = require('minecraft-data')(settings.version)
 
-  let playerSavedInventoryItems = [];
-  let playerSavedPosition = [];
-  let playerSavedRotation = [];
-  let playerSavedOnGround = true;
+  let playerSavedInventoryItems = []
+  let playerSavedPosition = []
+  let playerSavedRotation = []
+  let playerSavedOnGround = true
 
-  async function addPlayer() {
+  async function addPlayer () {
     player.type = 'player'
     player.crouching = false // Needs added in prismarine-entity later
     player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
@@ -54,7 +54,7 @@ module.exports.player = function (player, serv, settings) {
     player.uuid = player._client.uuid
     try {
       const playerDataFile = await fsReadFile(`${settings.worldFolder}/playerdata/${player.uuid}.dat`)
-      const playerData = (await nbtParse(playerDataFile)).value;
+      const playerData = (await nbtParse(playerDataFile)).value
       player.health = playerData.Health.value
       player.food = playerData.foodLevel.value
       player.gameMode = playerData.playerGameType.value
@@ -75,7 +75,7 @@ module.exports.player = function (player, serv, settings) {
     player.loadedChunks = {}
   }
 
-  function updateInventory() {
+  function updateInventory () {
     playerSavedInventoryItems.forEach((item) => {
       let theItem
       const itemName = item.id.value.slice(10)
@@ -85,15 +85,15 @@ module.exports.player = function (player, serv, settings) {
         theItem = mcData.blocksByName[itemName]
       }
       const newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
-      let slot = convertInventorySlotId.fromNBT(item.Slot.value)
+      const slot = convertInventorySlotId.fromNBT(item.Slot.value)
       player.inventory.updateSlot(slot, newItem)
     })
-    player._client.write("held_item_slot", {
+    player._client.write('held_item_slot', {
       slot: player.heldItemSlot
     })
   }
 
-  async function setSavedPosition() {
+  async function setSavedPosition () {
     if (playerSavedPosition.length > 0) {
       player.position.x = playerSavedPosition[0]
       player.position.y = playerSavedPosition[1]
@@ -104,7 +104,7 @@ module.exports.player = function (player, serv, settings) {
     }
   }
 
-  function sendLogin() {
+  function sendLogin () {
     // send init data so client will start rendering world
     player._client.write('login', {
       entityId: player.id,
@@ -118,13 +118,13 @@ module.exports.player = function (player, serv, settings) {
     player.position = player.spawnPoint.clone()
   }
 
-  function sendChunkWhenMove() {
+  function sendChunkWhenMove () {
     player.on('move', () => {
       if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
     })
   }
 
-  function updateTime() {
+  function updateTime () {
     player._client.write('update_time', {
       age: [0, 0],
       time: [0, serv.time]
@@ -147,7 +147,7 @@ module.exports.player = function (player, serv, settings) {
     player.sendAbilities()
   }
 
-  function fillTabList() {
+  function fillTabList () {
     player._writeOthers('player_info', {
       action: 0,
       data: [{
@@ -178,7 +178,7 @@ module.exports.player = function (player, serv, settings) {
     }), 5000)
   }
 
-  function announceJoin() {
+  function announceJoin () {
     serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
     player.emit('connected')
   }
