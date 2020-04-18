@@ -33,7 +33,6 @@
     "minecraft-protocol": "^1.5.2",
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
-    "node-gzip": "^1.1.2",
     "prismarine-chunk": "^1.9.0",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.0.1",
