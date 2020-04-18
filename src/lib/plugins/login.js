@@ -44,6 +44,7 @@ module.exports.player = function (player, serv, settings) {
   let playerSavedInventoryItems = [];
   let playerSavedPosition = [];
   let playerSavedRotation = [];
+  let playerSavedOnGround = true;
 
   async function addPlayer() {
     player.type = 'player'
@@ -59,8 +60,9 @@ module.exports.player = function (player, serv, settings) {
       player.gameMode = playerData.playerGameType.value
       player.xp = playerData.XpTotal.value
       player.heldItemSlot = playerData.SelectedItemSlot.value
-      playerSavedPosition = playerData.Pos.value.value;
-      playerSavedRotation = playerData.Rotation.value.value;
+      playerSavedPosition = playerData.Pos.value.value
+      playerSavedOnGround = Boolean(playerData.OnGround.value)
+      playerSavedRotation = playerData.Rotation.value.value
       playerSavedInventoryItems = playerData.Inventory.value.value
     } catch (err) {
       // No player data file / other error
@@ -98,6 +100,7 @@ module.exports.player = function (player, serv, settings) {
       player.position.z = playerSavedPosition[2]
       player.yaw = playerSavedRotation[0]
       player.pitch = playerSavedRotation[1]
+      player.onGround = playerSavedOnGround
     }
   }
 
