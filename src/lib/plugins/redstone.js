@@ -13,13 +13,21 @@ module.exports.server = function (serv, { version }) {
     return 0
   }
 
+  const isWireDirectedIn = async (world, pos, dir) => {
+    const up = await world.getBlock(pos.offset(0, 1, 0))
+    const upSolid = isSolid(up)
+    const b1 = (await wireDirection(world, pos.offset(-dir.x, 0, -dir.z), upSolid)).block !== null
+    const b2 = (await wireDirection(world, pos.offset(dir.z, 0, dir.x), upSolid)).block !== null
+    const b3 = (await wireDirection(world, pos.offset(-dir.z, 0, -dir.x), upSolid)).block !== null
+    return b1 && !(b2 || b3)
+  }
+
   // Return the power level from the block at pos to the solid block in dir
   const powerLevelDir = async (world, pos, dir) => {
     const block = await world.getBlock(pos)
     if (dir.y === 1 && block.type === redstoneTorchType) return 15
     if (block.type === redstoneWireType) {
-      if (dir.y === -1) return block.metadata
-      return block.metadata // TODO: isDirected into block
+      if (dir.y === -1 || await isWireDirectedIn(world, pos, dir)) { return block.metadata }
     }
     return 0
   }
@@ -43,7 +51,7 @@ module.exports.server = function (serv, { version }) {
     blockB.position = pos.offset(0, -1, 0)
     const blockC = await world.getBlock(pos.offset(0, 1, 0))
     blockC.position = pos.offset(0, 1, 0)
-    if (isSolid(blockB) && isRedstone(blockA)) { // same y
+    if (isRedstone(blockA)) { // same y
       return { power: powerLevel(blockA), block: blockA }
     }
     if (!isSolid(blockA) && isWire(blockB)) { // down
@@ -53,6 +61,15 @@ module.exports.server = function (serv, { version }) {
       return { power: powerLevel(blockC), block: blockC }
     }
     return { power: 0, block: null }
+  }
+
+  const notifyEndOfLine = async (world, pos, dir, tick) => {
+    const blockPos = pos.plus(dir)
+    const block = await world.getBlock(blockPos)
+    if (isSolid(block) && await isWireDirectedIn(world, pos, dir)) {
+      serv.updateBlock(world, blockPos, tick)
+      serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, tick)
+    }
   }
 
   serv.on('asap', () => {
@@ -141,19 +158,25 @@ module.exports.server = function (serv, { version }) {
         await world.setBlockData(pos, newPower)
 
         // Redstone wires neighbors:
-        // Only update folowing the power gradient
-        const dP = Math.sign(newPower - curPower)
-        if (b1.block && Math.sign(b1.power - curPower) === dP) serv.updateBlock(world, b1.block.position, tick)
-        if (b2.block && Math.sign(b2.power - curPower) === dP) serv.updateBlock(world, b2.block.position, tick)
-        if (b3.block && Math.sign(b3.power - curPower) === dP) serv.updateBlock(world, b3.block.position, tick)
-        if (b4.block && Math.sign(b4.power - curPower) === dP) serv.updateBlock(world, b4.block.position, tick)
+        if (b1.block) serv.updateBlock(world, b1.block.position, tick)
+        if (b2.block) serv.updateBlock(world, b2.block.position, tick)
+        if (b3.block) serv.updateBlock(world, b3.block.position, tick)
+        if (b4.block) serv.updateBlock(world, b4.block.position, tick)
 
         // Block updates
         // Only update if there is a real state change (powered / not powered)
         if ((curPower === 0) !== (newPower === 0)) {
-          serv.notifyNeighborsOfStateChange(world, pos, tick, true) // TODO: this is too many updates, but will do for now
+          serv.updateBlock(world, pos.offset(0, -1, 0), tick)
+          serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, -1, 0), tick)
         }
       }
+
+      // The end of line updates are always triggered because the direction is not encoded in the state
+      // (so we cannot detect the change)
+      await notifyEndOfLine(world, pos, new Vec3(1, 0, 0), tick)
+      await notifyEndOfLine(world, pos, new Vec3(-1, 0, 0), tick)
+      await notifyEndOfLine(world, pos, new Vec3(0, 0, 1), tick)
+      await notifyEndOfLine(world, pos, new Vec3(0, 0, -1), tick)
 
       return changed
     })
