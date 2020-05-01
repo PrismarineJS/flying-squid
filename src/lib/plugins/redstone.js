@@ -104,7 +104,6 @@ module.exports.server = function (serv, { version }) {
       if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick + 1)
       if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick + 1)
       serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1)
-      // TODO: eliminate the 1 redundant block update
 
       return changed
     }
