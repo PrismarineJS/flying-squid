@@ -1,8 +1,8 @@
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const oakSignType = mcData.blocksByName.oak_sign.id
-  const oakWallSignType = mcData.blocksByName.oak_wall_sign.id
+  const oakSignType = mcData.blocksByName.standing_sign.id
+  const oakWallSignType = mcData.blocksByName.wall_sign.id
 
   serv.on('asap', () => {
     serv.onItemPlace('sign', ({ direction, angle }) => {
