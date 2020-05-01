@@ -90,6 +90,14 @@ module.exports.server = function (serv, { version }) {
       return { id: unpoweredRepeaterType, data: Math.floor(angle / 90 + 0.5) & 0x3 }
     })
 
+    const repeaterInteraction = async ({ block, player }) => {
+      const data = (block.metadata + 4) & 0xF
+      player.setBlock(block.position, block.type, data)
+      return true
+    }
+    serv.onBlockInteraction('powered_repeater', repeaterInteraction)
+    serv.onBlockInteraction('unpowered_repeater', repeaterInteraction)
+
     const torchDataToOffset = [null, new Vec3(-1, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(0, -1, 0)]
 
     const updateRedstoneTorch = async (world, block, tick) => {

@@ -18,9 +18,11 @@ module.exports.server = (serv, { version }) => {
     const handler = itemPlaceHandlers.get(data.item.type)
     return handler ? handler(data) : { id: data.item.type, data: data.item.metadata }
   }
+
   /**
    * The handler is called when an item of the given type is
-   * used to place a block. Arguments are the item and direction
+   * used to place a block. Arguments are the item, direction
+   * and angle
    * It should return the id and data of the block to place
    */
   serv.onItemPlace = (name, handler) => {
@@ -28,16 +30,37 @@ module.exports.server = (serv, { version }) => {
     if (!item) item = mcData.blocksByName[name]
     itemPlaceHandlers.set(item.id, handler)
   }
+
+  const blockInteractHandler = new Map()
+  serv.interactWithBlock = async (data) => {
+    const handler = blockInteractHandler.get(data.block.type)
+    return handler ? handler(data) : false
+  }
+
+  /**
+   * The handler is called when a player interact with a block
+   * of the given type. Arguments are the block and the player
+   * It should return true if the block placement should be
+   * cancelled.
+   */
+  serv.onBlockInteraction = (name, handler) => {
+    let block = mcData.blocksByName[name]
+    blockInteractHandler.set(block.id, handler)
+  }
 }
 
 module.exports.player = function (player, serv, { version }) {
   const blocks = require('minecraft-data')(version).blocks
 
-  player._client.on('block_place', ({ direction, location } = {}) => {
+  player._client.on('block_place', async ({ direction, location } = {}) => {
+    const referencePosition = new Vec3(location.x, location.y, location.z)
+    const block = await player.world.getBlock(referencePosition)
+    block.position = referencePosition
+    if (await serv.interactWithBlock({ block, player })) return
+
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (heldItem === undefined || direction === -1 || heldItem.type === -1) return
 
-    const referencePosition = new Vec3(location.x, location.y, location.z)
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
     const dx = player.position.x - (placedPosition.x + 0.5)
