@@ -14,9 +14,9 @@ module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
   const itemPlaceHandlers = new Map()
-  serv.placeItem = (item, direction) => {
-    const handler = itemPlaceHandlers.get(item.type)
-    return handler ? handler(item, direction) : { id: item.type, data: item.metadata }
+  serv.placeItem = (data) => {
+    const handler = itemPlaceHandlers.get(data.item.type)
+    return handler ? handler(data) : { id: data.item.type, data: data.item.metadata }
   }
   /**
    * The handler is called when an item of the given type is
@@ -28,11 +28,6 @@ module.exports.server = (serv, { version }) => {
     if (!item) item = mcData.blocksByName[name]
     itemPlaceHandlers.set(item.id, handler)
   }
-
-  serv.onItemPlace('sign', (item, direction) => {
-    // TODO: wall sign direction
-    return { id: direction === 1 ? 63 : 68, data: 0 }
-  })
 }
 
 module.exports.player = function (player, serv, { version }) {
@@ -41,11 +36,21 @@ module.exports.player = function (player, serv, { version }) {
   player._client.on('block_place', ({ direction, location } = {}) => {
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (heldItem === undefined || direction === -1 || heldItem.type === -1) return
-    const { id, data } = serv.placeItem(heldItem, direction)
-    if (!blocks[id]) return
+
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
+    const dx = player.position.x - (placedPosition.x + 0.5)
+    const dz = player.position.z - (placedPosition.z + 0.5)
+    const angle = Math.atan2(dx, -dz) * 180 / Math.PI + 180 // Convert to [0,360[
+
+    const { id, data } = serv.placeItem({
+      item: heldItem,
+      angle,
+      direction
+    })
+
+    if (!blocks[id]) return
     player.behavior('placeBlock', {
       direction: directionVector,
       heldItem: heldItem,

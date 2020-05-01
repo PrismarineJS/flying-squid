@@ -6,6 +6,8 @@ module.exports.server = function (serv, { version }) {
   const redstoneWireType = mcData.blocksByName.redstone_wire.id
   const redstoneTorchType = mcData.blocksByName.redstone_torch.id
   const unlitRedstoneTorchType = mcData.blocksByName.unlit_redstone_torch.id
+  // const poweredRepeaterType = mcData.blocksByName.powered_repeater.id
+  const unpoweredRepeaterType = mcData.blocksByName.unpowered_repeater.id
 
   const powerLevel = (block) => {
     if (block.type === redstoneWireType) return block.metadata
@@ -73,13 +75,19 @@ module.exports.server = function (serv, { version }) {
   }
 
   serv.on('asap', () => {
-    serv.onItemPlace('redstone', (item, direction) => {
+    serv.onItemPlace('redstone', () => {
       return { id: redstoneWireType, data: 0 }
     })
 
-    serv.onItemPlace('redstone_torch', (item, direction) => {
+    serv.onItemPlace('redstone_torch', ({ direction }) => {
       const directionToData = [0, 5, 4, 3, 2, 1]
-      return { id: redstoneTorchType, data: directionToData[direction] }
+      // Placing an unlit torch allows to detect change on the first update
+      // and reduce the block updates
+      return { id: unlitRedstoneTorchType, data: directionToData[direction] }
+    })
+
+    serv.onItemPlace('repeater', ({ angle }) => {
+      return { id: unpoweredRepeaterType, data: Math.floor(angle / 90 + 0.5) & 0x3 }
     })
 
     const torchDataToOffset = [null, new Vec3(-1, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(0, -1, 0)]
@@ -115,12 +123,14 @@ module.exports.server = function (serv, { version }) {
         changed = true
       }
 
-      if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(-1, 0, 0), new Vec3(1, 0, 0), tick + 1)
-      if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(1, 0, 0), new Vec3(-1, 0, 0), tick + 1)
-      if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, -1), new Vec3(0, 0, 1), tick + 1)
-      if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick + 1)
-      if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick + 1)
-      serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1)
+      if (changed) {
+        if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(-1, 0, 0), new Vec3(1, 0, 0), tick + 1)
+        if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(1, 0, 0), new Vec3(-1, 0, 0), tick + 1)
+        if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, -1), new Vec3(0, 0, 1), tick + 1)
+        if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick + 1)
+        if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick + 1)
+        if (isSolid(await world.getBlock(pos.offset(0, 1, 0)))) { serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1) }
+      }
 
       return changed
     }
@@ -173,10 +183,10 @@ module.exports.server = function (serv, { version }) {
 
       // The end of line updates are always triggered because the direction is not encoded in the state
       // (so we cannot detect the change)
-      await notifyEndOfLine(world, pos, new Vec3(1, 0, 0), tick)
-      await notifyEndOfLine(world, pos, new Vec3(-1, 0, 0), tick)
-      await notifyEndOfLine(world, pos, new Vec3(0, 0, 1), tick)
-      await notifyEndOfLine(world, pos, new Vec3(0, 0, -1), tick)
+      await notifyEndOfLine(world, pos, new Vec3(1, 0, 0), tick + 1)
+      await notifyEndOfLine(world, pos, new Vec3(-1, 0, 0), tick + 1)
+      await notifyEndOfLine(world, pos, new Vec3(0, 0, 1), tick + 1)
+      await notifyEndOfLine(world, pos, new Vec3(0, 0, -1), tick + 1)
 
       return changed
     })
