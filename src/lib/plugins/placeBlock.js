@@ -13,9 +13,9 @@ const materialToSound = {
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const item_place_handlers = new Map()
+  const itemPlaceHandlers = new Map()
   serv.placeItem = (item, direction) => {
-    const handler = item_place_handlers.get(item.type)
+    const handler = itemPlaceHandlers.get(item.type)
     return handler ? handler(item, direction) : { id: item.type, data: item.metadata }
   }
   /**
@@ -26,12 +26,12 @@ module.exports.server = (serv, { version }) => {
   serv.onItemPlace = (name, handler) => {
     let item = mcData.itemsByName[name]
     if (!item) item = mcData.blocksByName[name]
-    item_place_handlers.set(item.id, handler)
+    itemPlaceHandlers.set(item.id, handler)
   }
 
   serv.onItemPlace('sign', (item, direction) => {
     // TODO: wall sign direction
-    return {id:direction===1 ? 63 : 68, data:0}
+    return { id: direction === 1 ? 63 : 68, data: 0 }
   })
 }
 
