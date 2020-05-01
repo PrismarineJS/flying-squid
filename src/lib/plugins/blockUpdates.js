@@ -1,5 +1,47 @@
 const { performance } = require('perf_hooks')
 
+class ChunkUpdates {
+  constructor () {
+    this.chunks = new Map()
+  }
+
+  add (pos) {
+    const chunkX = Math.floor(pos.x / 16)
+    const chunkZ = Math.floor(pos.z / 16)
+    const key = `${chunkX},${chunkZ}`
+    if (!this.chunks.has(key)) {
+      this.chunks.set(key, { chunkX, chunkZ, updates: new Set() })
+    }
+    this.chunks.get(key).updates.add(pos)
+  }
+
+  updateCount () {
+    let count = 0
+    for (const { updates } of this.chunks.values()) {
+      count += updates.size
+    }
+    return count
+  }
+
+  async getMultiBlockPackets (world) {
+    const packets = []
+    for (const { chunkX, chunkZ, updates } of this.chunks.values()) {
+      const records = []
+      for (const p of updates.values()) {
+        const block = await world.getBlock(p)
+        const state = (block.type << 4) | block.metadata // TODO: get directly the stateId from world
+        records.push({
+          horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
+          y: p.y,
+          blockId: state
+        })
+      }
+      packets.push({ chunkX, chunkZ, records })
+    }
+    return packets
+  }
+}
+
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
@@ -74,6 +116,8 @@ module.exports.server = (serv, { version }) => {
   serv.on('tick', async (tickTime, curTick) => {
     for (const [world, { updateQueue, updateSet }] of worldUpdateQueue.entries()) {
       const start = performance.now()
+
+      const chunkUpdates = new ChunkUpdates()
       let updatesCount = 0
       while (updatesCount < serv.MAX_UPDATES_PER_TICK && updateQueue.length > 0) {
         if (updateQueue[0].tick > curTick) break // We are done for this tick
@@ -89,11 +133,7 @@ module.exports.server = (serv, { version }) => {
         if (handler) {
           const changed = await handler(world, block, tick)
           if (changed) {
-            const block = await world.getBlock(pos)
-            // TODO: build multi block update packet
-            serv.players
-              .filter(p => p.world === world)
-              .forEach(player => player.sendBlock(pos, block.type, block.metadata))
+            chunkUpdates.add(pos)
           } else if (forceNotify) {
             serv.notifyNeighborsOfStateChange(world, pos, tick)
           }
@@ -103,10 +143,20 @@ module.exports.server = (serv, { version }) => {
         updatesCount++
       }
 
+      const multiBlockUpdates = await chunkUpdates.getMultiBlockPackets(world)
+      const players = serv.players.filter(p => p.world === world)
+      for (const chunkUpdate of multiBlockUpdates) {
+        // TODO: we could test if the chunk is within the view distance of the player
+        players.forEach(player => player._client.write('multi_block_change', chunkUpdate))
+      }
+
+      // TODO: chunkUpdates could also be used to update light
+
       if (updatesCount > 0) {
         const time = (performance.now() - start) / 1000
         const fraction = (time * 100 / tickTime).toFixed(2)
-        console.log(`[Block Update] Made ${updatesCount} updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
+        const sentUpdates = chunkUpdates.updateCount()
+        console.log(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
       }
     }
   })
