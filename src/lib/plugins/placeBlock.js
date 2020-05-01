@@ -10,26 +10,52 @@ const materialToSound = {
   'wood': 'wood'
 }
 
+module.exports.server = (serv, { version }) => {
+  const mcData = require('minecraft-data')(version)
+
+  const item_place_handlers = new Map()
+  serv.placeItem = (item, direction) => {
+    const handler = item_place_handlers.get(item.type)
+    return handler ? handler(item, direction) : { id: item.type, data: item.metadata }
+  }
+  /**
+   * The handler is called when an item of the given type is
+   * used to place a block. Arguments are the item and direction
+   * It should return the id and data of the block to place
+   */
+  serv.onItemPlace = (name, handler) => {
+    let item = mcData.itemsByName[name]
+    if (!item) item = mcData.blocksByName[name]
+    item_place_handlers.set(item.id, handler)
+  }
+
+  serv.onItemPlace('sign', (item, direction) => {
+    // TODO: wall sign direction
+    return {id:direction===1 ? 63 : 68, data:0}
+  })
+}
+
 module.exports.player = function (player, serv, { version }) {
   const blocks = require('minecraft-data')(version).blocks
 
   player._client.on('block_place', ({ direction, location } = {}) => {
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-    if (heldItem === undefined) return
-    if (direction === -1 || heldItem.type === -1 || !blocks[heldItem.type]) return
+    if (heldItem === undefined || direction === -1 || heldItem.type === -1) return
+    const { id, data } = serv.placeItem(heldItem, direction)
+    if (!blocks[id]) return
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
     player.behavior('placeBlock', {
       direction: directionVector,
       heldItem: heldItem,
-      id: heldItem.type,
-      damage: heldItem.metadata,
+      id,
+      damage: data,
       position: placedPosition,
       reference: referencePosition,
       playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[heldItem.type].material] || 'stone')
-    }, ({ direction, heldItem, position, playSound, sound, id, damage }) => {
+      sound: 'dig.' + (materialToSound[blocks[id].material] || 'stone')
+    }, ({ position, playSound, sound, id, damage }) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8
@@ -38,15 +64,9 @@ module.exports.player = function (player, serv, { version }) {
 
       if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
 
-      if (heldItem.type !== 323) {
-        player.changeBlock(position, id, damage)
-      } else if (direction === 1) {
-        player.setBlock(position, 63, 0)
-        player._client.write('open_sign_entity', {
-          location: position
-        })
-      } else {
-        player.setBlock(position, 68, 0)
+      player.setBlock(position, id, damage)
+
+      if (id === 63 || id === 68) {
         player._client.write('open_sign_entity', {
           location: position
         })

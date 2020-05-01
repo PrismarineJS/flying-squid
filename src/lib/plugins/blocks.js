@@ -8,6 +8,9 @@ module.exports.player = function (player, serv) {
 
     await player.world.setBlockType(position, blockType)
     await player.world.setBlockData(position, blockData)
+
+    if (blockType === 0) serv.notifyNeighborsOfStateChange(player.world, position, serv.tickCount, true)
+    else serv.updateBlock(player.world, position, serv.tickCount, true)
   }
 
   player.sendBlock = (position, blockType, blockData) => // Call from player.setBlock unless you want "local" fake blocks
