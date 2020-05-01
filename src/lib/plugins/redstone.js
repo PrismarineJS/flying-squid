@@ -87,6 +87,7 @@ module.exports.server = function (serv, { version }) {
       if (block.metadata !== 2) p = Math.max(p, await powerLevelDir(world, support.position.offset(-1, 0, 0), new Vec3(1, 0, 0)))
       if (block.metadata !== 3) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, 1), new Vec3(0, 0, -1)))
       if (block.metadata !== 4) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, -1), new Vec3(0, 0, 1)))
+      if (block.metadata !== 5) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 1, 0), new Vec3(0, -1, 0)))
 
       let changed = false
       if (block.type === redstoneTorchType && p !== 0) {
@@ -97,12 +98,12 @@ module.exports.server = function (serv, { version }) {
         changed = true
       }
 
-      if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(1, 0, 0), tick + 1)
-      if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(-1, 0, 0), tick + 1)
-      if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 0, 1), tick + 1)
-      if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 0, -1), tick + 1)
-      if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1)
-      serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 1, 0), new Vec3(0, 1, 0), tick + 1)
+      if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(-1, 0, 0), new Vec3(1, 0, 0), tick + 1)
+      if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(1, 0, 0), new Vec3(-1, 0, 0), tick + 1)
+      if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, -1), new Vec3(0, 0, 1), tick + 1)
+      if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick + 1)
+      if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick + 1)
+      serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1)
       // TODO: eliminate the 1 redundant block update
 
       return changed

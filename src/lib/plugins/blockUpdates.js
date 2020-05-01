@@ -1,3 +1,5 @@
+const { performance } = require('perf_hooks')
+
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
@@ -16,6 +18,8 @@ module.exports.server = (serv, { version }) => {
     }
     const updateQueue = worldUpdateQueue.get(world)
     updateQueue.push({ pos, tick, forceNotify })
+    // TODO: use a binary heap to keep track of updates
+    updateQueue.sort((a, b) => a.tick - b.tick)
   }
 
   serv.notifyNeighborsOfStateChange = (world, pos, tick, forceNotify) => {
@@ -30,6 +34,8 @@ module.exports.server = (serv, { version }) => {
     updateQueue.push({ pos: pos.offset(0, 1, 0), tick, forceNotify }) // up
     updateQueue.push({ pos: pos.offset(0, 0, -1), tick, forceNotify }) // north
     updateQueue.push({ pos: pos.offset(0, 0, 1), tick, forceNotify }) // south
+    // TODO: use a binary heap to keep track of updates
+    updateQueue.sort((a, b) => a.tick - b.tick)
   }
 
   serv.notifyNeighborsOfStateChangeDirectional = (world, pos, dir, tick, forceNotify) => {
@@ -39,13 +45,14 @@ module.exports.server = (serv, { version }) => {
     }
     const updateQueue = worldUpdateQueue.get(world)
     const p = pos.plus(dir)
-    updateQueue.push({ pos: p, tick, forceNotify }) // center
     if (dir.x !== 1) updateQueue.push({ pos: p.offset(-1, 0, 0), tick, forceNotify }) // east
     if (dir.x !== -1) updateQueue.push({ pos: p.offset(1, 0, 0), tick, forceNotify }) // west
     if (dir.y !== 1) updateQueue.push({ pos: p.offset(0, -1, 0), tick, forceNotify }) // down
     if (dir.y !== -1) updateQueue.push({ pos: p.offset(0, 1, 0), tick, forceNotify }) // up
     if (dir.z !== 1) updateQueue.push({ pos: p.offset(0, 0, -1), tick, forceNotify }) // north
     if (dir.z !== -1) updateQueue.push({ pos: p.offset(0, 0, 1), tick, forceNotify }) // south
+    // TODO: use a binary heap to keep track of updates
+    updateQueue.sort((a, b) => a.tick - b.tick)
   }
 
   const updateHandlers = new Map()
@@ -60,10 +67,9 @@ module.exports.server = (serv, { version }) => {
 
   serv.on('tick', async (tickTime, curTick) => {
     for (const [world, updateQueue] of worldUpdateQueue.entries()) {
+      const start = performance.now()
       let updatesCount = 0
       while (updatesCount < serv.MAX_UPDATES_PER_TICK && updateQueue.length > 0) {
-        // TODO: use a binary heap to keep track of updates
-        updateQueue.sort((a, b) => a.tick - b.tick)
         if (updateQueue[0].tick > curTick) break // We are done for this tick
         const { pos, tick, forceNotify } = updateQueue.shift()
         const block = await world.getBlock(pos)
@@ -86,7 +92,11 @@ module.exports.server = (serv, { version }) => {
         updatesCount++
       }
 
-      if (updatesCount > 0) { console.log(`[Block Update] Made ${updatesCount} updates, ${updateQueue.length} remainings`) }
+      if (updatesCount > 0) {
+        const time = (performance.now() - start) / 1000
+        const fraction = (time * 100 / tickTime).toFixed(2)
+        console.log(`[Block Update] Made ${updatesCount} updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
+      }
     }
   })
 }
