@@ -64,6 +64,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     await world.setBlockData(position, blockData)
   }
 
+  serv.setBlockAction = async (world, position, actionId, actionParam) => {
+    serv.players
+      .filter(p => p.world === world)
+      .forEach(player => player.sendBlockAction(position, actionId, actionParam))
+  }
+
   serv.reloadChunks = (world, chunks) => {
     serv.players
       .filter(player => player.world === world)

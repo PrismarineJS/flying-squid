@@ -24,6 +24,29 @@ module.exports.player = function (player, serv) {
 
   player.setBlock = (position, blockType, blockData) => serv.setBlock(player.world, position, blockType, blockData)
 
+  player.sendBlockAction = (position, actionId, actionParam, blockType) => {
+    if (!blockType) {
+      const location = new Vec3(position.x, position.y, position.z)
+      blockType = player.world.getBlockType(location)
+    }
+
+    player.behavior('sendBlockAction', {
+      position: position,
+      blockType: blockType,
+      actionId: actionId,
+      actionParam: actionParam
+    }, ({ position, blockType, actionId, actionParam }) => {
+      player._client.write('block_action', {
+        location: position,
+        actionId: actionId,
+        actionParam: actionParam,
+        blockId: blockType
+      })
+    })
+  }
+
+  player.setBlockAction = (position, byte1, byte2) => serv.setBlockAction(player.world, position, byte1, byte2)
+
   player.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
