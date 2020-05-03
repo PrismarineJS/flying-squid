@@ -62,6 +62,9 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
     await world.setBlockType(position, blockType)
     await world.setBlockData(position, blockData)
+
+    if (blockType === 0) serv.notifyNeighborsOfStateChange(world, position, serv.tickCount, serv.tickCount, true)
+    else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
   serv.reloadChunks = (world, chunks) => {
