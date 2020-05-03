@@ -62,9 +62,9 @@ module.exports.server = function (serv, { version }) {
            block.type === unlitRedstoneTorchType
   }
 
-  const isDirectedRepeater = (block, dir) => {
+  const isDirectedRepeater = (block, dir, powered = false) => {
     if (block.type !== poweredRepeaterType &&
-        block.type !== unpoweredRepeaterType) return false
+        (block.type !== unpoweredRepeaterType || powered)) return false
     const dataDir = block.metadata & 0x3
     if ((dataDir === 0 || dataDir === 2) && Math.abs(dir.z) === 1) return true
     if ((dataDir === 1 || dataDir === 3) && Math.abs(dir.x) === 1) return true
@@ -191,8 +191,13 @@ module.exports.server = function (serv, { version }) {
       const curPower = block.type === poweredRepeaterType ? 15 : 0
       let p = powerLevel(source, dir)
 
-      // Source power didn't change, do nothing
-      if ((p === 0) === (curPower === 0)) return false
+      const sideA = await world.getBlock(pos.offset(dir.z, 0, dir.x))
+      const sideB = await world.getBlock(pos.offset(-dir.z, 0, -dir.x))
+      const isLocked = isDirectedRepeater(sideA, new Vec3(dir.z, 0, dir.x), true) ||
+                       isDirectedRepeater(sideB, new Vec3(-dir.z, 0, -dir.x), true)
+
+      // Source power didn't change or locked, do nothing
+      if ((p === 0) === (curPower === 0) || isLocked) return false
 
       if (data !== null) p = data // load old value of p
 
