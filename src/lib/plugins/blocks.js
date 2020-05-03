@@ -38,8 +38,8 @@ module.exports.player = function (player, serv) {
     }, ({ position, blockType, actionId, actionParam }) => {
       player._client.write('block_action', {
         location: position,
-        actionId: actionId,
-        actionParam: actionParam,
+        byte1: actionId,
+        byte2: actionParam,
         blockId: blockType
       })
     })
