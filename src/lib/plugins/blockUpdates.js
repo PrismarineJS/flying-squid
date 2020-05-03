@@ -52,52 +52,52 @@ module.exports.server = (serv, { version }) => {
   // We eliminate redundant block updates at this level
   // by checking if the update is already in the queue.
   const addUpdate = (updateQueue, updateSet, update) => {
-    const hash = update.pos + ',' + update.tick + ',' + update.forceNotify
+    const hash = update.pos + ',' + update.fromTick + ',' + update.tick + ',' + update.forceNotify
     if (updateSet.has(hash)) return
     updateSet.add(hash)
     updateQueue.push(update)
   }
 
-  serv.updateBlock = (world, pos, tick, forceNotify) => {
+  serv.updateBlock = (world, pos, fromTick, tick, forceNotify = false, data = null) => {
     // TODO: it would be better to know the list of loaded worlds at initialisation
     if (!worldUpdateQueue.has(world)) {
       worldUpdateQueue.set(world, { updateQueue: [], updateSet: new Set() })
     }
     const { updateQueue, updateSet } = worldUpdateQueue.get(world)
-    addUpdate(updateQueue, updateSet, { pos, tick, forceNotify })
+    addUpdate(updateQueue, updateSet, { pos, fromTick, tick, forceNotify, data })
     // TODO: use a binary heap to keep track of updates
     updateQueue.sort((a, b) => a.tick - b.tick)
   }
 
-  serv.notifyNeighborsOfStateChange = (world, pos, tick, forceNotify) => {
+  serv.notifyNeighborsOfStateChange = (world, pos, fromTick, tick, forceNotify = false, data = null) => {
     // TODO: it would be better to know the list of loaded worlds at initialisation
     if (!worldUpdateQueue.has(world)) {
       worldUpdateQueue.set(world, { updateQueue: [], updateSet: new Set() })
     }
     const { updateQueue, updateSet } = worldUpdateQueue.get(world)
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(-1, 0, 0), tick, forceNotify }) // east
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(1, 0, 0), tick, forceNotify }) // west
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, -1, 0), tick, forceNotify }) // down
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 1, 0), tick, forceNotify }) // up
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 0, -1), tick, forceNotify }) // north
-    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 0, 1), tick, forceNotify }) // south
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(-1, 0, 0), fromTick, tick, forceNotify, data }) // east
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(1, 0, 0), fromTick, tick, forceNotify, data }) // west
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, -1, 0), fromTick, tick, forceNotify, data }) // down
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 1, 0), fromTick, tick, forceNotify, data }) // up
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 0, -1), fromTick, tick, forceNotify, data }) // north
+    addUpdate(updateQueue, updateSet, { pos: pos.offset(0, 0, 1), fromTick, tick, forceNotify, data }) // south
     // TODO: use a binary heap to keep track of updates
     updateQueue.sort((a, b) => a.tick - b.tick)
   }
 
-  serv.notifyNeighborsOfStateChangeDirectional = (world, pos, dir, tick, forceNotify) => {
+  serv.notifyNeighborsOfStateChangeDirectional = (world, pos, dir, fromTick, tick, forceNotify = false, data = null) => {
     // TODO: it would be better to know the list of loaded worlds at initialisation
     if (!worldUpdateQueue.has(world)) {
       worldUpdateQueue.set(world, { updateQueue: [], updateSet: new Set() })
     }
     const { updateQueue, updateSet } = worldUpdateQueue.get(world)
     const p = pos.plus(dir)
-    if (dir.x !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(-1, 0, 0), tick, forceNotify }) // east
-    if (dir.x !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(1, 0, 0), tick, forceNotify }) // west
-    if (dir.y !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, -1, 0), tick, forceNotify }) // down
-    if (dir.y !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 1, 0), tick, forceNotify }) // up
-    if (dir.z !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 0, -1), tick, forceNotify }) // north
-    if (dir.z !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 0, 1), tick, forceNotify }) // south
+    if (dir.x !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(-1, 0, 0), fromTick, tick, forceNotify, data }) // east
+    if (dir.x !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(1, 0, 0), fromTick, tick, forceNotify, data }) // west
+    if (dir.y !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, -1, 0), fromTick, tick, forceNotify, data }) // down
+    if (dir.y !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 1, 0), fromTick, tick, forceNotify, data }) // up
+    if (dir.z !== 1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 0, -1), fromTick, tick, forceNotify, data }) // north
+    if (dir.z !== -1) addUpdate(updateQueue, updateSet, { pos: p.offset(0, 0, 1), fromTick, tick, forceNotify, data }) // south
     // TODO: use a binary heap to keep track of updates
     updateQueue.sort((a, b) => a.tick - b.tick)
   }
@@ -125,8 +125,8 @@ module.exports.server = (serv, { version }) => {
       while (updatesCount < serv.MAX_UPDATES_PER_TICK && updateQueue.length > 0) {
         if (updateQueue[0].tick > curTick) break // We are done for this tick
 
-        const { pos, tick, forceNotify } = updateQueue.shift()
-        const hash = pos + ',' + tick + ',' + forceNotify
+        const { pos, fromTick, tick, data, forceNotify } = updateQueue.shift()
+        const hash = pos + ',' + fromTick + ',' + tick + ',' + forceNotify
         updateSet.delete(hash)
 
         const block = await world.getBlock(pos)
@@ -134,14 +134,14 @@ module.exports.server = (serv, { version }) => {
 
         const handler = updateHandlers.get(block.type)
         if (handler) {
-          const changed = await handler(world, block, tick)
+          const changed = await handler(world, block, fromTick, tick, data)
           if (changed) {
             chunkUpdates.add(pos)
           } else if (forceNotify) {
-            serv.notifyNeighborsOfStateChange(world, pos, tick)
+            serv.notifyNeighborsOfStateChange(world, pos, fromTick, tick)
           }
         } else if (forceNotify) {
-          serv.notifyNeighborsOfStateChange(world, pos, tick)
+          serv.notifyNeighborsOfStateChange(world, pos, fromTick, tick)
         }
         updatesCount++
       }

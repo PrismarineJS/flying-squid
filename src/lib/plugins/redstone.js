@@ -95,8 +95,8 @@ module.exports.server = function (serv, { version }) {
     const blockPos = pos.plus(dir)
     const block = await world.getBlock(blockPos)
     if (isSolid(block) && await isWireDirectedIn(world, pos, dir)) {
-      serv.updateBlock(world, blockPos, tick)
-      serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, tick)
+      serv.updateBlock(world, blockPos, tick, tick)
+      serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, tick, tick)
     }
   }
 
@@ -126,7 +126,7 @@ module.exports.server = function (serv, { version }) {
 
     const torchDataToOffset = [null, new Vec3(-1, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(0, -1, 0)]
 
-    const updateRedstoneTorch = async (world, block, tick) => {
+    const updateRedstoneTorch = async (world, block, fromTick, tick, data) => {
       const offset = torchDataToOffset[block.metadata]
       const pos = block.position
 
@@ -136,7 +136,7 @@ module.exports.server = function (serv, { version }) {
       if (support.boundingBox !== 'block') {
         await world.setBlockStateId(pos, 0)
         // TODO: drop torch
-        serv.notifyNeighborsOfStateChange(world, pos, tick, true)
+        serv.notifyNeighborsOfStateChange(world, pos, tick, tick, true)
         return true
       }
 
@@ -157,13 +157,13 @@ module.exports.server = function (serv, { version }) {
       }
 
       if (changed) {
-        if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(-1, 0, 0), new Vec3(1, 0, 0), tick + 1)
-        if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(1, 0, 0), new Vec3(-1, 0, 0), tick + 1)
-        if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, -1), new Vec3(0, 0, 1), tick + 1)
-        if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick + 1)
-        if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick + 1)
+        if (block.metadata === 1) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(-1, 0, 0), new Vec3(1, 0, 0), tick, tick + 1)
+        if (block.metadata === 2) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(1, 0, 0), new Vec3(-1, 0, 0), tick, tick + 1)
+        if (block.metadata === 3) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, -1), new Vec3(0, 0, 1), tick, tick + 1)
+        if (block.metadata === 4) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, 0, 1), new Vec3(0, 0, -1), tick, tick + 1)
+        if (block.metadata === 5) serv.notifyNeighborsOfStateChangeDirectional(world, pos.offset(0, -1, 0), new Vec3(0, 1, 0), tick, tick + 1)
         if (isSolid(await world.getBlock(pos.offset(0, 1, 0)))) {
-          serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick + 1)
+          serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, 1, 0), tick, tick + 1)
         }
       }
 
@@ -173,7 +173,8 @@ module.exports.server = function (serv, { version }) {
     serv.onBlockUpdate('unlit_redstone_torch', updateRedstoneTorch)
 
     const repeaterDirection = [new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(0, 0, -1), new Vec3(1, 0, 0)]
-    const updateRepeater = async (world, block, tick) => {
+
+    const updateRepeater = async (world, block, fromTick, tick, data) => {
       const pos = block.position
 
       // Redstone repeater should be on a solid block
@@ -181,13 +182,30 @@ module.exports.server = function (serv, { version }) {
       if (support.boundingBox !== 'block') {
         await world.setBlockStateId(pos, 0)
         // TODO: drop repeater
-        serv.notifyNeighborsOfStateChange(world, pos, tick)
+        serv.notifyNeighborsOfStateChange(world, pos, tick, tick)
         return true
       }
 
       const dir = repeaterDirection[block.metadata & 0x3]
       const source = await world.getBlock(pos.plus(dir))
-      const p = powerLevel(source, dir)
+      const curPower = block.type === poweredRepeaterType ? 15 : 0
+      let p = powerLevel(source, dir)
+
+      // Source power didn't change, do nothing
+      if ((p === 0) === (curPower === 0)) return false
+
+      if (data !== null) p = data // load old value of p
+
+      const delay = (((block.metadata >> 2) & 0x3) + 1) * 2 // delay in game tick
+      if (delay > (tick - fromTick)) { // Too soon, reschedule for later
+        serv.updateBlock(world, pos, fromTick, fromTick + delay, false, p)
+        if (p !== 0) { // on-pulse
+          for (let t = 1; t < delay; t++) { // blacklist next ticks
+            serv.updateBlock(world, pos, fromTick, fromTick + delay + t, false, p)
+          }
+        }
+        return false
+      }
 
       let changed = false
       if (block.type === poweredRepeaterType && p === 0) {
@@ -199,9 +217,9 @@ module.exports.server = function (serv, { version }) {
       }
 
       if (changed) {
-        serv.updateBlock(world, pos.plus(dir.scaled(-1)), tick)
+        serv.updateBlock(world, pos.plus(dir.scaled(-1)), tick, tick)
         const sink = await world.getBlock(pos.plus(dir.scaled(-1)))
-        if (isSolid(sink)) { serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir.scaled(-1), tick + 1) }
+        if (isSolid(sink)) { serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir.scaled(-1), tick, tick) }
       }
 
       return changed
@@ -209,7 +227,7 @@ module.exports.server = function (serv, { version }) {
     serv.onBlockUpdate('powered_repeater', updateRepeater)
     serv.onBlockUpdate('unpowered_repeater', updateRepeater)
 
-    serv.onBlockUpdate('redstone_wire', async (world, block, tick) => {
+    serv.onBlockUpdate('redstone_wire', async (world, block, fromTick, tick, data) => {
       const pos = block.position
 
       // Redstone wire should be on a solid block
@@ -217,7 +235,7 @@ module.exports.server = function (serv, { version }) {
       if (support.boundingBox !== 'block') {
         await world.setBlockStateId(pos, 0)
         // TODO: drop redstone
-        serv.notifyNeighborsOfStateChange(world, pos, tick)
+        serv.notifyNeighborsOfStateChange(world, pos, tick, tick)
         return true
       }
 
@@ -239,16 +257,16 @@ module.exports.server = function (serv, { version }) {
         await world.setBlockData(pos, newPower)
 
         // Redstone wires neighbors:
-        if (b1.block) serv.updateBlock(world, b1.block.position, tick)
-        if (b2.block) serv.updateBlock(world, b2.block.position, tick)
-        if (b3.block) serv.updateBlock(world, b3.block.position, tick)
-        if (b4.block) serv.updateBlock(world, b4.block.position, tick)
+        if (b1.block) serv.updateBlock(world, b1.block.position, tick, tick)
+        if (b2.block) serv.updateBlock(world, b2.block.position, tick, tick)
+        if (b3.block) serv.updateBlock(world, b3.block.position, tick, tick)
+        if (b4.block) serv.updateBlock(world, b4.block.position, tick, tick)
 
         // Block updates
         // Only update if there is a real state change (powered / not powered)
         if ((curPower === 0) !== (newPower === 0)) {
-          serv.updateBlock(world, pos.offset(0, -1, 0), tick)
-          serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, -1, 0), tick)
+          serv.updateBlock(world, pos.offset(0, -1, 0), tick, tick)
+          serv.notifyNeighborsOfStateChangeDirectional(world, pos, new Vec3(0, -1, 0), tick, tick)
         }
       }
 
