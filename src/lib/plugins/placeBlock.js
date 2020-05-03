@@ -28,6 +28,9 @@ module.exports.server = (serv, { version }) => {
   serv.onItemPlace = (name, handler) => {
     let item = mcData.itemsByName[name]
     if (!item) item = mcData.blocksByName[name]
+    if (itemPlaceHandlers.has(item.id)) {
+      serv.log(`[Warning] onItemPlace handler was registered twice for ${name}`)
+    }
     itemPlaceHandlers.set(item.id, handler)
   }
 
@@ -44,7 +47,10 @@ module.exports.server = (serv, { version }) => {
    * cancelled.
    */
   serv.onBlockInteraction = (name, handler) => {
-    let block = mcData.blocksByName[name]
+    const block = mcData.blocksByName[name]
+    if (blockInteractHandler.has(block.id)) {
+      serv.log(`[Warning] onBlockInteraction handler was registered twice for ${name}`)
+    }
     blockInteractHandler.set(block.id, handler)
   }
 }

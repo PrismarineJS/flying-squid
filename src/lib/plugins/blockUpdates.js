@@ -28,8 +28,7 @@ class ChunkUpdates {
     for (const { chunkX, chunkZ, updates } of this.chunks.values()) {
       const records = []
       for (const p of updates.values()) {
-        const block = await world.getBlock(p)
-        const state = (block.type << 4) | block.metadata // TODO: get directly the stateId from world
+        const state = await world.getBlockStateId(p)
         records.push({
           horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
           y: p.y,
@@ -110,7 +109,11 @@ module.exports.server = (serv, { version }) => {
    * It should return true if the block changed its state
    */
   serv.onBlockUpdate = (name, handler) => {
-    updateHandlers.set(mcData.blocksByName[name].id, handler)
+    const block = mcData.blocksByName[name]
+    if (updateHandlers.has(block.id)) {
+      serv.log(`[Warning] onBlockUpdate handler was registered twice for ${name}`)
+    }
+    updateHandlers.set(block.id, handler)
   }
 
   serv.on('tick', async (tickTime, curTick) => {
@@ -153,8 +156,8 @@ module.exports.server = (serv, { version }) => {
       // TODO: chunkUpdates could also be used to update light
 
       if (updatesCount > 0) {
-        const time = (performance.now() - start) / 1000
-        const fraction = (time * 100 / tickTime).toFixed(2)
+        const time = performance.now() - start
+        const fraction = (time * 100 / 50).toFixed(2)
         const sentUpdates = chunkUpdates.updateCount()
         console.log(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
       }
