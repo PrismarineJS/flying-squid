@@ -22,6 +22,23 @@ module.exports.server = function (serv, { version }) {
     return 0
   }
 
+  // Return the power level from the block at pos to the solid block in dir
+  const powerLevelDir = async (world, pos, dir) => {
+    const block = await world.getBlock(pos)
+    if (dir.y === -1 && block.type === redstoneTorchType) return 15
+    if (block.type === redstoneWireType) {
+      if (dir.y === 1 || await isWireDirectedIn(world, pos, dir.scaled(-1))) { return block.metadata }
+    }
+    if (block.type === poweredRepeaterType) {
+      const dataDir = block.metadata & 0x3
+      if (dataDir === 0 && dir.z === 1) return 15
+      if (dataDir === 1 && dir.x === -1) return 15
+      if (dataDir === 2 && dir.z === -1) return 15
+      if (dataDir === 3 && dir.x === 1) return 15
+    }
+    return 0
+  }
+
   const isWireDirectedIn = async (world, pos, dir) => {
     const up = await world.getBlock(pos.offset(0, 1, 0))
     const upSolid = isSolid(up)
@@ -29,16 +46,6 @@ module.exports.server = function (serv, { version }) {
     const b2 = (await wireDirection(world, pos, new Vec3(dir.z, 0, dir.x), upSolid)).block !== null
     const b3 = (await wireDirection(world, pos, new Vec3(-dir.z, 0, -dir.x), upSolid)).block !== null
     return b1 && !(b2 || b3)
-  }
-
-  // Return the power level from the block at pos to the solid block in dir
-  const powerLevelDir = async (world, pos, dir) => {
-    const block = await world.getBlock(pos)
-    if (dir.y === 1 && block.type === redstoneTorchType) return 15
-    if (block.type === redstoneWireType) {
-      if (dir.y === -1 || await isWireDirectedIn(world, pos, dir)) { return block.metadata }
-    }
-    return 0
   }
 
   const isSolid = (block) => {
@@ -52,9 +59,16 @@ module.exports.server = function (serv, { version }) {
   const isRedstone = (block) => {
     return block.type === redstoneWireType ||
            block.type === redstoneTorchType ||
-           block.type === unlitRedstoneTorchType ||
-           block.type === poweredRepeaterType ||
-           block.type === unpoweredRepeaterType
+           block.type === unlitRedstoneTorchType
+  }
+
+  const isDirectedRepeater = (block, dir) => {
+    if (block.type !== poweredRepeaterType &&
+        block.type !== unpoweredRepeaterType) return false
+    const dataDir = block.metadata & 0x3
+    if ((dataDir === 0 || dataDir === 2) && Math.abs(dir.z) === 1) return true
+    if ((dataDir === 1 || dataDir === 3) && Math.abs(dir.x) === 1) return true
+    return false
   }
 
   const wireDirection = async (world, pos, dir, upSolid) => {
@@ -65,7 +79,7 @@ module.exports.server = function (serv, { version }) {
     blockB.position = pos.offset(0, -1, 0)
     const blockC = await world.getBlock(pos.offset(0, 1, 0))
     blockC.position = pos.offset(0, 1, 0)
-    if (isRedstone(blockA)) { // same y
+    if (isRedstone(blockA) || isDirectedRepeater(blockA, dir)) { // same y
       return { power: powerLevel(blockA, dir), block: blockA }
     }
     if (!isSolid(blockA) && isWire(blockB)) { // down
@@ -126,12 +140,12 @@ module.exports.server = function (serv, { version }) {
         return true
       }
 
-      let p = await powerLevelDir(world, support.position.offset(0, -1, 0), new Vec3(0, 1, 0))
-      if (block.metadata !== 1) p = Math.max(p, await powerLevelDir(world, support.position.offset(1, 0, 0), new Vec3(-1, 0, 0)))
-      if (block.metadata !== 2) p = Math.max(p, await powerLevelDir(world, support.position.offset(-1, 0, 0), new Vec3(1, 0, 0)))
-      if (block.metadata !== 3) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, 1), new Vec3(0, 0, -1)))
-      if (block.metadata !== 4) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, -1), new Vec3(0, 0, 1)))
-      if (block.metadata !== 5) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 1, 0), new Vec3(0, -1, 0)))
+      let p = await powerLevelDir(world, support.position.offset(0, -1, 0), new Vec3(0, -1, 0))
+      if (block.metadata !== 1) p = Math.max(p, await powerLevelDir(world, support.position.offset(1, 0, 0), new Vec3(1, 0, 0)))
+      if (block.metadata !== 2) p = Math.max(p, await powerLevelDir(world, support.position.offset(-1, 0, 0), new Vec3(-1, 0, 0)))
+      if (block.metadata !== 3) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, 1), new Vec3(0, 0, 1)))
+      if (block.metadata !== 4) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 0, -1), new Vec3(0, 0, -1)))
+      if (block.metadata !== 5) p = Math.max(p, await powerLevelDir(world, support.position.offset(0, 1, 0), new Vec3(0, 1, 0)))
 
       let changed = false
       if (block.type === redstoneTorchType && p !== 0) {
