@@ -45,7 +45,7 @@ module.exports.player = function (player, serv) {
     })
   }
 
-  player.setBlockAction = (position, byte1, byte2) => serv.setBlockAction(player.world, position, byte1, byte2)
+  player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
 
   player.commands.add({
     base: 'setblock',
