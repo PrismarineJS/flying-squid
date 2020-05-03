@@ -36,6 +36,7 @@
     "moment": "^2.10.6",
     "prismarine-chunk": "^1.14.0",
     "prismarine-entity": "^0.2.0",
+    "prismarine-nbt": "^1.2.1",
     "prismarine-item": "^1.1.1",
     "prismarine-provider-anvil": "^2.1.0",
     "prismarine-windows": "^1.1.1",
