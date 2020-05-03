@@ -43,6 +43,12 @@
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.getPlayer(username)](#servgetplayerusername)
       - [serv.getNearby(loc)](#servgetnearbyloc)
+      - [serv.onItemPlace(name, handler)](#servonitemplacename-handler)
+      - [serv.onBlockInteraction(name, handler)](#servonblockinteractionname-handler)
+      - [serv.onBlockUpdate(name, handler)](#servonblockupdatename-handler)
+      - [serv.updateBlock(world, pos, fromTick, tick, forceNotify = false, data = null)](#servupdateblockworld-pos-fromtick-tick-forcenotify--false-data--null)
+      - [serv.notifyNeighborsOfStateChange(world, pos, fromTick, tick, forceNotify = false, data = null)](#servnotifyneighborsofstatechangeworld-pos-fromtick-tick-forcenotify--false-data--null)
+      - [serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, fromTick, tick, forceNotify = false, data = null)](#servnotifyneighborsofstatechangedirectionalworld-pos-dir-fromtick-tick-forcenotify--false-data--null)
       - [server.banUsername(username,reason,callback)](#serverbanusernameusernamereasoncallback)
       - [server.ban(uuid,reason)](#serverbanuuidreason)
       - [server.pardonUsername(username,callback)](#serverpardonusernameusernamecallback)
@@ -344,6 +350,36 @@ Returns array of players within loc. loc is a required paramater. The object con
 * world: World position is in
 * position: Center position
 * radius: Distance from position
+
+#### serv.onItemPlace(name, handler)
+
+Register a handler that will be called when an item of type `name` is called to place a block.
+
+The argument given to the handler is an object containing the held item that triggered the event, the direction (face) on which the player clicked, the angle of the player around the placed block. It should return an object containing the id and data of the block to place.
+
+#### serv.onBlockInteraction(name, handler)
+
+Register a handler that will be called when a player interact with a block of type `name`.
+
+The argument given to the handler is an object containing the clicked block and the player. It should return true if the block interaction occurred and the block placement should be cancelled.
+
+#### serv.onBlockUpdate(name, handler)
+
+Register a handler that will be called when a block of the type `name` is updated. It should verify that the block state is still correct according to the game's rules. It is triggered when a neighboring block has been modified.
+
+The arguments of the handler are the world in which the update occurred, the block, fromTick the tick at which the update was triggered, the tick the update was scheduled to (current tick), and optional data (null most of the time) that can be used to transmit data between block updates. The handler should return true if the block was changed so the update manager can send a multiBlockChange packet for all the changes that occurred within the tick. The state of the block should be modified by using the world's setBlockXXX functions instead of serv.setBlock (that would send redundant updates to players).
+
+#### serv.updateBlock(world, pos, fromTick, tick, forceNotify = false, data = null)
+
+Trigger a block update for the block in `world` at `pos`. `fromTick` is the current server tick `serv.tickCount`, `tick` is the future server tick when the update should be executed. When `forceNotify` is true, the block update will always trigger an update on the 6 direct neighbors, even when no handler is registered for this block type. `data` is an optional object that will be given to the handler.
+
+#### serv.notifyNeighborsOfStateChange(world, pos, fromTick, tick, forceNotify = false, data = null)
+
+Similar to `serv.updateBlock` but will trigger an update on the 6 direct neighbors of `pos` but not on the block itself.
+
+#### serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, fromTick, tick, forceNotify = false, data = null)
+
+Similar to `serv.updateBlock` but will trigger an update on 5 of the direct neighbors of `pos.plus(dir)`, but not on the block at `pos` or `pos.plus(dir)`.
 
 #### server.banUsername(username,reason,callback)
 
