@@ -168,6 +168,46 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(1)
       })
+
+      test('can open and close a chest', async () => {
+        await Promise.all([waitSpawnZone(bot, 2), onGround(bot), waitSpawnZone(bot2, 2), onGround(bot2)])
+
+        const chestId = mcData.blocksByName['chest'].id
+        const [ x, y, z ] = [1, 2, 3]
+
+        const states = {
+          open: {
+            location: { x, y, z },
+            byte1: 1,
+            byte2: 1, // open
+            blockId: chestId
+          },
+          closed: {
+            location: { x, y, z },
+            byte1: 1,
+            byte2: 0, // closed
+            blockId: chestId
+          }
+        }
+
+        bot.chat(`/setblock ${x} ${y} ${z} ${chestId} 2`) // place a chest facing north
+
+        await once(bot, 'blockUpdate')
+
+        bot.chat(`/setblockaction ${x} ${y} ${z} 1 1`) // open the chest
+
+        const [ blockActionOpen ] = await once(bot._client, 'block_action', { array: true })
+        const [ blockActionOpen2 ] = await once(bot2._client, 'block_action', { array: true })
+        expect(blockActionOpen).toEqual(states.open)
+        expect(blockActionOpen2).toEqual(states.open)
+
+        bot.chat(`/setblockaction ${x} ${y} ${z} 1 0`) // close the chest
+
+        const [ blockActionClosed ] = await once(bot._client, 'block_action', { array: true })
+        const [ blockActionClosed2 ] = await once(bot2._client, 'block_action', { array: true })
+        expect(blockActionClosed).toEqual(states.closed)
+        expect(blockActionClosed2).toEqual(states.closed)
+      })
     })
 
     describe('commands', () => {
