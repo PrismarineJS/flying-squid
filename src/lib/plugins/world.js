@@ -1,4 +1,5 @@
 const spiralloop = require('spiralloop')
+const Vec3 = require('vec3').Vec3
 
 const generations = require('flying-squid').generations
 const { promisify } = require('util')
@@ -65,6 +66,15 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
     if (blockType === 0) serv.notifyNeighborsOfStateChange(world, position, serv.tickCount, serv.tickCount, true)
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
+  }
+
+  serv.setBlockAction = async (world, position, actionId, actionParam) => {
+    const location = new Vec3(position.x, position.y, position.z)
+    const blockType = await world.getBlockType(location)
+
+    serv.players
+      .filter(p => p.world === world)
+      .forEach(player => player.sendBlockAction(position, actionId, actionParam, blockType))
   }
 
   serv.reloadChunks = (world, chunks) => {

@@ -27,6 +27,29 @@ module.exports.player = function (player, serv) {
 
   player.setBlock = (position, blockType, blockData) => serv.setBlock(player.world, position, blockType, blockData)
 
+  player.sendBlockAction = async (position, actionId, actionParam, blockType) => {
+    if (!blockType) {
+      const location = new Vec3(position.x, position.y, position.z)
+      blockType = await player.world.getBlockType(location)
+    }
+
+    player.behavior('sendBlockAction', {
+      position: position,
+      blockType: blockType,
+      actionId: actionId,
+      actionParam: actionParam
+    }, ({ position, blockType, actionId, actionParam }) => {
+      player._client.write('block_action', {
+        location: position,
+        byte1: actionId,
+        byte2: actionParam,
+        blockId: blockType
+      })
+    })
+  }
+
+  player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
+
   player.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
@@ -41,6 +64,21 @@ module.exports.player = function (player, serv) {
       let res = params.slice(1, 4)
       res = res.map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]]))
       player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+    }
+  })
+
+  player.commands.add({
+    base: 'setblockaction',
+    info: 'set a block action',
+    usage: '/setblockaction <x> <y> <z> <actionId> <actionParam>',
+    op: true,
+    parse (str) {
+      const results = str.match(/^(-?[0-9]+) (-?[0-9]+) (-?[0-9]+) (-?[0-9]+) (-?[0-9]+)?/)
+      if (!results) return false
+      return results
+    },
+    action (params) {
+      player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
     }
   })
 }
