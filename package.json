@@ -14,11 +14,12 @@
     "flying-squid": "app.js"
   },
   "scripts": {
-    "prepare": "require-self",
+    "prepare": "npm run snyk-protect && require-self",
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
-    "test": "jest --verbose --runInBand"
+    "test": "jest --verbose --runInBand",
+    "snyk-protect": "snyk protect"
   },
   "keywords": [],
   "license": "MIT",
@@ -47,7 +48,8 @@
     "request-promise": "^4.1.0",
     "spiralloop": "^1.0.2",
     "uuid-1345": "^1.0.1",
-    "vec3": "^0.1.3"
+    "vec3": "^0.1.3",
+    "snyk": "^1.321.0"
   },
   "repository": {
     "type": "git",
@@ -62,5 +64,6 @@
     "mineflayer": "^2.7.3",
     "require-self": "^0.2.1",
     "standard": "^12.0.1"
-  }
+  },
+  "snyk": true
 }
