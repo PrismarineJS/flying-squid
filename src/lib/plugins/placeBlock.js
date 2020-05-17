@@ -2,12 +2,12 @@ const Vec3 = require('vec3').Vec3
 
 const materialToSound = {
   undefined: 'stone',
-  'rock': 'stone',
-  'dirt': 'grass',
-  'plant': 'grass',
-  'wool': 'cloth',
-  'web': 'cloth',
-  'wood': 'wood'
+  rock: 'stone',
+  dirt: 'grass',
+  plant: 'grass',
+  wool: 'cloth',
+  web: 'cloth',
+  wood: 'wood'
 }
 
 module.exports.server = (serv, { version }) => {

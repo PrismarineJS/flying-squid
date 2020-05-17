@@ -8,7 +8,7 @@ module.exports.player = function (player, serv) {
       const args = str.split(' ')
       if (args.length !== 1) { return false }
 
-      let condition = args[0]
+      const condition = args[0]
       if (['clear', 'rain'].indexOf(condition) === -1) { return false }
 
       return { condition: condition }

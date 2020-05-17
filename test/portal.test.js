@@ -116,50 +116,50 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
 
         describe('detect potential first lines', () => {
           test('detect potential first lines from bottom left', async () => {
-            let potentialLines = await findPotentialLines(world, bottom[0], new Vec3(0, 1, 0))
+            const potentialLines = await findPotentialLines(world, bottom[0], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
-              'direction': direction,
-              'line': bottom
+              direction: direction,
+              line: bottom
             })
           })
 
           test('detect potential first lines from bottom right', async () => {
-            let potentialLines = await findPotentialLines(world, bottom[bottom.length - 1], new Vec3(0, 1, 0))
+            const potentialLines = await findPotentialLines(world, bottom[bottom.length - 1], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
-              'direction': direction,
-              'line': bottom
+              direction: direction,
+              line: bottom
             })
           })
 
           test('detect potential first lines from top left', async () => {
-            let potentialLines = await findPotentialLines(world, top[0], new Vec3(0, -1, 0))
+            const potentialLines = await findPotentialLines(world, top[0], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
-              'direction': direction,
-              'line': top
+              direction: direction,
+              line: top
             })
           })
 
           test('detect potential first lines from top right', async () => {
-            let potentialLines = await findPotentialLines(world, top[top.length - 1], new Vec3(0, -1, 0))
+            const potentialLines = await findPotentialLines(world, top[top.length - 1], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
-              'direction': direction,
-              'line': top
+              direction: direction,
+              line: top
             })
           })
 
           test('detect potential first lines from left top', async () => {
-            let potentialLines = await findPotentialLines(world, left[left.length - 1], direction)
+            const potentialLines = await findPotentialLines(world, left[left.length - 1], direction)
             expect(potentialLines).toEqual([{
-              'direction': new Vec3(0, 1, 0),
-              'line': left
+              direction: new Vec3(0, 1, 0),
+              line: left
             }])
           })
 
           test('detect potential first lines from right bottom', async () => {
-            let potentialLines = await findPotentialLines(world, right[0], direction.scaled(-1))
+            const potentialLines = await findPotentialLines(world, right[0], direction.scaled(-1))
             expect(potentialLines).toEqual([{
-              'direction': new Vec3(0, 1, 0),
-              'line': right
+              direction: new Vec3(0, 1, 0),
+              line: right
             }])
           })
         })
@@ -167,31 +167,31 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         describe('find borders', () => {
           test('find borders from bottom', async () => {
             const border = await findBorder(world, {
-              'direction': direction,
-              'line': bottom
+              direction: direction,
+              line: bottom
             }, new Vec3(0, 1, 0))
             expect(border).toEqual(expectedBorder)
           })
 
           test('find borders from top', async () => {
             const border = await findBorder(world, {
-              'direction': direction,
-              'line': top
+              direction: direction,
+              line: top
             }, new Vec3(0, -1, 0))
             expect(border).toEqual(expectedBorder)
           })
 
           test('find borders from left', async () => {
             const border = await findBorder(world, {
-              'direction': new Vec3(0, 1, 0),
-              'line': left
+              direction: new Vec3(0, 1, 0),
+              line: left
             }, direction)
             expect(border).toEqual(expectedBorder)
           })
           test('find borders from right', async () => {
             const border = await findBorder(world, {
-              'direction': new Vec3(0, 1, 0),
-              'line': right
+              direction: new Vec3(0, 1, 0),
+              line: right
             }, direction.scaled(-1))
             expect(border).toEqual(expectedBorder)
           })

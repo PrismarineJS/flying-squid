@@ -9,7 +9,7 @@ const { level } = require('prismarine-provider-anvil')
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
-module.exports.server = async function (serv, { version, worldFolder, generation = { 'name': 'diamond_square', 'options': { 'worldHeight': 80 } } } = {}) {
+module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
   const World = require('prismarine-world')(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
@@ -25,10 +25,10 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
     try {
       const levelData = await level.readLevel(worldFolder + '/level.dat')
-      seed = levelData['RandomSeed'][0]
+      seed = levelData.RandomSeed[0]
     } catch (err) {
       seed = newSeed
-      await level.writeLevel(worldFolder + '/level.dat', { 'RandomSeed': [seed, 0] })
+      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
     }
   } else { seed = newSeed }
   generation.options.seed = seed
@@ -36,7 +36,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder)
-  serv.netherworld = new World(generations['nether'](generation.options))
+  serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
@@ -186,7 +186,7 @@ module.exports.player = function (player, serv, settings) {
 
   player.sendSpawnPosition = () => {
     player._client.write('spawn_position', {
-      'location': player.spawnPoint
+      location: player.spawnPoint
     })
   }
 

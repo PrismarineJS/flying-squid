@@ -3,9 +3,9 @@ module.exports.player = function (player, serv) {
     let actionId
 
     if (serv.supportFeature('respawnIsPayload')) {
-      actionId = data['payload']
+      actionId = data.payload
     } else if (serv.supportFeature('respawnIsActionId')) {
-      actionId = data['actionId']
+      actionId = data.actionId
     }
 
     if (actionId === 0) {

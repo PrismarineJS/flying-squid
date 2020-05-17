@@ -5,5 +5,5 @@ module.exports.player = function (player, serv, settings) {
       footer: JSON.stringify(footer)
     })
 
-  player.playerlistUpdateText(settings['player-list-text']['header'], settings['player-list-text']['footer'])
+  player.playerlistUpdateText(settings['player-list-text'].header, settings['player-list-text'].footer)
 }

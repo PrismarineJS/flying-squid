@@ -108,7 +108,7 @@ module.exports.player = function (player, serv) {
     action (params) {
       const selector = player.selectorString(params[1])
       const parsedInt = [parseInt(params[2]), parseInt(params[3]), parseInt(params[4])]
-      for (let int of parsedInt) {
+      for (const int of parsedInt) {
         if (int > 81) return 'Too much velocity, max is 81.'
       }
       const vec = new Vec3(parsedInt[0], parsedInt[1], parsedInt[2])
