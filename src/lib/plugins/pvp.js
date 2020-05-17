@@ -39,7 +39,7 @@ module.exports.player = function (player, serv) {
       return str || false
     },
     action (sel) {
-      let arr = player.selectorString(sel)
+      const arr = player.selectorString(sel)
       if (arr.length === 0) throw new UserError('Could not find player')
 
       arr.map(entity => entity.takeDamage({ damage: 20 }))

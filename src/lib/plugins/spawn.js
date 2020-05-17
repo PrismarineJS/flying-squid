@@ -119,7 +119,7 @@ module.exports.player = function (player, serv, options) {
       if (!entity) {
         return 'No entity named ' + name
       }
-      let s = Math.floor(Math.sqrt(number))
+      const s = Math.floor(Math.sqrt(number))
       for (let i = 0; i < number; i++) {
         if (entity.type === 'mob') {
           serv.spawnMob(entity.id, player.world, player.position.offset(Math.floor(i / s * 10), 0, i % s * 10), {
@@ -175,9 +175,9 @@ module.exports.player = function (player, serv, options) {
       const args = str.split(' ')
       if (args.length !== 2) { return false }
 
-      let carrier = player.selectorString(args[0])
+      const carrier = player.selectorString(args[0])
       if (carrier.length === 0) throw new UserError('one carrier')
-      let attached = player.selectorString(args[1])
+      const attached = player.selectorString(args[1])
       if (attached.length === 0) throw new UserError('one attached')
 
       return { carrier: carrier[0], attached: attached[0] }
@@ -191,9 +191,9 @@ module.exports.player = function (player, serv, options) {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
     if (typeof entity.itemId !== 'undefined') {
       entity.sendMetadata([{
-        'key': 10,
-        'type': 5,
-        'value': {
+        key: 10,
+        type: 5,
+        value: {
           blockId: entity.itemId,
           itemDamage: entity.itemDamage,
           itemCount: 1
@@ -337,7 +337,7 @@ module.exports.entity = function (entity, serv) {
     if (serv.supportFeature('setPassengerStackEntity')) {
       const p = {
         entityId: entity.id,
-        passengers: [ attachedEntity.id ]
+        passengers: [attachedEntity.id]
       }
       if (entity.type === 'player') { entity._client.write('set_passengers', p) }
       entity._writeOthersNearby('set_passengers', p)

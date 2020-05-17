@@ -5,7 +5,7 @@ module.exports.player = function (player, serv, { version }) {
   const { detectFrame, generatePortal, addPortalToWorld } = require('flying-squid').portal_detector(version)
 
   player.use_flint_and_steel = async (referencePosition, direction, position) => {
-    let block = await player.world.getBlock(referencePosition)
+    const block = await player.world.getBlock(referencePosition)
     if (block.name === 'obsidian') {
       const frames = await detectFrame(player.world, referencePosition, direction)
       if (frames.length !== 0) {

@@ -61,7 +61,7 @@ async function findBorder (world, { line, direction }, directionV) {
 }
 
 async function detectFrame (world, startingPoint, directionV) {
-  let potentialLines = await findPotentialLines(world, startingPoint, directionV)
+  const potentialLines = await findPotentialLines(world, startingPoint, directionV)
 
   return asyncFilter((await Promise.all(potentialLines
     .map(line => findBorder(world, line, directionV))))

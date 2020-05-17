@@ -13,7 +13,7 @@ module.exports.player = (player, serv) => {
     },
     action (args) {
       if (args.length === 2) {
-        let entitiesFrom = player.selectorString(args[0])
+        const entitiesFrom = player.selectorString(args[0])
         let entityTo = player.selectorString(args[1])
         if (entityTo.length === 0) throw new UserError('Invalid target')
         entityTo = entityTo[0]
@@ -32,7 +32,7 @@ module.exports.player = (player, serv) => {
 
         player.teleport(new Vec3(x, y, z))
       } else if (args.length === 4) {
-        let entitiesFrom = player.selectorString(args[0])
+        const entitiesFrom = player.selectorString(args[0])
 
         entitiesFrom.forEach(e => e.teleport(new Vec3(
           serv.posFromString(args[1], e.position.x),
