@@ -14,7 +14,7 @@
     "flying-squid": "app.js"
   },
   "scripts": {
-    "prepare": "require-self",
+    "prepare": "npm install require-self && require-self",
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
