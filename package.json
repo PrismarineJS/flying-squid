@@ -32,7 +32,7 @@
     "flatmap": "^0.0.3",
     "minecraft-data": "^2.51.0",
     "minecraft-protocol": "^1.12.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.4",
     "moment": "^2.10.6",
     "prismarine-chunk": "^1.14.0",
     "prismarine-entity": "^1.0.0",
