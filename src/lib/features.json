@@ -32,7 +32,7 @@
   {
     "name": "entityCamelCase",
     "description": "entity names are in camel case",
-    "versions": ["1.8", "1.10"]
+    "versions": ["1.8", "1.9", "1.10"]
   },
   {
     "name": "entitySnakeCase",
