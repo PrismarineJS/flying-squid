@@ -36,7 +36,7 @@ class MCServer extends EventEmitter {
 
   connect (options) {
     const version = require('minecraft-data')(options.version).version
-    if (supportedVersions.indexOf(version.majorVersion) === -1) {
+    if (!supportedVersions.some(v => v.includes(version.majorVersion))) {
       throw new Error(`Version ${version.minecraftVersion} is not supported.`)
     }
     this.supportFeature = feature => supportFeature(feature, version.majorVersion)
