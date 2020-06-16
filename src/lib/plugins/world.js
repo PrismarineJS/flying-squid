@@ -122,7 +122,7 @@ module.exports.player = function (player, serv, settings) {
         x: x,
         z: z,
         groundUp: true,
-        bitMap: 0xffff,
+        bitMap: chunk.getMask(),
         chunkData: chunk.dump(),
         blockEntities: []
       })
