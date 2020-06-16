@@ -1,3 +1,7 @@
+## 1.2.1
+
+* update to new pchunk + use bitmask
+
 ## 1.2.0
 
 * fixes on useItem (thanks @bitknox)
