@@ -20,8 +20,8 @@
   "modpe": false,
   "view-distance": 10,
   "player-list-text": {
-    "header":"Flying squid",
-    "footer":"Test server"
+    "header":{"text": "Flying squid"},
+    "footer":{"text": "Test server"}
   },
   "everybody-op":true,
   "max-entities":100,
