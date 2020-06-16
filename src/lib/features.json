@@ -32,12 +32,12 @@
   {
     "name": "entityCamelCase",
     "description": "entity names are in camel case",
-    "versions": ["1.8"]
+    "versions": ["1.8", "1.10"]
   },
   {
     "name": "entitySnakeCase",
     "description": "entity name are in snake case",
-    "versions": ["1.10", "1.11", "1.12"]
+    "versions": ["1.11", "1.12"]
   },
   {
     "name": "respawnIsPayload",
