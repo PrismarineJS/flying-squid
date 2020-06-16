@@ -5,8 +5,8 @@ const settings = require('../config/default-settings')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
 
-function assertPosEqual (actual, expected) {
-  expect(actual.distanceTo(expected)).toBeLessThan(1)
+function assertPosEqual (actual, expected, precision = 1) {
+  expect(actual.distanceTo(expected)).toBeLessThan(precision)
 }
 
 const once = require('event-promise')
@@ -271,14 +271,14 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           const initialPosition = bot.entity.position.clone()
           bot.chat('/tp ~1 ~-2 ~3')
           await once(bot, 'forcedMove')
-          assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3))
+          assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
         test('can tp somebody else with relative positions', async () => {
           await Promise.all([onGround(bot), onGround(bot2)])
           const initialPosition = bot2.entity.position.clone()
           bot.chat('/tp bot2 ~1 ~-2 ~3')
           await once(bot2, 'forcedMove')
-          assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3))
+          assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
       })
       test('can use /deop', async () => {
