@@ -93,11 +93,11 @@ module.exports.player = function (player, serv, options) {
       }
       if (entity.type === 'mob') {
         serv.spawnMob(entity.id, player.world, player.position, {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+          velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         })
       } else if (entity.type === 'object') {
         serv.spawnObject(entity.id, player.world, player.position, {
-          velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+          velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
         })
       }
     }
