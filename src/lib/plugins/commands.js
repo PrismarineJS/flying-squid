@@ -165,6 +165,57 @@ module.exports.server = function (serv) {
     }
   })
 
+  serv.commands.add({
+    base: 'op',
+    info: 'op player',
+    usage: '/op <player>',
+    action(params) {
+      params = params.split(' ')
+      if (params[0] === undefined || params[0] === null || params[0] === '') {
+        return 'Player is not defined'
+      }
+
+      var player = serv.getPlayer(params[0])
+      if (player === undefined || player === null) {
+        return `${params[0]} is not found`
+      }
+
+      player.op = true
+
+      return `${params[0]} is opped`
+    }
+  })
+
+  serv.commands.add({
+    base: 'deop',
+    info: 'deop player',
+    usage: '/deop <player>',
+    action(params) {
+      params = params.split(' ')
+      if (params[0] === undefined || params[0] === null || params[0] === '') {
+        return 'Player is not defined'
+      }
+
+      var player = serv.getPlayer(params[0])
+      if (player === undefined || player === null) {
+        return `${params[0]} is not found`
+      }
+
+      player.op = false
+
+      return `${params[0]} is deopped`
+    }
+  })
+
+  serv.commands.add({
+    base: 'stop',
+    info: 'stop server',
+    usage: '/stop',
+    action() {
+      process.exit()
+    }
+  })
+
   function shuffleArray (array) {
     let currentIndex = array.length
     let temporaryValue
