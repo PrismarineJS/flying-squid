@@ -1,4 +1,5 @@
 const UserError = require('flying-squid').UserError
+const Command = require('flying-squid').Command
 
 module.exports.player = function (player, serv, { version }) {
   player.commands.add({
@@ -123,6 +124,37 @@ module.exports.entity = function (entity, serv) {
 }
 
 module.exports.server = function (serv) {
+  serv.commands = new Command({})
+
+  serv.commands.add({
+    base: 'gamemode',
+    info: 'change gamemode',
+    usage: '/gamemode <number> <player>',
+    action (params) {
+      var gamemodes = [0, 1, 2, 3]
+      params = params.split(' ')
+      if (params[0] === undefined || params[0] === null || params[0] === "") {
+        return 'Gamemode is not defined'
+      }
+
+      if (!(params[0] in gamemodes)) {
+        return `Gamemode ${params[0]} is not found`
+      } 
+
+      if (params[1] === undefined || params[1] === null || params[1] === "") {
+        return 'Player is not defined'
+      }
+
+      var player = serv.getPlayer(params[1])
+      if (player === undefined || player === null) {
+        return `${params[1]} is not found`
+      }
+
+      player.setGameMode(params[0])
+      return `Succesfully set ${params[1]}'s gamemode to ${params[0]}`
+    }
+  })
+
   function shuffleArray (array) {
     let currentIndex = array.length
     let temporaryValue
