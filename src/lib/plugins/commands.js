@@ -126,6 +126,16 @@ module.exports.entity = function (entity, serv) {
 module.exports.server = function (serv) {
   serv.commands = new Command({})
 
+  serv.handleCommand = async (str) => {
+    try {
+      const res = await serv.commands.use(str)
+      if (res) serv.log('[INFO]: ' + res)
+    } catch (err) {
+      if (err.userError) serv.log('[ERR]: ' + err.message)
+      else setTimeout(() => { throw err }, 0)
+    }
+  }
+
   serv.commands.add({
     base: 'gamemode',
     info: 'change gamemode',
@@ -133,15 +143,15 @@ module.exports.server = function (serv) {
     action (params) {
       var gamemodes = [0, 1, 2, 3]
       params = params.split(' ')
-      if (params[0] === undefined || params[0] === null || params[0] === "") {
+      if (params[0] === undefined || params[0] === null || params[0] === '') {
         return 'Gamemode is not defined'
       }
 
       if (!(params[0] in gamemodes)) {
         return `Gamemode ${params[0]} is not found`
-      } 
+      }
 
-      if (params[1] === undefined || params[1] === null || params[1] === "") {
+      if (params[1] === undefined || params[1] === null || params[1] === '') {
         return 'Player is not defined'
       }
 
