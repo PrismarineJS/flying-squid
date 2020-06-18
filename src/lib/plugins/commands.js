@@ -139,7 +139,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'gamemode',
     info: 'Change gamemode',
-    usage: '/gamemode <number> <player>',
+    usage: 'gamemode <number> <player>',
     action (params) {
       var gamemodes = [0, 1, 2, 3]
       params = params.split(' ')
@@ -168,7 +168,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'op',
     info: 'Op a player',
-    usage: '/op <player>',
+    usage: 'op <player>',
     action (params) {
       params = params.split(' ')
       if (params[0] === undefined || params[0] === null || params[0] === '') {
@@ -189,7 +189,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'deop',
     info: 'Deop a player',
-    usage: '/deop <player>',
+    usage: 'deop <player>',
     action (params) {
       params = params.split(' ')
       if (params[0] === undefined || params[0] === null || params[0] === '') {
@@ -210,7 +210,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'stop',
     info: 'Stop the server',
-    usage: '/stop',
+    usage: 'stop',
     action () {
       process.exit()
     }
@@ -219,7 +219,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'say',
     info: 'Broadcast a message',
-    usage: '/say <message>',
+    usage: 'say <message>',
     action (params) {
       serv.broadcast('[@] ' + params)
 
@@ -332,7 +332,7 @@ module.exports.server = function (serv) {
   }
 
   serv.selectorString = (str, pos, world, allowUser = true) => {
-    pos = pos.clone()
+    if (pos) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
@@ -373,7 +373,7 @@ module.exports.server = function (serv) {
     const convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym']
 
     const data = {
-      pos: pos,
+      pos: pos || '',
       world: world,
       scores: [],
       minScores: []
