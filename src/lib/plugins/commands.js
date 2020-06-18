@@ -169,7 +169,7 @@ module.exports.server = function (serv) {
     base: 'op',
     info: 'op player',
     usage: '/op <player>',
-    action(params) {
+    action (params) {
       params = params.split(' ')
       if (params[0] === undefined || params[0] === null || params[0] === '') {
         return 'Player is not defined'
@@ -190,7 +190,7 @@ module.exports.server = function (serv) {
     base: 'deop',
     info: 'deop player',
     usage: '/deop <player>',
-    action(params) {
+    action (params) {
       params = params.split(' ')
       if (params[0] === undefined || params[0] === null || params[0] === '') {
         return 'Player is not defined'
@@ -211,7 +211,7 @@ module.exports.server = function (serv) {
     base: 'stop',
     info: 'stop server',
     usage: '/stop',
-    action() {
+    action () {
       process.exit()
     }
   })
