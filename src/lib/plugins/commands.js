@@ -138,7 +138,7 @@ module.exports.server = function (serv) {
 
   serv.commands.add({
     base: 'gamemode',
-    info: 'change gamemode',
+    info: 'Change gamemode',
     usage: '/gamemode <number> <player>',
     action (params) {
       var gamemodes = [0, 1, 2, 3]
@@ -167,7 +167,7 @@ module.exports.server = function (serv) {
 
   serv.commands.add({
     base: 'op',
-    info: 'op player',
+    info: 'Op a player',
     usage: '/op <player>',
     action (params) {
       params = params.split(' ')
@@ -182,13 +182,13 @@ module.exports.server = function (serv) {
 
       player.op = true
 
-      return `${params[0]} is opped`
+      return `Opped ${params[0]}`
     }
   })
 
   serv.commands.add({
     base: 'deop',
-    info: 'deop player',
+    info: 'Deop a player',
     usage: '/deop <player>',
     action (params) {
       params = params.split(' ')
@@ -203,16 +203,27 @@ module.exports.server = function (serv) {
 
       player.op = false
 
-      return `${params[0]} is deopped`
+      return `Deopped ${params[0]}`
     }
   })
 
   serv.commands.add({
     base: 'stop',
-    info: 'stop server',
+    info: 'Stop the server',
     usage: '/stop',
     action () {
       process.exit()
+    }
+  })
+
+  serv.commands.add({
+    base: 'say',
+    info: 'Broadcast a message',
+    usage: '/say <message>',
+    action (params) {
+      serv.broadcast('[@] ' + params)
+
+      return '[@] ' + params
     }
   })
 

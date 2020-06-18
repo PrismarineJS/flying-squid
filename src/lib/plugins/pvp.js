@@ -76,3 +76,32 @@ module.exports.entity = function (entity, serv) {
     }
   }
 }
+
+module.exports.server = function (serv) {
+  serv.commands.add({
+    base: 'kill',
+    info: 'Kill entities',
+    usage: '/kill <selector>',
+    parse (str) {
+      return str || false
+    },
+    action (sel) {
+      console.log(serv.getPlayer(sel))
+      if (serv.getPlayer(sel) !== null) {
+        serv.getPlayer(sel).takeDamage({ damage: 20 })
+        return `Killed ${sel}`
+      } else {
+        // TODO: selector kill
+        /*
+        const arr = serv.selectorString(sel)
+        if (arr.length === 0) throw new UserError('Could not find player')
+
+        arr.map(entity => {
+          entity.takeDamage({ damage: 20 })
+          return `Killed ${entity}`
+        })
+        */
+      }
+    }
+  })
+}
