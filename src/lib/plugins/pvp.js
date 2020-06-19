@@ -91,11 +91,10 @@ module.exports.server = function (serv) {
         return `Killed ${sel}`
       } else {
         const arr = serv.selectorString(sel)
-        if (arr.length === 0) return 'Could not find player'
+        if (arr.length === 0) throw new UserError('Could not find player')
 
         arr.map(entity => {
           entity.takeDamage({ damage: 20 })
-          console.log(entity)
           return `Killed ${entity}`
         })
       }

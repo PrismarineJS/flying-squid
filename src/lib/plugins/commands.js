@@ -140,28 +140,33 @@ module.exports.server = function (serv) {
     base: 'gamemode',
     info: 'Change gamemode',
     usage: 'gamemode <number> <player>',
+    parse (params) {
+      return params || false
+    },
     action (params) {
       var gamemodes = [0, 1, 2, 3]
       params = params.split(' ')
-      if (params[0] === undefined || params[0] === null || params[0] === '') {
-        return 'Gamemode is not defined'
-      }
-
       if (!(params[0] in gamemodes)) {
-        return `Gamemode ${params[0]} is not found`
+        throw new UserError(`Gamemode ${params[0]} is not found`)
       }
 
       if (params[1] === undefined || params[1] === null || params[1] === '') {
-        return 'Player is not defined'
+        throw new UserError('Player is not defined')
       }
 
       var player = serv.getPlayer(params[1])
       if (player === undefined || player === null) {
-        return `${params[1]} is not found`
-      }
+        const arr = serv.selectorString(params)
+        if (arr.length === 0) throw new UserError('Could not find player')
 
-      player.setGameMode(params[0])
-      return `Succesfully set ${params[1]}'s gamemode to ${params[0]}`
+        arr.map(entity => {
+          entity.setGameMode(params[0])
+          return `Succesfully set ${entity}'s gamemode to ${params[0]}`
+        })
+      } else {
+        player.setGameMode(params[0])
+        return `Succesfully set ${params[1]}'s gamemode to ${params[0]}`
+      }
     }
   })
 
@@ -169,20 +174,25 @@ module.exports.server = function (serv) {
     base: 'op',
     info: 'Op a player',
     usage: 'op <player>',
+    parse (params) {
+      return params || false
+    },
     action (params) {
       params = params.split(' ')
-      if (params[0] === undefined || params[0] === null || params[0] === '') {
-        return 'Player is not defined'
-      }
-
       var player = serv.getPlayer(params[0])
       if (player === undefined || player === null) {
-        return `${params[0]} is not found`
+        const arr = serv.selectorString(params)
+        if (arr.length === 0) throw new UserError('Could not find player')
+
+        arr.map(entity => {
+          entity.op = true
+          return `Opped ${entity}`
+        })
+      } else {
+        player.op = true
+
+        return `Opped ${params[0]}`
       }
-
-      player.op = true
-
-      return `Opped ${params[0]}`
     }
   })
 
@@ -190,20 +200,25 @@ module.exports.server = function (serv) {
     base: 'deop',
     info: 'Deop a player',
     usage: 'deop <player>',
+    parse (params) {
+      return params || false
+    },
     action (params) {
       params = params.split(' ')
-      if (params[0] === undefined || params[0] === null || params[0] === '') {
-        return 'Player is not defined'
-      }
-
       var player = serv.getPlayer(params[0])
       if (player === undefined || player === null) {
-        return `${params[0]} is not found`
+        const arr = serv.selectorString(params)
+        if (arr.length === 0) throw new UserError('Could not find player')
+
+        arr.map(entity => {
+          entity.op = false
+          return `Deopped ${entity}`
+        })
+      } else {
+        player.op = false
+
+        return `Deopped ${params[0]}`
       }
-
-      player.op = false
-
-      return `Deopped ${params[0]}`
     }
   })
 
@@ -220,6 +235,9 @@ module.exports.server = function (serv) {
     base: 'say',
     info: 'Broadcast a message',
     usage: 'say <message>',
+    parse (params) {
+      return params || false
+    },
     action (params) {
       serv.broadcast('[@] ' + params)
 
