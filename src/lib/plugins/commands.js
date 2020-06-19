@@ -4,6 +4,7 @@ const Command = require('flying-squid').Command
 module.exports.player = function (player, serv, { version }) {
   player.commands.add({
     base: 'help',
+    aliases: ['?'],
     info: 'to show all commands',
     usage: '/help [command]',
     parse (str) {
@@ -138,6 +139,7 @@ module.exports.server = function (serv) {
 
   serv.commands.add({
     base: 'help',
+    aliases: ['?'],
     info: 'to show all commands',
     usage: 'help [command]',
     parse (str) {
