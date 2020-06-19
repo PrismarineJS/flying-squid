@@ -189,7 +189,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'gamemode',
     info: 'Change gamemode',
-    usage: 'gamemode <number> <player>',
+    usage: 'gamemode <0-3> <player>',
     parse (params) {
       return params || false
     },
@@ -239,9 +239,14 @@ module.exports.server = function (serv) {
           return `Opped ${entity}`
         })
       } else {
-        player.op = true
+        if (!player.op) {
+          player.op = true
 
-        return `Opped ${params[0]}`
+          player.chat(`§7§o[Server: Opped ${params[0]}]`)
+          return `Opped ${params[0]}`
+        } else {
+          return `${params[0]} is opped already`
+        }
       }
     }
   })
@@ -265,9 +270,14 @@ module.exports.server = function (serv) {
           return `Deopped ${entity}`
         })
       } else {
-        player.op = false
+        if (player.op) {
+          player.op = false
 
-        return `Deopped ${params[0]}`
+          player.chat(`§7§o[Server: Deopped ${params[0]}]`)
+          return `Deopped ${params[0]}`
+        } else {
+          return `${params[0]} isn't opped`
+        }
       }
     }
   })
