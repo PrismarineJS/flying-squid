@@ -174,16 +174,16 @@ module.exports.server = function (serv) {
           const baseCmd = hash[search]
           console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
-          console.log('Help -=-=-=-=-=-=-=-=-')
+          console.log('--=[ Help ]=--')
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
           if (found[i] === search) continue
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          console.log('  ' + usage + ': ' + info)
+          console.log('\x1b[33m' + usage + '\x1b[0m: ' + info)
         }
-        console.log('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
+        console.log('--=[ Page ' + (page + 1) + ' of ' + totalPages + ' ]=--')
       }
     }
   })
