@@ -191,6 +191,7 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'gamemode',
     info: 'Change gamemode',
+    aliases: ['gm'],
     usage: 'gamemode <0-3> <player>',
     parse (params) {
       return params || false
