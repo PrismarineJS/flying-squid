@@ -303,6 +303,29 @@ Default `true`. If false, time will not automatically pass.
 
 List of all plugins. Use serv.plugins[pluginName] to get a plugin's object and data.
 
+#### serv.commands
+
+Instance of the [Command](#flying-squidcommand) class.
+Server commands are executing from terminal.
+Here is an example to create a new command :
+```js
+serv.commands.add({
+    base: 'hello',
+    info: 'print hello in the console',
+    usage: 'hello <pseudo>',
+    parse(str)  {
+      const args=str.split(' ');
+      if(args.length!=1)
+        return false;
+       
+      return {pseudo:args[0]};
+    },
+    action({pseudo}) {
+      return "Hello "+pseudo;
+    }
+});
+```
+
 ### Events
 
 #### "error" (error)
