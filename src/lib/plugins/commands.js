@@ -194,31 +194,41 @@ module.exports.server = function (serv) {
     aliases: ['gm'],
     usage: 'gamemode <0-3> <player>',
     parse (params) {
-      return params || false
+      var paramsSplit = params.split(' ')
+      if (paramsSplit[0] === '') {
+        return false
+      }
+      if (!paramsSplit[0].match(/([0-3])/)) {
+        throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
+      }
+      if (!paramsSplit[1]) {
+        throw new UserError('You must specify which player you wish to perform this action on.')
+      }
+
+      return params.match(/([0-3]) (\w+)/) || false
+      // return params || false
     },
     action (params) {
-      var gamemodes = [0, 1, 2, 3]
-      params = params.split(' ')
-      if (!(params[0] in gamemodes)) {
-        throw new UserError(`Gamemode ${params[0]} is not found`)
+      console.log(params)
+      var gamemodes = {
+        0: "Survival",
+        1: "Creative",
+        2: "Adventure",
+        3: "Spectator"
       }
-
-      if (params[1] === undefined || params[1] === null || params[1] === '') {
-        throw new UserError('Player is not defined')
-      }
-
-      var player = serv.getPlayer(params[1])
+      var player = serv.getPlayer(params[2])
+      var mode = gamemodes[params[1]]
       if (player === undefined || player === null) {
         const arr = serv.selectorString(params)
-        if (arr.length === 0) throw new UserError('Could not find player')
+        if (arr.length === 0) throw new UserError(`Player '${params[2]}' cannot be found`)
 
         arr.map(entity => {
-          entity.setGameMode(params[0])
-          return `Succesfully set ${entity}'s gamemode to ${params[0]}`
+          entity.setGameMode(params[1])
+          return `Set ${entity}'s game mode to ${mode} Mode`
         })
       } else {
-        player.setGameMode(params[0])
-        return `Succesfully set ${params[1]}'s gamemode to ${params[0]}`
+        player.setGameMode(params[1])
+        return `Set ${params[2]}'s game mode to ${mode} Mode`
       }
     }
   })
