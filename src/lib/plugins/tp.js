@@ -2,7 +2,7 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = (player, serv) => {
-  player.commands.add({
+  serv.commmands.add({
     base: 'teleport',
     aliases: ['tp'],
     info: 'to teleport a player',

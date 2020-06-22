@@ -1,3 +1,5 @@
+const UserError = require('flying-squid').UserError
+
 module.exports.server = function (serv) {
   serv.entityMaxId = 0
   serv.players = []
@@ -12,22 +14,51 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
-  player.commands.add({
+  serv.commmands.add({
     base: 'gamemode',
     aliases: ['gm'],
     info: 'to change game mode',
-    usage: '/gamemode <0-3>',
+    usage: '/gamemode <0-3> [player]',
     op: true,
     parse (str) {
-      if (!str.match(/^([0-3])$/)) { return false }
-      return parseInt(str)
+      var paramsSplit = str.split(' ')
+      console.log(paramsSplit)
+      if (paramsSplit[0] === '') {
+        return false
+      }
+      if (!paramsSplit[0].match(/([0-3])$/) && paramsSplit[0].match(/([4-9])$/)) {
+        throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
+      }
+      if (!paramsSplit[1]) {
+        return paramsSplit[0].match(/([0-3])$/)
+      }
+
+      return str.match(/([0-3]) (\w+)/) || false
+      // return params || false
     },
-    action (mode) {
-      player.setGameMode(mode)
+    action (str) {
+      var gamemodes = {
+        0: "Survival",
+        1: "Creative",
+        2: "Adventure",
+        3: "Spectator"
+      }
+      console.log(str)
+      var mode = gamemodes[str[1]]
+      if (str[2]) {
+        var plyr = serv.getPlayer(str[2])
+        if (plyr !== null) {
+          plyr.setGameMode(str[1])
+          return `Set ${params[2]}'s game mode to ${mode} Mode`
+        } else {
+          throw new UserError(`Player '${str[2]}' cannot be found`)
+        }
+
+      } else player.setGameMode(str[1])
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'difficulty',
     aliases: ['diff'],
     info: 'Sets the difficulty level',

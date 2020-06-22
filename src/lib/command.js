@@ -18,16 +18,18 @@ class Command {
     return undefined
   }
 
-  async use (command, op = true) {
+  async use (command, ctx = 'player', op = true) {
     let res = this.find(command)
 
     if (res) {
       let [com, pars] = res
+      if (com.params.onlyConsole && ctx === 'player') return 'This command is console only' 
+      if (com.params.onlyPlayer && ctx === 'console') return 'This command is player only' 
       if (com.params.op && !op) return 'You do not have permission to use this command'
       const parse = com.params.parse
       if (parse) {
         if (typeof parse === 'function') {
-          pars = parse(pars)
+          pars = parse(pars, ctx)
           if (pars === false) {
             return com.params.usage ? 'Usage: ' + com.params.usage : 'Bad syntax'
           }
@@ -36,7 +38,7 @@ class Command {
         }
       }
 
-      res = await com.params.action(pars)
+      res = await com.params.action(pars, ctx)
 
       if (res) return '' + res
     } else {

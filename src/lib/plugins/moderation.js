@@ -76,7 +76,7 @@ module.exports.player = function (player, serv) {
 
   player.pardon = () => serv.pardon(player.uuid)
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'kick',
     info: 'to kick a player',
     usage: '/kick <player> [reason]',
@@ -100,7 +100,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'ban',
     info: 'to ban a player',
     usage: '/ban <player> [reason]',
@@ -134,7 +134,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'ban-ip',
     info: 'bans a specific IP',
     usage: '/ban-ip <ip> [reason]',
@@ -154,7 +154,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'pardon-ip',
     info: 'to pardon a player by ip',
     usage: '/pardon-ip <ip>',
@@ -165,7 +165,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'pardon',
     info: 'to pardon a player',
     usage: '/pardon <player>',
@@ -185,7 +185,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'op',
     info: 'op any player',
     usage: '/op <player>',
@@ -202,7 +202,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'deop',
     info: 'deop any player',
     usage: '/deop <player>',

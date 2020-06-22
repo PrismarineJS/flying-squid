@@ -97,7 +97,7 @@ module.exports.entity = function (entity, serv, { version }) {
 }
 
 module.exports.player = function (player, serv) {
-  player.commands.add({
+  serv.commmands.add({
     base: 'velocity',
     info: 'Push velocity on player(s)',
     usage: '/velocity <player> <x> <y> <z>',

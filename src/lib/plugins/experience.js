@@ -30,7 +30,7 @@ module.exports.player = function (player, serv) {
     if (send) player.sendXp()
   }
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'xp',
     info: 'Give yourself experience',
     usage: '/xp <amount> [player] OR /xp <amount>L [player]',

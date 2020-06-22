@@ -23,7 +23,7 @@ module.exports.server = function (serv, options) {
       player._client = client
 
       player.profileProperties = player._client.profile ? player._client.profile.properties : []
-      player.commands = new Command({})
+      
       Object.keys(plugins)
         .filter(pluginName => plugins[pluginName].player !== undefined)
         .forEach(pluginName => plugins[pluginName].player(player, serv, options))

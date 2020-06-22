@@ -2,7 +2,7 @@ const UserError = require('flying-squid').UserError
 const Command = require('flying-squid').Command
 
 module.exports.player = function (player, serv, { version }) {
-  player.commands.add({
+  serv.commands.add({
     base: 'help',
     aliases: ['?'],
     info: 'to show all commands',
@@ -18,7 +18,7 @@ module.exports.player = function (player, serv, { version }) {
     },
     action ({ search, page }) {
       if (page < 0) return 'Page # must be >= 1'
-      const hash = player.commands.uniqueHash
+      const hash = serv.commmands.uniqueHash
 
       const PAGE_LENGTH = 7
 
@@ -53,7 +53,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'ping',
     info: 'to pong!',
     usage: '/ping [number]',
@@ -67,7 +67,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'modpe',
     info: 'for modpe commands',
     usage: '/modpe <params>',
@@ -77,7 +77,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'version',
     info: 'to get version of the server',
     usage: '/version',
@@ -86,7 +86,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'bug',
     info: 'to bug report',
     usage: '/bug',
@@ -95,7 +95,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'selector',
     info: 'Get array from selector',
     usage: '/selector <selector>',
@@ -111,7 +111,7 @@ module.exports.player = function (player, serv, { version }) {
 
   player.handleCommand = async (str) => {
     try {
-      const res = await player.commands.use(str, player.op)
+      const res = await serv.commands.use(str, 'player', player.op)
       if (res) player.chat(serv.color.red + res)
     } catch (err) {
       if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message)
@@ -125,17 +125,17 @@ module.exports.entity = function (entity, serv) {
 }
 
 module.exports.server = function (serv) {
-  serv.commands = new Command({})
-
   serv.handleCommand = async (str) => {
     try {
-      const res = await serv.commands.use(str)
+      const res = await serv.commands.use(str, 'console')
       if (res) serv.log('[INFO]: ' + res)
     } catch (err) {
       if (err.userError) serv.log('[ERR]: ' + err.message)
       else setTimeout(() => { throw err }, 0)
     }
   }
+
+  /*
 
   serv.commands.add({
     base: 'help',
@@ -317,6 +317,8 @@ module.exports.server = function (serv) {
       return '[@] ' + params
     }
   })
+
+  */
 
   function shuffleArray (array) {
     let currentIndex = array.length

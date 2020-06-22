@@ -40,7 +40,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'portal',
     info: 'Create a portal frame',
     usage: '/portal <bottomLeft:<x> <y> <z>> <direction:x|z> <width> <height>',

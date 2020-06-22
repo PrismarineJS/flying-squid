@@ -80,7 +80,7 @@ module.exports.player = function (player, serv, options) {
   const entitiesByName = require('minecraft-data')(version).entitiesByName
   const Item = require('prismarine-item')(version)
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'summon',
     info: 'Summon an entity',
     usage: '/summon <entity_name>',
@@ -103,7 +103,7 @@ module.exports.player = function (player, serv, options) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'summonMany',
     info: 'Summon many entities',
     usage: '/summonMany <number> <entity_name>',
@@ -134,7 +134,7 @@ module.exports.player = function (player, serv, options) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'pile',
     info: 'make a pile of entities',
     usage: '/pile <entities types>',
@@ -166,7 +166,7 @@ module.exports.player = function (player, serv, options) {
     }
   })
 
-  player.commands.add({
+  serv.commmands.add({
     base: 'attach',
     info: 'attach an entity on an other entity',
     usage: '/attach <carrier> <attached>',
