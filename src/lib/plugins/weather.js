@@ -1,5 +1,5 @@
 module.exports.player = function (player, serv) {
-  serv.commmands.add({
+  serv.commands.add({
     base: 'weather',
     info: 'Sets the weather.',
     usage: '/weather <clear|rain>',

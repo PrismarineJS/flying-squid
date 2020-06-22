@@ -30,7 +30,7 @@ module.exports.player = function (player, serv) {
     if (mouse === 1) { attackEntity(target) }
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'kill',
     info: 'Kill entities',
     usage: '/kill <selector>',

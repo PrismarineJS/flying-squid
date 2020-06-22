@@ -66,7 +66,7 @@ module.exports.player = function (player, serv) {
     serv.playNoteBlock(data.note, player.world, position)
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'playsound',
     info: 'to play sound for yourself',
     usage: '/playsound <sound_name> [volume] [pitch]',
@@ -86,7 +86,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'playsoundforall',
     info: 'to play sound for everyone',
     usage: '/playsoundforall <sound_name> [volume] [pitch]',

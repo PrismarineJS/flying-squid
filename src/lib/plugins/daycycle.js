@@ -25,7 +25,7 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
-  serv.commmands.add({
+  serv.commands.add({
     base: 'night',
     info: 'to change a time to night',
     usage: '/night',
@@ -35,7 +35,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'time',
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
@@ -70,7 +70,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'day',
     info: 'to change a time to day',
     usage: '/day',

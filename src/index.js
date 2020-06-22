@@ -43,7 +43,7 @@ class MCServer extends EventEmitter {
     this.supportFeature = feature => supportFeature(feature, version.majorVersion)
 
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
-    this.commmands = new Command({})
+    this.commands = new Command({})
     this._server = mc.createServer(options)
     Object.keys(plugins)
       .filter(pluginName => plugins[pluginName].server !== undefined)

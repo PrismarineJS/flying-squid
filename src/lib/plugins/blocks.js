@@ -50,8 +50,6 @@ module.exports.player = function (player, serv) {
 
   player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
 
-  console.log(serv.commands)
-
   serv.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
@@ -68,9 +66,8 @@ module.exports.player = function (player, serv) {
       player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
     }
   })
-  
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'setblockaction',
     info: 'set a block action',
     usage: '/setblockaction <x> <y> <z> <actionId> <actionParam>',

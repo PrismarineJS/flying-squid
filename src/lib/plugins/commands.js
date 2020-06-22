@@ -16,9 +16,9 @@ module.exports.player = function (player, serv, { version }) {
       const search = params.join(' ')
       return { search: search, page: (page && page - 1) || 0 }
     },
-    action ({ search, page }) {
+    action ({ search, page }, ctx) {
       if (page < 0) return 'Page # must be >= 1'
-      const hash = serv.commmands.uniqueHash
+      const hash = serv.commands.uniqueHash
 
       const PAGE_LENGTH = 7
 
@@ -30,25 +30,30 @@ module.exports.player = function (player, serv, { version }) {
         const cmd = hash[found[0]]
         const usage = (cmd.params && cmd.params.usage) || cmd.base
         const info = (cmd.params && cmd.params.info) || 'No info'
-        player.chat(usage + ': ' + info)
+        if (ctx === 'player') player.chat(usage + ': ' + info)
+        else console.log(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
         const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
         found = found.sort()
         if (found.indexOf('search') !== -1) {
           const baseCmd = hash[search]
-          player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          if (ctx === 'player') player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          else console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
-          player.chat('Help -=-=-=-=-=-=-=-=-')
+          if (ctx === 'player') player.chat('Help -=-=-=-=-=-=-=-=-')
+          else console.log('Help -=-=-=-=-=-=-=-=-')
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
           if (found[i] === search) continue
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          player.chat(usage + ': ' + info)
+          if (ctx === 'player') player.chat(usage + ': ' + info)
+          else console.log(usage + ': ' + info)
         }
-        player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
+        if (ctx === 'player') player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
+        else console.log('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
       }
     }
   })
@@ -135,64 +140,12 @@ module.exports.server = function (serv) {
     }
   }
 
-  /*
-
-  serv.commands.add({
-    base: 'help',
-    aliases: ['?'],
-    info: 'to show all commands',
-    usage: 'help [command]',
-    parse (str) {
-      const params = str.split(' ')
-      const page = parseInt(params[params.length - 1])
-      if (page) {
-        params.pop()
-      }
-      const search = params.join(' ')
-      return { search: search, page: (page && page - 1) || 0 }
-    },
-    action ({ search, page }) {
-      if (page < 0) return 'Page # must be >= 1'
-      const hash = serv.commands.uniqueHash
-
-      const PAGE_LENGTH = 7
-
-      let found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') === 0)
-
-      if (found.length === 0) { // None found
-        return 'Could not find any matches'
-      } else if (found.length === 1) { // Single command found, giev info on command
-        const cmd = hash[found[0]]
-        const usage = (cmd.params && cmd.params.usage) || cmd.base
-        const info = (cmd.params && cmd.params.info) || 'No info'
-        console.log(usage + ': ' + info)
-      } else { // Multiple commands found, give list with pages
-        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
-        if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
-        found = found.sort()
-        if (found.indexOf('search') !== -1) {
-          const baseCmd = hash[search]
-          console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
-        } else {
-          console.log('--=[ Help ]=--')
-        }
-        for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
-          if (found[i] === search) continue
-          const cmd = hash[found[i]]
-          const usage = (cmd.params && cmd.params.usage) || cmd.base
-          const info = (cmd.params && cmd.params.info) || 'No info'
-          console.log('\x1b[33m' + usage + '\x1b[0m: ' + info)
-        }
-        console.log('--=[ Page ' + (page + 1) + ' of ' + totalPages + ' ]=--')
-      }
-    }
-  })
-
   serv.commands.add({
     base: 'gamemode',
     info: 'Change gamemode',
     aliases: ['gm'],
-    usage: 'gamemode <0-3> <player>',
+    op: true,
+    usage: '/gamemode <0-3> <player>',
     parse (params) {
       var paramsSplit = params.split(' ')
       if (paramsSplit[0] === '') {
@@ -236,7 +189,8 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'op',
     info: 'Op a player',
-    usage: 'op <player>',
+    usage: '/op <player>',
+    op: true,
     parse (params) {
       return params || false
     },
@@ -267,7 +221,8 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'deop',
     info: 'Deop a player',
-    usage: 'deop <player>',
+    usage: '/deop <player>',
+    op: true,
     parse (params) {
       return params || false
     },
@@ -298,7 +253,8 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'stop',
     info: 'Stop the server',
-    usage: 'stop',
+    usage: '/stop',
+    op: true,
     action () {
       process.exit()
     }
@@ -307,18 +263,18 @@ module.exports.server = function (serv) {
   serv.commands.add({
     base: 'say',
     info: 'Broadcast a message',
-    usage: 'say <message>',
+    usage: '/say <message>',
+    op: true,
     parse (params) {
       return params || false
     },
-    action (params) {
-      serv.broadcast('[@] ' + params)
+    action (params, ctx) {
+      var who = ctx === 'console' ? 'Server' : 'Player'
+      serv.broadcast(`[${who}] ` + params)
 
-      return '[@] ' + params
+      serv.log(`[${who}] ` + params)
     }
   })
-
-  */
 
   function shuffleArray (array) {
     let currentIndex = array.length

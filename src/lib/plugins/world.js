@@ -216,7 +216,7 @@ module.exports.player = function (player, serv, settings) {
     player.sendRestMap()
   }
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'changeworld',
     info: 'to change world',
     usage: '/changeworld overworld|nether',

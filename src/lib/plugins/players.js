@@ -14,7 +14,7 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
-  serv.commmands.add({
+  serv.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
     info: 'to change game mode',
@@ -58,7 +58,7 @@ module.exports.player = function (player, serv) {
     }
   })
 
-  serv.commmands.add({
+  serv.commands.add({
     base: 'difficulty',
     aliases: ['diff'],
     info: 'Sets the difficulty level',

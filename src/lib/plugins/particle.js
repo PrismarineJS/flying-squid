@@ -25,7 +25,7 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
-  serv.commmands.add({
+  serv.commands.add({
     base: 'particle',
     info: 'emit a particle at a position',
     usage: '/particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]',
