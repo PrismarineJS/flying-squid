@@ -30,6 +30,7 @@ module.exports.player = function (player, serv) {
     if (mouse === 1) { attackEntity(target) }
   })
 
+  /*
   serv.commands.add({
     base: 'kill',
     info: 'Kill entities',
@@ -45,6 +46,7 @@ module.exports.player = function (player, serv) {
       arr.map(entity => entity.takeDamage({ damage: 20 }))
     }
   })
+  */
 }
 
 module.exports.entity = function (entity, serv) {
@@ -78,28 +80,29 @@ module.exports.entity = function (entity, serv) {
 }
 
 module.exports.server = function (serv) {
-  /*
   serv.commands.add({
     base: 'kill',
     info: 'Kill entities',
-    usage: 'kill <selector>',
+    usage: '/kill <selector>|<player>',
     parse (str) {
       return str || false
     },
-    action (sel) {
-      if (serv.getPlayer(sel) !== null) {
-        serv.getPlayer(sel).takeDamage({ damage: 20 })
-        return `Killed ${sel}`
+    action (sel, ctx) {
+      if (sel !== '') {
+        if (serv.getPlayer(sel) !== null) {
+          serv.getPlayer(sel).takeDamage({ damage: 20 })
+          return `Killed ${sel}`
+        } else {
+          const arr = serv.selectorString(sel)
+          if (arr.length === 0) throw new UserError('Could not find player')
+          arr.map(entity => {
+            entity.takeDamage({ damage: 20 })
+            return `Killed ${entity}`
+          })
+        }
       } else {
-        const arr = serv.selectorString(sel)
-        if (arr.length === 0) throw new UserError('Could not find player')
-
-        arr.map(entity => {
-          entity.takeDamage({ damage: 20 })
-          return `Killed ${entity}`
-        })
+        ctx.player.takeDamage({ damage: 20 })
       }
     }
   })
-  */
 }

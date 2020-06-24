@@ -24,7 +24,7 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.serv = function (serv) {
   serv.commands.add({
     base: 'particle',
     info: 'emit a particle at a position',
@@ -39,13 +39,13 @@ module.exports.player = function (player, serv) {
         size: results[5] ? new Vec3(parseInt(results[3]), parseInt(results[4]), parseInt(results[5])) : new Vec3(1, 1, 1)
       }
     },
-    action ({ particle, amount, size }) {
+    action ({ particle, amount, size }, ctx) {
       if (amount >= 100000) {
-        player.chat('You cannot emit more than 100,000 particles!')
+        ctx.player.chat('You cannot emit more than 100,000 particles!')
         return
       }
-      player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')')
-      serv.emitParticle(particle, player.world, player.position, { count: amount, size: size })
+      ctx.player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')')
+      serv.emitParticle(particle, ctx.player.world, ctx.player.position, { count: amount, size: size })
     }
   })
 }

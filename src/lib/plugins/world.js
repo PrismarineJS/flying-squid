@@ -90,6 +90,18 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
   // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
+  serv.commands.add({
+    base: 'changeworld',
+    info: 'to change world',
+    usage: '/changeworld overworld|nether',
+    op: true,
+    action (world, ctx) {
+      if (ctx.player) {
+        if (world === 'nether') ctx.player.changeWorld(serv.netherworld, { dimension: -1 })
+        if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
+      }
+    }
+  })
 }
 
 module.exports.player = function (player, serv, settings) {
@@ -215,15 +227,4 @@ module.exports.player = function (player, serv, settings) {
     await player.waitPlayerLogin()
     player.sendRestMap()
   }
-
-  serv.commands.add({
-    base: 'changeworld',
-    info: 'to change world',
-    usage: '/changeworld overworld|nether',
-    op: true,
-    action (world) {
-      if (world === 'nether') player.changeWorld(serv.netherworld, { dimension: -1 })
-      if (world === 'overworld') player.changeWorld(serv.overworld, { dimension: 0 })
-    }
-  })
 }

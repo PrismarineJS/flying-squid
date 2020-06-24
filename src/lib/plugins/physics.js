@@ -96,7 +96,7 @@ module.exports.entity = function (entity, serv, { version }) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.server = function (serv) {
   serv.commands.add({
     base: 'velocity',
     info: 'Push velocity on player(s)',
@@ -105,8 +105,8 @@ module.exports.player = function (player, serv) {
     parse (str) {
       return str.match(/(.+?) (\d+) (\d+) (\d+)/) || false
     },
-    action (params) {
-      const selector = player.selectorString(params[1])
+    action (params, ctx) {
+      const selector = ctx.player.selectorString(params[1])
       const parsedInt = [parseInt(params[2]), parseInt(params[3]), parseInt(params[4])]
       for (const int of parsedInt) {
         if (int > 81) return 'Too much velocity, max is 81.'

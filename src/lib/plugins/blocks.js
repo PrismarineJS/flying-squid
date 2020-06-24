@@ -49,7 +49,9 @@ module.exports.player = function (player, serv) {
   }
 
   player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
+}
 
+module.exports.server = function (serv) {
   serv.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
@@ -60,10 +62,10 @@ module.exports.player = function (player, serv) {
       if (!results) return false
       return results
     },
-    action (params) {
+    action (params, ctx) {
       let res = params.slice(1, 4)
-      res = res.map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]]))
-      player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+      res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
+      ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
     }
   })
 
@@ -77,8 +79,8 @@ module.exports.player = function (player, serv) {
       if (!results) return false
       return results
     },
-    action (params) {
-      player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
+    action (params, ctx) {
+      ctx.player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
     }
   })
 }

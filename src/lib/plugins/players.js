@@ -13,7 +13,7 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.serv = function (serv) {
   serv.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
@@ -22,7 +22,6 @@ module.exports.player = function (player, serv) {
     op: true,
     parse (str) {
       var paramsSplit = str.split(' ')
-      console.log(paramsSplit)
       if (paramsSplit[0] === '') {
         return false
       }
@@ -36,25 +35,32 @@ module.exports.player = function (player, serv) {
       return str.match(/([0-3]) (\w+)/) || false
       // return params || false
     },
-    action (str) {
+    action (str, ctx) {
       var gamemodes = {
-        0: "Survival",
-        1: "Creative",
-        2: "Adventure",
-        3: "Spectator"
+        0: 'Survival',
+        1: 'Creative',
+        2: 'Adventure',
+        3: 'Spectator'
       }
-      console.log(str)
       var mode = gamemodes[str[1]]
-      if (str[2]) {
-        var plyr = serv.getPlayer(str[2])
+      var plyr = serv.getPlayer(str[2])
+      if (ctx.player) {
+        if (str[2]) {
+          if (plyr !== null) {
+            plyr.setGameMode(str[1])
+            return `Set ${str[2]}'s game mode to ${mode} Mode`
+          } else {
+            throw new UserError(`Player '${str[2]}' cannot be found`)
+          }
+        } else ctx.player.setGameMode(str[1])
+      } else {
         if (plyr !== null) {
           plyr.setGameMode(str[1])
-          return `Set ${params[2]}'s game mode to ${mode} Mode`
+          return `Set ${str[2]}'s game mode to ${mode} Mode`
         } else {
           throw new UserError(`Player '${str[2]}' cannot be found`)
         }
-
-      } else player.setGameMode(str[1])
+      }
     }
   })
 

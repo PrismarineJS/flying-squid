@@ -22,16 +22,14 @@ module.exports.server = function (serv) {
       })
     }
   })
-}
 
-module.exports.player = function (player, serv) {
   serv.commands.add({
     base: 'night',
     info: 'to change a time to night',
     usage: '/night',
     op: true,
     action () {
-      return player.handleCommand('time set night')
+      return serv.handleCommand('time set night')
     }
   })
 
@@ -48,9 +46,9 @@ module.exports.player = function (player, serv) {
         value: data[2] === 'day' ? 1000 : (data[2] === 'night' ? 13000 : parseInt(data[2]))
       }
     },
-    action ({ action, value }) {
+    action ({ action, value }, ctx) {
       if (action === 'query') {
-        player.chat('It is ' + serv.time)
+        ctx.player.chat('It is ' + serv.time)
       } else {
         if (isNaN(value)) {
           return 'That isn\'t a valid number!'
@@ -63,7 +61,8 @@ module.exports.player = function (player, serv) {
             newTime = value + serv.time
           }
 
-          player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
+          if (ctx.player)ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
+          else serv.log('Time was changed from ' + serv.time + ' to ' + newTime)
           serv.setTime(newTime)
         }
       }
@@ -76,7 +75,7 @@ module.exports.player = function (player, serv) {
     usage: '/day',
     op: true,
     action () {
-      return player.handleCommand('time set day')
+      return serv.handleCommand('time set day')
     }
   })
 }

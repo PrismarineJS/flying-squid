@@ -29,7 +29,9 @@ module.exports.player = function (player, serv) {
     if (setDisplay) player.displayXp = distanceToXpLevel(xp)
     if (send) player.sendXp()
   }
+}
 
+module.exports.server = function (serv) {
   serv.commands.add({
     base: 'xp',
     info: 'Give yourself experience',
@@ -38,21 +40,21 @@ module.exports.player = function (player, serv) {
     parse (str) {
       return str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) || false
     },
-    action (args) {
+    action (args, ctx) {
       const isLevel = !!args[2]
       const amt = parseInt(args[1])
-      const user = args[3] ? serv.getPlayer(args[3]) : player
+      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
       if (!user) return args[3] + ' is not on this server!'
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
-        player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+        ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
       } else {
-        const currLevel = getXpLevel(player.xp)
+        const currLevel = getXpLevel(ctx.player.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
-        const extraXp = player.xp - baseCurrLevel
+        const extraXp = ctx.player.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
-        player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+        ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
       }
     }
   })

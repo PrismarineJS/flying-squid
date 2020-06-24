@@ -50,7 +50,7 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.serv = function (serv) {
   serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',
@@ -58,8 +58,8 @@ module.exports.player = function (player, serv) {
     parse (str) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
-    action (params) {
-      const targets = player.selectorString(params[1])
+    action (params, ctx) {
+      const targets = ctx.player.selectorString(params[1])
       if (params[2] === 'clear') {
         targets.forEach(e => Object.keys(e.effects).forEach(effectId => {
           if (e.effects[effectId] !== null) e.removeEffect(effectId)
@@ -78,9 +78,9 @@ module.exports.player = function (player, serv) {
         })
       }
       const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
-      if (params[2] === 'clear') player.chat('Remove all effects from ' + chatSelect + '.')
+      if (params[2] === 'clear') ctx.player.chat('Remove all effects from ' + chatSelect + '.')
       else {
-        player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+        ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
       }
     }

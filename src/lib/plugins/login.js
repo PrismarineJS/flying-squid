@@ -7,7 +7,6 @@ const nbt = require('prismarine-nbt')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const convertInventorySlotId = require('../convertInventorySlotId')
-const Command = require('flying-squid').Command
 
 const fsReadFile = promisify(fs.readFile)
 const nbtParse = promisify(nbt.parse)
@@ -23,7 +22,7 @@ module.exports.server = function (serv, options) {
       player._client = client
 
       player.profileProperties = player._client.profile ? player._client.profile.properties : []
-      
+
       Object.keys(plugins)
         .filter(pluginName => plugins[pluginName].player !== undefined)
         .forEach(pluginName => plugins[pluginName].player(player, serv, options))
