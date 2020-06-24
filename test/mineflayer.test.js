@@ -284,7 +284,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /deop', async () => {
         await waitLoginMessage(bot)
         bot.chat('/deop bot')
-        await waitMessage(bot, 'bot is deopped')
+        await waitMessage(bot, '§7§o[Server: Deopped bot]') //await waitMessage(bot, 'bot is deopped')
         bot.chat('/op bot')
         await waitMessage(bot, 'You do not have permission to use this command')
         serv.getPlayer('bot').op = true
