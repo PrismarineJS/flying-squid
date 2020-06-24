@@ -50,7 +50,7 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.serv = function (serv) {
+module.exports.server = function (serv) {
   serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',

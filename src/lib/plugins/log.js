@@ -35,7 +35,6 @@ module.exports.server = function (serv, settings) {
     fs.appendFile(logFile, message + '\n', (err) => {
       if (err) console.log(err)
     })
-    rl.prompt(true)
   }
 
   serv.info = message => {

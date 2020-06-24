@@ -11,9 +11,7 @@ module.exports.server = function (serv) {
     if (found.length > 0) { return found[0] }
     return null
   }
-}
-
-module.exports.serv = function (serv) {
+  
   serv.commands.add({
     base: 'gamemode',
     aliases: ['gm'],

@@ -22,9 +22,7 @@ module.exports.server = function (serv) {
       data: []
     }, players.filter(p => blacklist.indexOf(p) === -1))
   }
-}
 
-module.exports.serv = function (serv) {
   serv.commands.add({
     base: 'particle',
     info: 'emit a particle at a position',
