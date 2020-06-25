@@ -27,6 +27,7 @@ module.exports.server = function (serv) {
     base: 'particle',
     info: 'emit a particle at a position',
     usage: '/particle <id> [amount] [<sizeX> <sizeY> <sizeZ>]',
+    onlyPlayer: true,
     op: true,
     parse (str) {
       const results = str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/)

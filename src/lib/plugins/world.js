@@ -94,12 +94,11 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     base: 'changeworld',
     info: 'to change world',
     usage: '/changeworld overworld|nether',
+    onlyPlayer: true,
     op: true,
     action (world, ctx) {
-      if (ctx.player) {
-        if (world === 'nether') ctx.player.changeWorld(serv.netherworld, { dimension: -1 })
-        if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
-      }
+      if (world === 'nether') ctx.player.changeWorld(serv.netherworld, { dimension: -1 })
+      if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
     }
   })
 }

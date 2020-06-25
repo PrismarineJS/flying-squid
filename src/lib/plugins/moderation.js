@@ -144,7 +144,7 @@ module.exports.server = function (serv) {
         else throw new UserError(username + ' is not on this server!')
       } else {
         kickPlayer.kick(reason)
-        kickPlayer.emit('kicked', ctx.player, reason)
+        kickPlayer.emit('kicked', ctx.player ? ctx.player : { username: '[@]' }, reason)
       }
     }
   })
@@ -168,7 +168,7 @@ module.exports.server = function (serv) {
       if (!banPlayer) {
         serv.banUsername(username, reason)
           .then(() => {
-            serv.emit('banned', ctx.player, username, reason)
+            serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
             if(ctx.player) ctx.player.chat(username + ' was banned')
             else serv.log(username + ' was banned')
           })
@@ -201,7 +201,8 @@ module.exports.server = function (serv) {
     },
     action ({ IP, reason }, ctx) {
       serv.banIP(IP, reason)
-      ctx.player.chat('' + IP + ' was IP banned')
+      if (ctx.player) ctx.player.chat('' + IP + ' was IP banned')
+      else serv.info('' + IP + ' was IP banned')
     }
   })
 
@@ -228,10 +229,14 @@ module.exports.server = function (serv) {
     },
     action (nick, ctx) {
       serv.pardonUsername(nick)
-        .then(() => ctx.player.chat(nick + ' is unbanned'))
+        .then(() => {
+          if (ctx.player) ctx.player.chat(nick + ' is unbanned')
+          else serv.info(nick + ' is unbanned')
+        })
         .catch(err => {
           if (err) { // This tricks eslint
-            ctx.player.chat(nick + ' is not banned')
+            if (ctx.player) ctx.player.chat(nick + ' is not banned')
+            else serv.info(nick + ' is not unbanned')
           }
         })
     }

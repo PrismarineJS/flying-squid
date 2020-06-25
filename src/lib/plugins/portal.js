@@ -47,6 +47,7 @@ module.exports.server = function (serv, { version }) {
     base: 'portal',
     info: 'Create a portal frame',
     usage: '/portal <bottomLeft:<x> <y> <z>> <direction:x|z> <width> <height>',
+    onlyPlayer: true,
     op: true,
     parse (str, ctx) {
       const pars = str.split(' ')

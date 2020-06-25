@@ -1,5 +1,6 @@
 const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
+const colors = require('colors')
 
 module.exports.player = function (player, serv) {
   player.updateHealth = (health) => {
@@ -73,17 +74,18 @@ module.exports.server = function (serv) {
       if (sel !== '') {
         if (serv.getPlayer(sel) !== null) {
           serv.getPlayer(sel).takeDamage({ damage: 20 })
-          return `Killed ${sel}`
+          serv.info(`Killed ${colors.bold(sel)}`)
         } else {
           const arr = serv.selectorString(sel)
           if (arr.length === 0) throw new UserError('Could not find player')
           arr.map(entity => {
             entity.takeDamage({ damage: 20 })
-            return `Killed ${entity}`
+            serv.info(`Killed ${colors.bold(entity.type === 'player' ? entity.username : entity.name)}`)
           })
         }
       } else {
-        ctx.player.takeDamage({ damage: 20 })
+        if (ctx.player) ctx.player.takeDamage({ damage: 20 })
+        else serv.err('Can\'t kill console')
       }
     }
   })

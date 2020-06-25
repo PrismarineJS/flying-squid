@@ -106,7 +106,7 @@ module.exports.server = function (serv) {
       return str.match(/(.+?) (\d+) (\d+) (\d+)/) || false
     },
     action (params, ctx) {
-      const selector = ctx.player.selectorString(params[1])
+      const selector = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
       const parsedInt = [parseInt(params[2]), parseInt(params[3]), parseInt(params[4])]
       for (const int of parsedInt) {
         if (int > 81) return 'Too much velocity, max is 81.'

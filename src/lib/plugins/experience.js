@@ -1,3 +1,5 @@
+const UserError = require('flying-squid').UserError
+
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
 
 module.exports.player = function (player, serv) {
@@ -43,20 +45,21 @@ module.exports.server = function (serv) {
     action (args, ctx) {
       const isLevel = !!args[2]
       const amt = parseInt(args[1])
+      if (!ctx.player && !args[3]) throw new UserError('Console can\'t give itself experience.')
       const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
-      if (!user) return args[3] + ' is not on this server!'
+      if (!user) throw new UserError(args[3] + ' is not on this server!')
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
         if(ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
-        else serv.log('Gave ' + user.username + ' ' + amt + ' xp')
+        else serv.info('Gave ' + user.username + ' ' + amt + ' xp')
       } else {
-        const currLevel = getXpLevel(ctx.player.xp)
+        const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
-        const extraXp = ctx.player.xp - baseCurrLevel
+        const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
         if(ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
-        else serv.log('Gave ' + user.username + ' ' + amt + ' levels')
+        else serv.info('Gave ' + user.username + ' ' + amt + ' levels')
       }
     }
   })

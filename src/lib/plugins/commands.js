@@ -279,6 +279,7 @@ module.exports.server = function (serv, { version }) {
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arpe])(?:\[([^\]]+)\])?$/)
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t found nearest players')
     if (match === null) throw new UserError('Invalid selector format')
     const typeConversion = {
       a: 'all',
