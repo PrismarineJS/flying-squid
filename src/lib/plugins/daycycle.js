@@ -48,7 +48,8 @@ module.exports.server = function (serv) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-        ctx.player.chat('It is ' + serv.time)
+        if(ctx.player) ctx.player.chat('It is ' + serv.time)
+        else serv.log('It is ' + serv.time)
       } else {
         if (isNaN(value)) {
           return 'That isn\'t a valid number!'
@@ -61,7 +62,7 @@ module.exports.server = function (serv) {
             newTime = value + serv.time
           }
 
-          if (ctx.player)ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
+          if (ctx.player) ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
           else serv.log('Time was changed from ' + serv.time + ' to ' + newTime)
           serv.setTime(newTime)
         }

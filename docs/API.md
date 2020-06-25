@@ -113,7 +113,6 @@
       - [player.xp](#playerxp)
       - [player.displayXp](#playerdisplayxp)
       - [player.xpLevel](#playerxplevel)
-      - [player.commands](#playercommands)
     - [Events](#events-2)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -306,7 +305,7 @@ List of all plugins. Use serv.plugins[pluginName] to get a plugin's object and d
 #### serv.commands
 
 Instance of the [Command](#flying-squidcommand) class.
-Server commands are executing from terminal.
+``serv.commands`` contains all commands of the server.
 Here is an example to create a new command :
 ```js
 serv.commands.add({
@@ -320,8 +319,9 @@ serv.commands.add({
        
       return {pseudo:args[0]};
     },
-    action({pseudo}) {
-      return "Hello "+pseudo;
+    action({pseudo}, ctx) {
+      if (ctx.player) player.chat("Hello "+pseudo);
+      else serv.log("Hello "+pseudo);
     }
 });
 ```
@@ -748,29 +748,6 @@ Number from 0 to 1.0 representing the progress bar at the bottom of the player's
 #### player.xpLevel
 
 Level of xp the player has. Set this with player.setXpLevel()
-
-#### player.commands
-
-Instance of the [Command](#flying-squidcommand) class.
-Here is an example to create a new command :
-```js
-player.commands.add({
-    base: 'hello',
-    info: 'print hello in the console',
-    usage: '/hello <pseudo>',
-    op: false,
-    parse(str)  {
-      const args=str.split(' ');
-      if(args.length!=1)
-        return false;
-       
-      return {pseudo:args[0]};
-    },
-    action({pseudo}) {
-      console.log("Hello "+pseudo);
-    }
-});
-```
 
 ### Events
 

@@ -140,7 +140,8 @@ module.exports.server = function (serv) {
     action ({ username, reason }, ctx) {
       const kickPlayer = serv.getPlayer(username)
       if (!kickPlayer) {
-        ctx.player.chat(username + ' is not on this server!')
+        if(ctx.player) ctx.player.chat(username + ' is not on this server!')
+        else throw new UserError(username + ' is not on this server!')
       } else {
         kickPlayer.kick(reason)
         kickPlayer.emit('kicked', ctx.player, reason)
@@ -168,11 +169,13 @@ module.exports.server = function (serv) {
         serv.banUsername(username, reason)
           .then(() => {
             serv.emit('banned', ctx.player, username, reason)
-            ctx.player.chat(username + ' was banned')
+            if(ctx.player) ctx.player.chat(username + ' was banned')
+            else serv.log(username + ' was banned')
           })
           .catch(err => {
             if (err) { // This tricks eslint
-              ctx.player.chat(username + ' is not a valid player!')
+              if(ctx.player) ctx.player.chat(username + ' is not a valid player!')
+              else throw new UserError(username + ' is not a valid player!')
             }
           })
       } else {
@@ -209,7 +212,8 @@ module.exports.server = function (serv) {
     op: true,
     action (IP, ctx) {
       const result = serv.pardonIP(IP)
-      ctx.player.chat(result ? IP + ' was IP pardoned' : IP + ' is not banned')
+      if(ctx.player) ctx.player.chat(result ? IP + ' was IP pardoned' : IP + ' is not banned')
+      else serv.log(result ? IP + ' was IP pardoned' : IP + ' is not banned')
     }
   })
 

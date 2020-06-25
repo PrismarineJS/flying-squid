@@ -50,8 +50,11 @@ module.exports.player = function(player, serv) {
   player.on('spawned', () => { // Say hey to the user!
     player.chat(`Welcome to a ${serv.color.green}Flying Squid Server${serv.color.reset}!`);
   });
+}
 
-  player.commands.add({
+module.exports.server = function(serv) {
+  // Commands are added there only.
+  serv.commands.add({
     base: 'random', // This is what the user starts with, so in this case: /random
     info: 'Returns a random number from 0 to num', // Description of the command
     usage: '/random <num>', // Usage displayed if parse() returns false (which means they used it incorrectly)
@@ -60,9 +63,10 @@ module.exports.player = function(player, serv) {
       if (!match) return false; // Anything else, show them the usage
       else return parseInt(match[0]); // Otherwise, pass our number as an int to action()
     },
-    action(maxNumber) {
+    action(maxNumber, ctx) { // ctx - context who is using it
       const number = Math.floor(Math.random()*(maxNumber+1)); // Generate our random number
-      player.chat(number); // Send it to the player
+      if(ctx.player) player.chat(number); // If context of the player send it to him
+      else serv.log(number); // If not, log it.
     }
   })
 }

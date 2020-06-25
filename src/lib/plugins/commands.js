@@ -47,6 +47,7 @@ module.exports.server = function (serv, { version }) {
     base: 'modpe',
     info: 'for modpe commands',
     usage: '/modpe <params>',
+    onlyPlayer: true,
     parse (str) { return str || false },
     action (str, ctx) {
       ctx.player.emit('modpe', str)
@@ -81,7 +82,8 @@ module.exports.server = function (serv, { version }) {
     },
     action (sel, ctx) {
       const arr = serv.selectorString(sel, ctx.player.position, ctx.player.world)
-      ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
+      if(ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
+      else serv.log(JSON.stringify(arr.map(a => a.id)))
     }
   })
 
