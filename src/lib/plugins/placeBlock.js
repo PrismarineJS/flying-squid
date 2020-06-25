@@ -48,7 +48,6 @@ module.exports.server = (serv, { version }) => {
    */
   serv.onBlockInteraction = (name, handler) => {
     const block = mcData.blocksByName[name]
-    console.log("name " + name)
     if (blockInteractHandler.has(block.id)) {
       serv.log(`[Warning] onBlockInteraction handler was registered twice for ${name}`)
     }
