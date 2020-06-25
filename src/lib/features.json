@@ -61,7 +61,7 @@
   },
   {
     "name": "theFlattening",
-    "description": "many items for merged, separated or renamed",
+    "description": "many items got merged, separated or renamed",
     "versions": ["1.13"]
   }
 ]
