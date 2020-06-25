@@ -126,19 +126,17 @@ module.exports.server = function (serv, { version }) {
           if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
           else console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
-          if (ctx.player) ctx.player.chat('--=[ &6Help &r]=--')
-          else console.log('--=[ ' + colors.yellow('Help') + ' ]=--')
+          if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
+          else console.log(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
           if (found[i] === search) continue
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          if (ctx.player) ctx.player.chat(usage + ': ' + info)
-          else console.log(colors.yellow(usage) + ': ' + info)
+          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '') ))
+          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '') ))
         }
-        if (ctx.player) ctx.player.chat('--=[ Page &6' + (page + 1) + ' &rof &6' + totalPages + '&r ]=--')
-        else console.log('--=[ Page ' + colors.yellow(page + 1) + ' of ' + colors.yellow(totalPages) + ' ]=--')
       }
     }
   })
@@ -147,6 +145,7 @@ module.exports.server = function (serv, { version }) {
     base: 'stop',
     info: 'Stop the server',
     usage: '/stop',
+    onlyConsole: true,
     op: true,
     action () {
       process.exit()
