@@ -1,7 +1,7 @@
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const oakSignType = mcData.blocksByName.standing_sign.id
+  const oakSignType = mcData.blocksByName.sign.id
   const oakWallSignType = mcData.blocksByName.wall_sign.id
 
   serv.on('asap', () => {
