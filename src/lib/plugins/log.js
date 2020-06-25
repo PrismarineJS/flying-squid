@@ -28,7 +28,7 @@ module.exports.server = function (serv, settings) {
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
-    readline.cursorTo(process.stdout, 0);
+    readline.cursorTo(process.stdout, 0)
     message = moment().format('MMMM Do YYYY, HH:mm:ss') + ' ' + message
     if (!settings.noConsoleOutput) console.log(message)
     if (!settings.logging) return
@@ -48,7 +48,7 @@ module.exports.server = function (serv, settings) {
   console.log = (function () {
     var orig = console.log
     return function () {
-      readline.cursorTo(process.stdout, 0);
+      readline.cursorTo(process.stdout, 0)
       try {
         var tmp = process.stdout
         process.stdout = process.stderr

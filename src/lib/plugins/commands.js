@@ -27,53 +27,6 @@ module.exports.server = function (serv, { version }) {
       else setTimeout(() => { throw err }, 0)
     }
   }
-  /*
-  serv.commands.add({
-    base: 'gamemode',
-    info: 'Change gamemode',
-    aliases: ['gm'],
-    op: true,
-    usage: '/gamemode <0-3> <player>',
-    parse (params) {
-      var paramsSplit = params.split(' ')
-      if (paramsSplit[0] === '') {
-        return false
-      }
-      if (!paramsSplit[0].match(/([0-3])/)) {
-        throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
-      }
-      if (!paramsSplit[1]) {
-        throw new UserError('You must specify which player you wish to perform this action on.')
-      }
-
-      return params.match(/([0-3]) (\w+)/) || false
-      // return params || false
-    },
-    action (params) {
-      console.log(params)
-      var gamemodes = {
-        0: "Survival",
-        1: "Creative",
-        2: "Adventure",
-        3: "Spectator"
-      }
-      var player = serv.getPlayer(params[2])
-      var mode = gamemodes[params[1]]
-      if (player === undefined || player === null) {
-        const arr = serv.selectorString(params)
-        if (arr.length === 0) throw new UserError(`Player '${params[2]}' cannot be found`)
-
-        arr.map(entity => {
-          entity.setGameMode(params[1])
-          return `Set ${entity}'s game mode to ${mode} Mode`
-        })
-      } else {
-        player.setGameMode(params[1])
-        return `Set ${params[2]}'s game mode to ${mode} Mode`
-      }
-    }
-  })
-  */
 
   serv.commands.add({
     base: 'ping',
@@ -85,7 +38,8 @@ module.exports.server = function (serv, { version }) {
       let str = 'pong'
       if (!isNaN(num)) str += ' [' + num + ']'
 
-      ctx.player.chat(str + '!')
+      if (ctx.player) ctx.player.chat(str + '!')
+      else serv.info(str + '!')
     }
   })
 

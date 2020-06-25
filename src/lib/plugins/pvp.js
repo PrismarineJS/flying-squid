@@ -29,24 +29,6 @@ module.exports.player = function (player, serv) {
     }
     if (mouse === 1) { attackEntity(target) }
   })
-
-  /*
-  serv.commands.add({
-    base: 'kill',
-    info: 'Kill entities',
-    usage: '/kill <selector>',
-    op: true,
-    parse (str) {
-      return str || false
-    },
-    action (sel) {
-      const arr = player.selectorString(sel)
-      if (arr.length === 0) throw new UserError('Could not find player')
-
-      arr.map(entity => entity.takeDamage({ damage: 20 }))
-    }
-  })
-  */
 }
 
 module.exports.entity = function (entity, serv) {

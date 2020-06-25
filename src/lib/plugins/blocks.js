@@ -64,8 +64,10 @@ module.exports.server = function (serv) {
     },
     action (params, ctx) {
       let res = params.slice(1, 4)
-      res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
-      ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+      if (ctx.player) res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
+      else res = res.map((val, i) => serv.posFromString(val, new Vec3(0, 128, 0)[['x', 'y', 'z'][i]]))
+      if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+      else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
     }
   })
 
@@ -80,7 +82,8 @@ module.exports.server = function (serv) {
       return results
     },
     action (params, ctx) {
-      ctx.player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
+      if (ctx.player) ctx.player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
+      else serv.setBlockAction(serv.overworld, new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
     }
   })
 }
