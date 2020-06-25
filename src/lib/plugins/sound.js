@@ -35,6 +35,48 @@ module.exports.server = function (serv) {
   }
 
   serv.getNote = note => 0.5 * Math.pow(Math.pow(2, 1 / 12), note)
+
+  serv.commands.add({
+    base: 'playsoundforall',
+    info: 'to play sound for everyone',
+    usage: '/playsoundforall <sound_name> [volume] [pitch]',
+    onlyPlayer: true,
+    op: true,
+    parse (str) {
+      const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
+      if (!results) return false
+      return {
+        sound_name: results[1],
+        volume: results[2] ? parseFloat(results[2]) : 1.0,
+        pitch: results[3] ? parseFloat(results[3]) : 1.0
+      }
+    },
+    action (action, ctx) {
+      ctx.player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
+      serv.playSound(action.sound_name, ctx.player.world, ctx.player.position, { volume: action.volume, pitch: action.pitch })
+    }
+  })
+
+  serv.commands.add({
+    base: 'playsound',
+    info: 'to play sound for yourself',
+    usage: '/playsound <sound_name> [volume] [pitch]',
+    onlyPlayer: true,
+    op: true,
+    parse (str) {
+      const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
+      if (!results) return false
+      return {
+        sound_name: results[1],
+        volume: results[2] ? parseFloat(results[2]) : 1.0,
+        pitch: results[3] ? parseFloat(results[3]) : 1.0
+      }
+    },
+    action (action, ctx) {
+      ctx.player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
+      ctx.player.playSound(action.sound_name, { volume: action.volume, pitch: action.pitch })
+    }
+  })
 }
 
 module.exports.player = function (player, serv) {
@@ -64,46 +106,6 @@ module.exports.player = function (player, serv) {
     const data = player.world.blockEntityData[position.toString()]
     if (typeof data.note === 'undefined') data.note = 0
     serv.playNoteBlock(data.note, player.world, position)
-  })
-
-  player.commands.add({
-    base: 'playsound',
-    info: 'to play sound for yourself',
-    usage: '/playsound <sound_name> [volume] [pitch]',
-    op: true,
-    parse (str) {
-      const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
-      if (!results) return false
-      return {
-        sound_name: results[1],
-        volume: results[2] ? parseFloat(results[2]) : 1.0,
-        pitch: results[3] ? parseFloat(results[3]) : 1.0
-      }
-    },
-    action (action) {
-      player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
-      player.playSound(action.sound_name, { volume: action.volume, pitch: action.pitch })
-    }
-  })
-
-  player.commands.add({
-    base: 'playsoundforall',
-    info: 'to play sound for everyone',
-    usage: '/playsoundforall <sound_name> [volume] [pitch]',
-    op: true,
-    parse (str) {
-      const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
-      if (!results) return false
-      return {
-        sound_name: results[1],
-        volume: results[2] ? parseFloat(results[2]) : 1.0,
-        pitch: results[3] ? parseFloat(results[3]) : 1.0
-      }
-    },
-    action (action) {
-      player.chat('Playing "' + action.sound_name + '" (volume: ' + action.volume + ', pitch: ' + action.pitch + ')')
-      serv.playSound(action.sound_name, player.world, player.position, { volume: action.volume, pitch: action.pitch })
-    }
   })
 }
 

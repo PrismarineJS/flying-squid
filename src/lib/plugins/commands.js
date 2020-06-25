@@ -1,115 +1,10 @@
 const UserError = require('flying-squid').UserError
+var colors = require('colors')
 
 module.exports.player = function (player, serv, { version }) {
-  player.commands.add({
-    base: 'help',
-    info: 'to show all commands',
-    usage: '/help [command]',
-    parse (str) {
-      const params = str.split(' ')
-      const page = parseInt(params[params.length - 1])
-      if (page) {
-        params.pop()
-      }
-      const search = params.join(' ')
-      return { search: search, page: (page && page - 1) || 0 }
-    },
-    action ({ search, page }) {
-      if (page < 0) return 'Page # must be >= 1'
-      const hash = player.commands.uniqueHash
-
-      const PAGE_LENGTH = 7
-
-      let found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') === 0)
-
-      if (found.length === 0) { // None found
-        return 'Could not find any matches'
-      } else if (found.length === 1) { // Single command found, giev info on command
-        const cmd = hash[found[0]]
-        const usage = (cmd.params && cmd.params.usage) || cmd.base
-        const info = (cmd.params && cmd.params.info) || 'No info'
-        player.chat(usage + ': ' + info)
-      } else { // Multiple commands found, give list with pages
-        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
-        if (page >= totalPages) return 'There are only' + totalPages + ' help pages'
-        found = found.sort()
-        if (found.indexOf('search') !== -1) {
-          const baseCmd = hash[search]
-          player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
-        } else {
-          player.chat('Help -=-=-=-=-=-=-=-=-')
-        }
-        for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
-          if (found[i] === search) continue
-          const cmd = hash[found[i]]
-          const usage = (cmd.params && cmd.params.usage) || cmd.base
-          const info = (cmd.params && cmd.params.info) || 'No info'
-          player.chat(usage + ': ' + info)
-        }
-        player.chat('--=[Page ' + (page + 1) + ' of ' + totalPages + ']=--')
-      }
-    }
-  })
-
-  player.commands.add({
-    base: 'ping',
-    info: 'to pong!',
-    usage: '/ping [number]',
-    action (params) {
-      const num = params[0] * 1 + 1
-
-      let str = 'pong'
-      if (!isNaN(num)) str += ' [' + num + ']'
-
-      player.chat(str + '!')
-    }
-  })
-
-  player.commands.add({
-    base: 'modpe',
-    info: 'for modpe commands',
-    usage: '/modpe <params>',
-    parse (str) { return str || false },
-    action (str) {
-      player.emit('modpe', str)
-    }
-  })
-
-  player.commands.add({
-    base: 'version',
-    info: 'to get version of the server',
-    usage: '/version',
-    action () {
-      return 'This server is running flying-squid version ' + version
-    }
-  })
-
-  player.commands.add({
-    base: 'bug',
-    info: 'to bug report',
-    usage: '/bug',
-    action () {
-      return 'Report bugs / issues here: https://github.com/PrismarineJS/flying-squid/issues'
-    }
-  })
-
-  player.commands.add({
-    base: 'selector',
-    info: 'Get array from selector',
-    usage: '/selector <selector>',
-    op: true,
-    parse (str) {
-      return str || false
-    },
-    action (sel) {
-      const arr = serv.selectorString(sel, player.position, player.world)
-      player.chat(JSON.stringify(arr.map(a => a.id)))
-    }
-  })
-
   player.handleCommand = async (str) => {
     try {
-      const res = await player.commands.use(str, player.op)
+      const res = await serv.commands.use(str, { player: player }, player.op)
       if (res) player.chat(serv.color.red + res)
     } catch (err) {
       if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message)
@@ -122,7 +17,156 @@ module.exports.entity = function (entity, serv) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
+  serv.handleCommand = async (str) => {
+    try {
+      const res = await serv.commands.use(str)
+      if (res) serv.info(res)
+    } catch (err) {
+      if (err.userError) serv.err(err.message)
+      else setTimeout(() => { throw err }, 0)
+    }
+  }
+
+  serv.commands.add({
+    base: 'ping',
+    info: 'to pong!',
+    usage: '/ping [number]',
+    action (params, ctx) {
+      const num = params[0] * 1 + 1
+
+      let str = 'pong'
+      if (!isNaN(num)) str += ' [' + num + ']'
+
+      if (ctx.player) ctx.player.chat(str + '!')
+      else serv.info(str + '!')
+    }
+  })
+
+  serv.commands.add({
+    base: 'modpe',
+    info: 'for modpe commands',
+    usage: '/modpe <params>',
+    onlyPlayer: true,
+    parse (str) { return str || false },
+    action (str, ctx) {
+      ctx.player.emit('modpe', str)
+    }
+  })
+
+  serv.commands.add({
+    base: 'version',
+    info: 'to get version of the server',
+    usage: '/version',
+    action () {
+      return 'This server is running flying-squid version ' + version
+    }
+  })
+
+  serv.commands.add({
+    base: 'bug',
+    info: 'to bug report',
+    usage: '/bug',
+    action () {
+      return 'Report bugs / issues here: https://github.com/PrismarineJS/flying-squid/issues'
+    }
+  })
+
+  serv.commands.add({
+    base: 'selector',
+    info: 'Get array from selector',
+    usage: '/selector <selector>',
+    op: true,
+    parse (str) {
+      return str || false
+    },
+    action (sel, ctx) {
+      const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
+      if(ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
+      else serv.log(JSON.stringify(arr.map(a => a.id)))
+    }
+  })
+
+  serv.commands.add({
+    base: 'help',
+    aliases: ['?'],
+    info: 'to show all commands',
+    usage: '/help [command]',
+    parse (str) {
+      const params = str.split(' ')
+      const page = parseInt(params[params.length - 1])
+      if (page) {
+        params.pop()
+      }
+      const search = params.join(' ')
+      return { search: search, page: (page && page - 1) || 0 }
+    },
+    action ({ search, page }, ctx) {
+      if (page < 0) return 'Page # must be >= 1'
+      const hash = serv.commands.uniqueHash
+
+      const PAGE_LENGTH = 7
+
+      let found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') === 0)
+
+      if (found.length === 0) { // None found
+        return 'Could not find any matches'
+      } else if (found.length === 1) { // Single command found, giev info on command
+        const cmd = hash[found[0]]
+        const usage = (cmd.params && cmd.params.usage) || cmd.base
+        const info = (cmd.params && cmd.params.info) || 'No info'
+        if (ctx.player) ctx.player.chat(usage + ': ' + info)
+        else console.log(usage + ': ' + info)
+      } else { // Multiple commands found, give list with pages
+        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
+        if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
+        found = found.sort()
+        if (found.indexOf('search') !== -1) {
+          const baseCmd = hash[search]
+          if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          else console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+        } else {
+          if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
+          else console.log(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
+        }
+        for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
+          if (found[i] === search) continue
+          const cmd = hash[found[i]]
+          const usage = (cmd.params && cmd.params.usage) || cmd.base
+          const info = (cmd.params && cmd.params.info) || 'No info'
+          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '') ))
+          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '') ))
+        }
+      }
+    }
+  })
+
+  serv.commands.add({
+    base: 'stop',
+    info: 'Stop the server',
+    usage: '/stop',
+    op: true,
+    action () {
+      process.exit()
+    }
+  })
+
+  serv.commands.add({
+    base: 'say',
+    info: 'Broadcast a message',
+    usage: '/say <message>',
+    op: true,
+    parse (params) {
+      return params || false
+    },
+    action (params, ctx) {
+      var who = ctx.player ? ctx.player.username : 'Server'
+      serv.broadcast(`[${who}] ` + params)
+
+      serv.log(`[CHAT]: [${who}] ` + params)
+    }
+  })
+
   function shuffleArray (array) {
     let currentIndex = array.length
     let temporaryValue
@@ -228,11 +272,12 @@ module.exports.server = function (serv) {
   }
 
   serv.selectorString = (str, pos, world, allowUser = true) => {
-    pos = pos.clone()
+    if (pos) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arpe])(?:\[([^\]]+)\])?$/)
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t found nearest players')
     if (match === null) throw new UserError('Invalid selector format')
     const typeConversion = {
       a: 'all',
@@ -269,7 +314,7 @@ module.exports.server = function (serv) {
     const convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym']
 
     const data = {
-      pos: pos,
+      pos: pos || '',
       world: world,
       scores: [],
       minScores: []

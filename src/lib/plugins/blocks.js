@@ -49,8 +49,10 @@ module.exports.player = function (player, serv) {
   }
 
   player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
+}
 
-  player.commands.add({
+module.exports.server = function (serv) {
+  serv.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
     usage: '/setblock <x> <y> <z> <id> [data]',
@@ -60,14 +62,16 @@ module.exports.player = function (player, serv) {
       if (!results) return false
       return results
     },
-    action (params) {
+    action (params, ctx) {
       let res = params.slice(1, 4)
-      res = res.map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]]))
-      player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+      if (ctx.player) res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
+      else res = res.map((val, i) => serv.posFromString(val, new Vec3(0, 128, 0)[['x', 'y', 'z'][i]]))
+      if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+      else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
     }
   })
 
-  player.commands.add({
+  serv.commands.add({
     base: 'setblockaction',
     info: 'set a block action',
     usage: '/setblockaction <x> <y> <z> <actionId> <actionParam>',
@@ -77,8 +81,9 @@ module.exports.player = function (player, serv) {
       if (!results) return false
       return results
     },
-    action (params) {
-      player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
+    action (params, ctx) {
+      if (ctx.player) ctx.player.setBlockAction(new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
+      else serv.setBlockAction(serv.overworld, new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
     }
   })
 }
