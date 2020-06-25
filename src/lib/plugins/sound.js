@@ -40,6 +40,7 @@ module.exports.server = function (serv) {
     base: 'playsoundforall',
     info: 'to play sound for everyone',
     usage: '/playsoundforall <sound_name> [volume] [pitch]',
+    onlyPlayer: true,
     op: true,
     parse (str) {
       const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
@@ -60,6 +61,7 @@ module.exports.server = function (serv) {
     base: 'playsound',
     info: 'to play sound for yourself',
     usage: '/playsound <sound_name> [volume] [pitch]',
+    onlyPlayer: true,
     op: true,
     parse (str) {
       const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)

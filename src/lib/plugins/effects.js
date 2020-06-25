@@ -55,6 +55,7 @@ module.exports.server = function (serv) {
     base: 'effect',
     info: 'Give player an effect',
     usage: '/effect <player> <effect> [seconds] [amplifier] [hideParticles]',
+    onlyPlayer: true,
     parse (str) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
@@ -85,7 +86,7 @@ module.exports.server = function (serv) {
       else {
         if (ctx.player) ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
-        else serv.log('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+        else serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
       }
     }

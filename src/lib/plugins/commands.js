@@ -145,7 +145,6 @@ module.exports.server = function (serv, { version }) {
     base: 'stop',
     info: 'Stop the server',
     usage: '/stop',
-    onlyConsole: true,
     op: true,
     action () {
       process.exit()

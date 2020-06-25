@@ -170,12 +170,12 @@ module.exports.server = function (serv) {
           .then(() => {
             serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
             if(ctx.player) ctx.player.chat(username + ' was banned')
-            else serv.log(username + ' was banned')
+            else serv.info(username + ' was banned')
           })
           .catch(err => {
             if (err) { // This tricks eslint
               if(ctx.player) ctx.player.chat(username + ' is not a valid player!')
-              else throw new UserError(username + ' is not a valid player!')
+              else serv.err(username + ' is not a valid player!')
             }
           })
       } else {
@@ -192,7 +192,8 @@ module.exports.server = function (serv) {
     op: true,
     parse (str) {
       const argv = str.split(' ')
-      if (argv.length < 1) return
+      if (argv[0] === '') return false
+      if (!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(argv[0])) throw new UserError('IP is not correct')
 
       return {
         IP: argv.shift(),
@@ -201,8 +202,8 @@ module.exports.server = function (serv) {
     },
     action ({ IP, reason }, ctx) {
       serv.banIP(IP, reason)
-      if (ctx.player) ctx.player.chat('' + IP + ' was IP banned')
-      else serv.info('' + IP + ' was IP banned')
+      if (ctx.player) ctx.player.chat(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
+      else serv.info(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
     }
   })
 

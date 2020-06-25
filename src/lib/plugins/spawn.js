@@ -136,6 +136,7 @@ module.exports.server = function (serv, options) {
     base: 'pile',
     info: 'make a pile of entities',
     usage: '/pile <entities types>',
+    onlyPlayer: true,
     op: true,
     parse (str) {
       const args = str.split(' ')
@@ -149,11 +150,11 @@ module.exports.server = function (serv, options) {
       entityTypes.map(entity => {
         if (entity.type === 'mob') {
           return serv.spawnMob(entity.id, ctx.player.world, ctx.player.position, {
-            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+            velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         } else if (entity.type === 'object') {
           return serv.spawnObject(entity.id, ctx.player.world, ctx.player.position, {
-            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+            velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
       })
@@ -173,9 +174,9 @@ module.exports.server = function (serv, options) {
       const args = str.split(' ')
       if (args.length !== 2) { return false }
 
-      const carrier = ctx.player.selectorString(args[0])
+      const carrier = ctx.player ? ctx.player.selectorString(args[0]) : serv.selectorString(args[0])
       if (carrier.length === 0) throw new UserError('one carrier')
-      const attached = ctx.player.selectorString(args[1])
+      const attached = ctx.player ? ctx.player.selectorString(args[1]) : serv.selectorString(args[1])
       if (attached.length === 0) throw new UserError('one attached')
 
       return { carrier: carrier[0], attached: attached[0] }
