@@ -2,7 +2,7 @@ const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv) {
   function cancelDig ({ position, block }) {
-    player.sendBlock(position, block.type, block.metadata)
+    player.sendBlock(position, block.type)
   }
 
   player._client.on('block_dig', async ({ location, status, face }) => {

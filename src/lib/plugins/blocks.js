@@ -13,12 +13,10 @@ module.exports.player = function (player, serv) {
     else serv.updateBlock(player.world, position, serv.tickCount, serv.tickCount, true)
   }
 
-  player.sendBlock = (position, blockType, blockData, blockStateId) => // Call from player.setBlock unless you want "local" fake blocks
+  player.sendBlock = (position, blockStateId) => // Call from player.setBlock unless you want "local" fake blocks
     player.behavior('sendBlock', {
-      position: position,
-      blockType: blockType,
-      blockData: blockData
-    }, ({ position, blockType, blockData }) => {
+      position: position
+    }, ({ position }) => {
       player._client.write('block_change', {
         location: position,
         type: blockStateId

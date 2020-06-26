@@ -66,7 +66,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       stateId = blockType << 4 | blockData
     serv.players
       .filter(p => p.world === world)
-      .forEach(player => player.sendBlock(position, blockType, blockData, stateId))
+      .forEach(player => player.sendBlock(position, stateId))
     await world.setBlockStateId(position, stateId)
     if (blockType === 0) serv.notifyNeighborsOfStateChange(world, position, serv.tickCount, serv.tickCount, true)
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
