@@ -16,12 +16,17 @@ module.exports.server = function (serv, { version }) {
   const powerLevel = (block, dir) => {
     if (block.type === redstoneWireType) return block.metadata
     if (block.type === redstoneTorchType) return 15
-    if (block.type === poweredRepeaterType || (block.type === repeaterType && block.metadata.powered == true)) {
-      const dataDir = block.metadata & 0x3
-      if (dataDir === 0 && dir.z === 1) return 15
-      if (dataDir === 1 && dir.x === -1) return 15
-      if (dataDir === 2 && dir.z === -1) return 15
-      if (dataDir === 3 && dir.x === 1) return 15
+    if (serv.supportFeature('theFlattening')) {
+      // to do
+    } else {
+      // the if below is missing a check whether repeater is powered or not
+      if (block.type === poweredRepeaterType) {
+        const dataDir = block.metadata & 0x3
+        if (dataDir === 0 && dir.z === 1) return 15
+        if (dataDir === 1 && dir.x === -1) return 15
+        if (dataDir === 2 && dir.z === -1) return 15
+        if (dataDir === 3 && dir.x === 1) return 15
+      }
     }
     return 0
   }
@@ -33,12 +38,16 @@ module.exports.server = function (serv, { version }) {
     if (block.type === redstoneWireType) {
       if (dir.y === 1 || await isWireDirectedIn(world, pos, dir.scaled(-1))) { return block.metadata }
     }
-    if (block.type === poweredRepeaterType || (block.type === repeaterType && block.metadata.powered == true)) {
-      const dataDir = block.metadata & 0x3
-      if (dataDir === 0 && dir.z === 1) return 15
-      if (dataDir === 1 && dir.x === -1) return 15
-      if (dataDir === 2 && dir.z === -1) return 15
-      if (dataDir === 3 && dir.x === 1) return 15
+    if (serv.supportFeature('theFlattening')) {
+      //to-do
+    } else {
+      if (block.type === poweredRepeaterType) {
+        const dataDir = block.metadata & 0x3
+        if (dataDir === 0 && dir.z === 1) return 15
+        if (dataDir === 1 && dir.x === -1) return 15
+        if (dataDir === 2 && dir.z === -1) return 15
+        if (dataDir === 3 && dir.x === 1) return 15
+      }
     }
     return 0
   }
@@ -67,12 +76,17 @@ module.exports.server = function (serv, { version }) {
   }
 
   const isDirectedRepeater = (block, dir, powered = false) => {
-    if (block.type !== poweredRepeaterType &&
-        (block.type !== unpoweredRepeaterType || block.type !== repeaterType || powered)) return false
-    const dataDir = block.metadata & 0x3
-    if ((dataDir === 0 || dataDir === 2) && Math.abs(dir.z) === 1) return true
-    if ((dataDir === 1 || dataDir === 3) && Math.abs(dir.x) === 1) return true
-    return false
+    if (serv.supportFeature('theFlattening')) {
+      //TO-DO
+      return false;
+    } else {
+      if (block.type !== poweredRepeaterType &&
+        (block.type !== unpoweredRepeaterType || powered)) return false
+      const dataDir = block.metadata & 0x3
+      if ((dataDir === 0 || dataDir === 2) && Math.abs(dir.z) === 1) return true
+      if ((dataDir === 1 || dataDir === 3) && Math.abs(dir.x) === 1) return true
+      return false
+    }
   }
 
   const wireDirection = async (world, pos, dir, upSolid) => {
