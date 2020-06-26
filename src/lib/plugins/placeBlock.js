@@ -98,11 +98,12 @@ module.exports.player = function (player, serv, { version }) {
       }
 
       if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
-      if (serv.supportFeature("theFlattening"))
-        stateId = mcData.blocksByName[heldItem.name].minStateId + blockData
-      else
-        stateId = blockType << 4 | blockData
-      player.setBlock(position, id, damage, stateId)
+      var stateId;
+      if (serv.supportFeature("theFlattening")) {
+        stateId = mcData.blocksByName[heldItem.name].minStateId
+      } else
+        stateId = id << 4 | damage
+      player.setBlock(position, stateId)
 
       if (id === 63 || id === 68) {
         player._client.write('open_sign_entity', {
