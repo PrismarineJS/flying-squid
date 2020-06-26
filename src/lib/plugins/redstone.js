@@ -5,14 +5,14 @@ module.exports.server = function (serv, { version }) {
 
   const redstoneWireType = mcData.blocksByName.redstone_wire.id
   const redstoneTorchType = mcData.blocksByName.redstone_torch.id
-  const repeaterType = mcData.blocksByName.repeater.id
 
-  let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType;
+  let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType, repeaterType;
   if (!serv.supportFeature('theFlattening')) {
-    unlitRedstoneTorchType = mcData.blocksByName.unlit_unlit_redstone_torch.id
+    unlitRedstoneTorchType = mcData.blocksByName.unlit_redstone_torch.id
     poweredRepeaterType = mcData.blocksByName.powered_repeater.id
     unpoweredRepeaterType = mcData.blocksByName.unpowered_repeater.id
-  }
+  } else
+    repeaterType = mcData.blocksByName.repeater.id
   const powerLevel = (block, dir) => {
     if (block.type === redstoneWireType) return block.metadata
     if (block.type === redstoneTorchType) return 15
