@@ -99,8 +99,11 @@ module.exports.player = function (player, serv, { version }) {
 
       if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
       var stateId;
+      console.log(mcData.blocksByName[heldItem.name])
       if (serv.supportFeature("theFlattening")) {
-        stateId = mcData.blocksByName[heldItem.name].minStateId
+        if (mcData.blocksByName[heldItem.name].name == 'grass_block')
+          damage = 1;
+        stateId = mcData.blocksByName[heldItem.name].minStateId + damage
       } else
         stateId = id << 4 | damage
       player.setBlock(position, stateId)
