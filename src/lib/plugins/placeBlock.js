@@ -89,7 +89,7 @@ module.exports.player = function (player, serv, { version }) {
       reference: referencePosition,
       playSound: true,
       sound: 'dig.' + (materialToSound[blocks[id].material] || 'stone')
-    }, ({ position, playSound, sound, id, damage }) => {
+    }, ({ position, playSound, sound, id, damage, heldItem }) => {
       if (playSound) {
         serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
           pitch: 0.8
@@ -97,8 +97,7 @@ module.exports.player = function (player, serv, { version }) {
       }
 
       if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
-
-      player.setBlock(position, id, damage)
+      player.setBlock(position, id, damage, heldItem.name)
 
       if (id === 63 || id === 68) {
         player._client.write('open_sign_entity', {
