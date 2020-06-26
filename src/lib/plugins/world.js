@@ -57,18 +57,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     return Promise.all(promises)
   }
 
-  serv.setBlock = async (world, position, blockType, blockData, stateId=0) => {
-    console.log(mcData.blocksByName[name].minStateId + " + " + blockData)
-    var stateId;
-    if (serv.supportFeature("theFlattening"))
-      stateId = mcData.blocksByName[name].minStateId + blockData
-    else
-      stateId = blockType << 4 | blockData
+  serv.setBlock = async (world, position, stateId) => {
     serv.players
       .filter(p => p.world === world)
       .forEach(player => player.sendBlock(position, stateId))
     await world.setBlockStateId(position, stateId)
-    if (blockType === 0) serv.notifyNeighborsOfStateChange(world, position, serv.tickCount, serv.tickCount, true)
+    if (stateId === 0) serv.notifyNeighborsOfStateChange(world, position, serv.tickCount, serv.tickCount, true)
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
