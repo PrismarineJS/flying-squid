@@ -59,7 +59,11 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
   serv.setBlock = async (world, position, blockType, blockData, name="undefined") => {
     console.log(mcData.blocksByName[name].minStateId + " + " + blockData)
-    var stateId = mcData.blocksByName[name].minStateId+blockData
+    var stateId;
+    if (serv.supportFeature("theFlattening"))
+      stateId = mcData.blocksByName[name].minStateId + blockData
+    else
+      stateId = blockType << 4 | blockData
     serv.players
       .filter(p => p.world === world)
       .forEach(player => player.sendBlock(position, blockType, blockData, stateId))
