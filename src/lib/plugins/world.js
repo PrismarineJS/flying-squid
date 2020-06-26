@@ -57,7 +57,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     return Promise.all(promises)
   }
 
-  serv.setBlock = async (world, position, blockType, blockData, name="undefined") => {
+  serv.setBlock = async (world, position, blockType, blockData, stateId=0) => {
     console.log(mcData.blocksByName[name].minStateId + " + " + blockData)
     var stateId;
     if (serv.supportFeature("theFlattening"))

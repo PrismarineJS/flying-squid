@@ -56,6 +56,7 @@ module.exports.server = (serv, { version }) => {
 }
 
 module.exports.player = function (player, serv, { version }) {
+  const mcData = require('minecraft-data')(version)
   const blocks = require('minecraft-data')(version).blocks
 
   player._client.on('block_place', async ({ direction, location } = {}) => {
@@ -97,7 +98,11 @@ module.exports.player = function (player, serv, { version }) {
       }
 
       if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
-      player.setBlock(position, id, damage, heldItem.name)
+      if (serv.supportFeature("theFlattening"))
+        stateId = mcData.blocksByName[heldItem.name].minStateId + blockData
+      else
+        stateId = blockType << 4 | blockData
+      player.setBlock(position, id, damage, stateId)
 
       if (id === 63 || id === 68) {
         player._client.write('open_sign_entity', {
