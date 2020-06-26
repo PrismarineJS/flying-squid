@@ -1,7 +1,7 @@
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const oakSignType = mcData.blocksByName.sign.id
+  const oakSignType = serv.supportFeature("theFlattening") ? mcData.blocksByName.sign.id : mcData.blocksByName.standing_sign.id
   const oakWallSignType = mcData.blocksByName.wall_sign.id
 
   serv.on('asap', () => {
