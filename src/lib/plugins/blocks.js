@@ -23,7 +23,7 @@ module.exports.player = function (player, serv) {
       })
     })
 
-  player.setBlock = (position, stateId=0) => serv.setBlock(player.world, position, stateId)
+  player.setBlock = (position, stateId = 0) => serv.setBlock(player.world, position, stateId)
 
   player.sendBlockAction = async (position, actionId, actionParam, blockType) => {
     if (!blockType) {

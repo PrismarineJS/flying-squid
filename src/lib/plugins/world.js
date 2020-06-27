@@ -11,7 +11,6 @@ const fsMkdir = promisify(fs.mkdir)
 
 module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
   const World = require('prismarine-world')(version)
-  const mcData = require('minecraft-data')(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
@@ -21,7 +20,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     try {
       await fsStat(regionFolder)
     } catch (err) {
-      await fsMkdir(regionFolder)
+      await fsMkdir(regionFolder, { recursive: true })
     }
 
     try {
