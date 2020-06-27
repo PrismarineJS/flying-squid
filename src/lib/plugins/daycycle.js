@@ -50,7 +50,7 @@ module.exports.server = function (serv) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-        if(ctx.player) ctx.player.chat('It is ' + serv.time)
+        if (ctx.player) ctx.player.chat('It is ' + serv.time)
         else serv.log('It is ' + serv.time)
       } else {
         if (isNaN(value)) {

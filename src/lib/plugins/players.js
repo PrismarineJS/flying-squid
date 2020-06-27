@@ -29,7 +29,7 @@ module.exports.server = function (serv, { version }) {
       }
       if (!paramsSplit[1]) {
         if (ctx.player) return paramsSplit[0].match(/^([0-3])$/)
-        else throw new UserError(`Console cannot set gamemode`)
+        else throw new UserError('Console cannot set gamemode')
       }
 
       return str.match(/^([0-3]) (\w+)$/) || false
@@ -86,9 +86,9 @@ module.exports.server = function (serv, { version }) {
     usage: '/give <player> <item> [count]',
     tab: ['player', 'number', 'number'],
     op: true,
-    parse(args) {
+    parse (args) {
       args = args.split(' ')
-      if (args[0] === '') return false;
+      if (args[0] === '') return false
       if (!serv.getPlayer(args[0])) throw new UserError('Player is not found')
       if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
       return {
@@ -105,7 +105,7 @@ module.exports.server = function (serv, { version }) {
         if (e.type === parseInt(newItem.type)) {
           e.count += parseInt(count)
           player.inventory.updateSlot(e.slot, e)
-          return true;
+          return true
         }
 
         if (player.inventory.slots.length === i) {

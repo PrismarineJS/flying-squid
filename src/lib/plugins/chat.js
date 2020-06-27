@@ -160,7 +160,7 @@ module.exports.player = function (player, serv) {
   }
 
   player._client.on('tab_complete', function (data) {
-    //console.log(data)
+    // console.log(data)
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
       const cmds = []
@@ -171,7 +171,7 @@ module.exports.player = function (player, serv) {
       }
 
       if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
-        serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length-2))
+        serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2))
       } else {
         player._client.write('tab_complete', {
           matches: cmds
