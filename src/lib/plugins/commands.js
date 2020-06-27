@@ -92,6 +92,7 @@ module.exports.server = function (serv, { version }) {
     aliases: ['?'],
     info: 'to show all commands',
     usage: '/help [command]',
+    tab: ['command'],
     parse (str) {
       const params = str.split(' ')
       const page = parseInt(params[params.length - 1])

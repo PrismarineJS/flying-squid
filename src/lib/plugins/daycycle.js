@@ -27,6 +27,7 @@ module.exports.server = function (serv) {
     base: 'night',
     info: 'to change a time to night',
     usage: '/night',
+    tab: [],
     op: true,
     action () {
       return serv.handleCommand('time set night')
@@ -37,6 +38,7 @@ module.exports.server = function (serv) {
     base: 'time',
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
+    tab: ['time'],
     op: true,
     parse (str) {
       const data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/)

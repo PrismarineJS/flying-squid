@@ -123,6 +123,7 @@ module.exports.player = function (player, serv) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
+      serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
     } else {
       player.behavior('chat', {
         message: message,
@@ -159,10 +160,25 @@ module.exports.player = function (player, serv) {
   }
 
   player._client.on('tab_complete', function (data) {
-    const playerNames = []
-    for (const player of serv.players) playerNames.push(player.username)
-    player._client.write('tab_complete', {
-      matches: playerNames
-    })
+    //console.log(data)
+    const textSplit = data.text.split(' ')
+    if (textSplit[0].startsWith('/')) {
+      const cmds = []
+      for (var cmd in serv.commands.uniqueHash) {
+        var cmdFull = serv.commands.uniqueHash[cmd]
+        if (!player.op && cmdFull.params.op) continue
+        cmds.push(`/${cmd}`)
+      }
+
+      if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
+        serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length-2))
+      } else {
+        player._client.write('tab_complete', {
+          matches: cmds
+        })
+      }
+    } else {
+      serv.tabComplete.use('player')
+    }
   })
 }
