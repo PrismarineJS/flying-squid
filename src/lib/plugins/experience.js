@@ -51,14 +51,22 @@ module.exports.server = function (serv) {
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
+<<<<<<< HEAD
         if(ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+=======
+        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+>>>>>>> 50a18752444823aed563fbc6d6747277ba82642b
         else serv.info('Gave ' + user.username + ' ' + amt + ' xp')
       } else {
         const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
         const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
+<<<<<<< HEAD
         if(ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+=======
+        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+>>>>>>> 50a18752444823aed563fbc6d6747277ba82642b
         else serv.info('Gave ' + user.username + ' ' + amt + ' levels')
       }
     }
