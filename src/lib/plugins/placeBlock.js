@@ -25,13 +25,30 @@ module.exports.server = (serv, { version }) => {
    * and angle
    * It should return the id and data of the block to place
    */
-  serv.onItemPlace = (name, handler) => {
+  serv.onItemPlace = (name, handler, warn = true) => {
     let item = mcData.itemsByName[name]
     if (!item) item = mcData.blocksByName[name]
-    if (itemPlaceHandlers.has(item.id)) {
+    if (itemPlaceHandlers.has(item.id) && warn) {
       serv.log(`[Warning] onItemPlace handler was registered twice for ${name}`)
     }
     itemPlaceHandlers.set(item.id, handler)
+  }
+
+  if (serv.supportFeature('theFlattening')) {
+    // Register default handlers for item -> block conversion
+    for (const name of Object.keys(mcData.itemsByName)) {
+      const block = mcData.blocksByName[name]
+      if (block) {
+        serv.onItemPlace(name, () => {
+          return { id: block.id, data: 0 }
+        })
+      }
+    }
+
+    // Manual overrides for special blocks:
+    serv.onItemPlace('grass_block', () => {
+      return { id: mcData.blocksByName.grass_block.id, data: 1 }
+    }, false)
   }
 
   const blockInteractHandler = new Map()
@@ -57,7 +74,7 @@ module.exports.server = (serv, { version }) => {
 
 module.exports.player = function (player, serv, { version }) {
   const mcData = require('minecraft-data')(version)
-  const blocks = require('minecraft-data')(version).blocks
+  const blocks = mcData.blocks
 
   player._client.on('block_place', async ({ direction, location } = {}) => {
     const referencePosition = new Vec3(location.x, location.y, location.z)
@@ -81,41 +98,22 @@ module.exports.player = function (player, serv, { version }) {
     })
 
     if (!blocks[id]) return
-    player.behavior('placeBlock', {
-      direction: directionVector,
-      heldItem: heldItem,
-      id,
-      damage: data,
-      position: placedPosition,
-      reference: referencePosition,
-      playSound: true,
-      sound: 'dig.' + (materialToSound[blocks[id].material] || 'stone')
-    }, ({ position, playSound, sound, id, damage, heldItem }) => {
-      if (playSound) {
-        serv.playSound(sound, player.world, placedPosition.clone().add(new Vec3(0.5, 0.5, 0.5)), {
-          pitch: 0.8
-        })
-      }
 
-      if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
-      var stateId
-      console.log(mcData.blocksByName[heldItem.name])
-      if (serv.supportFeature('theFlattening')) {
-        if (mcData.blocksByName[heldItem.name].name === 'grass_block') { damage = 1 }
-        stateId = mcData.blocksByName[heldItem.name].minStateId + damage
-      } else { stateId = id << 4 | damage }
-      player.setBlock(position, stateId)
-
-      if (id === 63 || id === 68) {
-        player._client.write('open_sign_entity', {
-          location: position
-        })
-      }
-    }, async () => {
-      const id = await player.world.getBlockType(placedPosition)
-      const damage = await player.world.getBlockData(placedPosition)
-      player.sendBlock(placedPosition, id, damage)
+    const sound = 'dig.' + (materialToSound[blocks[id].material] || 'stone')
+    serv.playSound(sound, player.world, placedPosition.offset(0.5, 0.5, 0.5), {
+      pitch: 0.8
     })
+
+    if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
+
+    const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+    player.setBlock(placedPosition, stateId)
+
+    if (id === 63 || id === 68) {
+      player._client.write('open_sign_entity', {
+        location: placedPosition
+      })
+    }
   })
 }
 
