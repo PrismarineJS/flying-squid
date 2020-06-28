@@ -12,6 +12,7 @@ function assertPosEqual (actual, expected, precision = 1) {
 const once = require('event-promise')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
+const { postNettyVersionsByProtocolVersion } = require('minecraft-data')
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
@@ -304,6 +305,19 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.chat('/give bot2 1 1')
         await once(bot2.inventory, 'windowUpdate')
         expect(bot2.inventory.slots[9].type).toEqual(1)
+      })
+      test('can use /ban & /banlist', async () => {
+        bot.chat('/banlist')
+        await waitMessage(bot, 'There are 0 total banned players')
+        bot.chat('/ban bot2')
+        await waitMessage(bot, 'bot2 was banned')
+        bot.chat('/banlist')
+        await waitMessage(bot, 'There are 1 total banned players:')
+        await waitMessage(bot, 'bot2')
+        bot.chat('/pardon bot2')
+        await waitMessage(bot, 'bot2 was unbanned')
+        bot.chat('/banlist')
+        await waitMessage(bot, 'There are 0 total banned players')
       })
     })
   })
