@@ -212,42 +212,6 @@ module.exports.server = function (serv) {
     info: 'Displays banlist.',
     usage: '/banlist',
     op: true,
-    action (v, ctx) {
-      var pllist = Object.keys(serv.bannedPlayers)
-      var iplist = Object.keys(serv.bannedIPs)
-      if (v !== 'ips') {
-        if (ctx.player) {
-          ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
-          pllist.forEach(e => {
-            ctx.player.chat(e)
-          })
-        } else {
-          serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
-          pllist.forEach(e => {
-            serv.info(e)
-          })
-        }
-      } else {
-        if (ctx.player) {
-          ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
-          iplist.forEach(e => {
-            ctx.player.chat(e)
-          })
-        } else {
-          serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
-          iplist.forEach(e => {
-            serv.info(e)
-          })
-        }
-      }
-    }
-  })
-
-  serv.commands.add({
-    base: 'banlist',
-    info: 'Displays banlist.',
-    usage: '/banlist',
-    op: true,
     action(v, ctx) {
       var pllist = Object.keys(serv.bannedPlayers)
       var iplist = Object.keys(serv.bannedIPs)

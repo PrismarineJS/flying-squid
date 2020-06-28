@@ -40,7 +40,6 @@ module.exports.server = function (serv) {
     usage: '/time <add|query|set> <value>',
     tab: ['time'],
     op: true,
-    tab: ['time'],
     parse (str) {
       const data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/)
       if (!data) return false
