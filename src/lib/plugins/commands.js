@@ -82,7 +82,7 @@ module.exports.server = function (serv, { version }) {
     },
     action (sel, ctx) {
       const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
-      if(ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
+      if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
       else serv.log(JSON.stringify(arr.map(a => a.id)))
     }
   })
@@ -135,8 +135,8 @@ module.exports.server = function (serv, { version }) {
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '') ))
-          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '') ))
+          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
+          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
         }
       }
     }

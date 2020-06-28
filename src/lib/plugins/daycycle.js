@@ -38,6 +38,7 @@ module.exports.server = function (serv) {
     base: 'time',
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
+    tab: ['time'],
     op: true,
     tab: ['time'],
     parse (str) {
@@ -50,7 +51,11 @@ module.exports.server = function (serv) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
+<<<<<<< HEAD
         if(ctx.player) ctx.player.chat('It is ' + serv.time)
+=======
+        if (ctx.player) ctx.player.chat('It is ' + serv.time)
+>>>>>>> 50a18752444823aed563fbc6d6747277ba82642b
         else serv.log('It is ' + serv.time)
       } else {
         if (isNaN(value)) {

@@ -158,27 +158,4 @@ module.exports.player = function (player, serv) {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2 })
   }
-
-  player._client.on('tab_complete', function (data) {
-    //console.log(data)
-    const textSplit = data.text.split(' ')
-    if (textSplit[0].startsWith('/')) {
-      const cmds = []
-      for (var cmd in serv.commands.uniqueHash) {
-        var cmdFull = serv.commands.uniqueHash[cmd]
-        if (!player.op && cmdFull.params.op) continue
-        cmds.push(`/${cmd}`)
-      }
-
-      if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
-        serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length-2))
-      } else {
-        player._client.write('tab_complete', {
-          matches: cmds
-        })
-      }
-    } else {
-      serv.tabComplete.use('player')
-    }
-  })
 }

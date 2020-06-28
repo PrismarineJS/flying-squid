@@ -300,6 +300,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot, 'experience')
         expect(bot.experience.points).toEqual(100)
       })
+      test('can use /give', async () => {
+        bot.chat('/give bot2 1 1')
+        await once(bot2.inventory, 'windowUpdate')
+        expect(bot2.inventory.slots[9].type).toEqual(1)
+      })
     })
   })
 })

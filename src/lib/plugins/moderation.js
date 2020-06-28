@@ -140,7 +140,7 @@ module.exports.server = function (serv) {
     action ({ username, reason }, ctx) {
       const kickPlayer = serv.getPlayer(username)
       if (!kickPlayer) {
-        if(ctx.player) ctx.player.chat(username + ' is not on this server!')
+        if (ctx.player) ctx.player.chat(username + ' is not on this server!')
         else throw new UserError(username + ' is not on this server!')
       } else {
         kickPlayer.kick(reason)
@@ -169,12 +169,12 @@ module.exports.server = function (serv) {
         serv.banUsername(username, reason)
           .then(() => {
             serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-            if(ctx.player) ctx.player.chat(username + ' was banned')
+            if (ctx.player) ctx.player.chat(username + ' was banned')
             else serv.info(username + ' was banned')
           })
           .catch(err => {
             if (err) { // This tricks eslint
-              if(ctx.player) ctx.player.chat(username + ' is not a valid player!')
+              if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
               else serv.err(username + ' is not a valid player!')
             }
           })
@@ -202,8 +202,44 @@ module.exports.server = function (serv) {
     },
     action ({ IP, reason }, ctx) {
       serv.banIP(IP, reason)
-      if (ctx.player) ctx.player.chat(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
-      else serv.info(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
+      if (ctx.player) ctx.player.chat(`${IP} was IP banned ${reason ? '(' + reason + ')' : ''}`)
+      else serv.info(`${IP} was IP banned ${reason ? '(' + reason + ')' : ''}`)
+    }
+  })
+
+  serv.commands.add({
+    base: 'banlist',
+    info: 'Displays banlist.',
+    usage: '/banlist',
+    op: true,
+    action (v, ctx) {
+      var pllist = Object.keys(serv.bannedPlayers)
+      var iplist = Object.keys(serv.bannedIPs)
+      if (v !== 'ips') {
+        if (ctx.player) {
+          ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
+          pllist.forEach(e => {
+            ctx.player.chat(e)
+          })
+        } else {
+          serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
+          pllist.forEach(e => {
+            serv.info(e)
+          })
+        }
+      } else {
+        if (ctx.player) {
+          ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
+          iplist.forEach(e => {
+            ctx.player.chat(e)
+          })
+        } else {
+          serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
+          iplist.forEach(e => {
+            serv.info(e)
+          })
+        }
+      }
     }
   })
 
@@ -252,7 +288,7 @@ module.exports.server = function (serv) {
     op: true,
     action (IP, ctx) {
       const result = serv.pardonIP(IP)
-      if(ctx.player) ctx.player.chat(result ? IP + ' was IP pardoned' : IP + ' is not banned')
+      if (ctx.player) ctx.player.chat(result ? IP + ' was IP pardoned' : IP + ' is not banned')
       else serv.log(result ? IP + ' was IP pardoned' : IP + ' is not banned')
     }
   })
