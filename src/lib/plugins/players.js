@@ -24,12 +24,12 @@ module.exports.server = function (serv, { version }) {
       if (paramsSplit[0] === '') {
         return false
       }
-      if (!paramsSplit[0].match(/^([0-3])$/) && paramsSplit[0].match(/^([4-9])$/)) {
+      if (!paramsSplit[0].match(/^([0-3])$/) && paramsSplit[0].match(/^([0-9]+)$/)) {
         throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
       }
       if (!paramsSplit[1]) {
         if (ctx.player) return paramsSplit[0].match(/^([0-3])$/)
-        else throw new UserError(`Console cannot set gamemode`)
+        else throw new UserError(`Console cannot set gamemode itself`)
       }
 
       return str.match(/^([0-3]) (\w+)$/) || false

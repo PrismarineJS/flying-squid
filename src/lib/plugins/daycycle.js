@@ -51,11 +51,7 @@ module.exports.server = function (serv) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-<<<<<<< HEAD
-        if(ctx.player) ctx.player.chat('It is ' + serv.time)
-=======
         if (ctx.player) ctx.player.chat('It is ' + serv.time)
->>>>>>> 50a18752444823aed563fbc6d6747277ba82642b
         else serv.log('It is ' + serv.time)
       } else {
         if (isNaN(value)) {
