@@ -112,7 +112,7 @@ module.exports.player = function (player, serv, settings) {
       dimension: 0,
       difficulty: serv.difficulty,
       reducedDebugInfo: false,
-      maxPlayers: serv._server.maxPlayers
+      maxPlayers: Math.min(255, serv._server.maxPlayers)
     })
     player.position = player.spawnPoint.clone()
   }
