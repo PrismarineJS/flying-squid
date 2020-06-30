@@ -21,7 +21,7 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv, { worldFolder }) {
-  function playerInventoryToNBT (playerInventory) {
+  function playerInventoryToNBT(playerInventory) {
     const nbtInventory = []
     playerInventory.slots.forEach(item => {
       if (item !== undefined) {
@@ -75,7 +75,6 @@ module.exports.player = function (player, serv, { worldFolder }) {
       // player.dat exists
       const playerDataFile = await fsReadFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
       const parsed = await nbtParse(playerDataFile)
-      fs.writeFileSync(`${worldFolder}/playerdata/${player.uuid}.txt`, JSON.stringify(parsed))
 
       parsed.value.Health.value = player.health
       parsed.value.foodLevel.value = player.food
