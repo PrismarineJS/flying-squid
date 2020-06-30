@@ -2,7 +2,7 @@ flying-squid
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
-[![Build Status](https://img.shields.io/circleci/project/github/PrismarineJS/flying-squid/master.svg)](https://circleci.com/gh/PrismarineJS/flying-squid)
+[![Build Status](https://github.com/PrismarineJS/flying-squid/workflows/CI/badge.svg)](https://github.com/PrismarineJS/flying-squid/actions?query=workflow%3A%22CI%22)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
@@ -11,7 +11,7 @@ flying-squid
 Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
 ## Features
-* Support for Minecraft 1.8 and 1.12
+* Support for Minecraft 1.8, 1.9, 1.10, 1.11 and 1.12
 * Players can see the world
 * Players see each other in-game and in tab
 * Digging
@@ -56,7 +56,7 @@ Http api available in the test instance at [flying-squid.rom1504.fr](http://flyi
 * [flying-squid-essentials](https://github.com/DeudlyYT/Flying-Squid-Essentials) Plugin that in a future will be like Essentials of bukkit/spigot.
 All the basic commands that a server should have
 * [squidcord](https://github.com/dada513/SquidCord) a bridge between a discord channel and the minecraft server.
-
+* [authme](https://github.com/TheAlan404/flying-squid-authme) an auth plugin for `online-mode=false` servers.
 
 ## Documentation
 For development see the [API documentation](API.md), [CONTRIBUTE.md](CONTRIBUTE.md) and [HISTORY.md](HISTORY.md)

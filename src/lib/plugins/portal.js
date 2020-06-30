@@ -2,10 +2,10 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = function (player, serv, { version }) {
-  const { detectFrame, generatePortal, addPortalToWorld } = require('flying-squid').portal_detector(version)
+  const { detectFrame } = require('flying-squid').portal_detector(version)
 
   player.use_flint_and_steel = async (referencePosition, direction, position) => {
-    let block = await player.world.getBlock(referencePosition)
+    const block = await player.world.getBlock(referencePosition)
     if (block.name === 'obsidian') {
       const frames = await detectFrame(player.world, referencePosition, direction)
       if (frames.length !== 0) {
@@ -39,27 +39,31 @@ module.exports.player = function (player, serv, { version }) {
       p.forEach(portal => destroyPortal(portal, position))
     }
   })
+}
 
-  player.commands.add({
+module.exports.server = function (serv, { version }) {
+  const { generatePortal, addPortalToWorld } = require('flying-squid').portal_detector(version)
+  serv.commands.add({
     base: 'portal',
     info: 'Create a portal frame',
     usage: '/portal <bottomLeft:<x> <y> <z>> <direction:x|z> <width> <height>',
+    onlyPlayer: true,
     op: true,
-    parse (str) {
+    parse (str, ctx) {
       const pars = str.split(' ')
       if (pars.length !== 6) { return false }
       let [x, y, z, direction, width, height] = pars;
-      [x, y, z] = [x, y, z].map((val, i) => serv.posFromString(val, player.position[['x', 'y', 'z'][i]]))
+      [x, y, z] = [x, y, z].map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
       const bottomLeft = new Vec3(x, y, z)
       if (direction !== 'x' && direction !== 'z') { throw new UserError('Wrong Direction') }
       direction = direction === 'x' ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)
       return { bottomLeft, direction, width, height }
     },
-    async action ({ bottomLeft, direction, width, height }) {
+    async action ({ bottomLeft, direction, width, height }, ctx) {
       if (width > 21 || height > 21) { throw new UserError('Portals can only be 21x21!') }
       const portal = generatePortal(bottomLeft, direction, width, height)
-      await addPortalToWorld(player.world, portal, [], [], async (pos, type) => {
-        await serv.setBlock(player.world, pos, type, 0)
+      await addPortalToWorld(ctx.player.world, portal, [], [], async (pos, type) => {
+        await serv.setBlock(ctx.player.world, pos, type, 0)
       })
     }
   })

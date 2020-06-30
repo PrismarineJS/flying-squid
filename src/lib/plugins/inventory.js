@@ -2,11 +2,11 @@ const Vec3 = require('vec3')
 
 module.exports.player = function (player, serv, { version }) {
   const Item = require('prismarine-item')(version)
-  const windows = require('prismarine-windows')(version).windows
+  const windows = require('prismarine-windows')(version)
 
   player.heldItemSlot = 0
   player.heldItem = new Item(256, 1)
-  player.inventory = new windows.InventoryWindow(0, 'Inventory', 44)
+  player.inventory = windows.createWindow(1, 'minecraft:inventory', 'inv', 36)
 
   player._client.on('held_item_slot', ({ slotId } = {}) => {
     player.heldItemSlot = slotId

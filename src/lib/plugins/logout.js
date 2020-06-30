@@ -49,7 +49,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
   }
 
   player.despawnEntities = entities => player._client.write('entity_destroy', {
-    'entityIds': entities.map(e => e.id)
+    entityIds: entities.map(e => e.id)
   })
 
   player._client.on('end', async () => {

@@ -1,4 +1,5 @@
 const spiralloop = require('spiralloop')
+const Vec3 = require('vec3').Vec3
 
 const generations = require('flying-squid').generations
 const { promisify } = require('util')
@@ -8,7 +9,7 @@ const { level } = require('prismarine-provider-anvil')
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
-module.exports.server = async function (serv, { version, worldFolder, generation = { 'name': 'diamond_square', 'options': { 'worldHeight': 80 } } } = {}) {
+module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
   const World = require('prismarine-world')(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
@@ -24,10 +25,10 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
     try {
       const levelData = await level.readLevel(worldFolder + '/level.dat')
-      seed = levelData['RandomSeed'][0]
+      seed = levelData.RandomSeed[0]
     } catch (err) {
       seed = newSeed
-      await level.writeLevel(worldFolder + '/level.dat', { 'RandomSeed': [seed, 0] })
+      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
     }
   } else { seed = newSeed }
   generation.options.seed = seed
@@ -35,7 +36,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder)
-  serv.netherworld = new World(generations['nether'](generation.options))
+  serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
@@ -67,6 +68,15 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
+  serv.setBlockAction = async (world, position, actionId, actionParam) => {
+    const location = new Vec3(position.x, position.y, position.z)
+    const blockType = await world.getBlockType(location)
+
+    serv.players
+      .filter(p => p.world === world)
+      .forEach(player => player.sendBlockAction(position, actionId, actionParam, blockType))
+  }
+
   serv.reloadChunks = (world, chunks) => {
     serv.players
       .filter(player => player.world === world)
@@ -80,6 +90,17 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
   // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
+  serv.commands.add({
+    base: 'changeworld',
+    info: 'to change world',
+    usage: '/changeworld overworld|nether',
+    onlyPlayer: true,
+    op: true,
+    action (world, ctx) {
+      if (world === 'nether') ctx.player.changeWorld(serv.netherworld, { dimension: -1 })
+      if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
+    }
+  })
 }
 
 module.exports.player = function (player, serv, settings) {
@@ -112,7 +133,7 @@ module.exports.player = function (player, serv, settings) {
         x: x,
         z: z,
         groundUp: true,
-        bitMap: 0xffff,
+        bitMap: chunk.getMask(),
         chunkData: chunk.dump(),
         blockEntities: []
       })
@@ -176,7 +197,7 @@ module.exports.player = function (player, serv, settings) {
 
   player.sendSpawnPosition = () => {
     player._client.write('spawn_position', {
-      'location': player.spawnPoint
+      location: player.spawnPoint
     })
   }
 
@@ -205,15 +226,4 @@ module.exports.player = function (player, serv, settings) {
     await player.waitPlayerLogin()
     player.sendRestMap()
   }
-
-  player.commands.add({
-    base: 'changeworld',
-    info: 'to change world',
-    usage: '/changeworld overworld|nether',
-    op: true,
-    action (world) {
-      if (world === 'nether') player.changeWorld(serv.netherworld, { dimension: -1 })
-      if (world === 'overworld') player.changeWorld(serv.overworld, { dimension: 0 })
-    }
-  })
 }

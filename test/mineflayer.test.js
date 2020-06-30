@@ -5,8 +5,8 @@ const settings = require('../config/default-settings')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
 
-function assertPosEqual (actual, expected) {
-  expect(actual.distanceTo(expected)).toBeLessThan(1)
+function assertPosEqual (actual, expected, precision = 1) {
+  expect(actual.distanceTo(expected)).toBeLessThan(precision)
 }
 
 const once = require('event-promise')
@@ -75,12 +75,12 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     beforeEach(async () => {
       const options = settings
       options['online-mode'] = false
-      options['port'] = 0
+      options.port = 0
       options['view-distance'] = 2
-      options['worldFolder'] = undefined
-      options['logging'] = false
-      options['version'] = version.minecraftVersion
-      options['generation'] = { // TODO: fix block tests failing at random without manually specifying seed
+      options.worldFolder = undefined
+      options.logging = false
+      options.version = version.minecraftVersion
+      options.generation = { // TODO: fix block tests failing at random without manually specifying seed
         name: 'diamond_square',
         options: {
           seed: 2116746182
@@ -140,7 +140,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         bot.dig(bot.blockAt(pos))
 
-        let [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
+        const [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
@@ -167,6 +167,46 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(1)
+      })
+
+      test('can open and close a chest', async () => {
+        await Promise.all([waitSpawnZone(bot, 2), onGround(bot), waitSpawnZone(bot2, 2), onGround(bot2)])
+
+        const chestId = mcData.blocksByName.chest.id
+        const [x, y, z] = [1, 2, 3]
+
+        const states = {
+          open: {
+            location: { x, y, z },
+            byte1: 1,
+            byte2: 1, // open
+            blockId: chestId
+          },
+          closed: {
+            location: { x, y, z },
+            byte1: 1,
+            byte2: 0, // closed
+            blockId: chestId
+          }
+        }
+
+        bot.chat(`/setblock ${x} ${y} ${z} ${chestId} 2`) // place a chest facing north
+
+        await once(bot, 'blockUpdate')
+
+        bot.chat(`/setblockaction ${x} ${y} ${z} 1 1`) // open the chest
+
+        const [blockActionOpen] = await once(bot._client, 'block_action', { array: true })
+        const [blockActionOpen2] = await once(bot2._client, 'block_action', { array: true })
+        expect(blockActionOpen).toEqual(states.open)
+        expect(blockActionOpen2).toEqual(states.open)
+
+        bot.chat(`/setblockaction ${x} ${y} ${z} 1 0`) // close the chest
+
+        const [blockActionClosed] = await once(bot._client, 'block_action', { array: true })
+        const [blockActionClosed2] = await once(bot2._client, 'block_action', { array: true })
+        expect(blockActionClosed).toEqual(states.closed)
+        expect(blockActionClosed2).toEqual(states.closed)
       })
     })
 
@@ -231,20 +271,20 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           const initialPosition = bot.entity.position.clone()
           bot.chat('/tp ~1 ~-2 ~3')
           await once(bot, 'forcedMove')
-          assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3))
+          assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
         test('can tp somebody else with relative positions', async () => {
           await Promise.all([onGround(bot), onGround(bot2)])
           const initialPosition = bot2.entity.position.clone()
           bot.chat('/tp bot2 ~1 ~-2 ~3')
           await once(bot2, 'forcedMove')
-          assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3))
+          assertPosEqual(bot2.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
       })
       test('can use /deop', async () => {
         await waitLoginMessage(bot)
         bot.chat('/deop bot')
-        await waitMessage(bot, 'bot is deopped')
+        await waitMessage(bot, '§7§o[Server: Deopped bot]')
         bot.chat('/op bot')
         await waitMessage(bot, 'You do not have permission to use this command')
         serv.getPlayer('bot').op = true
@@ -252,7 +292,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         bot.chat('/setblock 1 2 3 95 0')
-        let [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
+        const [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         expect(newBlock.type).toEqual(95)
       })
       test('can use /xp', async () => {
