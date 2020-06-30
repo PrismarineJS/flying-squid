@@ -1,4 +1,13 @@
 const once = require('event-promise')
+const nbt = require('prismarine-nbt')
+const long = require('long')
+const fs = require('fs')
+const { promisify } = require('util')
+const { gzip } = require('node-gzip')
+const convertInventorySlotId = require('../convertInventorySlotId')
+
+const fsReadFile = promisify(fs.readFile)
+const nbtParse = promisify(nbt.parse)
 
 module.exports.server = function (serv) {
   serv.quit = async (reason = 'Going down') => {
@@ -11,12 +20,39 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, { worldFolder }) {
+  function playerInventoryToNBT (playerInventory) {
+    const nbtInventory = []
+    playerInventory.slots.forEach(item => {
+      if (item !== undefined) {
+        nbtInventory.push({
+          Slot: {
+            type: 'byte',
+            value: convertInventorySlotId.toNBT(item.slot)
+          },
+          id: {
+            type: 'string',
+            value: `minecraft:${item.name}`
+          },
+          Count: {
+            type: 'byte',
+            value: item.count
+          },
+          Damage: {
+            type: 'short',
+            value: item.metadata
+          }
+        })
+      }
+    })
+    return nbtInventory
+  }
+
   player.despawnEntities = entities => player._client.write('entity_destroy', {
     'entityIds': entities.map(e => e.id)
   })
 
-  player._client.on('end', () => {
+  player._client.on('end', async () => {
     if (player && player.username) {
       serv.broadcast(serv.color.yellow + player.username + ' quit the game.')
       player._writeOthers('player_info', {
@@ -33,6 +69,373 @@ module.exports.player = function (player, serv) {
         serv.players.splice(index, 1)
       }
       delete serv.uuidToPlayer[player.uuid]
+    }
+    // save player.dat file
+    try {
+      // player.dat exists
+      const playerDataFile = await fsReadFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
+      const parsed = await nbtParse(playerDataFile)
+      fs.writeFileSync(`${worldFolder}/playerdata/${player.uuid}.txt`, JSON.stringify(parsed))
+
+      parsed.value.Health.value = player.health
+      parsed.value.foodLevel.value = player.food
+      parsed.value.playerGameType.value = player.gameMode
+      parsed.value.XpTotal.value = player.xp
+      parsed.value.SelectedItemSlot.value = player.heldItemSlot
+      parsed.value.Pos.value.value = [player.position.x, player.position.y, player.position.z]
+      parsed.value.Rotation.value.value = [player.yaw, player.pitch]
+      parsed.value.OnGround.value = Number(player.onGround)
+      parsed.value.Inventory.value.value = playerInventoryToNBT(player.inventory)
+
+      const newDataCompressed = await gzip(nbt.writeUncompressed(parsed))
+      fs.writeFileSync(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
+    } catch (e) {
+      // create player.dat
+      // Get UUIDMost & UUIDLeast. mc-uuid-converter Copyright (c) 2020 Sol Toder https://github.com/AjaxGb/mc-uuid-converter.
+      const uuidBytes = new Uint8Array(16)
+      const uuid = new DataView(uuidBytes.buffer)
+
+      const hexText = player.uuid.includes('-')
+        ? player.uuid.trim()
+          .split('-')
+          .map((g, i) => g.padStart([8, 4, 4, 4, 12][i], '0'))
+          .join('')
+        : player.uuid.trim().padStart(32, '0')
+      uuid.setBigUint64(0, BigInt('0x' + hexText.substring(0, 16)), false)
+      uuid.setBigUint64(8, BigInt('0x' + hexText.substring(16)), false)
+
+      const UUIDMostLong = new long.fromString(uuid.getBigInt64(0, false).toString(), false)
+      const UUIDLeastLong = new long.fromString(uuid.getBigInt64(8, false).toString(), false)
+
+      const parsed = {
+        'type': 'compound',
+        'name': '',
+        'value': {
+          'HurtByTimestamp': {
+            'type': 'int',
+            'value': 0
+          },
+          'SleepTimer': {
+            'type': 'short',
+            'value': 0
+          },
+          'Attributes': {
+            'type': 'list',
+            'value': {
+              'type': 'compound',
+              'value': [
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 20
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.maxHealth'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 0
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.knockbackResistance'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 0.10000000149011612
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.movementSpeed'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 0
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.armor'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 0
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.armorToughness'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 1
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.attackDamage'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 4
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.attackSpeed'
+                  }
+                },
+                {
+                  'Base': {
+                    'type': 'double',
+                    'value': 0
+                  },
+                  'Name': {
+                    'type': 'string',
+                    'value': 'generic.luck'
+                  }
+                }
+              ]
+            }
+          },
+          'Invulnerable': {
+            'type': 'byte',
+            'value': 0
+          },
+          'FallFlying': {
+            'type': 'byte',
+            'value': 0
+          },
+          'PortalCooldown': {
+            'type': 'int',
+            'value': 0
+          },
+          'AbsorptionAmount': {
+            'type': 'float',
+            'value': 0
+          },
+          'abilities': {
+            'type': 'compound',
+            'value': {
+              'invulnerable': {
+                'type': 'byte',
+                'value': 0
+              },
+              'mayfly': {
+                'type': 'byte',
+                'value': 0
+              },
+              'instabuild': {
+                'type': 'byte',
+                'value': 0
+              },
+              'walkSpeed': {
+                'type': 'float',
+                'value': 0.10000000149011612
+              },
+              'mayBuild': {
+                'type': 'byte',
+                'value': 1
+              },
+              'flying': {
+                'type': 'byte',
+                'value': 0
+              },
+              'flySpeed': {
+                'type': 'float',
+                'value': 0.05000000074505806
+              }
+            }
+          },
+          'FallDistance': {
+            'type': 'float',
+            'value': 0
+          },
+          'recipeBook': {
+            'type': 'compound',
+            'value': {
+              'recipes': {
+                'type': 'list',
+                'value': {
+                  'type': 'end',
+                  'value': []
+                }
+              },
+              'isFilteringCraftable': {
+                'type': 'byte',
+                'value': 0
+              },
+              'toBeDisplayed': {
+                'type': 'list',
+                'value': {
+                  'type': 'end',
+                  'value': []
+                }
+              },
+              'isGuiOpen': {
+                'type': 'byte',
+                'value': 0
+              }
+            }
+          },
+          'DeathTime': {
+            'type': 'short',
+            'value': 0
+          },
+          'XpSeed': {
+            'type': 'int',
+            'value': 0
+          },
+          'XpTotal': {
+            'type': 'int',
+            'value': player.xp
+          },
+          'playerGameType': {
+            'type': 'int',
+            'value': player.gameMode
+          },
+          'seenCredits': {
+            'type': 'byte',
+            'value': 0
+          },
+          'Motion': {
+            'type': 'list',
+            'value': {
+              'type': 'double',
+              'value': [
+                0,
+                -0.0784000015258789,
+                0
+              ]
+            }
+          },
+          'UUIDLeast': {
+            'type': 'long',
+            'value': [
+              UUIDLeastLong.high,
+              UUIDLeastLong.low
+            ]
+          },
+          'Health': {
+            'type': 'float',
+            'value': player.health
+          },
+          'foodSaturationLevel': {
+            'type': 'float',
+            'value': 5
+          },
+          'Air': {
+            'type': 'short',
+            'value': 300
+          },
+          'OnGround': {
+            'type': 'byte',
+            'value': Number(player.onGround)
+          },
+          'Dimension': {
+            'type': 'int',
+            'value': 0
+          },
+          'Rotation': {
+            'type': 'list',
+            'value': {
+              'type': 'float',
+              'value': [
+                player.yaw,
+                player.pitch
+              ]
+            }
+          },
+          'XpLevel': {
+            'type': 'int',
+            'value': 0
+          },
+          'Score': {
+            'type': 'int',
+            'value': 0
+          },
+          'UUIDMost': {
+            'type': 'long',
+            'value': [
+              UUIDMostLong.high,
+              UUIDMostLong.low
+            ]
+          },
+          'Sleeping': {
+            'type': 'byte',
+            'value': 0
+          },
+          'Pos': {
+            'type': 'list',
+            'value': {
+              'type': 'double',
+              'value': [
+                player.position.x,
+                player.position.y,
+                player.position.z
+              ]
+            }
+          },
+          'Fire': {
+            'type': 'short',
+            'value': -20
+          },
+          'XpP': {
+            'type': 'float',
+            'value': 0
+          },
+          'EnderItems': {
+            'type': 'list',
+            'value': {
+              'type': 'end',
+              'value': []
+            }
+          },
+          'DataVersion': {
+            'type': 'int',
+            'value': 1343
+          },
+          'foodLevel': {
+            'type': 'int',
+            'value': player.food
+          },
+          'foodExhaustionLevel': {
+            'type': 'float',
+            'value': 0
+          },
+          'HurtTime': {
+            'type': 'short',
+            'value': 0
+          },
+          'SelectedItemSlot': {
+            'type': 'int',
+            'value': player.heldItemSlot
+          },
+          'Inventory': {
+            'type': 'list',
+            'value': {
+              'type': 'compound',
+              'value': playerInventoryToNBT(player.inventory)
+            }
+          },
+          'foodTickTimer': {
+            'type': 'int',
+            'value': 0
+          }
+        }
+      }
+
+      const newDataCompressed = await gzip(nbt.writeUncompressed(parsed))
+      fs.writeFileSync(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
     }
   })
 }
