@@ -306,19 +306,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot2.inventory, 'windowUpdate')
         expect(bot2.inventory.slots[9].type).toEqual(1)
       })
-      test('can use /banlist, /ban, /pardon', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/banlist')
-        await waitMessage(bot, 'There are 0 total banned players')
-        bot.chat('/ban bot2')
-        await waitMessage(bot, 'bot2 was banned')
-        bot.chat('/banlist')
-        await waitMessage(bot, 'There are 1 total banned players:')
-        bot.chat('/pardon bot2')
-        await waitMessage(bot, 'bot2 is unbanned')
-        bot.chat('/banlist')
-        await waitMessage(bot, 'There are 0 total banned players')
-      })
       test('can use tabComplete', async () => {
         bot.tabComplete('/give', (err, data) => {
           expect(data[0]).toEqual('bot')
