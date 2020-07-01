@@ -315,6 +315,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.chat('/banlist')
         await waitMessage(bot, 'There are 1 total banned players:')
         bot.chat('/pardon bot2')
+        await waitMessage(bot, 'bot2 quit the game.')
         await waitMessage(bot, 'bot2 is unbanned')
         bot.chat('/banlist')
         await waitMessage(bot, 'There are 0 total banned players')
