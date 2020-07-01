@@ -148,6 +148,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/stop',
     op: true,
     action () {
+      serv.quit('Closed')
       process.exit()
     }
   })
