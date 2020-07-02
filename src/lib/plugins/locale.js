@@ -5,18 +5,18 @@ module.exports.player = (player, serv) => {
         player.lang = packet.locale
     })
 
-    player.localeString = (string) => serv.locales.get(string, player.lang)
+    player.localeString = (path) => serv.locales.get(player.lang, path)
 }
 
 module.exports.server = (serv) => {
     serv.locales = {
         langs: {},
-        getString(locale, string) {
-            return _.get(this.langs[locale || 'en_us'], string.replace(/:/g, ".")) || ''
+        getString(locale, path) {
+            return _.get(this.langs[locale || 'en_us'], path.replace(/:/g, ".")) || ''
         },
-        addString(locale, stringName, stringValue) {
+        addString(locale, path, value) {
             this.langs[locale] = this.langs[locale] || {}
-            _.set(this.langs[locale], stringName.replace(/:/g, "."), stringValue)
+            _.set(this.langs[locale], path.replace(/:/g, "."), value)
         }
     }
 }
