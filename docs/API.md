@@ -333,16 +333,14 @@ serv.commands.add({
 `serv.locales` contains all localization on the server
 Also you can provide your localization using this example:
 ```js
-module.exports.server = function(serv) {
-  serv.locale.setString({
-    en_US: {
-      example: 'My example command!',
-      another: {
-        object: 'Here\'s another object!'
-      }
+serv.locale.setString({
+  en_US: {
+    example: 'My example command!',
+    another: {
+      object: 'Here\'s another object!'
     }
-  })
-}
+  }
+})
 ```
 
 ### Events
