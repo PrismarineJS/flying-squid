@@ -11,50 +11,40 @@ module.exports.player = (player, serv) => {
 module.exports.server = (serv) => {
     serv.locales = {
         langs: {},
-        getString(lang = 'en_US', path) {
-            const str = _.get(this.langs[lang], path)
-            if (str !== undefined) return str['value']
-            return `String \'${path}\' in \'${lang}\' not found`
-        },
         addStringLang(lang, path, value) {
-            this.langs[lang] = this.langs[lang] || {}
-            _.set(this.langs[lang], path, { value: value })
+            serv.locales.langs[lang] = serv.locales.langs[lang] || {}
+            _.set(serv.locales.langs[lang], path, { value: value })
         },
-        addString(path, values) {
-            Object.keys(values).map(lang => {
-                let localPath = path
+        addString: (path, values) => {
+            _.map(_.keys(values), lang => {
+                serv.locales.langs[lang] = serv.locales.langs[lang] || {}
                 let value = values[lang]
-                this.langs[lang] = this.langs[lang] || {}
-                _.set(this.langs[lang], localPath, { value: value })
+                let localPath = path
+                _.set(serv.locales.langs[lang], localPath, value)
             })
+        },
+        getString: (lang = 'en_US', path) => {
+            return _.get(serv.locales.langs[lang], path, `\'${path}\' not found`)
         }
     }
 
     serv.localeString = (lang, path) => serv.locales.getString(lang, path)
 
     serv.locales.addString('localeTest', {
-        en_US: 'Localization works!',
-        ru_RU: 'Локализация работает!'
-    })
-
-    serv.locales.addString('localeTest.inside', {
-        en_US: 'Localization works inside localeTest!',
-        ru_RU: 'Локализация работает внутри localeTest!'
-    })
-
-    serv.locales.addString('localeTest.object', {
         en_US: {
-            hmm: 'Localization works.. hmm...'
+            works: 'Localization works!',
+            object: {
+                hmm: 'Localization works.. hmm...'
+            },
+            array: ['It works!', 'I\'m array!']
         },
         ru_RU: {
-            hmm: 'Локализация работает .. хммм'
+            works: 'Локализация работает!',
+            object: {
+                hmm: 'Локализация работает.. хмм...'
+            },
+            array: ['Работает!', 'Я массив!']
         },
-        ru_RU1: {
-            hmm: 'Локализация работает .. хммм', 
-            lol: {
-                h: 'ehx'
-            }
-        }
     })
 
     serv.commands.add({

@@ -303,20 +303,35 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     describe('localization', () => {
-      test('can use /localetest en_US', async () => {
+      test('can use /localetest en_US works', async () => {
         await waitLoginMessage(bot)
-        bot.chat('/localetest')
+        bot.chat('/localetest en_US works')
         await waitMessage(bot, 'Localization works!')
       })
       test('can use /localetest ru_RU', async () => {
         await waitLoginMessage(bot)
-        bot.chat('/localetest ru_RU')
+        bot.chat('/localetest ru_RU works')
         await waitMessage(bot, 'Локализация работает!')
       })
-      test('can use /localetest en_US inside', async () => {
+      test('can use /localetest en_US (object)', async () => {
         await waitLoginMessage(bot)
-        bot.chat('/localetest')
-        await waitMessage(bot, 'Localization works!')
+        bot.chat('/localetest en_US object.hmm')
+        await waitMessage(bot, 'Localization works.. hmm...')
+      })
+      test('can use /localetest ru_RU (object)', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest ru_RU object.hmm')
+        await waitMessage(bot, 'Локализация работает.. хмм...')
+      })
+      test('can use /localetest en_US (array)', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest en_US array.0')
+        await waitMessage(bot, 'It works!')
+      })
+      test('can use /localetest ru_RU (array)', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest ru_RU array.0')
+        await waitMessage(bot, 'Работает!')
       })
     })
   })
