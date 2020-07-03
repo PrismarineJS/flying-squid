@@ -30,6 +30,7 @@
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
       - [serv.plugins](#servplugins)
+      - [serv.tabComplete](#servtabcomplete)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
