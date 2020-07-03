@@ -301,5 +301,23 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(bot.experience.points).toEqual(100)
       })
     })
+
+    describe('localization', () => {
+      test('can use /localetest en_US', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest')
+        await waitMessage(bot, 'Localization works!')
+      })
+      test('can use /localetest ru_RU', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest ru_RU')
+        await waitMessage(bot, 'Локализация работает!')
+      })
+      test('can use /localetest en_US inside', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/localetest')
+        await waitMessage(bot, 'Localization works!')
+      })
+    })
   })
 })
