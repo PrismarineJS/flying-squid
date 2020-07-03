@@ -326,6 +326,17 @@ serv.commands.add({
 });
 ```
 
+#### serv.tabComplete
+
+`serv.tabComplete` has types and tab completition function
+
+You can provide your types:
+```js
+serv.tabComplete.add('tabId', () => {
+  return ['some', 'values', 'in array', 'ONLY STRINGS!']
+})
+```
+
 ### Events
 
 #### "error" (error)
