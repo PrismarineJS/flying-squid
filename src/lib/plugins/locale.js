@@ -47,10 +47,6 @@ module.exports.server = (serv) => {
         },
     })
 
-    serv.locales.setString('localeTest', {
-        en_US: 'shit!'
-    })
-
     serv.commands.add({
         base: 'localetest',
         info: 'Test localization',
