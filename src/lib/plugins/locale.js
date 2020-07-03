@@ -52,7 +52,7 @@ module.exports.server = (serv) => {
         ru_RU1: {
             hmm: 'Локализация работает .. хммм', 
             lol: {
-                h: 'eh'
+                h: 'ehx'
             }
         }
     })
