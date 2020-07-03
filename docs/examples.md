@@ -110,3 +110,36 @@ module.exports.player = function(player, serv) {
   })
 }
 ```
+
+## Localization for your plugin
+
+You can add a localization for your plugin. Here's an example how to do it
+
+```js
+// All localization stored in serv.locales.langs
+// You can access it by getString() method
+module.exports.server = function(serv) {
+  serv.locale.setString({
+    en_US: {
+      example: 'My example command!',
+      another: {
+        object: 'Here\'s another object!'
+      }
+    }
+  })
+
+  serv.commands.add({
+    base: 'locale',
+    info: 'Localization example!',
+    usage: '/locale [path]',
+    action(path, ctx) {
+      // If path not found it will return "'path' not found"
+      // So now you can use Mojang localization paths and yours, which you have added early.
+      // e.g. "example" path will return "My example command!"
+
+      if (ctx.player) ctx.player.chat(ctx.player.localeString(path)) // If player's lang is 'en_US' it will return string of path
+      else serv.info('en_US', serv.localeString(path)) // localeString() method is equal to serv.locales.getString() method
+    }
+  })
+}
+```

@@ -30,6 +30,8 @@
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
       - [serv.plugins](#servplugins)
+      - [serv.commands](#servcommands)
+      - [serv.locales](#servlocales)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
@@ -324,6 +326,23 @@ serv.commands.add({
       else serv.log("Hello "+pseudo);
     }
 });
+```
+
+#### serv.locales
+
+`serv.locales` contains all localization on the server
+Also you can provide your localization using this example:
+```js
+module.exports.server = function(serv) {
+  serv.locale.setString({
+    en_US: {
+      example: 'My example command!',
+      another: {
+        object: 'Here\'s another object!'
+      }
+    }
+  })
+}
 ```
 
 ### Events
