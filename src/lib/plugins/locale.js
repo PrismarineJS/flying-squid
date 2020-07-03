@@ -11,11 +11,11 @@ module.exports.player = (player, serv) => {
 module.exports.server = (serv) => {
     serv.locales = {
         langs: {},
-        addStringLang(lang, path, value) {
+        setStringLang(lang, path, value) {
             serv.locales.langs[lang] = serv.locales.langs[lang] || {}
             _.set(serv.locales.langs[lang], path, { value: value })
         },
-        addString: (path, values) => {
+        setString: (path, values) => {
             _.map(_.keys(values), lang => {
                 serv.locales.langs[lang] = serv.locales.langs[lang] || {}
                 let value = values[lang]
@@ -30,7 +30,7 @@ module.exports.server = (serv) => {
 
     serv.localeString = (lang, path) => serv.locales.getString(lang, path)
 
-    serv.locales.addString('localeTest', {
+    serv.locales.setString('localeTest', {
         en_US: {
             works: 'Localization works!',
             object: {
@@ -45,6 +45,10 @@ module.exports.server = (serv) => {
             },
             array: ['Работает!', 'Я массив!']
         },
+    })
+
+    serv.locales.setString('localeTest', {
+        en_US: 'shit!'
     })
 
     serv.commands.add({
