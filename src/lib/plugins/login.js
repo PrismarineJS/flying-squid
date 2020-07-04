@@ -1,16 +1,11 @@
 const Vec3 = require('vec3').Vec3
 
 const path = require('path')
-const fs = require('fs')
-const { promisify } = require('util')
-const nbt = require('prismarine-nbt')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
+const playerDat = require('../playerDat')
 const convertInventorySlotId = require('../convertInventorySlotId')
 const Command = require('flying-squid').Command
-
-const fsReadFile = promisify(fs.readFile)
-const nbtParse = promisify(nbt.parse)
 
 module.exports.server = function (serv, options) {
   serv._server.on('connection', client =>
@@ -37,14 +32,11 @@ module.exports.server = function (serv, options) {
   })
 }
 
-module.exports.player = function (player, serv, settings) {
+module.exports.player = async function (player, serv, settings) {
   const Item = require('prismarine-item')(settings.version)
   const mcData = require('minecraft-data')(settings.version)
 
-  let playerSavedInventoryItems = []
-  let playerSavedPosition = []
-  let playerSavedRotation = []
-  let playerSavedOnGround = true
+  let playerData
 
   async function addPlayer () {
     player.type = 'player'
@@ -52,31 +44,19 @@ module.exports.player = function (player, serv, settings) {
     player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
     player.username = player._client.username
     player.uuid = player._client.uuid
-    try {
-      const playerDataFile = await fsReadFile(`${settings.worldFolder}/playerdata/${player.uuid}.dat`)
-      const playerData = (await nbtParse(playerDataFile)).value
-      player.health = playerData.Health.value
-      player.food = playerData.foodLevel.value
-      player.gameMode = playerData.playerGameType.value
-      player.xp = playerData.XpTotal.value
-      player.heldItemSlot = playerData.SelectedItemSlot.value
-      playerSavedPosition = playerData.Pos.value.value
-      playerSavedOnGround = Boolean(playerData.OnGround.value)
-      playerSavedRotation = playerData.Rotation.value.value
-      playerSavedInventoryItems = playerData.Inventory.value.value
-    } catch (err) {
-      // No player data file / other error
-      player.health = 20
-      player.food = 20
-      player.heldItemSlot = 0
-    }
+
+    await player.findSpawnPoint()
+
+    playerData = await playerDat.read(player.uuid, player.spawnPoint, settings.worldFolder)
+    Object.keys(playerData.player).forEach(k => { player[k] = playerData.player[k] })
+
     serv.players.push(player)
     serv.uuidToPlayer[player.uuid] = player
     player.loadedChunks = {}
   }
 
   function updateInventory () {
-    playerSavedInventoryItems.forEach((item) => {
+    playerData.inventory.forEach((item) => {
       let theItem
       const itemName = item.id.value.slice(10)
       if (mcData.itemsByName[itemName]) {
@@ -93,17 +73,6 @@ module.exports.player = function (player, serv, settings) {
     })
   }
 
-  async function setSavedPosition () {
-    if (playerSavedPosition.length > 0) {
-      player.position.x = playerSavedPosition[0]
-      player.position.y = playerSavedPosition[1]
-      player.position.z = playerSavedPosition[2]
-      player.yaw = playerSavedRotation[0]
-      player.pitch = playerSavedRotation[1]
-      player.onGround = playerSavedOnGround
-    }
-  }
-
   function sendLogin () {
     // send init data so client will start rendering world
     player._client.write('login', {
@@ -115,7 +84,6 @@ module.exports.player = function (player, serv, settings) {
       reducedDebugInfo: false,
       maxPlayers: serv._server.maxPlayers
     })
-    player.position = player.spawnPoint.clone()
   }
 
   function sendChunkWhenMove () {
@@ -209,10 +177,8 @@ module.exports.player = function (player, serv, settings) {
     }
 
     await addPlayer()
-    await player.findSpawnPoint()
     sendLogin()
     player.sendSpawnPosition()
-    await setSavedPosition()
     player.sendSelfPosition()
     player.sendAbilities()
     await player.sendMap()
