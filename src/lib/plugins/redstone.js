@@ -6,13 +6,12 @@ module.exports.server = function (serv, { version }) {
   const redstoneWireType = mcData.blocksByName.redstone_wire.id
   const redstoneTorchType = mcData.blocksByName.redstone_torch.id
 
-  let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType, repeaterType;
+  let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType, repeaterType
   if (!serv.supportFeature('theFlattening')) {
     unlitRedstoneTorchType = mcData.blocksByName.unlit_redstone_torch.id
     poweredRepeaterType = mcData.blocksByName.powered_repeater.id
     unpoweredRepeaterType = mcData.blocksByName.unpowered_repeater.id
-  } else
-    repeaterType = mcData.blocksByName.repeater.id
+  } else { repeaterType = mcData.blocksByName.repeater.id }
   const powerLevel = (block, dir) => {
     if (block.type === redstoneWireType) return block.metadata
     if (block.type === redstoneTorchType) return 15
@@ -39,7 +38,7 @@ module.exports.server = function (serv, { version }) {
       if (dir.y === 1 || await isWireDirectedIn(world, pos, dir.scaled(-1))) { return block.metadata }
     }
     if (serv.supportFeature('theFlattening')) {
-      //to-do
+      // to-do
     } else {
       if (block.type === poweredRepeaterType) {
         const dataDir = block.metadata & 0x3
@@ -77,8 +76,8 @@ module.exports.server = function (serv, { version }) {
 
   const isDirectedRepeater = (block, dir, powered = false) => {
     if (serv.supportFeature('theFlattening')) {
-      //TO-DO
-      return false;
+      // TO-DO
+      return false
     } else {
       if (block.type !== poweredRepeaterType &&
         (block.type !== unpoweredRepeaterType || powered)) return false
@@ -236,16 +235,10 @@ module.exports.server = function (serv, { version }) {
 
       let changed = false
       if ((block.type === poweredRepeaterType || block.type === repeaterType) && p === 0) {
-        if (serv.supportFeature('theFlattening'))
-          block.metadata.powered = false;
-        else
-          await world.setBlockType(pos, unpoweredRepeaterType)
+        if (serv.supportFeature('theFlattening')) { block.metadata.powered = false } else { await world.setBlockType(pos, unpoweredRepeaterType) }
         changed = true
       } else if ((block.type === unpoweredRepeaterType || block.type === repeaterType) && p !== 0) {
-        if (serv.supportFeature('theFlattening'))
-          block.metadata.powered = true;
-        else
-          await world.setBlockType(pos, poweredRepeaterType)
+        if (serv.supportFeature('theFlattening')) { block.metadata.powered = true } else { await world.setBlockType(pos, poweredRepeaterType) }
         changed = true
       }
 

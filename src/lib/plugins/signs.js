@@ -1,16 +1,40 @@
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const oakSignType = serv.supportFeature("theFlattening") ? mcData.blocksByName.sign.id : mcData.blocksByName.standing_sign.id
-  const oakWallSignType = mcData.blocksByName.wall_sign.id
+  const oakSign = serv.supportFeature('theFlattening') ? mcData.blocksByName.sign : mcData.blocksByName.standing_sign
+  const oakWallSign = mcData.blocksByName.wall_sign
 
   serv.on('asap', () => {
-    serv.onItemPlace('sign', ({ direction, angle }) => {
-      if (direction === 1) {
-        return { id: oakSignType, data: Math.floor(angle / 22.5 + 0.5) & 0xF }
-      }
-      return { id: oakWallSignType, data: direction }
-    })
+    if (serv.supportFeature('theFlattening')) {
+      serv.onItemPlace('sign', ({ player, placedPosition, direction, properties }) => {
+        if (direction === 0) return { id: -1, data: 0 }
+        let block = oakSign
+        if (direction !== 1) {
+          block = oakWallSign
+          properties.facing = ['north', 'south', 'west', 'east'][direction - 2]
+        }
+
+        player._client.write('open_sign_entity', {
+          location: placedPosition
+        })
+
+        const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
+        return { id: block.id, data }
+      })
+    } else {
+      serv.onItemPlace('sign', ({ player, placedPosition, direction, properties }) => {
+        if (direction === 0) return { id: -1, data: 0 }
+
+        player._client.write('open_sign_entity', {
+          location: placedPosition
+        })
+
+        if (direction === 1) {
+          return { id: oakSign.id, data: properties.rotation }
+        }
+        return { id: oakWallSign.id, data: direction }
+      })
+    }
   })
 }
 
