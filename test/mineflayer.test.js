@@ -310,9 +310,15 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot2.inventory, 'windowUpdate')
         expect(bot2.inventory.slots[9].type).toEqual(1)
       })
-      test('can use tabComplete', async () => {
-        bot.tabComplete('/give', (err, data) => {
-          expect(data[0]).toEqual('bot')
+      test('can use tabComplete', () => {
+        return new Promise((resolve, reject) => {
+          bot.tabComplete('/give', (err, data) => {
+            if (err) {
+              return reject(err)
+            }
+            expect(data[0]).toEqual('bot')
+            return resolve()
+          })
         })
       })
 
