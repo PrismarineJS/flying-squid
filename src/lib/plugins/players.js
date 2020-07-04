@@ -1,6 +1,7 @@
 const UserError = require('flying-squid').UserError
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
+  const Item = require('prismarine-item')(version)
   serv.entityMaxId = 0
   serv.players = []
   serv.uuidToPlayer = {}
@@ -18,19 +19,20 @@ module.exports.server = function (serv) {
     info: 'to change game mode',
     usage: '/gamemode <0-3> [player]',
     op: true,
-    parse (str) {
+    parse (str, ctx) {
       var paramsSplit = str.split(' ')
       if (paramsSplit[0] === '') {
         return false
       }
-      if (!paramsSplit[0].match(/([0-3])$/) && paramsSplit[0].match(/([4-9])$/)) {
+      if (!paramsSplit[0].match(/^([0-3])$/) && paramsSplit[0].match(/^([0-9]+)$/)) {
         throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
       }
       if (!paramsSplit[1]) {
-        return paramsSplit[0].match(/([0-3])$/)
+        if (ctx.player) return paramsSplit[0].match(/^([0-3])$/)
+        else throw new UserError(`Console cannot set gamemode itself`)
       }
 
-      return str.match(/([0-3]) (\w+)/) || false
+      return str.match(/^([0-3]) (\w+)$/) || false
       // return params || false
     },
     action (str, ctx) {
@@ -75,6 +77,45 @@ module.exports.server = function (serv) {
     action (diff) {
       serv._writeAll('difficulty', { difficulty: diff })
       serv.difficulty = diff
+    }
+  })
+
+  serv.commands.add({
+    base: 'give',
+    info: 'Gives an item to a player.',
+    usage: '/give <player> <item> [count]',
+    tab: ['player', 'number', 'number'],
+    op: true,
+    parse(args) {
+      args = args.split(' ')
+      if (args[0] === '') return false;
+      if (!serv.getPlayer(args[0])) throw new UserError('Player is not found')
+      if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
+      return {
+        player: serv.getPlayer(args[0]),
+        item: args[1],
+        count: args[2] ? args[2] : 1
+      }
+    },
+    action ({ player, item, count }, ctx) {
+      const newItem = new Item(item, count)
+
+      player.inventory.slots.forEach((e, i) => {
+        if (e === undefined) return
+        if (e.type === parseInt(newItem.type)) {
+          e.count += parseInt(count)
+          player.inventory.updateSlot(e.slot, e)
+          return true;
+        }
+
+        if (player.inventory.slots.length === i) {
+          player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
+        }
+      })
+
+      if (player.inventory.items().length === 0) {
+        player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
+      }
     }
   })
 }
