@@ -82,12 +82,14 @@ module.exports.server = function (serv) {
       if (params[2] === 'clear') {
         if (ctx.player) ctx.player.chat('Remove all effects from ' + chatSelect + '.')
         else serv.log('Remove all effects from ' + chatSelect + '.')
-      }
-      else {
-        if (ctx.player) ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+      } else {
+        if (ctx.player) {
+          ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
-        else serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+        } else {
+          serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
+        }
       }
     }
   })

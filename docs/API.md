@@ -30,6 +30,7 @@
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
       - [serv.plugins](#servplugins)
+      - [serv.tabComplete](#servtabcomplete)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
@@ -324,6 +325,17 @@ serv.commands.add({
       else serv.log("Hello "+pseudo);
     }
 });
+```
+
+#### serv.tabComplete
+
+`serv.tabComplete` has types and tab completition function
+
+You can provide your types:
+```js
+serv.tabComplete.add('tabId', () => {
+  return ['some', 'values', 'in array', 'ONLY STRINGS!']
+})
 ```
 
 ### Events

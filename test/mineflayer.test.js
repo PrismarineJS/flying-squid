@@ -12,6 +12,7 @@ function assertPosEqual (actual, expected, precision = 1) {
 const once = require('event-promise')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
+const { postNettyVersionsByProtocolVersion } = require('minecraft-data')
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
@@ -299,6 +300,42 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.chat('/xp 100')
         await once(bot, 'experience')
         expect(bot.experience.points).toEqual(100)
+      })
+      test('can use /give', async () => {
+        bot.chat('/give bot2 1 1')
+        await once(bot2.inventory, 'windowUpdate')
+        expect(bot2.inventory.slots[9].type).toEqual(1)
+      })
+      test('can use tabComplete', async () => {
+        bot.tabComplete('/give', (err, data) => {
+          expect(data[0]).toEqual('bot')
+        })
+      })
+
+      function waitMessagePromise(message) {
+        return new Promise((resolve) => {
+          const listener = (msg) => {
+            if (msg.extra[0].text === message) {
+              bot.removeListener('message', listener)
+              resolve()
+            }
+          }
+          bot.on('message', listener)
+        })
+      }
+
+      test('can use /banlist, /ban, /pardon', async () => {
+        await waitLoginMessage(bot)
+        bot.chat('/banlist')
+        await waitMessagePromise('There are 0 total banned players')
+        bot.chat('/ban bot2')
+        await waitMessagePromise("bot2 was banned")
+        bot.chat('/banlist')
+        await waitMessagePromise('There are 1 total banned players:')
+        bot.chat('/pardon bot2')
+        await waitMessagePromise("bot2 is unbanned")
+        bot.chat('/banlist')
+        await waitMessagePromise('There are 0 total banned players')
       })
     })
   })

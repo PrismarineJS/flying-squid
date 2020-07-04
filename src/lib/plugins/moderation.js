@@ -3,28 +3,34 @@ const rp = require('request-promise')
 const UUID = require('uuid-1345')
 const UserError = require('flying-squid').UserError
 
-module.exports.server = function (serv) {
-  serv.ban = (uuid, reason) => {
-    serv.bannedPlayers[uuid] = {
-      time: +moment(),
-      reason: reason || 'Your account is banned!'
-    }
+module.exports.server = function (serv, settings) {
+  serv.ban = async (uuid, reason) => {
+    if (!serv.bannedPlayers[uuid]) {
+      serv.bannedPlayers[uuid] = {
+        time: +moment(),
+        reason: reason || 'Your account is banned!'
+      }
+      return true
+    } else return false
   }
-  serv.banIP = (IP, reason) => {
-    serv.bannedIPs[IP] = {
-      time: +moment(),
-      reason: reason || 'Your IP is banned!'
-    }
-    Object.keys(serv.players)
-      .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
-      .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason))
+  serv.banIP = async (IP, reason) => {
+    if (!serv.bannedIPs[IP]) {
+      serv.bannedIPs[IP] = {
+        time: +moment(),
+        reason: reason || 'Your IP is banned!'
+      }
+      Object.keys(serv.players)
+        .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
+        .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason))
+      return true
+    } else return false
   }
 
   function uuidInParts (plainUUID) {
-    return UUID.stringify(UUID.parse(plainUUID))
+    return plainUUID.length == 32 ? plainUUID.substring(0, 8) + '-' + plainUUID.substring(8, 12) + '-' + plainUUID.substring(12, 16) + '-' + plainUUID.substring(16, 20) + '-' + plainUUID.substring(20) : plainUUID
   }
 
-  serv.getUUIDFromUsername = username => {
+  serv.getUUIDFromUsername = async username => {
     return rp('https://api.mojang.com/users/profiles/minecraft/' + username)
       .then((body) => {
         if (!body) throw new Error('username not found')
@@ -33,17 +39,24 @@ module.exports.server = function (serv) {
       .catch(err => { throw err })
   }
 
-  serv.banUsername = (username, reason) => {
-    return serv.getUUIDFromUsername(username)
-      .then(uuid => serv.ban(uuid, reason))
+  serv.banUsername = async (username, reason) => {
+    return serv.ban(username, reason)
   }
 
-  serv.pardonUsername = (username) => {
+  serv.banUUID = async (username, reason) => {
+    return serv.getUUIDFromUsername(username).then(uuid => serv.ban(uuid, reason))
+  }
+
+  serv.pardonUsername = async (username) => {
+    return pardon(username)
+  }
+
+  serv.pardonUUID = async (username) => {
     return serv.getUUIDFromUsername(username)
       .then(pardon)
   }
 
-  serv.pardonIP = (IP) => {
+  serv.pardonIP = async (IP) => {
     return serv.bannedIPs[IP] ? delete serv.bannedIPs[IP] : false
   }
 
@@ -140,7 +153,7 @@ module.exports.server = function (serv) {
     action ({ username, reason }, ctx) {
       const kickPlayer = serv.getPlayer(username)
       if (!kickPlayer) {
-        if(ctx.player) ctx.player.chat(username + ' is not on this server!')
+        if (ctx.player) ctx.player.chat(username + ' is not on this server!')
         else throw new UserError(username + ' is not on this server!')
       } else {
         kickPlayer.kick(reason)
@@ -166,21 +179,69 @@ module.exports.server = function (serv) {
       const banPlayer = serv.getPlayer(username)
 
       if (!banPlayer) {
-        serv.banUsername(username, reason)
-          .then(() => {
-            serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-            if(ctx.player) ctx.player.chat(username + ' was banned')
-            else serv.info(username + ' was banned')
-          })
-          .catch(err => {
-            if (err) { // This tricks eslint
-              if(ctx.player) ctx.player.chat(username + ' is not a valid player!')
-              else serv.err(username + ' is not a valid player!')
-            }
-          })
+        if (settings['online-mode']) {
+          serv.banUUID(username, reason)
+            .then(result => {
+              if (result) {
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
+                else serv.info(username + ' was banned')
+              } else {
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
+                else serv.err(username + ' is banned!')
+              }
+            })
+            .catch(err => {
+              if (err) { // This tricks eslint
+                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
+                else serv.err(username + ' is not a valid player!')
+              }
+            })
+        } else {
+          serv.banUsername(username, reason)
+            .then(result => {
+              if (result) {
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
+                else serv.info(username + ' was banned')
+              } else {
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
+                else serv.err(username + ' is banned!')
+              }
+            })
+            .catch(err => {
+              if (err) { // This tricks eslint
+                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
+                else serv.err(username + ' is not a valid player!')
+              }
+            })
+        }
       } else {
-        banPlayer.ban(reason)
-        serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+        if (settings['online-mode']) {
+          banPlayer.banUUID(reason)
+            .then(result => {
+              if (result) {
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
+                else serv.info(username + ' was banned')
+              } else {
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
+                else serv.err(username + ' is banned!')
+              }
+            })
+        } else {
+          banPlayer.banUsername(reason)
+            .then(result => {
+              if (result) {
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
+                else serv.info(username + ' was banned')
+              } else {
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
+                else serv.err(username + ' is banned!')
+              }
+            })
+        }
       }
     }
   })
@@ -202,8 +263,53 @@ module.exports.server = function (serv) {
     },
     action ({ IP, reason }, ctx) {
       serv.banIP(IP, reason)
-      if (ctx.player) ctx.player.chat(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
-      else serv.info(`${IP} was IP banned ${reason ? '('+reason+')' : ''}`)
+        .then(result => {
+          if (result) {
+            if (ctx.player) ctx.player.chat(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
+            else serv.info(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
+          } else {
+            if (ctx.player) ctx.player.chat(`IP ${IP} is banned!`)
+            else serv.err(`IP ${IP} is banned!`)
+          }
+        })
+    }
+  })
+
+  serv.commands.add({
+    base: 'banlist',
+    info: 'Displays banlist.',
+    usage: '/banlist',
+    op: true,
+    action(v, ctx) {
+      var pllist = Object.keys(serv.bannedPlayers)
+      var iplist = Object.keys(serv.bannedIPs)
+      if (v !== 'ips') {
+        if (ctx.player) {
+          ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
+          pllist.forEach(e => {
+            ctx.player.chat(e)
+          })
+        }
+        else {
+          serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
+          pllist.forEach(e => {
+            serv.info(e)
+          })
+        }
+      } else {
+        if (ctx.player) {
+          ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
+          iplist.forEach(e => {
+            ctx.player.chat(e)
+          })
+        }
+        else {
+          serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
+          iplist.forEach(e => {
+            serv.info(e)
+          })
+        }
+      }
     }
   })
 
@@ -213,9 +319,16 @@ module.exports.server = function (serv) {
     usage: '/pardon-ip <ip>',
     op: true,
     action (IP, ctx) {
-      const result = serv.pardonIP(IP)
-      if(ctx.player) ctx.player.chat(result ? IP + ' was IP pardoned' : IP + ' is not banned')
-      else serv.log(result ? IP + ' was IP pardoned' : IP + ' is not banned')
+      serv.pardonIP(IP)
+        .then(result => {
+          if (result) {
+            if (ctx.player) ctx.player.chat(`IP ${IP} was pardoned`)
+            else serv.info(`IP ${IP} was pardoned`)
+          } else {
+            if (ctx.player) ctx.player.chat(`IP ${IP} is not banned`)
+            else serv.err(`IP ${IP} is not banned`)
+          }
+        })
     }
   })
 
@@ -229,17 +342,29 @@ module.exports.server = function (serv) {
       return str
     },
     action (nick, ctx) {
-      serv.pardonUsername(nick)
-        .then(() => {
-          if (ctx.player) ctx.player.chat(nick + ' is unbanned')
-          else serv.info(nick + ' is unbanned')
-        })
-        .catch(err => {
-          if (err) { // This tricks eslint
-            if (ctx.player) ctx.player.chat(nick + ' is not banned')
-            else serv.info(nick + ' is not unbanned')
-          }
-        })
+      if (settings['online-mode']) {
+        serv.pardonUUID(nick)
+          .then((result) => {
+            if (result) {
+              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
+              else serv.info(nick + ' is unbanned')
+            } else {
+              if (ctx.player) ctx.player.chat(nick + ' is not banned')
+              else serv.err(nick + ' is not banned')
+            }
+          })
+      } else {
+        serv.pardonUsername(nick)
+          .then((result) => {
+            if (result) {
+              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
+              else serv.info(nick + ' is unbanned')
+            } else {
+              if (ctx.player) ctx.player.chat(nick + ' is not banned')
+              else serv.err(nick + ' is not banned')
+            }
+          })
+      }
     }
   })
 }
@@ -248,17 +373,25 @@ module.exports.player = function (player, serv) {
   player.kick = (reason = 'You were kicked!') =>
     player._client.end(reason)
 
-  player.ban = reason => {
+  player.banUUID = reason => {
     reason = reason || 'You were banned!'
     player.kick(reason)
     const uuid = player.uuid
-    serv.ban(uuid, reason)
+    return serv.ban(uuid, reason)
+  }
+  player.banUsername = reason => {
+    reason = reason || 'You were banned!'
+    player.kick(reason)
+    const nick = player.username
+    return serv.banUsername(nick, reason)
   }
   player.banIP = reason => {
     reason = reason || 'You were IP banned!'
     player.kick(reason)
-    serv.banIP(player._client.socket.remoteAddress)
+    return serv.banIP(player._client.socket.remoteAddress)
   }
 
-  player.pardon = () => serv.pardon(player.uuid)
+  // I think it doesn't do anything but ok well...
+  player.pardonUUID = () => serv.pardonUsername(player.uuid)
+  player.pardonUsername = () => serv.pardonUsername(player.username)
 }

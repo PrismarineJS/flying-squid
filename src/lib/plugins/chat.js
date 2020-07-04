@@ -123,6 +123,7 @@ module.exports.player = function (player, serv) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
+      serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
     } else {
       player.behavior('chat', {
         message: message,
@@ -157,12 +158,4 @@ module.exports.player = function (player, serv) {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2 })
   }
-
-  player._client.on('tab_complete', function (data) {
-    const playerNames = []
-    for (const player of serv.players) playerNames.push(player.username)
-    player._client.write('tab_complete', {
-      matches: playerNames
-    })
-  })
 }
