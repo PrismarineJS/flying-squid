@@ -7,8 +7,13 @@ module.exports.server = (serv, { version }) => {
   serv.on('asap', () => {
     if (serv.supportFeature('theFlattening')) {
       serv.onItemPlace('sign', ({ direction, properties }) => {
-        const block = direction === 1 ? oakSign : oakWallSign
-        console.log(properties.waterlogged)
+        if (direction === 0) return { id: -1, data: 0 }
+        let block = oakSign
+        if (direction !== 1) {
+          block = oakWallSign
+          properties.facing = ['north', 'south', 'west', 'east'][direction - 2]
+        }
+
         const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
         return { id: block.id, data }
       })

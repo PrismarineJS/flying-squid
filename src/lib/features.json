@@ -63,5 +63,10 @@
     "name": "theFlattening",
     "description": "many items got merged, separated or renamed",
     "versions": ["1.13"]
+  },
+  {
+    "name": "blockPlaceHasIntCursor",
+    "description": "block_place packet has int cursor",
+    "versions": ["1.8", "1.9", "1.10"]
   }
 ]

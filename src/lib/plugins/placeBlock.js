@@ -51,12 +51,12 @@ module.exports.server = (serv, { version }) => {
       for (let i = states.length - 1; i >= 0; i--) {
         const prop = states[i]
         let value = baseData % prop.num_values
-        baseData /= Math.floor(baseData / prop.num_values)
+        baseData = Math.floor(baseData / prop.num_values)
         if (properties[prop.name]) {
-          value = offset * parseValue(properties[prop.name], prop)
+          value = parseValue(properties[prop.name], prop)
         }
+        data += offset * value
         offset *= prop.num_values
-        data += value
       }
       return data
     }
@@ -104,7 +104,7 @@ module.exports.player = function (player, serv, { version }) {
   const mcData = require('minecraft-data')(version)
   const blocks = mcData.blocks
 
-  player._client.on('block_place', async ({ direction, location } = {}) => {
+  player._client.on('block_place', async ({ direction, location, cursorY } = {}) => {
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const block = await player.world.getBlock(referencePosition)
     block.position = referencePosition
@@ -119,6 +119,12 @@ module.exports.player = function (player, serv, { version }) {
     const dz = player.position.z - (placedPosition.z + 0.5)
     const angle = Math.atan2(dx, -dz) * 180 / Math.PI + 180 // Convert to [0,360[
 
+    if (serv.supportFeature('blockPlaceHasIntCursor')) cursorY /= 16
+
+    let half = cursorY > 0.5 ? 'top' : 'bottom'
+    if (direction === 0) half = 'top'
+    else if (direction === 1) half = 'bottom'
+
     const { id, data } = serv.placeItem({
       item: heldItem,
       angle,
@@ -126,7 +132,8 @@ module.exports.player = function (player, serv, { version }) {
       properties: {
         rotation: Math.floor(angle / 22.5 + 0.5) & 0xF,
         axis: directionToAxis[direction],
-        facing: directionToFacing[direction],
+        facing: directionToFacing[Math.floor(angle / 90 + 0.5) & 0x3],
+        half,
         waterlogged: (await player.world.getBlock(placedPosition)).type === mcData.blocksByName.water.id
       }
     })
@@ -153,4 +160,4 @@ module.exports.player = function (player, serv, { version }) {
 
 const directionToVector = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)]
 const directionToAxis = ['y', 'y', 'z', 'z', 'x', 'x']
-const directionToFacing = ['down', 'up', 'north', 'south', 'east', 'west']
+const directionToFacing = ['north', 'east', 'south', 'west']
