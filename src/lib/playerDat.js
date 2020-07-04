@@ -1,3 +1,5 @@
+/* global BigInt */
+
 const fs = require('fs')
 const Vec3 = require('vec3').Vec3
 const nbt = require('prismarine-nbt')
@@ -6,7 +8,6 @@ const { gzip } = require('node-gzip')
 const { promisify } = require('util')
 const convertInventorySlotId = require('./convertInventorySlotId')
 
-const fsReadFile = promisify(fs.readFile)
 const nbtParse = promisify(nbt.parse)
 
 module.exports = { read, save }
@@ -19,7 +20,7 @@ const defaultPlayer = {
 
 async function read (uuid, spawnPoint, worldFolder) {
   try {
-    const playerDataFile = await fsReadFile(`${worldFolder}/playerdata/${uuid}.dat`)
+    const playerDataFile = await fs.promises.readFile(`${worldFolder}/playerdata/${uuid}.dat`)
     const playerData = (await nbtParse(playerDataFile)).value
     return {
       player: {
@@ -73,7 +74,7 @@ async function save (player, worldFolder) {
 
   if (worldFolder !== undefined) {
     try {
-      const playerDataFile = await fsReadFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
+      const playerDataFile = await fs.promises.readFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
       const newUncompressedData = await nbtParse(playerDataFile)
 
       newUncompressedData.value.Health.value = player.health
@@ -102,8 +103,8 @@ async function save (player, worldFolder) {
       uuid.setBigUint64(0, BigInt('0x' + hexText.substring(0, 16)), false)
       uuid.setBigUint64(8, BigInt('0x' + hexText.substring(16)), false)
 
-      const UUIDMostLong = new long.fromString(uuid.getBigInt64(0, false).toString(), false)
-      const UUIDLeastLong = new long.fromString(uuid.getBigInt64(8, false).toString(), false)
+      const UUIDMostLong = long.fromString(uuid.getBigInt64(0, false).toString(), false)
+      const UUIDLeastLong = long.fromString(uuid.getBigInt64(8, false).toString(), false)
 
       const newUncompressedData = {
         type: 'compound',
@@ -433,6 +434,7 @@ async function save (player, worldFolder) {
       }
 
       const newDataCompressed = await gzip(nbt.writeUncompressed(newUncompressedData))
+      await fs.promises.mkdir(`${worldFolder}/playerdata/`, { recursive: true })
       fs.writeFileSync(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
     }
   }

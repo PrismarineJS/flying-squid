@@ -18,7 +18,8 @@
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
-    "test": "jest --verbose --runInBand"
+    "test": "jest --verbose --runInBand",
+    "pretest": "npm run lint"
   },
   "keywords": [],
   "license": "MIT",
