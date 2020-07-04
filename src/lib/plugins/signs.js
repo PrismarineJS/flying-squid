@@ -6,7 +6,7 @@ module.exports.server = (serv, { version }) => {
 
   serv.on('asap', () => {
     if (serv.supportFeature('theFlattening')) {
-      serv.onItemPlace('sign', ({ direction, properties }) => {
+      serv.onItemPlace('sign', ({ player, placedPosition, direction, properties }) => {
         if (direction === 0) return { id: -1, data: 0 }
         let block = oakSign
         if (direction !== 1) {
@@ -14,11 +14,21 @@ module.exports.server = (serv, { version }) => {
           properties.facing = ['north', 'south', 'west', 'east'][direction - 2]
         }
 
+        player._client.write('open_sign_entity', {
+          location: placedPosition
+        })
+
         const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
         return { id: block.id, data }
       })
     } else {
-      serv.onItemPlace('sign', ({ direction, properties }) => {
+      serv.onItemPlace('sign', ({ player, placedPosition, direction, properties }) => {
+        if (direction === 0) return { id: -1, data: 0 }
+
+        player._client.write('open_sign_entity', {
+          location: placedPosition
+        })
+
         if (direction === 1) {
           return { id: oakSign.id, data: properties.rotation }
         }

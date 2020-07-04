@@ -129,6 +129,8 @@ module.exports.player = function (player, serv, { version }) {
       item: heldItem,
       angle,
       direction,
+      player,
+      placedPosition,
       properties: {
         rotation: Math.floor(angle / 22.5 + 0.5) & 0xF,
         axis: directionToAxis[direction],
@@ -149,12 +151,6 @@ module.exports.player = function (player, serv, { version }) {
 
     const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
     player.setBlock(placedPosition, stateId)
-
-    if (id === 63 || id === 68) {
-      player._client.write('open_sign_entity', {
-        location: placedPosition
-      })
-    }
   })
 }
 
