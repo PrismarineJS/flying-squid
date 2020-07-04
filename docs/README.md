@@ -11,7 +11,7 @@ flying-squid
 Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
 ## Features
-* Support for Minecraft 1.8, 1.9, 1.10, 1.11 and 1.12
+* Support for Minecraft 1.8, 1.9, 1.10, 1.11, 1.12 and 1.13
 * Players can see the world
 * Players see each other in-game and in tab
 * Digging

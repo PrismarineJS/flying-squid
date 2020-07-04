@@ -12,7 +12,6 @@ function assertPosEqual (actual, expected, precision = 1) {
 const once = require('event-promise')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
-const { postNettyVersionsByProtocolVersion } = require('minecraft-data')
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
@@ -150,22 +149,24 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
         const pos = bot.entity.position.offset(0, -2, 0).floored()
+        const digPromise = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
 
-        let [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
+        let [, newBlock] = await digPromise
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
 
-        bot.creative.setInventorySlot(36, new Item(1, 1))
-        await new Promise((resolve) => {
+        const invPromise = new Promise((resolve) => {
           bot.inventory.on('windowUpdate', (slot, oldItem, newItem) => {
             if (slot === 36 && newItem && newItem.type === 1) { resolve() }
           })
         })
+        bot.creative.setInventorySlot(36, new Item(1, 1))
+        await invPromise
 
+        const placePromise = once(bot2, 'blockUpdate', { array: true })
         bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0));
-
-        [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
+        [, newBlock] = await placePromise
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(1)
       })
@@ -191,21 +192,23 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           }
         }
 
+        const setBlockPromise = once(bot, 'blockUpdate')
         bot.chat(`/setblock ${x} ${y} ${z} ${chestId} 2`) // place a chest facing north
+        await setBlockPromise
 
-        await once(bot, 'blockUpdate')
-
+        const openPromise1 = once(bot._client, 'block_action', { array: true })
+        const openPromise2 = once(bot2._client, 'block_action', { array: true })
         bot.chat(`/setblockaction ${x} ${y} ${z} 1 1`) // open the chest
-
-        const [blockActionOpen] = await once(bot._client, 'block_action', { array: true })
-        const [blockActionOpen2] = await once(bot2._client, 'block_action', { array: true })
+        const [blockActionOpen] = await openPromise1
+        const [blockActionOpen2] = await openPromise2
         expect(blockActionOpen).toEqual(states.open)
         expect(blockActionOpen2).toEqual(states.open)
 
+        const closePromise1 = once(bot._client, 'block_action', { array: true })
+        const closePromise2 = once(bot2._client, 'block_action', { array: true })
         bot.chat(`/setblockaction ${x} ${y} ${z} 1 0`) // close the chest
-
-        const [blockActionClosed] = await once(bot._client, 'block_action', { array: true })
-        const [blockActionClosed2] = await once(bot2._client, 'block_action', { array: true })
+        const [blockActionClosed] = await closePromise1
+        const [blockActionClosed2] = await closePromise2
         expect(blockActionClosed).toEqual(states.closed)
         expect(blockActionClosed2).toEqual(states.closed)
       })
@@ -292,9 +295,10 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
-        bot.chat('/setblock 1 2 3 95 0')
+        const chestId = mcData.blocksByName.chest.id
+        bot.chat(`/setblock 1 2 3 ${chestId} 0`)
         const [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
-        expect(newBlock.type).toEqual(95)
+        expect(newBlock.type).toEqual(chestId)
       })
       test('can use /xp', async () => {
         bot.chat('/xp 100')
@@ -306,13 +310,19 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot2.inventory, 'windowUpdate')
         expect(bot2.inventory.slots[9].type).toEqual(1)
       })
-      test('can use tabComplete', async () => {
-        bot.tabComplete('/give', (err, data) => {
-          expect(data[0]).toEqual('bot')
+      test.skip('can use tabComplete', () => { // TODO to fix
+        return new Promise((resolve, reject) => {
+          bot.tabComplete('/give', (err, data) => {
+            if (err) {
+              return reject(err)
+            }
+            expect(data[0]).toEqual('bot')
+            return resolve()
+          })
         })
       })
 
-      function waitMessagePromise(message) {
+      function waitMessagePromise (message) {
         return new Promise((resolve) => {
           const listener = (msg) => {
             if (msg.extra[0].text === message) {
@@ -329,11 +339,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.chat('/banlist')
         await waitMessagePromise('There are 0 total banned players')
         bot.chat('/ban bot2')
-        await waitMessagePromise("bot2 was banned")
+        await waitMessagePromise('bot2 was banned')
         bot.chat('/banlist')
         await waitMessagePromise('There are 1 total banned players:')
         bot.chat('/pardon bot2')
-        await waitMessagePromise("bot2 is unbanned")
+        await waitMessagePromise('bot2 is unbanned')
         bot.chat('/banlist')
         await waitMessagePromise('There are 0 total banned players')
       })

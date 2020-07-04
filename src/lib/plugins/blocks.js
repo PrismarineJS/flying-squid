@@ -13,19 +13,17 @@ module.exports.player = function (player, serv) {
     else serv.updateBlock(player.world, position, serv.tickCount, serv.tickCount, true)
   }
 
-  player.sendBlock = (position, blockType, blockData) => // Call from player.setBlock unless you want "local" fake blocks
+  player.sendBlock = (position, blockStateId) => // Call from player.setBlock unless you want "local" fake blocks
     player.behavior('sendBlock', {
-      position: position,
-      blockType: blockType,
-      blockData: blockData
-    }, ({ position, blockType, blockData }) => {
+      position: position
+    }, ({ position }) => {
       player._client.write('block_change', {
         location: position,
-        type: blockType << 4 | blockData
+        type: blockStateId
       })
     })
 
-  player.setBlock = (position, blockType, blockData) => serv.setBlock(player.world, position, blockType, blockData)
+  player.setBlock = (position, stateId) => serv.setBlock(player.world, position, stateId)
 
   player.sendBlockAction = async (position, actionId, actionParam, blockType) => {
     if (!blockType) {
@@ -51,7 +49,10 @@ module.exports.player = function (player, serv) {
   player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
+  const mcData = require('minecraft-data')(version)
+  const blocks = mcData.blocks
+
   serv.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
@@ -67,8 +68,13 @@ module.exports.server = function (serv) {
       let res = params.slice(1, 4)
       if (ctx.player) res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
       else res = res.map((val, i) => serv.posFromString(val, new Vec3(0, 128, 0)[['x', 'y', 'z'][i]]))
-      if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
-      else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), params[4], params[5] || 0)
+
+      const id = parseInt(params[4], 10)
+      const data = parseInt(params[5] || 0, 10)
+      const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+
+      if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), stateId)
+      else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), stateId)
     }
   })
 

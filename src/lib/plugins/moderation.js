@@ -1,6 +1,5 @@
 const moment = require('moment')
 const rp = require('request-promise')
-const UUID = require('uuid-1345')
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, settings) {
@@ -27,7 +26,7 @@ module.exports.server = function (serv, settings) {
   }
 
   function uuidInParts (plainUUID) {
-    return plainUUID.length == 32 ? plainUUID.substring(0, 8) + '-' + plainUUID.substring(8, 12) + '-' + plainUUID.substring(12, 16) + '-' + plainUUID.substring(16, 20) + '-' + plainUUID.substring(20) : plainUUID
+    return plainUUID.length === 32 ? plainUUID.substring(0, 8) + '-' + plainUUID.substring(8, 12) + '-' + plainUUID.substring(12, 16) + '-' + plainUUID.substring(16, 20) + '-' + plainUUID.substring(20) : plainUUID
   }
 
   serv.getUUIDFromUsername = async username => {
@@ -280,7 +279,7 @@ module.exports.server = function (serv, settings) {
     info: 'Displays banlist.',
     usage: '/banlist',
     op: true,
-    action(v, ctx) {
+    action (v, ctx) {
       var pllist = Object.keys(serv.bannedPlayers)
       var iplist = Object.keys(serv.bannedIPs)
       if (v !== 'ips') {
@@ -289,8 +288,7 @@ module.exports.server = function (serv, settings) {
           pllist.forEach(e => {
             ctx.player.chat(e)
           })
-        }
-        else {
+        } else {
           serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
           pllist.forEach(e => {
             serv.info(e)
@@ -302,8 +300,7 @@ module.exports.server = function (serv, settings) {
           iplist.forEach(e => {
             ctx.player.chat(e)
           })
-        }
-        else {
+        } else {
           serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
           iplist.forEach(e => {
             serv.info(e)
