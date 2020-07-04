@@ -48,7 +48,7 @@ async function save (player, worldFolder) {
   function playerInventoryToNBT (playerInventory) {
     const nbtInventory = []
     playerInventory.slots.forEach(item => {
-      if (item !== undefined) {
+      if (item) {
         nbtInventory.push({
           Slot: {
             type: 'byte',
