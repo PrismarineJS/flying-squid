@@ -1,4 +1,5 @@
 const once = require('event-promise')
+const playerDat = require('../playerDat')
 
 module.exports.server = function (serv) {
   serv.quit = async (reason = 'Going down') => {
@@ -11,12 +12,12 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, { worldFolder }) {
   player.despawnEntities = entities => player._client.write('entity_destroy', {
     entityIds: entities.map(e => e.id)
   })
 
-  player._client.on('end', () => {
+  player._client.on('end', async () => {
     if (player && player.username) {
       serv.broadcast(serv.color.yellow + player.username + ' quit the game.')
       player._writeOthers('player_info', {
@@ -34,5 +35,7 @@ module.exports.player = function (player, serv) {
       }
       delete serv.uuidToPlayer[player.uuid]
     }
+
+    playerDat.save(player, worldFolder)
   })
 }
