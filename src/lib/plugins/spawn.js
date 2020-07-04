@@ -121,11 +121,11 @@ module.exports.server = function (serv, options) {
       for (let i = 0; i < number; i++) {
         if (entity.type === 'mob') {
           serv.spawnMob(entity.id, ctx.player.world, ctx.player.position.offset(Math.floor(i / s * 10), 0, i % s * 10), {
-            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+            velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         } else if (entity.type === 'object') {
           serv.spawnObject(entity.id, ctx.player.world, ctx.player.position.offset(Math.floor(i / s * 10), 0, i % s * 10), {
-            velocity: Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
+            velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
         }
       }

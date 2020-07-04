@@ -80,7 +80,7 @@ class Command {
   setOp (op) {
     this.params.op = op
   }
-  
+
   tab (command, i) {
     if (this.find(command)[0].params.tab) return this.find(command)[0].params.tab[i]
     return 'player'
