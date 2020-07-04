@@ -292,9 +292,10 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
-        bot.chat('/setblock 1 2 3 95 0')
+        const chestId = mcData.blocksByName.chest.id
+        bot.chat(`/setblock 1 2 3 ${chestId} 0`)
         const [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
-        expect(newBlock.type).toEqual(95)
+        expect(newBlock.type).toEqual(chestId)
       })
       test('can use /xp', async () => {
         bot.chat('/xp 100')
