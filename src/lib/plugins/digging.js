@@ -74,9 +74,9 @@ module.exports.player = function (player, serv) {
         }, ({ state }) => {
           lastDestroyState = state
           player._writeOthersNearby('block_break_animation', {
-            'entityId': currentAnimationId,
-            'location': location,
-            'destroyStage': state
+            entityId: currentAnimationId,
+            location: location,
+            destroyStage: state
           })
         })
       }
@@ -86,9 +86,9 @@ module.exports.player = function (player, serv) {
   function cancelDigging (location) {
     clearInterval(animationInterval)
     player._writeOthersNearby('block_break_animation', {
-      'entityId': currentAnimationId,
-      'location': location,
-      'destroyStage': -1
+      entityId: currentAnimationId,
+      location: location,
+      destroyStage: -1
     })
   }
 

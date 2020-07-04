@@ -1,3 +1,5 @@
+const UserError = require('flying-squid').UserError
+
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
 
 module.exports.player = function (player, serv) {
@@ -29,8 +31,10 @@ module.exports.player = function (player, serv) {
     if (setDisplay) player.displayXp = distanceToXpLevel(xp)
     if (send) player.sendXp()
   }
+}
 
-  player.commands.add({
+module.exports.server = function (serv) {
+  serv.commands.add({
     base: 'xp',
     info: 'Give yourself experience',
     usage: '/xp <amount> [player] OR /xp <amount>L [player]',
@@ -38,21 +42,24 @@ module.exports.player = function (player, serv) {
     parse (str) {
       return str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) || false
     },
-    action (args) {
+    action (args, ctx) {
       const isLevel = !!args[2]
       const amt = parseInt(args[1])
-      const user = args[3] ? serv.getPlayer(args[3]) : player
-      if (!user) return args[3] + ' is not on this server!'
+      if (!ctx.player && !args[3]) throw new UserError('Console can\'t give itself experience.')
+      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
+      if (!user) throw new UserError(args[3] + ' is not on this server!')
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
-        player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+        else serv.info('Gave ' + user.username + ' ' + amt + ' xp')
       } else {
-        const currLevel = getXpLevel(player.xp)
+        const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
-        const extraXp = player.xp - baseCurrLevel
+        const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
-        player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+        else serv.info('Gave ' + user.username + ' ' + amt + ' levels')
       }
     }
   })

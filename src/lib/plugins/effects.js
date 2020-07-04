@@ -50,16 +50,17 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.player = function (player) {
-  player.commands.add({
+module.exports.server = function (serv) {
+  serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',
     usage: '/effect <player> <effect> [seconds] [amplifier] [hideParticles]',
+    onlyPlayer: true,
     parse (str) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
-    action (params) {
-      const targets = player.selectorString(params[1])
+    action (params, ctx) {
+      const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
       if (params[2] === 'clear') {
         targets.forEach(e => Object.keys(e.effects).forEach(effectId => {
           if (e.effects[effectId] !== null) e.removeEffect(effectId)
@@ -78,10 +79,17 @@ module.exports.player = function (player) {
         })
       }
       const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
-      if (params[2] === 'clear') player.chat('Remove all effects from ' + chatSelect + '.')
-      else {
-        player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+      if (params[2] === 'clear') {
+        if (ctx.player) ctx.player.chat('Remove all effects from ' + chatSelect + '.')
+        else serv.log('Remove all effects from ' + chatSelect + '.')
+      } else {
+        if (ctx.player) {
+          ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
                         (parseInt(params[3]) || 30) + ' seconds')
+        } else {
+          serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
+                        (parseInt(params[3]) || 30) + ' seconds')
+        }
       }
     }
   })

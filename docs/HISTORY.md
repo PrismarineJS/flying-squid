@@ -1,3 +1,16 @@
+## 1.2.1
+
+* update to new pchunk + use bitmask
+
+## 1.2.0
+
+* fixes on useItem (thanks @bitknox)
+* fix egg spawning (thanks @rtm516)
+* tab complete functionality (thanks @jvyden420)
+* read/save player files (thanks @rrwr)
+* implement some redstones (thanks @Karang)
+* implement block actions (thanks @FalcoG)
+
 ## 1.1.2
 
 * copy README.md to root, so it's displayed by npm

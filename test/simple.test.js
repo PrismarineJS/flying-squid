@@ -21,11 +21,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     beforeAll(done => {
       const options = settings
       options['online-mode'] = false
-      options['port'] = 0
+      options.port = 0
       options['view-distance'] = 2
-      options['worldFolder'] = undefined
-      options['logging'] = false
-      options['version'] = version.minecraftVersion
+      options.worldFolder = undefined
+      options.logging = false
+      options.version = version.minecraftVersion
       serv = squid.createMCServer(options)
 
       serv.on('listening', () => {

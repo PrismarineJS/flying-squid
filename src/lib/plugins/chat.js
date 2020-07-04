@@ -11,36 +11,36 @@ module.exports.server = function (serv) {
   }
 
   serv.color = {
-    'black': '&0',
-    'dark_blue': '&1',
-    'dark_green': '&2',
-    'dark_cyan': '&3',
-    'dark_red': '&4',
-    'purple': '&5',
-    'dark_purple': '&5',
-    'gold': '&6',
-    'gray': '&7',
-    'grey': '&7',
-    'dark_gray': '&8',
-    'dark_grey': '&8',
-    'blue': '&9',
-    'green': '&a',
-    'aqua': '&b',
-    'cyan': '&b',
-    'red': '&c',
-    'pink': '&d',
-    'light_purple': '&d',
-    'yellow': '&e',
-    'white': '&f',
-    'random': '&k',
-    'obfuscated': '&k',
-    'bold': '&l',
-    'strikethrough': '&m',
-    'underlined': '&n',
-    'underline': '&n',
-    'italic': '&o',
-    'italics': '&o',
-    'reset': '&r'
+    black: '&0',
+    dark_blue: '&1',
+    dark_green: '&2',
+    dark_cyan: '&3',
+    dark_red: '&4',
+    purple: '&5',
+    dark_purple: '&5',
+    gold: '&6',
+    gray: '&7',
+    grey: '&7',
+    dark_gray: '&8',
+    dark_grey: '&8',
+    blue: '&9',
+    green: '&a',
+    aqua: '&b',
+    cyan: '&b',
+    red: '&c',
+    pink: '&d',
+    light_purple: '&d',
+    yellow: '&e',
+    white: '&f',
+    random: '&k',
+    obfuscated: '&k',
+    bold: '&l',
+    strikethrough: '&m',
+    underlined: '&n',
+    underline: '&n',
+    italic: '&o',
+    italics: '&o',
+    reset: '&r'
   }
 
   serv.parseClassic = (message) => {
@@ -123,6 +123,7 @@ module.exports.player = function (player, serv) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
+      serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
     } else {
       player.behavior('chat', {
         message: message,
@@ -157,12 +158,4 @@ module.exports.player = function (player, serv) {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2 })
   }
-
-  player._client.on('tab_complete', function (data) {
-    let playerNames = []
-    for (let player of serv.players) playerNames.push(player.username)
-    player._client.write('tab_complete', {
-      matches: playerNames
-    })
-  })
 }

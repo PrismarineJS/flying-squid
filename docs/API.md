@@ -30,6 +30,7 @@
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
       - [serv.plugins](#servplugins)
+      - [serv.tabComplete](#servtabcomplete)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
@@ -57,6 +58,7 @@
       - [server.setTime(time)](#serversettimetime)
       - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
       - [server.setBlock(world, position, blockType, blockData)](#serversetblockworld-position-blocktype-blockdata)
+      - [server.setBlockAction(world, position, actionId, actionParam)](#serversetblockactionworld-position-actionid-actionparam)
       - [server.playSound(sound, world, position, opt)](#serverplaysoundsound-world-position-opt)
       - [server.playNoteBlock(world, position, pitch)](#serverplaynoteblockworld-position-pitch)
       - [server.getNote(note)](#servergetnotenote)
@@ -112,7 +114,6 @@
       - [player.xp](#playerxp)
       - [player.displayXp](#playerdisplayxp)
       - [player.xpLevel](#playerxplevel)
-      - [player.commands](#playercommands)
     - [Events](#events-2)
       - ["connected"](#connected)
       - ["spawned"](#spawned)
@@ -127,6 +128,7 @@
       - ["command"](#command)
       - ["punch"](#punch)
       - ["sendBlock"](#sendblock)
+      - ["sendBlockAction"](#sendblockaction)
       - ["sendChunk"](#sendchunk)
       - ["dig"](#dig)
       - ["dug"](#dug)
@@ -144,10 +146,12 @@
       - [player.chat(message)](#playerchatmessage)
       - [player.changeBlock(position,blockType,blockData)](#playerchangeblockpositionblocktypeblockdata)
       - [player.sendBlock(position,blockType,blockData)](#playersendblockpositionblocktypeblockdata)
+      - [player.sendBlockAction(position,actionId,actionParam,blockType)](#playersendblockactionpositionactionidactionparamblocktype)
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.setBlock(position,blockType,blockData)](#playersetblockpositionblocktypeblockdata)
+      - [player.setBlockAction(position,actionId,actionParam)](#playersetblockactionpositionactionidactionparam)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
@@ -299,6 +303,41 @@ Default `true`. If false, time will not automatically pass.
 
 List of all plugins. Use serv.plugins[pluginName] to get a plugin's object and data.
 
+#### serv.commands
+
+Instance of the [Command](#flying-squidcommand) class.
+``serv.commands`` contains all commands of the server.
+Here is an example to create a new command :
+```js
+serv.commands.add({
+    base: 'hello',
+    info: 'print hello in the console',
+    usage: 'hello <pseudo>',
+    parse(str)  {
+      const args=str.split(' ');
+      if(args.length!=1)
+        return false;
+       
+      return {pseudo:args[0]};
+    },
+    action({pseudo}, ctx) {
+      if (ctx.player) player.chat("Hello "+pseudo);
+      else serv.log("Hello "+pseudo);
+    }
+});
+```
+
+#### serv.tabComplete
+
+`serv.tabComplete` has types and tab completition function
+
+You can provide your types:
+```js
+serv.tabComplete.add('tabId', () => {
+  return ['some', 'values', 'in array', 'ONLY STRINGS!']
+})
+```
+
 ### Events
 
 #### "error" (error)
@@ -416,6 +455,10 @@ Use `server.stopTickInterval()` if you want but this method already calls that a
 #### server.setBlock(world, position, blockType, blockData)
 
 Saves block in world and sends block update to all players of the same world.
+
+#### server.setBlockAction(world, position, actionId, actionParam)
+
+Sends a block action to all players of the same world.
 
 #### server.playSound(sound, world, position, opt)
 
@@ -718,29 +761,6 @@ Number from 0 to 1.0 representing the progress bar at the bottom of the player's
 
 Level of xp the player has. Set this with player.setXpLevel()
 
-#### player.commands
-
-Instance of the [Command](#flying-squidcommand) class.
-Here is an example to create a new command :
-```js
-player.commands.add({
-    base: 'hello',
-    info: 'print hello in the console',
-    usage: '/hello <pseudo>',
-    op: false,
-    parse(str)  {
-      const args=str.split(' ');
-      if(args.length!=1)
-        return false;
-       
-      return {pseudo:args[0]};
-    },
-    action({pseudo}) {
-      console.log("Hello "+pseudo);
-    }
-});
-```
-
 ### Events
 
 #### "connected" 
@@ -827,6 +847,20 @@ Emitted when sending a block to a player (block changed). This is separate for e
 - data: Metadata of the block
 
 Default: Send block change to player.
+
+Cancelled: Nothing
+
+#### "sendBlockAction"
+
+Emitted when sending a block action to a player. This is separate for every player, cancelling this for one player will prevent the action from happening.
+- position: Position of the block
+- id: ID of the block
+- actionId: Action ID, dependent on the block.
+- actionParam: The parameters depend on the block.
+
+All block action IDs and parameters are listed [here](https://wiki.vg/Block_Actions).
+
+Default: Send block action to player.
 
 Cancelled: Nothing
 
@@ -972,6 +1006,15 @@ change the block at position `position` to `blockType` and `blockData`
 
 this will not make any changes on the server's world and only sends it to the user as a "fake" or "local" block
 
+#### player.sendBlockAction(position,actionId,actionParam,blockType)
+
+Set the block action at position `position` to `actionId` and `actionParam`.
+
+``blockType`` is only required when the block at the location is a fake block. 
+This will only be caused by using ``player.sendBlock``.
+
+This will not make any changes to the server's world and only sends it to the user as a local action.
+
 #### player.sendInitialPosition()
 
 send its initial position to the player
@@ -987,6 +1030,12 @@ handle `command`
 #### player.setBlock(position,blockType,blockData)
 
 Saves block in world and sends block update to all players of the same world.
+
+#### player.setBlockAction(position,actionId,actionParam)
+
+Sets a block action and sends the block action to all players in the same world.
+
+This will not make any changes to the server's world
 
 #### player.updateHealth(health)
 

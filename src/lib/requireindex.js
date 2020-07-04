@@ -4,19 +4,19 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = function (dir, basenames) {
-  let requires = {}
+  const requires = {}
 
   if (arguments.length === 2) {
     // If basenames argument is passed, explicitly include those files
     basenames.forEach(function (basename) {
-      let filepath = path.resolve(path.join(dir, basename))
+      const filepath = path.resolve(path.join(dir, basename))
       requires[basename] = require(filepath)
     })
   } else if (arguments.length === 1) {
     // If basenames arguments isn't passed, require all JavaScript
     // Files (except for those prefixed with _) and all directories
 
-    let files = fs.readdirSync(dir)
+    const files = fs.readdirSync(dir)
 
     // Sort files in lowercase alpha for Linux
     files.sort((a, b) => {
@@ -38,16 +38,16 @@ module.exports = function (dir, basenames) {
         return
       }
 
-      let filepath = path.resolve(path.join(dir, filename))
-      let ext = path.extname(filename)
-      let stats = fs.statSync(filepath)
+      const filepath = path.resolve(path.join(dir, filename))
+      const ext = path.extname(filename)
+      const stats = fs.statSync(filepath)
 
       // Don't require non-javascript files (.txt, .md, etc.)
       if (stats.isFile() && !(['.js', '.node', '.json'].includes(ext))) {
         return
       }
 
-      let basename = path.basename(filename, ext)
+      const basename = path.basename(filename, ext)
 
       requires[basename] = require(filepath)
     })

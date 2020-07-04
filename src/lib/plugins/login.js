@@ -5,7 +5,6 @@ const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const playerDat = require('../playerDat')
 const convertInventorySlotId = require('../convertInventorySlotId')
-const Command = require('flying-squid').Command
 
 module.exports.server = function (serv, options) {
   serv._server.on('connection', client =>
@@ -18,7 +17,7 @@ module.exports.server = function (serv, options) {
       player._client = client
 
       player.profileProperties = player._client.profile ? player._client.profile.properties : []
-      player.commands = new Command({})
+
       Object.keys(plugins)
         .filter(pluginName => plugins[pluginName].player !== undefined)
         .forEach(pluginName => plugins[pluginName].player(player, serv, options))
@@ -82,7 +81,7 @@ module.exports.player = async function (player, serv, settings) {
       dimension: 0,
       difficulty: serv.difficulty,
       reducedDebugInfo: false,
-      maxPlayers: serv._server.maxPlayers
+      maxPlayers: Math.min(255, serv._server.maxPlayers)
     })
   }
 
