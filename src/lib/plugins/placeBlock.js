@@ -35,13 +35,46 @@ module.exports.server = (serv, { version }) => {
   }
 
   if (serv.supportFeature('theFlattening')) {
+    const parseValue = (value, state) => {
+      if (state.type === 'enum') {
+        return state.values.indexOf(value)
+      }
+      if (state.type === 'bool') {
+        return value ? 0 : 1
+      }
+      return parseInt(value, 10)
+    }
+
+    serv.setBlockDataProperties = (baseData, states, properties) => {
+      let data = 0
+      let offset = 1
+      for (let i = states.length - 1; i >= 0; i--) {
+        const prop = states[i]
+        let value = baseData % prop.num_values
+        baseData /= Math.floor(baseData / prop.num_values)
+        if (properties[prop.name]) {
+          value = offset * parseValue(properties[prop.name], prop)
+        }
+        offset *= prop.num_values
+        data += value
+      }
+      return data
+    }
+
     // Register default handlers for item -> block conversion
     for (const name of Object.keys(mcData.itemsByName)) {
       const block = mcData.blocksByName[name]
       if (block) {
-        serv.onItemPlace(name, () => {
-          return { id: block.id, data: block.defaultState - block.minStateId }
-        })
+        if (block.states.length > 0) {
+          serv.onItemPlace(name, ({ properties }) => {
+            const data = block.defaultState - block.minStateId
+            return { id: block.id, data: serv.setBlockDataProperties(data, block.states, properties) }
+          })
+        } else {
+          serv.onItemPlace(name, () => {
+            return { id: block.id, data: 0 }
+          })
+        }
       }
     }
   }
@@ -89,7 +122,13 @@ module.exports.player = function (player, serv, { version }) {
     const { id, data } = serv.placeItem({
       item: heldItem,
       angle,
-      direction
+      direction,
+      properties: {
+        rotation: Math.floor(angle / 22.5 + 0.5) & 0xF,
+        axis: directionToAxis[direction],
+        facing: directionToFacing[direction],
+        waterlogged: (await player.world.getBlock(placedPosition)).type === mcData.blocksByName.water.id
+      }
     })
 
     if (!blocks[id]) return
@@ -113,3 +152,5 @@ module.exports.player = function (player, serv, { version }) {
 }
 
 const directionToVector = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)]
+const directionToAxis = ['y', 'y', 'z', 'z', 'x', 'x']
+const directionToFacing = ['down', 'up', 'north', 'south', 'east', 'west']
