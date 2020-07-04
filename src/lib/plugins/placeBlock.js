@@ -40,15 +40,10 @@ module.exports.server = (serv, { version }) => {
       const block = mcData.blocksByName[name]
       if (block) {
         serv.onItemPlace(name, () => {
-          return { id: block.id, data: 0 }
+          return { id: block.id, data: block.defaultState - block.minStateId }
         })
       }
     }
-
-    // Manual overrides for special blocks:
-    serv.onItemPlace('grass_block', () => {
-      return { id: mcData.blocksByName.grass_block.id, data: 1 }
-    }, false)
   }
 
   const blockInteractHandler = new Map()
