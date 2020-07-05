@@ -6,10 +6,23 @@ const get = (object, path, value) => {
 }
 
 const set = (obj, path, value) => {
-  if (Object(obj) !== obj) return obj
+  if (Object(obj) !== obj) return obj // When obj is not an object
+  // If not yet an array, get the keys from the string-path
   if (!Array.isArray(path)) path = path.toString().match(/[^.[\]]+/g) || []
-  path.slice(0, -1).reduce((a, c, i) => Object(a[c]) === a[c] ? a[c] : a[c] = Math.abs(path[i + 1]) >> 0 === +path[i + 1] ? [] : {}, obj)[path.pop()] = value
-  return obj
+  path.slice(0, -1).reduce((a, c, i) => { // Iterate all of them except the last one
+    if (Object(a[c]) === a[c]) {
+      return a[c]
+    } else {
+      var cvcv = a[c] = Math.abs(path[i + 1]) >> 0
+      if (cvcv === +path[i + 1]) {
+        return []
+      } else {
+        return {}
+      } // Yes: assign a new array object // No: assign a new plain object
+    }
+  }, obj)[path.pop()] = value // Finally assign the value to the last key
+
+  return obj // Return the top-level object to allow chaining
 }
 
 module.exports.player = (player, serv) => {
