@@ -132,6 +132,7 @@ module.exports.player = function (player, serv, { version }) {
       player,
       referencePosition,
       placedPosition,
+      directionVector,
       properties: {
         rotation: Math.floor(angle / 22.5 + 0.5) & 0xF,
         axis: directionToAxis[direction],

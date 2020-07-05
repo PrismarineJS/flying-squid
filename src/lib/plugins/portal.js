@@ -2,6 +2,11 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = function (player, serv, { version }) {
+  const mcData = require('minecraft-data')(version)
+
+  const obsidianType = mcData.blocksByName.obsidian.id
+  const portalType = serv.supportFeature('theFlattening') ? mcData.blocksByName.nether_portal.id : mcData.blocksByName.portal.id
+
   player.on('dug', ({ position, block }) => {
     function destroyPortal (portal, positionAlreadyDone = null) {
       player.world.portals = player.world.portals.splice(player.world.portals.indexOf(portal), 1)
@@ -11,14 +16,14 @@ module.exports.player = function (player, serv, { version }) {
         .forEach(ap => serv.setBlock(player.world, ap, 0))
     }
 
-    if (block.name === 'obsidian') {
+    if (block.type === obsidianType) {
       const p = player.world.portals.filter(({ bottom, top, left, right }) =>
-        [].concat([], [bottom, left, right, top])
+        [].concat(bottom, left, right, top)
           .reduce((acc, pos) => acc || pos.equals(position), false))
       p.forEach(portal => destroyPortal(portal, position))
     }
 
-    if (block.name === 'portal') {
+    if (block.type === portalType) {
       const p = player.world.portals.filter(({ air }) => air.reduce((acc, pos) => acc || pos.equals(position), false))
       p.forEach(portal => destroyPortal(portal, position))
     }
@@ -29,6 +34,7 @@ module.exports.server = function (serv, { version }) {
   const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
   const mcData = require('minecraft-data')(version)
 
+  const obsidianType = mcData.blocksByName.obsidian.id
   const fireType = mcData.blocksByName.fire.id
 
   let portalX
@@ -44,11 +50,10 @@ module.exports.server = function (serv, { version }) {
   }
 
   serv.on('asap', () => {
-    serv.onItemPlace('flint_and_steel', async ({ player, referencePosition, direction }) => {
+    serv.onItemPlace('flint_and_steel', async ({ player, referencePosition, directionVector }) => {
       const block = await player.world.getBlock(referencePosition)
-      if (block.name === 'obsidian') {
-        const frames = await detectFrame(player.world, referencePosition, direction)
-        console.log(frames)
+      if (block.type === obsidianType) {
+        const frames = await detectFrame(player.world, referencePosition, directionVector)
         if (frames.length !== 0) {
           const air = frames[0].air
           const stateId = (frames[0].bottom[0].x - frames[0].bottom[1].x) !== 0 ? portalX : portalZ
