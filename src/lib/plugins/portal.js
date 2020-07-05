@@ -2,22 +2,6 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = function (player, serv, { version }) {
-  const { detectFrame } = require('flying-squid').portal_detector(version)
-
-  player.use_flint_and_steel = async (referencePosition, direction, position) => {
-    const block = await player.world.getBlock(referencePosition)
-    if (block.name === 'obsidian') {
-      const frames = await detectFrame(player.world, referencePosition, direction)
-      if (frames.length !== 0) {
-        const air = frames[0].air
-        air.forEach(pos => player.setBlock(pos, 90, (frames[0].bottom[0].x - frames[0].bottom[1].x) !== 0 ? 1 : 2))
-        player.world.portals.push(frames[0])
-        return
-      }
-    }
-    player.changeBlock(position, 51, 0)
-  }
-
   player.on('dug', ({ position, block }) => {
     function destroyPortal (portal, positionAlreadyDone = null) {
       player.world.portals = player.world.portals.splice(player.world.portals.indexOf(portal), 1)
@@ -42,7 +26,43 @@ module.exports.player = function (player, serv, { version }) {
 }
 
 module.exports.server = function (serv, { version }) {
-  const { generatePortal, addPortalToWorld } = require('flying-squid').portal_detector(version)
+  const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
+  const mcData = require('minecraft-data')(version)
+
+  const fireType = mcData.blocksByName.fire.id
+
+  let portalX
+  let portalZ
+  if (serv.supportFeature('theFlattening')) {
+    const portalBlock = mcData.blocksByName.nether_portal
+    portalX = portalBlock.minStateId
+    portalZ = portalBlock.minStateId + 1
+  } else {
+    const portalBlock = mcData.blocksByName.portal
+    portalX = portalBlock.id << 4 + 1
+    portalZ = portalBlock.id << 4 + 2
+  }
+
+  serv.on('asap', () => {
+    serv.onItemPlace('flint_and_steel', async ({ player, referencePosition, direction }) => {
+      const block = await player.world.getBlock(referencePosition)
+      if (block.name === 'obsidian') {
+        const frames = await detectFrame(player.world, referencePosition, direction)
+        console.log(frames)
+        if (frames.length !== 0) {
+          const air = frames[0].air
+          const stateId = (frames[0].bottom[0].x - frames[0].bottom[1].x) !== 0 ? portalX : portalZ
+          air.forEach(pos => {
+            player.setBlock(pos, stateId)
+          })
+          player.world.portals.push(frames[0])
+          return { id: -1, data: 0 }
+        }
+      }
+      return { id: fireType, data: 0 }
+    })
+  })
+
   serv.commands.add({
     base: 'portal',
     info: 'Create a portal frame',

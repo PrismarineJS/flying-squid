@@ -125,11 +125,12 @@ module.exports.player = function (player, serv, { version }) {
     if (direction === 0) half = 'top'
     else if (direction === 1) half = 'bottom'
 
-    const { id, data } = serv.placeItem({
+    const { id, data } = await serv.placeItem({
       item: heldItem,
       angle,
       direction,
       player,
+      referencePosition,
       placedPosition,
       properties: {
         rotation: Math.floor(angle / 22.5 + 0.5) & 0xF,
