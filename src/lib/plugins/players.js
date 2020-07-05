@@ -47,15 +47,15 @@ module.exports.server = function (serv, { version }) {
       if (ctx.player) {
         if (str[2]) {
           if (plyr !== null) {
-            plyr.setGameMode(str[1])
+            plyr.setGameMode(parseInt(str[1], 10))
             return `Set ${str[2]}'s game mode to ${mode} Mode`
           } else {
             throw new UserError(`Player '${str[2]}' cannot be found`)
           }
-        } else ctx.player.setGameMode(str[1])
+        } else ctx.player.setGameMode(parseInt(str[1], 10))
       } else {
         if (plyr !== null) {
-          plyr.setGameMode(str[1])
+          plyr.setGameMode(parseInt(str[1], 10))
           return `Set ${str[2]}'s game mode to ${mode} Mode`
         } else {
           throw new UserError(`Player '${str[2]}' cannot be found`)

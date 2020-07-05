@@ -1,43 +1,61 @@
 const Vec3 = require('vec3').Vec3
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, { version }) {
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }
 
   player._client.on('block_dig', async ({ location, status, face }) => {
-    let pos = new Vec3(location.x, location.y, location.z)
+    if (status === 3 || status === 4) {
+      const heldItem = player.inventory.slots[36 + player.heldItemSlot]
+      if (!heldItem || heldItem.type === -1) return
 
-    const directionVector = directionToVector[face]
-    const facedPos = pos.plus(directionVector)
+      const count = (status === 4) ? 1 : heldItem.count
 
-    try {
+      heldItem.count -= count
+      if (heldItem.count === 0) player.inventory.slots[36 + player.heldItemSlot] = null
+
+      // TODO: correct position & velocity + physic simulation
+      dropBlock({
+        blockDropPosition: player.position,
+        blockDropWorld: player.world,
+        blockDropVelocity: new Vec3(0, 0, 0),
+        blockDropId: heldItem.type,
+        blockDropDamage: heldItem.metadata,
+        blockDropCount: count,
+        blockDropPickup: 500,
+        blockDropDeath: 60 * 5 * 1000
+      })
+    } else if (status === 5) {
+      // TODO: Shoot arrow / finish eating
+    } else {
+      let pos = new Vec3(location.x, location.y, location.z)
+
+      const directionVector = directionToVector[face]
+      const facedPos = pos.plus(directionVector)
+
       const facedBlock = await player.world.getBlock(facedPos)
       let block
       if (facedBlock.name === 'fire') {
         block = facedBlock
         pos = facedPos
-      } else block = await player.world.getBlock(pos)
+      } else {
+        block = await player.world.getBlock(pos)
+      }
 
       currentlyDugBlock = block
       if (currentlyDugBlock.type === 0) return
-      if (status === 0 && player.gameMode !== 1) {
-        player.behavior('dig', { // Start dig survival
-          position: pos,
-          block: block
-        }, ({ position }) => {
-          return startDigging(position)
-        }, cancelDig)
-      } else if (status === 2) { completeDigging(pos) } else if (status === 1) {
-        player.behavior('cancelDig', { // Cancel dig survival
-          position: pos,
-          block: block
-        }, ({ position }) => {
-          return cancelDigging(position)
-        })
-      } else if (status === 0 && player.gameMode === 1) { return creativeDigging(pos) }
-    } catch (err) {
-      setTimeout(() => { throw err }, 0)
+      if (status === 0) {
+        if (player.gameMode === 1) {
+          creativeDigging(pos)
+        } else {
+          startDigging(pos)
+        }
+      } else if (status === 1) {
+        cancelDigging(pos)
+      } else if (status === 2) {
+        completeDigging(pos)
+      }
     }
   })
 
@@ -131,11 +149,12 @@ module.exports.player = function (player, serv) {
     }
   }
 
-  function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropPickup, blockDropDeath }) {
+  function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropCount, blockDropPickup, blockDropDeath }) {
     serv.spawnObject(2, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
       itemDamage: blockDropDamage,
+      itemCount: blockDropCount,
       pickupTime: blockDropPickup,
       deathTime: blockDropDeath
     })
