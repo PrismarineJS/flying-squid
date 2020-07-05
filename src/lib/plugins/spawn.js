@@ -28,7 +28,7 @@ module.exports.server = function (serv, options) {
     return entity
   }
 
-  serv.spawnObject = (type, world, position, { pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, pickupTime = undefined, deathTime = undefined }) => {
+  serv.spawnObject = (type, world, position, { pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, itemCount = 1, pickupTime = undefined, deathTime = undefined }) => {
     const object = serv.initEntity('object', type, world, position)
     object.uuid = UUID.v4()
     object.name = objectsById[type].name
@@ -44,6 +44,7 @@ module.exports.server = function (serv, options) {
     object.pickupTime = pickupTime
     object.itemId = itemId
     object.itemDamage = itemDamage
+    object.itemCount = itemCount
 
     object.updateAndSpawn()
   }
@@ -194,15 +195,27 @@ module.exports.player = function (player, serv, options) {
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
     if (typeof entity.itemId !== 'undefined') {
-      entity.sendMetadata([{
-        key: 10,
-        type: 5,
-        value: {
-          blockId: entity.itemId,
-          itemDamage: entity.itemDamage,
-          itemCount: 1
-        }
-      }])
+      if (serv.supportFeature('theFlattening')) {
+        entity.sendMetadata([{
+          key: 6,
+          type: 6,
+          value: {
+            present: true,
+            itemId: entity.itemId,
+            itemCount: entity.itemCount
+          }
+        }])
+      } else {
+        entity.sendMetadata([{
+          key: 10,
+          type: 5,
+          value: {
+            blockId: entity.itemId,
+            itemDamage: entity.itemDamage,
+            itemCount: entity.itemCount
+          }
+        }])
+      }
     }
     entity.equipment.forEach((equipment, slot) => {
       if (equipment !== undefined) {
