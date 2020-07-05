@@ -90,7 +90,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       width: 4,
       height: 5,
       additionalAir: air,
-      additionalObsidian: [].concat([], [bottom, left, right, top])
+      additionalObsidian: [].concat(bottom, left, right, top)
     })
 
     portalData.push({

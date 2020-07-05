@@ -5,7 +5,7 @@ const replace = {
 }
 
 function fromNBT (slotId) {
-  let slot
+  let slot = slotId
   let returnSlotId = slotId
   if (returnSlotId < 0) {
     returnSlotId = String(returnSlotId)
@@ -17,13 +17,13 @@ function fromNBT (slotId) {
 }
 
 function toNBT (slotId) {
-  let slot
+  let slot = slotId
   let returnSlotId = slotId
   if (returnSlotId < 0) {
     returnSlotId = String(returnSlotId)
   }
   const invertReplace = Object.assign({}, ...Object.entries(replace).map(([a, b]) => ({ [b]: a })))
-  if (slotId >= 36 && slotId < 44) {
+  if (slotId >= 36 && slotId <= 44) {
     slot = slotId - 36
   }
   return invertReplace[returnSlotId] || slot

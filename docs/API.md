@@ -32,6 +32,7 @@
       - [serv.plugins](#servplugins)
       - [serv.commands](#servcommands)
       - [serv.locales](#servlocales)
+      - [serv.tabComplete](#servtabcomplete)
     - [Events](#events)
       - ["error" (error)](#error-error)
       - ["clientError" (client,error)](#clienterror-clienterror)
@@ -342,6 +343,18 @@ serv.locale.setString({
   }
 })
 ```
+
+#### serv.tabComplete
+
+`serv.tabComplete` has types and tab completition function
+
+You can provide your types:
+```js
+serv.tabComplete.add('tabId', () => {
+  return ['some', 'values', 'in array', 'ONLY STRINGS!']
+})
+```
+
 
 ### Events
 
