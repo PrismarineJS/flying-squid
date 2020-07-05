@@ -111,7 +111,7 @@ module.exports.player = function (player, serv, { version }) {
     if (await serv.interactWithBlock({ block, player })) return
 
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-    if (heldItem === undefined || direction === -1 || heldItem.type === -1) return
+    if (!heldItem || direction === -1 || heldItem.type === -1) return
 
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
@@ -149,7 +149,12 @@ module.exports.player = function (player, serv, { version }) {
       pitch: 0.8
     })
 
-    if (player.gameMode === 0) { player.inventory.slots[36 + player.heldItemSlot]-- }
+    if (player.gameMode === 0) {
+      heldItem.count--
+      if (heldItem.count === 0) {
+        player.inventory.slots[36 + player.heldItemSlot] = null
+      }
+    }
 
     const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
     player.setBlock(placedPosition, stateId)

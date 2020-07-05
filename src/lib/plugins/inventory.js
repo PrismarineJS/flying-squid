@@ -179,12 +179,11 @@ module.exports.player = function (player, serv, { version }) {
 
   player.collect = (collectEntity) => {
     // Add it to a stack already in the player's inventory if possible
-    for (let itemKey = 0; itemKey < player.inventory.slots.length; itemKey++) {
-      const item = player.inventory.slots[itemKey]
-      if (item === undefined) continue
-      if (item.type === collectEntity.itemId) {
+    for (let slot = 0; slot < player.inventory.slots.length; slot++) {
+      const item = player.inventory.slots[slot]
+      if (item && item.type === collectEntity.itemId) {
         item.count += 1
-        player.inventory.updateSlot(itemKey, item)
+        player.inventory.updateSlot(slot, item)
         collectEntity._writeOthersNearby('collect', {
           collectedEntityId: collectEntity.id,
           collectorEntityId: player.id
@@ -196,8 +195,11 @@ module.exports.player = function (player, serv, { version }) {
     }
 
     // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
-    const emptySlot = player.inventory.firstEmptyInventorySlot()
-    if (emptySlot !== null) {
+    let emptySlot = player.inventory.firstEmptySlotRange(36, 36 + 9) // first check for room in hotbar
+    if (!emptySlot) {
+      emptySlot = player.inventory.firstEmptyInventorySlot()
+    }
+    if (emptySlot) {
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
         collectorEntityId: player.id

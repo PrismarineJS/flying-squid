@@ -98,7 +98,7 @@ module.exports.player = async function (player, serv, settings) {
     })
   }
 
-  player.setGameMode = gameMode => {
+  player.setGameMode = (gameMode) => {
     player.gameMode = gameMode
     player._client.write('game_state_change', {
       reason: 3,
