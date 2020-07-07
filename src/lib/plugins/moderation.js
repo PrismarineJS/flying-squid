@@ -367,23 +367,23 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = function (player, serv) {
-  player.kick = (reason = 'You were kicked!') =>
-    player._client.end(reason)
+  player.kick = (reason) =>
+    player._client.end(reason || player.localeString('multiplayer.disconnect.kicked'))
 
   player.banUUID = reason => {
-    reason = reason || 'You were banned!'
+    reason = reason || player.localeString('multiplayer.disconnect.banned')
     player.kick(reason)
     const uuid = player.uuid
     return serv.ban(uuid, reason)
   }
   player.banUsername = reason => {
-    reason = reason || 'You were banned!'
+    reason = reason || player.localeString('multiplayer.disconnect.banned')
     player.kick(reason)
     const nick = player.username
     return serv.banUsername(nick, reason)
   }
   player.banIP = reason => {
-    reason = reason || 'You were IP banned!'
+    reason = reason || player.localeString('multiplayer.disconnect.ip_banned')
     player.kick(reason)
     return serv.banIP(player._client.socket.remoteAddress)
   }

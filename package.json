@@ -32,6 +32,7 @@
     "emit-then": "^2.0.0",
     "event-promise": "^0.0.1",
     "flatmap": "^0.0.3",
+    "lodash.set": "^4.3.2",
     "long": "^4.0.0",
     "minecraft-data": "^2.61.0",
     "minecraft-protocol": "^1.12.0",

@@ -146,7 +146,7 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
+    serv.localeBroadcast('&e%s', { localize: {'multiplayer.player.joined': player.username } })
     player.emit('connected')
   }
 
