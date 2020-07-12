@@ -9,16 +9,16 @@ const get = (object, path, value) => {
   return pathArrayFlat.reduce((obj, key) => obj && obj[key], object) || value
 }
 
-function removeItemAll(arr, value) {
-  var i = 0;
+function removeItemAll (arr, value) {
+  var i = 0
   while (i < arr.length) {
     if (arr[i] === value) {
-      arr.splice(i, 1);
+      arr.splice(i, 1)
     } else {
-      ++i;
+      ++i
     }
   }
-  return arr;
+  return arr
 }
 
 module.exports.player = (player, serv) => {
@@ -47,27 +47,26 @@ module.exports.server = (serv, options) => {
     setStringJSON: (lang, json) => {
       serv.locales.langs[lang] = serv.locales.langs[lang] || {}
       Object.entries(json).map((entry) => {
-        set(serv.locales.langs[lang], entry[0]+'.value', entry[1])
+        set(serv.locales.langs[lang], entry[0] + '.value', entry[1])
       })
     },
     getString: (lang, path, info) => {
-      lang = lang ? lang : 'en_us'
+      lang = lang || 'en_us'
       lang = serv.locales.langs[lang] ? lang : 'en_us'
-      if(info) {
-        var splitted = get(serv.locales.langs[lang], path, `'${path}' not found`)['value'].split(/(%s|%[0-9]\$s)/)
+      if (info) {
+        var splitted = get(serv.locales.langs[lang], path, `'${path}' not found`).value.split(/(%s|%[0-9]\$s)/)
         var sindex = 0
         splitted.forEach((str, i) => {
-          if(/(%s)/.test(str)) {
+          if (/(%s)/.test(str)) {
             splitted[i] = info[sindex]
             sindex++
           } else if (/(%[0-9]\$s)/.test(str)) {
-            let iex = /(?!(\$s|%))([0-9]+)/.exec(str)[0]-1
+            const iex = /(?!(\$s|%))([0-9]+)/.exec(str)[0] - 1
             splitted[i] = info[iex]
           }
         })
         return splitted.join('')
-      }
-      else return get(serv.locales.langs[lang], path, `'${path}' not found`)['value']
+      } else return get(serv.locales.langs[lang], path, `'${path}' not found`).value
     }
   }
 
@@ -77,24 +76,24 @@ module.exports.server = (serv, options) => {
     whitelist.filter(w => blacklist.indexOf(w) === -1).forEach(player => {
       if (localize !== {}) {
         var nos = message.split(/(%s)/)
-        var splitted = message.split(/%s/)
+        // var splitted = message.split(/%s/)
         var sindex = 0
-  
+
         nos.forEach((msg, i) => {
-          if(/(%s)/.test(msg)) {
+          if (/(%s)/.test(msg)) {
             console.log(nos[i])
             var keys = Object.keys(localize)
-            console.log(player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [ localize[keys[sindex]] ]))
-            nos[i] = player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [ localize[keys[sindex]] ])
+            console.log(player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [localize[keys[sindex]]]))
+            nos[i] = player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [localize[keys[sindex]]])
             sindex++
           }
         })
-  
+
         message = removeItemAll(nos, '%s').join('')
       }
 
       if (typeof message === 'string') message = serv.parseClassic(message)
-      
+
       if (!system) player.chat(message)
       else player.system(message)
     })
@@ -102,18 +101,18 @@ module.exports.server = (serv, options) => {
 
   serv.localeString = (lang, path, info) => serv.locales.getString(lang, path, info)
 
-  fs.readdir(path.join(__dirname, '../locales/'+options.version), (err, files) => {
+  fs.readdir(path.join(__dirname, '../locales/' + options.version), (err, files) => {
     if (err) serv.err(err)
     else {
       files.forEach((file) => {
-        fs.readFile(path.join(__dirname, '../locales/'+options.version+'/'+file), {encoding: 'utf8'}, (err, data) => {
+        fs.readFile(path.join(__dirname, '../locales/' + options.version + '/' + file), { encoding: 'utf8' }, (err, data) => {
           if (err) serv.err(err)
           else {
-            var lang = file.split('.')[0],
-                ext = file.split('.')[1]
+            var lang = file.split('.')[0]
+            var ext = file.split('.')[1]
             if (ext === 'lang') {
-              var langData = data.split('\n'),
-                newData = {}
+              var langData = data.split('\n')
+              var newData = {}
               langData.forEach((str) => {
                 var string = str.split('=')
                 newData[string[0]] = string[1]
@@ -155,7 +154,7 @@ module.exports.server = (serv, options) => {
     info: 'Test localization',
     usage: '/localetest [where] [lang] [replace]',
     op: true,
-    parse(args) {
+    parse (args) {
       return args || false
     },
     action (args, ctx) {

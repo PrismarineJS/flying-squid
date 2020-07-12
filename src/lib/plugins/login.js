@@ -146,7 +146,7 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    serv.localeBroadcast('&e%s', { localize: {'multiplayer.player.joined': player.username } })
+    serv.localeBroadcast('&e%s', { localize: { 'multiplayer.player.joined': player.username } })
     player.emit('connected')
   }
 
