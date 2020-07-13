@@ -12,6 +12,7 @@ const fsMkdir = promisify(fs.mkdir)
 module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
   const World = require('prismarine-world')(version)
   const mcData = require('minecraft-data')(version)
+  const Anvil = require('prismarine-provider-anvil').Anvil(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
@@ -36,7 +37,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
-  serv.overworld = new World(generationModule(generation.options), regionFolder)
+  serv.overworld = new World(generationModule(generation.options), new Anvil(regionFolder))
   serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
