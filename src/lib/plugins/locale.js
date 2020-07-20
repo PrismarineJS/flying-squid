@@ -129,7 +129,6 @@ module.exports.server = (serv, options) => {
             })
           })
         })
-  
         serv.info('Downloaded locales!')
       }
     }
