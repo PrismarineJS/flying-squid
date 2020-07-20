@@ -1,6 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 const set = require('lodash.set')
+const mkdirp = require('mkdirp')
+
+let appdata = path.join(process.env.APPDATA, '.flying-squid')
+mkdirp(appdata)
+
+const LauncherDownload = require('minecraft-wrap').LauncherDownload
+const ld = new LauncherDownload(path.join(appdata, 'temp'), process.platform)
 
 const get = (object, path, value) => {
   const pathArray = Array.isArray(path) ? path : path.split('.').filter(key => key)
@@ -81,9 +88,7 @@ module.exports.server = (serv, options) => {
 
         nos.forEach((msg, i) => {
           if (/(%s)/.test(msg)) {
-            console.log(nos[i])
             var keys = Object.keys(localize)
-            console.log(player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [localize[keys[sindex]]]))
             nos[i] = player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [localize[keys[sindex]]])
             sindex++
           }
@@ -99,55 +104,60 @@ module.exports.server = (serv, options) => {
     })
   }
 
-  serv.localeString = (lang, path, info) => serv.locales.getString(lang, path, info)
-
-  fs.readdir(path.join(__dirname, '../locales/' + options.version), (err, files) => {
-    if (err) serv.err(err)
-    else {
-      files.forEach((file) => {
-        fs.readFile(path.join(__dirname, '../locales/' + options.version + '/' + file), { encoding: 'utf8' }, (err, data) => {
-          if (err) serv.err(err)
-          else {
-            var lang = file.split('.')[0]
-            var ext = file.split('.')[1]
-            if (ext === 'lang') {
-              var langData = data.split('\n')
-              var newData = {}
-              langData.forEach((str) => {
-                var string = str.split('=')
-                newData[string[0]] = string[1]
-              })
-              serv.locales.setStringJSON(lang, newData)
-            } else if (ext === 'json') {
-              var json = JSON.parse(data)
-              serv.locales.setStringJSON(lang, json)
-            }
+  fs.readdir(path.join(appdata, 'locale/'+options.version), (err, files) => {
+    mkdirp(path.join(appdata, 'locale/'+options.version))
+    if (!files) {
+      const assetsCurrent = []
+      ld.getAssetIndex(options.version).then(assets => {
+  
+        Object.keys(assets.objects).forEach(asset => {
+          if (/^(minecraft\/lang\/)/.test(asset)) {
+            assetsCurrent.push(asset)
           }
         })
+        downloadLangs(options.version, assetsCurrent)
+      }).catch(err => {
+        console.log(err)
       })
+  
+      const downloadLangs = (version, assets) => {
+        assets.forEach(asset => {
+          ld.getAsset(asset, version).then(r => {
+            fs.readFile(r, { encoding: 'utf8' }, (err, data) => {
+              if (err) console.error(err)
+              fs.writeFileSync(path.join(appdata, 'locale/'+version+'/'+asset.split('/')[2]), data)
+            })
+          })
+        })
+  
+        serv.info('Downloaded locales!')
+      }
     }
   })
 
-  serv.locales.setStringLangs('test.out', {
-    ru_ru: 'test'
+  fs.readdirSync(path.join(appdata, 'locale/'+options.version)).forEach(e => {
+    fs.readFile(path.join(appdata, 'locale/'+options.version+'/'+e), {encoding: 'utf8'}, (err, data) => {
+      if (err) console.error(err)
+      else {
+        var lang = e.split('.')[0],
+        ext = e.split('.')[1]
+        if (ext === 'lang') {
+          var langData = data.split('\n'),
+            newData = {}
+          langData.forEach((str) => {
+            var string = str.split('=')
+            newData[string[0]] = string[1]
+          })
+          serv.locales.setStringJSON(lang, newData)
+        } else if (ext === 'json') {
+          var json = JSON.parse(data)
+          serv.locales.setStringJSON(lang, json)
+        }
+      }
+    })
   })
 
-  serv.locales.setStringLangs('localeTest', {
-    en_us: {
-      works: 'Localization works!',
-      object: {
-        hmm: 'Localization works.. hmm...'
-      },
-      array: ['It works!', 'I\'m array!']
-    },
-    ru_ru: {
-      works: 'Локализация работает!',
-      object: {
-        hmm: 'Локализация работает.. хмм...'
-      },
-      array: ['Работает!', 'Я массив!']
-    }
-  })
+  serv.localeString = (lang, path, ...info) => serv.locales.getString(lang, path, ...info)
 
   serv.commands.add({
     base: 'localetest',
@@ -159,16 +169,14 @@ module.exports.server = (serv, options) => {
     },
     action (args, ctx) {
       args = args.split(' ')
-      const lang = args[0] === '' ? undefined : args[0]
-      const path = args[1] || 'localeTest.works'
+      const lang = args[1] === '' ? undefined : args[1]
+      const path = args[0] || 'localeTest.works'
       const replace = args.slice(2)
-
-      console.log(serv.locales.langs)
 
       if (ctx.player) {
         if (lang) ctx.player.chat(serv.localeString(lang, path))
         else ctx.player.chat(ctx.player.localeString(path))
-      } else serv.info(serv.localeString(lang, path, replace))
+      } else console.log(serv.localeString(lang, path))
     }
   })
 }
