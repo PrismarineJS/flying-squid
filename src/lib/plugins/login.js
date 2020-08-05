@@ -1,3 +1,4 @@
+/* global BigInt */
 const Vec3 = require('vec3').Vec3
 
 const path = require('path')
@@ -31,11 +32,12 @@ module.exports.server = function (serv, options) {
     }
   })
 
-  serv.hashedSeed = 0n
+  serv.hashedSeed = [0, 0]
   serv.on('seed', (seed) => {
     const seedBuf = Buffer.allocUnsafe(8)
-    seedBuf.writeBigInt64BE(BigInt(seed))
-    serv.hashedSeed = crypto.createHash('sha256').update(seedBuf).digest().subarray(0, 8).readBigInt64BE()
+    seedBuf.writeBigInt64LE(BigInt(seed))
+    const seedHash = crypto.createHash('sha256').update(seedBuf).digest().subarray(0, 8).readBigInt64LE()
+    serv.hashedSeed = [Number(seedHash >> 32n), Number(seedHash & 2147483647n)] // convert BigInt to mcpc long
   })
 }
 
@@ -86,13 +88,19 @@ module.exports.player = async function (player, serv, settings) {
       entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,
-      dimension: 0,
+      previousGameMode: player.prevGameMode,
+      worldNames: Object.values(serv.dimensionNames),
+      dimensionCodec: dimensionCodec,
+      worldName: serv.dimensionNames[0],
+      dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[0] : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
       reducedDebugInfo: false,
       maxPlayers: Math.min(255, serv._server.maxPlayers),
-      enableRespawnScreen: true
+      enableRespawnScreen: true,
+      isDebug: false,
+      isFlat: false
     })
     if (serv.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
@@ -129,6 +137,7 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   player.setGameMode = (gameMode) => {
+    if (gameMode !== player.gameMode) player.prevGameMode = player.gameMode
     player.gameMode = gameMode
     player._client.write('game_state_change', {
       reason: 3,
@@ -225,5 +234,249 @@ module.exports.player = async function (player, serv, settings) {
     await player.waitPlayerLogin()
     player.sendRestMap()
     sendChunkWhenMove()
+  }
+
+  const dimensionCodec = { // Dumped from a vanilla 1.16.1 server, as these are hardcoded constants
+    type: 'compound',
+    name: '',
+    value: {
+      dimension: {
+        type: 'list',
+        value: {
+          type: 'compound',
+          value: [
+            {
+              name: {
+                type: 'string',
+                value: 'minecraft:overworld'
+              },
+              bed_works: {
+                type: 'byte',
+                value: 1
+              },
+              shrunk: {
+                type: 'byte',
+                value: 0
+              },
+              piglin_safe: {
+                type: 'byte',
+                value: 0
+              },
+              has_ceiling: {
+                type: 'byte',
+                value: 0
+              },
+              has_skylight: {
+                type: 'byte',
+                value: 1
+              },
+              infiniburn: {
+                type: 'string',
+                value: 'minecraft:infiniburn_overworld'
+              },
+              ultrawarm: {
+                type: 'byte',
+                value: 0
+              },
+              ambient_light: {
+                type: 'float',
+                value: 0
+              },
+              logical_height: {
+                type: 'int',
+                value: 256
+              },
+              has_raids: {
+                type: 'byte',
+                value: 1
+              },
+              natural: {
+                type: 'byte',
+                value: 1
+              },
+              respawn_anchor_works: {
+                type: 'byte',
+                value: 0
+              }
+            }, /*, minecraft:overworld_caves is not implemented in flying-squid yet            {
+              "name": {
+                "type": "string",
+                "value": "minecraft:overworld_caves"
+              },
+              "bed_works": {
+                "type": "byte",
+                "value": 1
+              },
+              "shrunk": {
+                "type": "byte",
+                "value": 0
+              },
+              "piglin_safe": {
+                "type": "byte",
+                "value": 0
+              },
+              "has_ceiling": {
+                "type": "byte",
+                "value": 1
+              },
+              "has_skylight": {
+                "type": "byte",
+                "value": 1
+              },
+              "infiniburn": {
+                "type": "string",
+                "value": "minecraft:infiniburn_overworld"
+              },
+              "ultrawarm": {
+                "type": "byte",
+                "value": 0
+              },
+              "ambient_light": {
+                "type": "float",
+                "value": 0
+              },
+              "logical_height": {
+                "type": "int",
+                "value": 256
+              },
+              "has_raids": {
+                "type": "byte",
+                "value": 1
+              },
+              "natural": {
+                "type": "byte",
+                "value": 1
+              },
+              "respawn_anchor_works": {
+                "type": "byte",
+                "value": 0
+              }
+            } */
+            {
+              infiniburn: {
+                type: 'string',
+                value: 'minecraft:infiniburn_nether'
+              },
+              ultrawarm: {
+                type: 'byte',
+                value: 1
+              },
+              logical_height: {
+                type: 'int',
+                value: 128
+              },
+              natural: {
+                type: 'byte',
+                value: 0
+              },
+              name: {
+                type: 'string',
+                value: 'minecraft:the_nether'
+              },
+              bed_works: {
+                type: 'byte',
+                value: 0
+              },
+              fixed_time: {
+                type: 'long',
+                value: [
+                  0,
+                  18000
+                ]
+              },
+              shrunk: {
+                type: 'byte',
+                value: 1
+              },
+              piglin_safe: {
+                type: 'byte',
+                value: 1
+              },
+              has_skylight: {
+                type: 'byte',
+                value: 0
+              },
+              has_ceiling: {
+                type: 'byte',
+                value: 1
+              },
+              ambient_light: {
+                type: 'float',
+                value: 0.1
+              },
+              has_raids: {
+                type: 'byte',
+                value: 0
+              },
+              respawn_anchor_works: {
+                type: 'byte',
+                value: 1
+              }
+            }/*, minecraft:the_end is not implemented in flying-squid yet
+            {
+              "infiniburn": {
+                "type": "string",
+                "value": "minecraft:infiniburn_end"
+              },
+              "ultrawarm": {
+                "type": "byte",
+                "value": 0
+              },
+              "logical_height": {
+                "type": "int",
+                "value": 256
+              },
+              "natural": {
+                "type": "byte",
+                "value": 0
+              },
+              "name": {
+                "type": "string",
+                "value": "minecraft:the_end"
+              },
+              "bed_works": {
+                "type": "byte",
+                "value": 0
+              },
+              "fixed_time": {
+                "type": "long",
+                "value": [
+                  0,
+                  6000
+                ]
+              },
+              "shrunk": {
+                "type": "byte",
+                "value": 0
+              },
+              "piglin_safe": {
+                "type": "byte",
+                "value": 0
+              },
+              "has_skylight": {
+                "type": "byte",
+                "value": 0
+              },
+              "has_ceiling": {
+                "type": "byte",
+                "value": 0
+              },
+              "ambient_light": {
+                "type": "float",
+                "value": 0
+              },
+              "has_raids": {
+                "type": "byte",
+                "value": 1
+              },
+              "respawn_anchor_works": {
+                "type": "byte",
+                "value": 0
+              }
+            } */
+          ]
+        }
+      }
+    }
   }
 }

@@ -11,11 +11,16 @@ module.exports.player = function (player, serv) {
     if (actionId === 0) {
       player.behavior('requestRespawn', {}, () => {
         player._client.write('respawn', {
-          dimension: 0,
+          previousGameMode: player.prevGameMode,
+          dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[0] : 0,
+          worldName: serv.dimensionNames[0],
           difficulty: serv.difficulty,
           hashedSeed: serv.hashedSeed,
           gamemode: player.gameMode,
-          levelType: 'default'
+          levelType: 'default',
+          isDebug: false,
+          isFlat: false,
+          copyMetadata: false
         })
         player.sendSelfPosition()
         player.updateHealth(20)
