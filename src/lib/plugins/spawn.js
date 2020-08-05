@@ -194,6 +194,9 @@ module.exports.player = function (player, serv, options) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
+    if (serv.supportFeature('entityMetadataSentSeparately')) {
+      entity.sendMetadata(entity.metadata)
+    }
     if (typeof entity.itemId !== 'undefined') {
       if (serv.supportFeature('theFlattening')) {
         entity.sendMetadata([{
@@ -264,6 +267,11 @@ module.exports.entity = function (entity, serv) {
       entityPosition = entity.position
     }
 
+    let metadata
+    if (!serv.supportFeature('entityMetadataSentSeparately')) {
+      metadata = entity.metadata
+    }
+
     if (entity.type === 'player') {
       return {
         entityId: entity.id,
@@ -274,7 +282,7 @@ module.exports.entity = function (entity, serv) {
         yaw: entity.yaw,
         pitch: entity.pitch,
         currentItem: 0,
-        metadata: entity.metadata
+        metadata
       }
     } else if (entity.type === 'object') {
       return {
@@ -307,7 +315,7 @@ module.exports.entity = function (entity, serv) {
         velocityX: scaledVelocity.x,
         velocityY: scaledVelocity.y,
         velocityZ: scaledVelocity.z,
-        metadata: entity.metadata
+        metadata
       }
     }
   }

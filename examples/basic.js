@@ -27,5 +27,5 @@ mcServer.createMCServer({
   },
   'everybody-op': true,
   'max-entities': 100,
-  version: '1.14.4'
+  version: '1.15.2'
 })

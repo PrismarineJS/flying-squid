@@ -143,6 +143,7 @@ module.exports.player = function (player, serv, settings) {
         z: z,
         groundUp: true,
         bitMap: chunk.getMask(),
+        biomes: chunk.dumpBiomes(),
         heightmaps: {
           type: 'compound',
           name: '',

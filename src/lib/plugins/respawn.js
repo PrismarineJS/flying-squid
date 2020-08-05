@@ -13,6 +13,7 @@ module.exports.player = function (player, serv) {
         player._client.write('respawn', {
           dimension: 0,
           difficulty: serv.difficulty,
+          hashedSeed: serv.hashedSeed,
           gamemode: player.gameMode,
           levelType: 'default'
         })

@@ -1,6 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 const path = require('path')
+const crypto = require('crypto')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const playerDat = require('../playerDat')
@@ -28,6 +29,13 @@ module.exports.server = function (serv, options) {
     } catch (err) {
       setTimeout(() => { throw err }, 0)
     }
+  })
+
+  serv.hashedSeed = 0n
+  serv.on('seed', (seed) => {
+    const seedBuf = Buffer.allocUnsafe(8)
+    seedBuf.writeBigInt64BE(BigInt(seed))
+    serv.hashedSeed = crypto.createHash('sha256').update(seedBuf).digest().subarray(0, 8).readBigInt64BE()
   })
 }
 
@@ -79,10 +87,12 @@ module.exports.player = async function (player, serv, settings) {
       levelType: 'default',
       gameMode: player.gameMode,
       dimension: 0,
+      hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
       reducedDebugInfo: false,
-      maxPlayers: Math.min(255, serv._server.maxPlayers)
+      maxPlayers: Math.min(255, serv._server.maxPlayers),
+      enableRespawnScreen: true
     })
     if (serv.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
