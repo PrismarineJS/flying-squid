@@ -75,7 +75,7 @@ module.exports.server = function (serv, { version }) {
       return parseInt(str)
     },
     action (diff) {
-      serv._writeAll('difficulty', { difficulty: diff })
+      serv._writeAll('difficulty', { difficulty: diff, difficultyLocked: false })
       serv.difficulty = diff
     }
   })

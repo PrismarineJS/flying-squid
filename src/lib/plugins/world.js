@@ -143,9 +143,27 @@ module.exports.player = function (player, serv, settings) {
         z: z,
         groundUp: true,
         bitMap: chunk.getMask(),
+        heightmaps: {
+          type: 'compound',
+          name: '',
+          value: {
+            MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+          }
+        }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
         blockEntities: []
       })
+      if (serv.supportFeature('lightSentSeparately')) {
+        player._client.write('update_light', {
+          chunkX: x,
+          chunkZ: z,
+          skyLightMask: chunk.skyLightMask,
+          blockLightMask: chunk.blockLightMask,
+          emptySkyLightMask: 0,
+          emptyBlockLightMask: 0,
+          data: chunk.dumpLight()
+        })
+      }
       return Promise.resolve()
     })
   }

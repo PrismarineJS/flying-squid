@@ -7,6 +7,8 @@ mcServer.createMCServer({
   'online-mode': true,
   logging: true,
   gameMode: 1,
+  difficulty: 1,
+  worldFolder: 'world',
   generation: {
     name: 'diamond_square',
     options: {
@@ -18,5 +20,12 @@ mcServer.createMCServer({
 
   },
   modpe: false,
-  'view-distance': 10
+  'view-distance': 10,
+  'player-list-text': {
+    header: 'Flying squid',
+    footer: 'Test server'
+  },
+  'everybody-op': true,
+  'max-entities': 100,
+  version: '1.14.4'
 })

@@ -80,14 +80,34 @@ module.exports.player = async function (player, serv, settings) {
       gameMode: player.gameMode,
       dimension: 0,
       difficulty: serv.difficulty,
+      viewDistance: settings['view-distance'],
       reducedDebugInfo: false,
       maxPlayers: Math.min(255, serv._server.maxPlayers)
     })
+    if (serv.supportFeature('difficultySentSeparately')) {
+      player._client.write('difficulty', {
+        difficulty: serv.difficulty,
+        difficultyLocked: false
+      })
+    }
   }
 
   function sendChunkWhenMove () {
     player.on('move', () => {
       if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
+      if (!serv.supportFeature('updateViewPosition')) {
+        return
+      }
+      const chunkX = Math.floor(player.position.x / 16)
+      const chunkZ = Math.floor(player.position.z / 16)
+      const lastChunkX = Math.floor(player.lastPositionPlayersUpdated.x / 16)
+      const lastChunkZ = Math.floor(player.lastPositionPlayersUpdated.z / 16)
+      if (chunkX !== lastChunkX || chunkZ !== lastChunkZ) {
+        player._client.write('update_view_position', {
+          chunkX,
+          chunkZ
+        })
+      }
     })
   }
 
