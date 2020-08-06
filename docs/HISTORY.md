@@ -1,3 +1,8 @@
+## 1.3.0
+
+* 1.9, 1.10, 1.11, 1.13, 1.14, 1.15, 1.16 support added (thanks @Deudly and @Karang for 1.13, thanks @IdanHo for >= 1.14)
+* implement server commands (thanks @redcarti)
+
 ## 1.2.1
 
 * update to new pchunk + use bitmask
