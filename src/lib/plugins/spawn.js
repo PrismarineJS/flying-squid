@@ -194,6 +194,9 @@ module.exports.player = function (player, serv, options) {
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
+    if (serv.supportFeature('entityMetadataSentSeparately')) {
+      entity.sendMetadata(entity.metadata)
+    }
     if (typeof entity.itemId !== 'undefined') {
       if (serv.supportFeature('theFlattening')) {
         entity.sendMetadata([{
@@ -217,16 +220,34 @@ module.exports.player = function (player, serv, options) {
         }])
       }
     }
-    entity.equipment.forEach((equipment, slot) => {
-      if (equipment !== undefined) {
+    if (serv.supportFeature('allEntityEquipmentInOne')) {
+      const equipments = []
+      entity.equipment.forEach((equipment, slot) => {
+        if (equipment !== undefined) {
+          equipments.push({
+            slot: slot,
+            item: Item.toNotch(equipment)
+          })
+        }
+      })
+      if (equipments.length > 0) {
         player._client.write('entity_equipment', {
           entityId: entity.id,
-          slot: slot,
-          item: Item.toNotch(equipment)
+          equipments: equipments
         })
       }
+    } else {
+      entity.equipment.forEach((equipment, slot) => {
+        if (equipment !== undefined) {
+          player._client.write('entity_equipment', {
+            entityId: entity.id,
+            slot: slot,
+            item: Item.toNotch(equipment)
+          })
+        }
+      }
+      )
     }
-    )
   }
 }
 

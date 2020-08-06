@@ -44,7 +44,7 @@ async function read (uuid, spawnPoint, worldFolder) {
   }
 }
 
-async function save (player, worldFolder) {
+async function save (player, worldFolder, snakeCase) {
   function playerInventoryToNBT (playerInventory) {
     const nbtInventory = []
     playerInventory.slots.forEach(item => {
@@ -130,7 +130,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.maxHealth'
+                    value: snakeCase ? 'generic.maxHealth' : 'generic.max_health'
                   }
                 },
                 {
@@ -140,7 +140,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.knockbackResistance'
+                    value: snakeCase ? 'generic.knockbackResistance' : 'generic.knockback_resistance'
                   }
                 },
                 {
@@ -150,7 +150,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.movementSpeed'
+                    value: snakeCase ? 'generic.movementSpeed' : 'generic.movement_speed'
                   }
                 },
                 {
@@ -170,7 +170,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.armorToughness'
+                    value: snakeCase ? 'generic.armorToughness' : 'generic.armor_toughness'
                   }
                 },
                 {
@@ -180,7 +180,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.attackDamage'
+                    value: snakeCase ? 'generic.attackDamage' : 'generic.attack_damage'
                   }
                 },
                 {
@@ -190,7 +190,7 @@ async function save (player, worldFolder) {
                   },
                   Name: {
                     type: 'string',
-                    value: 'generic.attackSpeed'
+                    value: snakeCase ? 'generic.attackSpeed' : 'generic.attack_speed'
                   }
                 },
                 {

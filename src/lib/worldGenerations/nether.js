@@ -3,6 +3,7 @@ const rand = require('random-seed')
 
 function generation ({ version, seed, level = 50 } = {}) {
   const Chunk = require('prismarine-chunk')(version)
+  const mcData = require('minecraft-data')(version)
 
   function generateChunk (chunkX, chunkZ) {
     const seedRand = rand.create(seed + ':' + chunkX + ':' + chunkZ)
@@ -16,8 +17,8 @@ function generation ({ version, seed, level = 50 } = {}) {
           let data
 
           if (y < bedrockheightbottom) block = 7
-          else if (y < level) block = seedRand(50) === 0 ? 89 : 87
-          else if (y > 127 - bedrockheighttop) block = 7
+          else if (y < level) block = seedRand(50) === 0 ? mcData.blocksByName.glowstone.id : mcData.blocksByName.netherrack.id
+          else if (y > 127 - bedrockheighttop) block = mcData.blocksByName.bedrock.id
 
           const pos = new Vec3(x, y, z)
           if (block) chunk.setBlockType(pos, block)

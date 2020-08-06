@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        mcVersionIndex: [0, 1, 2, 3, 4, 5]
+        mcVersionIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
     - uses: actions/checkout@v2
@@ -25,5 +25,5 @@ jobs:
     - run: npm install
     - env:
         CIRCLE_NODE_INDEX: ${{ matrix.mcVersionIndex }}
-        CIRCLE_NODE_TOTAL: 6
+        CIRCLE_NODE_TOTAL: 9
       run: npm test

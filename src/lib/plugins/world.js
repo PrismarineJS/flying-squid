@@ -41,6 +41,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
+  serv.dimensionNames = {
+    '-1': 'minecraft:nether',
+    0: 'minecraft:overworld'
+    // 1: 'minecraft:end'
+  }
+
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {}
   serv.netherworld.blockEntityData = {}
@@ -143,9 +149,30 @@ module.exports.player = function (player, serv, settings) {
         z: z,
         groundUp: true,
         bitMap: chunk.getMask(),
+        biomes: chunk.dumpBiomes(),
+        ignoreOldData: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
+        heightmaps: {
+          type: 'compound',
+          name: '',
+          value: {
+            MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+          }
+        }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
         blockEntities: []
       })
+      if (serv.supportFeature('lightSentSeparately')) {
+        player._client.write('update_light', {
+          chunkX: x,
+          chunkZ: z,
+          trustEdges: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
+          skyLightMask: chunk.skyLightMask,
+          blockLightMask: chunk.blockLightMask,
+          emptySkyLightMask: 0,
+          emptyBlockLightMask: 0,
+          data: chunk.dumpLight()
+        })
+      }
       return Promise.resolve()
     })
   }
@@ -215,12 +242,21 @@ module.exports.player = function (player, serv, settings) {
     opt = opt || {}
     player.world = world
     player.loadedChunks = {}
-    if (typeof opt.gamemode !== 'undefined') player.gameMode = opt.gamemode
+    if (typeof opt.gamemode !== 'undefined') {
+      if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
+      player.gameMode = opt.gamemode
+    }
     player._client.write('respawn', {
-      dimension: opt.dimension || 0,
+      previousGameMode: player.prevGameMode,
+      dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
+      hashedSeed: serv.hashedSeed,
       gamemode: opt.gamemode || player.gameMode,
-      levelType: 'default'
+      levelType: 'default',
+      isDebug: false,
+      isFlat: false,
+      copyMetadata: true
     })
     await player.findSpawnPoint()
     player.position = player.spawnPoint
