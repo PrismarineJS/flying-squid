@@ -37,7 +37,7 @@ module.exports.server = function (serv, options) {
     const seedBuf = Buffer.allocUnsafe(8)
     seedBuf.writeBigInt64LE(BigInt(seed))
     const seedHash = crypto.createHash('sha256').update(seedBuf).digest().subarray(0, 8).readBigInt64LE()
-    serv.hashedSeed = [Number(seedHash >> 32n), Number(seedHash & 2147483647n)] // convert BigInt to mcpc long
+    serv.hashedSeed = [Number(BigInt.asIntN(64, seedHash) < 0 ? -(BigInt.asUintN(32, (-seedHash) >> 32n) + 1n) : seedHash >> 32n), Number(BigInt.asIntN(32, seedHash & (2n ** 32n - 1n)))] // convert BigInt to mcpc long
   })
 }
 

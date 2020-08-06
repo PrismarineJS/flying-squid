@@ -251,6 +251,7 @@ module.exports.player = function (player, serv, settings) {
       dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
+      hashedSeed: serv.hashedSeed,
       gamemode: opt.gamemode || player.gameMode,
       levelType: 'default',
       isDebug: false,

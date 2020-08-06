@@ -285,11 +285,6 @@ module.exports.entity = function (entity, serv) {
       entityPosition = entity.position
     }
 
-    let metadata
-    if (!serv.supportFeature('entityMetadataSentSeparately')) {
-      metadata = entity.metadata
-    }
-
     if (entity.type === 'player') {
       return {
         entityId: entity.id,
@@ -300,7 +295,7 @@ module.exports.entity = function (entity, serv) {
         yaw: entity.yaw,
         pitch: entity.pitch,
         currentItem: 0,
-        metadata
+        metadata: entity.metadata
       }
     } else if (entity.type === 'object') {
       return {
@@ -333,7 +328,7 @@ module.exports.entity = function (entity, serv) {
         velocityX: scaledVelocity.x,
         velocityY: scaledVelocity.y,
         velocityZ: scaledVelocity.z,
-        metadata
+        metadata: entity.metadata
       }
     }
   }
