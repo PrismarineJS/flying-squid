@@ -29,11 +29,9 @@ module.exports.player = function (player, serv, { version }) {
     } else if (status === 5) {
       // TODO: Shoot arrow / finish eating
     } else if (status === 6) {
-      // TODO: swap item between hand
-      
+
       let currentSlot = player.inventory.slots[36 + player.heldItemSlot];
       let offhand = player.inventory.slots[45];
-
 
       player.inventory.updateSlot(36 + player.heldItemSlot, offhand);
       player.inventory.updateSlot(45, currentSlot);
