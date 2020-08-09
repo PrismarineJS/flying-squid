@@ -111,7 +111,7 @@ module.exports.player = function (player, serv, { version }) {
     if (await serv.interactWithBlock({ block, player })) return
 
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-    if (!heldItem || direction === -1 || heldItem.type === -1) return
+    if (!heldItem || direction === -1 || heldItem.type === -1 || !blocks.contains(heldItem.type)) return
 
     const directionVector = directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
