@@ -24,8 +24,8 @@ module.exports.server = function (serv, { version }) {
       if (paramsSplit[0] === '') {
         return false
       }
-      if (!paramsSplit[0].match(/^([0-3])$/) && paramsSplit[0].match(/^([0-9]+)$/)) {
-        throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
+      if (!paramsSplit[0].match(/^([0-3])$/)) {
+        throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be a number from 0-3`)
       }
       if (!paramsSplit[1]) {
         if (ctx.player) return paramsSplit[0].match(/^([0-3])$/)
