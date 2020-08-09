@@ -16,7 +16,7 @@ function generation ({ version, seed, level = 50 } = {}) {
           let block
           let data
 
-          if (y < bedrockheightbottom) block = 7
+          if (y < bedrockheightbottom) block = mcData.blocksByName.bedrock.id
           else if (y < level) block = seedRand(50) === 0 ? mcData.blocksByName.glowstone.id : mcData.blocksByName.netherrack.id
           else if (y > 127 - bedrockheighttop) block = mcData.blocksByName.bedrock.id
 
