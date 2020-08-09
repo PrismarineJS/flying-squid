@@ -25,7 +25,7 @@ module.exports.server = function (serv, { version }) {
         return false
       }
       if (!paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)) {
-        throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be survival, creative, adventure, or spectator`)
+        throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be survival, creative, adventure, spectator, or a number from 0-3`)
       }
       if (!paramsSplit[1]) {
         if (ctx.player) return paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)
