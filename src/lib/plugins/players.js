@@ -17,7 +17,7 @@ module.exports.server = function (serv, { version }) {
     base: 'gamemode',
     aliases: ['gm'],
     info: 'to change game mode',
-    usage: '/gamemode <0-3> [player]',
+    usage: '/gamemode <mode> [player]',
     op: true,
     parse (str, ctx) {
       var paramsSplit = str.split(' ')
