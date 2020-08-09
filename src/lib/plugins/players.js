@@ -37,10 +37,10 @@ module.exports.server = function (serv, { version }) {
     },
     action (str, ctx) {
       var gamemodes = {
-        'survival': 0,
-        'creative': 1,
-        'adventure': 2,
-        'spectator': 3
+        survival: 0,
+        creative: 1,
+        adventure: 2,
+        spectator: 3
       }
       var gamemode = gamemodes[str[1]]
       var mode = str[1]
