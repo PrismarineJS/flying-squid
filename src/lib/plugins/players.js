@@ -40,9 +40,9 @@ module.exports.server = function (serv, { version }) {
         survival: 0,
         creative: 1,
         adventure: 2,
-        spectator: 3,
+        spectator: 3
       }
-      var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({[v]: k})))
+      var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
       var gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
       var mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
       var plyr = serv.getPlayer(str[2])
