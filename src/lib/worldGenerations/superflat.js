@@ -21,12 +21,10 @@ function generation (options = {}) {
           if (y === 0) {
             chunk.setBlockType(new Vec3(x, y, z), bottomId)
             if (options.bottomData) chunk.setBlockData(new Vec3(x, y, z), options.bottomData)
-          }
-          else if (y < middleThickness + 1) {
+          } else if (y < middleThickness + 1) {
             chunk.setBlockType(new Vec3(x, y, z), middleId)
             if (options.middleData) chunk.setBlockData(new Vec3(x, y, z), options.middleData)
-          }
-          else {
+          } else {
             chunk.setBlockType(new Vec3(x, y, z), topId)
             if (topData) chunk.setBlockData(new Vec3(x, y, z), topData)
           }
