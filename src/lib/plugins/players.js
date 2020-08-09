@@ -17,45 +17,47 @@ module.exports.server = function (serv, { version }) {
     base: 'gamemode',
     aliases: ['gm'],
     info: 'to change game mode',
-    usage: '/gamemode <0-3> [player]',
+    usage: '/gamemode <mode> [player]',
     op: true,
     parse (str, ctx) {
       var paramsSplit = str.split(' ')
       if (paramsSplit[0] === '') {
         return false
       }
-      if (!paramsSplit[0].match(/^([0-3])$/) && paramsSplit[0].match(/^([0-9]+)$/)) {
-        throw new UserError(`The number you have entered (${paramsSplit[0]}) is too big, it must be at most 3`)
+      if (!paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)) {
+        throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be survival, creative, adventure, spectator, or a number from 0-3`)
       }
       if (!paramsSplit[1]) {
-        if (ctx.player) return paramsSplit[0].match(/^([0-3])$/)
+        if (ctx.player) return paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)
         else throw new UserError('Console cannot set gamemode itself')
       }
 
-      return str.match(/^([0-3]) (\w+)$/) || false
+      return str.match(/^(survival|creative|adventure|spectator|[0-3]) (\w+)$/) || false
       // return params || false
     },
     action (str, ctx) {
       var gamemodes = {
-        0: 'Survival',
-        1: 'Creative',
-        2: 'Adventure',
-        3: 'Spectator'
+        survival: 0,
+        creative: 1,
+        adventure: 2,
+        spectator: 3
       }
-      var mode = gamemodes[str[1]]
+      var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
+      var gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
+      var mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
       var plyr = serv.getPlayer(str[2])
       if (ctx.player) {
         if (str[2]) {
           if (plyr !== null) {
-            plyr.setGameMode(parseInt(str[1], 10))
+            plyr.setGameMode(gamemode)
             return `Set ${str[2]}'s game mode to ${mode} Mode`
           } else {
             throw new UserError(`Player '${str[2]}' cannot be found`)
           }
-        } else ctx.player.setGameMode(parseInt(str[1], 10))
+        } else ctx.player.setGameMode(gamemode)
       } else {
         if (plyr !== null) {
-          plyr.setGameMode(parseInt(str[1], 10))
+          plyr.setGameMode(gamemode)
           return `Set ${str[2]}'s game mode to ${mode} Mode`
         } else {
           throw new UserError(`Player '${str[2]}' cannot be found`)
