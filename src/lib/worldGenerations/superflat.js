@@ -29,8 +29,9 @@ function generation (options = {}) {
             chunk.setBlockType(new Vec3(x, y, z), topId)
             if (topData) chunk.setBlockData(new Vec3(x, y, z), topData)
           }
+          chunk.setSkyLight(new Vec3(x, y, z), 15)
         }
-        for (let y = 0; y < 256; y++) {
+        for (let y = middleThickness + 2; y < 256; y++) {
           chunk.setSkyLight(new Vec3(x, y, z), 15)
         }
       }
