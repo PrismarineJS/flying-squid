@@ -31,7 +31,7 @@ download('1.16.1', MC_SERVER_JAR, (err) => {
     client.on('login', packet => {
       fs.writeFile('dimensionCodec.json', JSON.stringify(packet.dimensionCodec), (err) => {
         if (err) return console.error(err)
-        console.log("Dumped dimension codec successfully to dimensionCodec.json!")
+        console.log('Dumped dimension codec successfully to dimensionCodec.json!')
         client.end()
         wrap.stopServer(() => {
           wrap.deleteServerData(() => {})
