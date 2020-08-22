@@ -30,16 +30,16 @@ module.exports.server = function (serv, settings) {
   }
 
   serv.getUUIDFromUsername = async username => {
-    return await new Promise((res) => {
+    return await new Promise((resolve, reject) => {
       needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
-      .then((response) => {
-        if (!response.body) throw new Error('username not found')
-        var idstr = response.body.id
-        if (typeof idstr !== 'string') throw new Error('username not found')
-        res(uuidInParts(idstr))
-      })
-      .catch(err => { throw err })
-    });
+        .then((response) => {
+          if (!response.body) throw new Error('username not found')
+          var idstr = response.body.id
+          if (typeof idstr !== 'string') throw new Error('username not found')
+          resolve(uuidInParts(idstr))
+        })
+        .catch(err => { throw err })
+    })
   }
 
   serv.banUsername = async (username, reason) => {
