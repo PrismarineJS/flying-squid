@@ -32,9 +32,9 @@ module.exports.server = function (serv, settings) {
   serv.getUUIDFromUsername = async username => {
     return needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
       .then((response) => {
-        if (!response.body) throw new Error('username not found');
-		var idstr = response.body.id;
-		if (typeof idstr != 'string') throw new Error('username not found');
+        if (!response.body) throw new Error('username not found')
+        var idstr = response.body.id
+        if (typeof idstr !== 'string') throw new Error('username not found')
         return uuidInParts(idstr)
       })
       .catch(err => { throw err })
