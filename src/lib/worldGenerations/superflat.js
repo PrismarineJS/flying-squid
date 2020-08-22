@@ -3,7 +3,8 @@ const Vec3 = require('vec3').Vec3
 function generation (options = {}) {
   const Chunk = require('prismarine-chunk')(options.version)
   const mcData = require('minecraft-data')(options.version)
-  const theFlattening = require('../../../app').supportFeature('theFlattening')
+  const version = mcData.version
+  const theFlattening = require('./lib/supportFeature')('theFlattening', version.majorVersion)
 
   const bottomId = options.bottomId || mcData.blocksByName.bedrock.id
   const middleId = options.middleId || mcData.blocksByName.dirt.id
