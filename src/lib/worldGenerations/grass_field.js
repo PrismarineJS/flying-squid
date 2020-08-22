@@ -3,7 +3,8 @@ const Vec3 = require('vec3').Vec3
 function generation ({ version }) {
   const Chunk = require('prismarine-chunk')(version)
   const mcData = require('minecraft-data')(version)
-  const theFlattening = require('../../../app').supportFeature('theFlattening')
+  const versionObject = mcData.version
+  const theFlattening = require('./lib/supportFeature')('theFlattening', versionObject.majorVersion)
 
   function generateSimpleChunk () {
     const chunk = new Chunk()
