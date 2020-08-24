@@ -33,6 +33,7 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = async function (player, serv) {
+  player.prevGameMode = 255
   player.gameMode = serv.gameMode
   player.findSpawnPoint = async () => {
     player.spawnPoint = await serv.getSpawnPoint(player.world)

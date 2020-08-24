@@ -28,6 +28,12 @@ module.exports.player = function (player, serv, { version }) {
       })
     } else if (status === 5) {
       // TODO: Shoot arrow / finish eating
+    } else if (status === 6) {
+      const currentSlot = player.inventory.slots[36 + player.heldItemSlot]
+      const offhand = player.inventory.slots[45]
+
+      player.inventory.updateSlot(36 + player.heldItemSlot, offhand)
+      player.inventory.updateSlot(45, currentSlot)
     } else {
       let pos = new Vec3(location.x, location.y, location.z)
 
@@ -61,7 +67,7 @@ module.exports.player = function (player, serv, { version }) {
 
   function diggingTime () {
     // assume holding nothing and usual conditions
-    return currentlyDugBlock.digTime()
+    return currentlyDugBlock.digTime(null, false, false, false)
   }
 
   let currentlyDugBlock
@@ -99,6 +105,14 @@ module.exports.player = function (player, serv, { version }) {
         })
       }
     }
+    if (serv.supportFeature('acknowledgePlayerDigging')) {
+      player._client.write('acknowledge_player_digging', {
+        location: location,
+        block: currentlyDugBlock.stateId,
+        status: 0,
+        successful: true
+      })
+    }
   }
 
   function cancelDigging (location) {
@@ -108,6 +122,14 @@ module.exports.player = function (player, serv, { version }) {
       location: location,
       destroyStage: -1
     })
+    if (serv.supportFeature('acknowledgePlayerDigging')) {
+      player._client.write('acknowledge_player_digging', {
+        location: location,
+        block: currentlyDugBlock.stateId,
+        status: 1,
+        successful: true
+      })
+    }
   }
 
   async function completeDigging (location) {
@@ -140,12 +162,28 @@ module.exports.player = function (player, serv, { version }) {
           await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
         }
         if (data.dropBlock) dropBlock(data)
+        if (serv.supportFeature('acknowledgePlayerDigging')) {
+          player._client.write('acknowledge_player_digging', {
+            location: location,
+            block: 0,
+            status: 2,
+            successful: true
+          })
+        }
       }, cancelDig)
     } else {
       player._client.write('block_change', {
         location: location,
         type: currentlyDugBlock.type << 4
       })
+      if (serv.supportFeature('acknowledgePlayerDigging')) {
+        player._client.write('acknowledge_player_digging', {
+          location: location,
+          block: currentlyDugBlock.stateId,
+          status: 2,
+          successful: false
+        })
+      }
     }
   }
 
