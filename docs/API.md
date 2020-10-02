@@ -1015,6 +1015,10 @@ This will only be caused by using ``player.sendBlock``.
 
 This will not make any changes to the server's world and only sends it to the user as a local action.
 
+#### player.sendBrand(brand = 'flying-squid')
+
+Send the specified `brand` to the player or `flying-squid` by default
+
 #### player.sendInitialPosition()
 
 send its initial position to the player
