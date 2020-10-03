@@ -1,3 +1,10 @@
+## 1.3.1
+* Swap attribute names (thanks @mdashlw)
+* Use bedrock instead of polished andesite (thanks @GroobleDierne)
+* Fix crash in /gamemode command (thanks @lleyton)
+* Remove deprecated/heavy dependencies (request, request-promise) in favor of needle (thanks @WasabiThumb)
+* Remove blocks id (thanks @GroobleDierne)
+
 ## 1.3.0
 
 * 1.9, 1.10, 1.11, 1.13, 1.14, 1.15, 1.16 support added (thanks @Deudly and @Karang for 1.13, thanks @IdanHo for >= 1.14)

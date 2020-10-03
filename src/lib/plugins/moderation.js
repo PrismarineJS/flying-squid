@@ -1,5 +1,5 @@
 const moment = require('moment')
-const rp = require('request-promise')
+const needle = require('needle')
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, settings) {
@@ -30,12 +30,16 @@ module.exports.server = function (serv, settings) {
   }
 
   serv.getUUIDFromUsername = async username => {
-    return rp('https://api.mojang.com/users/profiles/minecraft/' + username)
-      .then((body) => {
-        if (!body) throw new Error('username not found')
-        return uuidInParts(JSON.parse(body).id)
-      })
-      .catch(err => { throw err })
+    return await new Promise((resolve, reject) => {
+      needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
+        .then((response) => {
+          if (!response.body) throw new Error('username not found')
+          var idstr = response.body.id
+          if (typeof idstr !== 'string') throw new Error('username not found')
+          resolve(uuidInParts(idstr))
+        })
+        .catch(err => { throw err })
+    })
   }
 
   serv.banUsername = async (username, reason) => {
