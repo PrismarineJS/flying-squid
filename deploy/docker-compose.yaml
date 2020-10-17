@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  minecraft:
+    image: louis030195/flying-squid
+    ports:
+      - "25565:25565"
