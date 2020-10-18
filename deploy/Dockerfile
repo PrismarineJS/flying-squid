@@ -1,5 +1,8 @@
-FROM node:12
+FROM node:14-slim
 
-RUN npm install -g flying-squid
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm run prepare
+COPY . .
 
-ENTRYPOINT [ "flying-squid" ]
+ENTRYPOINT [ "node", "app.js", "-c", "/config" ]
