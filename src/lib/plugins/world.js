@@ -144,10 +144,6 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
-      // var mapChunk = 
-      // if (chunk.blockEntities !== undefined)
-      //   mapChunk.blockEntities = chunk.blockEntities
-
       var blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
         return {
           type: 'compound',
