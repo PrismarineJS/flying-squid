@@ -40,20 +40,17 @@ async function putBlockEntity ({ world, id, position, extra }) {
 
 async function removeBlockEntity ({ world, position }) {
   const column = await world.getColumnAt(position)
-  console.log(`previous block entities from ${position.x}, ${position.y}, ${position.z}:`, column.blockEntities)
 
   if (!column.blockEntities) column.blockEntities = []
 
   column.blockEntities = column.blockEntities.filter(item =>
     !(item.x.value == position.x && item.y.value == position.y && item.z.value == position.z)
   )
-  console.log('new block entities:', column.blockEntities)
   world.saveAt(position)
 }
 
 module.exports.player = function (player, serv) {
   player._client.on('block_dig', async ({ location, status, face }) => {
-    console.log('block dig')
     const facedPos = location.plus(directionVector)
     await removeBlockEntity({ world: player._client.world, location })
   })

@@ -9,7 +9,6 @@ module.exports.server = (serv, { version }) => {
   serv.on('asap', () => {
     if (serv.supportFeature('theFlattening')) {
       const placeHandler = ({ player, placedPosition, direction, properties, item }) => {
-        console.log('placed', item)
         if (direction === 0) return { id: -1, data: 0 }
         const block = mcData.blocksByName[item.name]
         if (direction !== 1) {
@@ -51,8 +50,6 @@ module.exports.player = function (player) {
     const position = new Vec3(location.x, location.y, location.z)
     var block = await player.world.getBlock(position)
     var column = await player.world.getColumnAt(location)
-    console.log(block)
-    console.log('update sign', position, text1, text2, text3, text4)
 
     await putBlockEntity({
       world: player.world,
