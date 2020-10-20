@@ -38,7 +38,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
-  serv.netherworld = new World(generations.nether(generation.options))
+  // serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {
@@ -144,6 +144,18 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
+      // var mapChunk = 
+      // if (chunk.blockEntities !== undefined)
+      //   mapChunk.blockEntities = chunk.blockEntities
+
+      var blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
+        return {
+          type: 'compound',
+          name: '',
+          value: e
+        }
+      }) : []
+
       player._client.write('map_chunk', {
         x: x,
         z: z,
@@ -159,8 +171,9 @@ module.exports.player = function (player, serv, settings) {
           }
         }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
-        blockEntities: []
+        blockEntities: blockEntities
       })
+
       if (serv.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
