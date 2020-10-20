@@ -3,7 +3,7 @@ const { putBlockEntity, removeBlockEntity } = require('../blockEntities')
 
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
-  
+
   const oakWallSign = mcData.blocksByName.wall_sign
 
   serv.on('asap', () => {
@@ -11,11 +11,10 @@ module.exports.server = (serv, { version }) => {
       const placeHandler = ({ player, placedPosition, direction, properties, item }) => {
         console.log('placed', item)
         if (direction === 0) return { id: -1, data: 0 }
-        let block = mcData.blocksByName[item.name]
+        const block = mcData.blocksByName[item.name]
         if (direction !== 1) {
           properties.facing = ['north', 'south', 'west', 'east'][direction - 2]
         }
-
 
         player._client.write('open_sign_entity', {
           location: placedPosition
@@ -48,7 +47,7 @@ module.exports.server = (serv, { version }) => {
 }
 
 module.exports.player = function (player) {
-  player._client.on('update_sign', async({location, text1, text2, text3, text4}) => {
+  player._client.on('update_sign', async ({ location, text1, text2, text3, text4 }) => {
     const position = new Vec3(location.x, location.y, location.z)
     var block = await player.world.getBlock(position)
     var column = await player.world.getColumnAt(location)
@@ -61,10 +60,10 @@ module.exports.player = function (player) {
       position,
       extra: {
         Color: 'black',
-        Text1: JSON.stringify({'text': text1}),
-        Text2: JSON.stringify({'text': text2}),
-        Text3: JSON.stringify({'text': text3}),
-        Text4: JSON.stringify({'text': text4})
+        Text1: JSON.stringify({ text: text1 }),
+        Text2: JSON.stringify({ text: text2 }),
+        Text3: JSON.stringify({ text: text3 }),
+        Text4: JSON.stringify({ text: text4 })
       }
     })
   })
