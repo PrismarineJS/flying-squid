@@ -2,11 +2,11 @@ const Vec3 = require('vec3').Vec3
 
 const actions = {
   // TODO: add more here
-  'minecraft:sign': 9,
+  'minecraft:sign': 9
 }
 
 module.exports.player = function (player, serv) {
-  serv.putBlockEntity = async({ world, id, position, extra }) => {
+  serv.putBlockEntity = async ({ world, id, position, extra }) => {
     await serv.removeBlockEntity({ world, position }) // remove the block entity there, if there is one
     const column = await world.getColumnAt(position)
     const data = {
@@ -43,13 +43,13 @@ module.exports.player = function (player, serv) {
     }
     column.blockEntities.push(data)
 
-    if (id == 'minecraft:sign' && serv.supportFeature('updateSignPacket')) {
+    if (id === 'minecraft:sign' && serv.supportFeature('updateSignPacket')) {
       const packetData = {
-        'location': position,
-        'text1': JSON.parse(extra.Text1).text,
-        'text2': JSON.parse(extra.Text2).text,
-        'text3': JSON.parse(extra.Text3).text,
-        'text4': JSON.parse(extra.Text4).text,
+        location: position,
+        text1: JSON.parse(extra.Text1).text,
+        text2: JSON.parse(extra.Text2).text,
+        text3: JSON.parse(extra.Text3).text,
+        text4: JSON.parse(extra.Text4).text
       }
       player._writeOthersNearby(
         'update_sign',
@@ -62,14 +62,13 @@ module.exports.player = function (player, serv) {
       return
     }
 
-    
     const packetData = {
-      'location': position,
-      'action': actions[id],
-      'nbtData': {
-        'type': 'compound',
-        'name': '',
-        'value': data
+      location: position,
+      action: actions[id],
+      nbtData: {
+        type: 'compound',
+        name: '',
+        value: data
       }
     }
     player._writeOthersNearby(
@@ -80,30 +79,25 @@ module.exports.player = function (player, serv) {
       'tile_entity_data',
       packetData
     )
-    console.log('put block entity', data)
   }
 
-  serv.removeBlockEntity = async({ world, position }) => {
+  serv.removeBlockEntity = async ({ world, position }) => {
     const column = await world.getColumnAt(position)
 
     if (!column.blockEntities) column.blockEntities = []
 
     column.blockEntities = column.blockEntities.filter(item =>
-      !(item.x.value == position.x && item.y.value == position.y && item.z.value == position.z)
+      !(item.x.value === position.x && item.y.value === position.y && item.z.value === position.z)
     )
     world.saveAt(position)
   }
 
   player._client.on('block_dig', async ({ location, status, face }) => {
     location = new Vec3(location.x, location.y, location.z) // sometimes doesnt work if i dont do this
-    console.log('hmmm', location, status, face)
     const directionVector = directionToVector[face]
     const facedPos = location.plus(directionVector)
     await serv.removeBlockEntity({ world: player.world, position: facedPos })
   })
 }
 
-
-
 const directionToVector = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)]
-

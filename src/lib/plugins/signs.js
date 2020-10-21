@@ -45,8 +45,6 @@ module.exports.server = (serv, { version }) => {
 module.exports.player = function (player, serv) {
   player._client.on('update_sign', async ({ location, text1, text2, text3, text4 }) => {
     const position = new Vec3(location.x, location.y, location.z)
-    var block = await player.world.getBlock(position)
-    var column = await player.world.getColumnAt(location)
 
     await serv.putBlockEntity({
       world: player.world,
