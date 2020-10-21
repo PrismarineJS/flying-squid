@@ -1,10 +1,7 @@
 const Vec3 = require('vec3').Vec3
-const { putBlockEntity, removeBlockEntity } = require('../blockEntities')
 
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
-
-  const oakWallSign = mcData.blocksByName.wall_sign
 
   serv.on('asap', () => {
     if (serv.supportFeature('theFlattening')) {
@@ -37,21 +34,21 @@ module.exports.server = (serv, { version }) => {
         })
 
         if (direction === 1) {
-          return { id: oakSign.id, data: properties.rotation }
+          return { id: mcData.blocksByName.standing_sign.id, data: properties.rotation }
         }
-        return { id: oakWallSign.id, data: direction }
+        return { id: mcData.blocksByName.wall_sign.id, data: direction }
       })
     }
   })
 }
 
-module.exports.player = function (player) {
+module.exports.player = function (player, serv) {
   player._client.on('update_sign', async ({ location, text1, text2, text3, text4 }) => {
     const position = new Vec3(location.x, location.y, location.z)
     var block = await player.world.getBlock(position)
     var column = await player.world.getColumnAt(location)
 
-    await putBlockEntity({
+    await serv.putBlockEntity({
       world: player.world,
       id: 'minecraft:sign',
       position,
