@@ -68,6 +68,7 @@ module.exports.server = (serv, { version }) => {
         if (block.states.length > 0) {
           serv.onItemPlace(name, ({ properties }) => {
             const data = block.defaultState - block.minStateId
+            console.log('placing block', properties, data, serv.setBlockDataProperties(data, block.states, properties))
             return { id: block.id, data: serv.setBlockDataProperties(data, block.states, properties) }
           })
         } else {

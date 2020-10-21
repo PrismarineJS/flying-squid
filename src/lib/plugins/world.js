@@ -14,7 +14,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   const mcData = require('minecraft-data')(version)
   const Anvil = require('prismarine-provider-anvil').Anvil(version)
 
-  const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
+  const newSeed = generation.options ? generation.options.seed : Math.floor(Math.random() * Math.pow(2, 31))
   let seed
   let regionFolder
   if (worldFolder) {
@@ -33,12 +33,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
     }
   } else { seed = newSeed }
-  generation.options.seed = seed
-  generation.options.version = version
-  serv.emit('seed', generation.options.seed)
-  const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
+  // generation.options.seed = seed
+  // generation.options.version = version
+  serv.emit('seed', seed)
+  const generationModule = generations[generation.name] ? generations[generation.name] : (generation instanceof Function ? generation : require(generation.name))
   serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
-  serv.netherworld = new World(generations.nether(generation.options))
+  // serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {
@@ -49,9 +49,9 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {}
-  serv.netherworld.blockEntityData = {}
+  // serv.netherworld.blockEntityData = {}
   serv.overworld.portals = []
-  serv.netherworld.portals = []
+  // serv.netherworld.portals = []
   /// ///////////
 
   serv.pregenWorld = (world, size = 3) => {
@@ -144,6 +144,14 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
+      var blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
+        return {
+          type: 'compound',
+          name: '',
+          value: e
+        }
+      }) : []
+
       player._client.write('map_chunk', {
         x: x,
         z: z,
@@ -159,8 +167,9 @@ module.exports.player = function (player, serv, settings) {
           }
         }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
-        blockEntities: []
+        blockEntities: serv.supportFeature('updateSignPacket') ? blockEntities.filter(blockEntity => blockEntity.value.id.value !== 'minecraft:sign') : blockEntities
       })
+
       if (serv.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
@@ -173,6 +182,25 @@ module.exports.player = function (player, serv, settings) {
           data: chunk.dumpLight()
         })
       }
+
+      if (serv.supportFeature('updateSignPacket')) {
+        for (const blockEntity of blockEntities) {
+          if (blockEntity.value.id.value === 'minecraft:sign') {
+            const packetData = {
+              location: new Vec3(blockEntity.value.x.value, blockEntity.value.y.value, blockEntity.value.z.value),
+              text1: JSON.parse(blockEntity.value.Text1.value).text,
+              text2: JSON.parse(blockEntity.value.Text2.value).text,
+              text3: JSON.parse(blockEntity.value.Text3.value).text,
+              text4: JSON.parse(blockEntity.value.Text4.value).text
+            }
+            player._client.write(
+              'update_sign',
+              packetData
+            )
+          }
+        }
+      }
+
       return Promise.resolve()
     })
   }

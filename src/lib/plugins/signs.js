@@ -1,16 +1,14 @@
+const Vec3 = require('vec3').Vec3
+
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
-  const oakSign = serv.supportFeature('theFlattening') ? mcData.blocksByName.sign : mcData.blocksByName.standing_sign
-  const oakWallSign = mcData.blocksByName.wall_sign
-
   serv.on('asap', () => {
     if (serv.supportFeature('theFlattening')) {
-      const placeHandler = ({ player, placedPosition, direction, properties }) => {
+      const placeHandler = ({ player, placedPosition, direction, properties, item }) => {
         if (direction === 0) return { id: -1, data: 0 }
-        let block = oakSign
+        const block = mcData.blocksByName[item.name]
         if (direction !== 1) {
-          block = oakWallSign
           properties.facing = ['north', 'south', 'west', 'east'][direction - 2]
         }
 
@@ -36,14 +34,29 @@ module.exports.server = (serv, { version }) => {
         })
 
         if (direction === 1) {
-          return { id: oakSign.id, data: properties.rotation }
+          return { id: mcData.blocksByName.standing_sign.id, data: properties.rotation }
         }
-        return { id: oakWallSign.id, data: direction }
+        return { id: mcData.blocksByName.wall_sign.id, data: direction }
       })
     }
   })
 }
 
-module.exports.player = function (player) {
-// WIP: temporary removed
+module.exports.player = function (player, serv) {
+  player._client.on('update_sign', async ({ location, text1, text2, text3, text4 }) => {
+    const position = new Vec3(location.x, location.y, location.z)
+
+    await serv.putBlockEntity({
+      world: player.world,
+      id: 'minecraft:sign',
+      position,
+      extra: {
+        Color: 'black',
+        Text1: JSON.stringify({ text: text1 }),
+        Text2: JSON.stringify({ text: text2 }),
+        Text3: JSON.stringify({ text: text3 }),
+        Text4: JSON.stringify({ text: text4 })
+      }
+    })
+  })
 }

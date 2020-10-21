@@ -5,6 +5,11 @@
     "versions": ["1.8"]
   },
   {
+    "name": "updateSignPacket",
+    "description": "Updating signs is done through it's own packet, 0x12",
+    "versions": ["1.8"]
+  },
+  {
     "name": "unloadChunkDirect",
     "description": "Chunk unloading is done by sending directly an unload chunk packet",
     "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
