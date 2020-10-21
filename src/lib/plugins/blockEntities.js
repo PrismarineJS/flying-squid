@@ -42,6 +42,27 @@ module.exports.player = function (player, serv) {
       }
     }
     column.blockEntities.push(data)
+
+    if (id == 'minecraft:sign' && serv.supportFeature('updateSignPacket')) {
+      const packetData = {
+        'location': position,
+        'text1': JSON.parse(extra.Text1).text,
+        'text2': JSON.parse(extra.Text2).text,
+        'text3': JSON.parse(extra.Text3).text,
+        'text4': JSON.parse(extra.Text4).text,
+      }
+      player._writeOthersNearby(
+        'update_sign',
+        packetData
+      )
+      player._client.write( // not necessary in 1.13+ but still here just in case
+        'update_sign',
+        packetData
+      )
+      return
+    }
+
+    
     const packetData = {
       'location': position,
       'action': actions[id],
@@ -59,6 +80,7 @@ module.exports.player = function (player, serv) {
       'tile_entity_data',
       packetData
     )
+    console.log('put block entity', data)
   }
 
   serv.removeBlockEntity = async({ world, position }) => {
@@ -74,9 +96,10 @@ module.exports.player = function (player, serv) {
 
   player._client.on('block_dig', async ({ location, status, face }) => {
     location = new Vec3(location.x, location.y, location.z) // sometimes doesnt work if i dont do this
+    console.log('hmmm', location, status, face)
     const directionVector = directionToVector[face]
     const facedPos = location.plus(directionVector)
-    await serv.removeBlockEntity({ world: player._client.world, location })
+    await serv.removeBlockEntity({ world: player.world, position: facedPos })
   })
 }
 

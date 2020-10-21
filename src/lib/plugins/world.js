@@ -167,7 +167,7 @@ module.exports.player = function (player, serv, settings) {
           }
         }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
-        blockEntities: blockEntities
+        blockEntities: serv.supportFeature('updateSignPacket') ? blockEntities.filter(blockEntity => blockEntity.value.id.value != 'minecraft:sign') : blockEntities
       })
 
       if (serv.supportFeature('lightSentSeparately')) {
@@ -182,6 +182,27 @@ module.exports.player = function (player, serv, settings) {
           data: chunk.dumpLight()
         })
       }
+
+      if (serv.supportFeature('updateSignPacket')) {
+        for (let blockEntity of blockEntities) {
+          console.log('bruhhhh', blockEntity)
+          if (blockEntity.value.id.value == 'minecraft:sign') {
+            let packetData = {
+              'location': new Vec3(blockEntity.value.x.value, blockEntity.value.y.value, blockEntity.value.z.value),
+              'text1': JSON.parse(blockEntity.value.Text1.value).text,
+              'text2': JSON.parse(blockEntity.value.Text2.value).text,
+              'text3': JSON.parse(blockEntity.value.Text3.value).text,
+              'text4': JSON.parse(blockEntity.value.Text4.value).text,
+            }
+            console.log(packetData)
+            player._client.write(
+              'update_sign',
+              packetData
+            )
+          }
+        }
+      }
+
       return Promise.resolve()
     })
   }
