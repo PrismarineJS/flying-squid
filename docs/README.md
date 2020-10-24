@@ -36,6 +36,41 @@ Or try our autoupdating flying-squid server [autonomous-squid](https://github.co
 You can also install flying-squid globally with `sudo npm install -g flying-squid`
 and then run it with `flying-squid` command.
 
+### Docker
+
+Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
+
+```bash
+docker run prismarinejs/flying-squid
+
+```
+With specific flying-squid configuration, container name and the most important, opening the port to flying-squid:
+
+```bash
+docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm prismarinejs/flying-squid
+```
+
+[docker-compose](https://docs.docker.com/compose/) is useful to quickly launch & stop a single container with a specific configuration.
+
+```yaml
+version: '3.8'
+
+services:
+  flying-squid:
+    image: prismarinejs/flying-squid
+    volumes:
+       - ${PWD}/config:/config
+    ports:
+      - "25565:25565"
+volumes:
+  flying-squid:
+```
+
+```bash
+docker-compose -f path/to/docker-compose.yaml up
+```
+
+
 ## World generation
 
 There are several modules than can be used to generate the world. The default one is called diamond-square

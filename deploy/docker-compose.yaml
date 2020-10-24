@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  flying-squid:
+    image: prismarinejs/flying-squid
+    volumes:
+       - ${PWD}/config:/config
+    ports:
+      - "25565:25565"
+volumes:
+  flying-squid:
