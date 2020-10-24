@@ -2,11 +2,13 @@ const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
   serv.emitParticle = (particle, world, position, { whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1 } = {}) => {
-    const players = (typeof whitelist !== 'undefined' ? (whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
-      world: world,
-      position: position,
-      radius: radius
-    }))
+    const players = (typeof whitelist !== 'undefined'
+      ? (whitelist instanceof Array ? whitelist : [whitelist])
+      : serv.getNearby({
+        world: world,
+        position: position,
+        radius: radius
+      }))
 
     serv._writeArray('world_particles', {
       particleId: particle,
