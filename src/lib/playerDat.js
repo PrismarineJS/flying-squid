@@ -96,9 +96,9 @@ async function save (player, worldFolder, snakeCase) {
 
       const hexText = player.uuid.includes('-')
         ? player.uuid.trim()
-          .split('-')
-          .map((g, i) => g.padStart([8, 4, 4, 4, 12][i], '0'))
-          .join('')
+            .split('-')
+            .map((g, i) => g.padStart([8, 4, 4, 4, 12][i], '0'))
+            .join('')
         : player.uuid.trim().padStart(32, '0')
       uuid.setBigUint64(0, BigInt('0x' + hexText.substring(0, 16)), false)
       uuid.setBigUint64(8, BigInt('0x' + hexText.substring(16)), false)

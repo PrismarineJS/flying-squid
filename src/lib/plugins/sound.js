@@ -2,11 +2,13 @@ const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
   serv.playSound = (sound, world, position, { whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0 } = {}) => {
-    const players = (typeof whitelist !== 'undefined' ? (typeof whitelist instanceof Array ? whitelist : [whitelist]) : serv.getNearby({
-      world: world,
-      position: position,
-      radius: radius
-    }))
+    const players = (typeof whitelist !== 'undefined'
+      ? (typeof whitelist instanceof Array ? whitelist : [whitelist])
+      : serv.getNearby({
+        world: world,
+        position: position,
+        radius: radius
+      }))
     players.filter(player => blacklist.indexOf(player) === -1)
       .forEach(player => {
         const iniPos = position ? position.scaled(1 / 32) : player.position.scaled(1 / 32)
