@@ -1,3 +1,6 @@
+## 1.3.2
+* docker support (thanks @SonLight)
+
 ## 1.3.1
 * Swap attribute names (thanks @mdashlw)
 * Use bedrock instead of polished andesite (thanks @GroobleDierne)

@@ -25,7 +25,8 @@ module.exports = (version) => {
   }
 
   async function findPotentialLines (world, startingPoint, directionV) {
-    const firstLineDirection = directionV.y !== 0 ? [new Vec3(1, 0, 0), new Vec3(0, 0, 1)]
+    const firstLineDirection = directionV.y !== 0
+      ? [new Vec3(1, 0, 0), new Vec3(0, 0, 1)]
       : [new Vec3(0, 1, 0)]
     return (await Promise.all(firstLineDirection
       .map(async d => ({ direction: d, line: (await findLine(world, startingPoint, 'obsidian', d, directionV)) }))))
