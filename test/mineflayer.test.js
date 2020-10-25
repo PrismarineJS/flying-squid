@@ -350,35 +350,30 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     describe('localization', () => {
-      test('can use /localetest en_US works', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest en_US works')
-        await waitMessage(bot, 'Localization works!')
+      describe('Hello, world!', () => {
+        test('en_US', async () => {
+          await waitLoginMessage(bot)
+          bot.chat('/localetest en_US translation.test.none')
+          await waitMessage(bot, 'Hello, world!')
+        })
+        test('ru_RU', async () => {
+          await waitLoginMessage(bot)
+          bot.chat('/localetest ru_RU translation.test.none')
+          await waitMessage(bot, 'Привет, мир!')
+        })
       })
-      test('can use /localetest ru_RU', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest ru_RU works')
-        await waitMessage(bot, 'Локализация работает!')
-      })
-      test('can use /localetest en_US (object)', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest en_US object.hmm')
-        await waitMessage(bot, 'Localization works.. hmm...')
-      })
-      test('can use /localetest ru_RU (object)', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest ru_RU object.hmm')
-        await waitMessage(bot, 'Локализация работает.. хмм...')
-      })
-      test('can use /localetest en_US (array)', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest en_US array.0')
-        await waitMessage(bot, 'It works!')
-      })
-      test('can use /localetest ru_RU (array)', async () => {
-        await waitLoginMessage(bot)
-        bot.chat('/localetest ru_RU array.0')
-        await waitMessage(bot, 'Работает!')
+
+      describe('replacer', () => {
+        test('en_US', async () => {
+          await waitLoginMessage(bot)
+          bot.chat('/localetest en_US tutorial.move.description SPACE')
+          await waitMessage(bot, 'Jump with SPACE')
+        })
+        test('ru_RU', async () => {
+          await waitLoginMessage(bot)
+          bot.chat('/localetest ru_RU tutorial.move.description SPACE')
+          await waitMessage(bot, 'Прыгайте — SPACE')
+        })
       })
     })
   })

@@ -185,7 +185,14 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    serv.localeBroadcast('&e%s', { localize: { 'multiplayer.player.joined': player.username } })
+    // serv.localeBroadcast('&e%s', { localize: { 'multiplayer.player.joined': player.username } })
+
+    serv.players.forEach(pl => {
+      let joinMessage = pl.localeString('multiplayer.player.joined', player.username)
+      let message = serv.parseClassic("&e" + joinMessage)
+      pl.chat(message)
+    })
+
     player.emit('connected')
   }
 
@@ -216,6 +223,7 @@ module.exports.player = async function (player, serv, settings) {
 
     await addPlayer()
     sendLogin()
+
     player.sendSpawnPosition()
     player.sendSelfPosition()
     player.sendAbilities()

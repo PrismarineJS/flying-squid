@@ -19,7 +19,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
 
   player._client.on('end', async () => {
     if (player && player.username) {
-      serv.localeBroadcast('&e%s', { localize: { 'multiplayer.player.left': player.username } })
+      // serv.localeBroadcast('&e%s', { localize: { 'multiplayer.player.left': player.username } })
       player._writeOthers('player_info', {
         action: 4,
         data: [{

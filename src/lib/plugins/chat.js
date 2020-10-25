@@ -123,7 +123,7 @@ module.exports.player = function (player, serv) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
-      serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
+      serv.info(`${player.username} issued command: ${message}`)
     } else {
       player.behavior('chat', {
         message: message,

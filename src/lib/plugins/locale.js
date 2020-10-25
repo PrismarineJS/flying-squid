@@ -3,179 +3,202 @@ const path = require('path')
 const set = require('lodash.set')
 const mkdirp = require('mkdirp')
 
-let appdata = path.join(process.env.APPDATA, '.flying-squid')
+const appdata = path.join(process.env.APPDATA, '.flying-squid')
 mkdirp(appdata)
 
+const tempFolder = path.join(appdata, 'temp')
+
 const LauncherDownload = require('minecraft-wrap').LauncherDownload
-const ld = new LauncherDownload(path.join(appdata, 'temp'), process.platform)
+const ld = new LauncherDownload(tempFolder, process.platform)
 
-const get = (object, path, value) => {
-  const pathArray = Array.isArray(path) ? path : path.split('.').filter(key => key)
-  const pathArrayFlat = pathArray.flatMap(part => typeof part === 'string' ? part.split('.') : part)
-
-  return pathArrayFlat.reduce((obj, key) => obj && obj[key], object) || value
+function format(string, ...replacers) {
+  var splittedString = string.split(/(%s|%[\d+]\$s)/)
+  var sindex = 0
+  splittedString.forEach((str, i) => {
+    if (/(%s)/.test(str)) {
+      splittedString[i] = replacers[sindex]
+      sindex++
+    } else if (/%(\d+)\$s/.test(str)) {
+      const replaceIndex = /%(\d+)\$s/.exec(str)[1] - 1
+      splittedString[i] = replacers[replaceIndex]
+    }
+  })
+  return splittedString.join('')
 }
 
-function removeItemAll (arr, value) {
-  var i = 0
-  while (i < arr.length) {
-    if (arr[i] === value) {
-      arr.splice(i, 1)
-    } else {
-      ++i
+class LocaleManager {
+  constructor() {
+    this.langs = {}
+    this.players = {}
+  }
+  setStringLang = (lang, path, value) => {
+    this.langs[lang] = this.langs[lang] || {}
+    set(this.langs[lang], path, value)
+  }
+  setStringLangs = (path, langsvalues) => {
+    Object.keys(langsvalues).forEach(lang => {
+      this.langs[lang] = this.langs[lang] || {}
+      const value = langsvalues[lang]
+      const localPath = path
+      this.langs[lang][localPath] = value
+    })
+  }
+  setStringJSON = (lang, json) => {
+    this.langs[lang] = json
+  }
+  getString = (locale, path, ...replacers) => {
+    // locale = this.langs[locale] ? locale : 'en_us'
+    try {
+      let string = this.langs[locale][path]
+
+      if (replacers) return format(string, ...replacers)
+      else return string
+    } catch(e) {
+      console.log(e)
+      return path
     }
   }
-  return arr
+  setPlayerLocale(uuid, locale) {
+    this.players[uuid] = locale || 'en_us'
+  }
+  getPlayerLocale(uuid) {
+    return this.players[uuid] || 'en_us'
+  }
 }
 
 module.exports.player = (player, serv) => {
-  player._client.on('settings', (packet) => {
-    player.lang = packet.locale
+  player.setLocale = (locale) => {
+    player.locale = locale
+  }
+
+  player.setLocale(serv.localeManager.getPlayerLocale(player._client.uuid))
+
+  player._client.on('settings', packet => {
+    serv.localeManager.setPlayerLocale(player._client.uuid, packet.locale)
+    player.setLocale(serv.localeManager.getPlayerLocale(player._client.uuid))
   })
 
-  player.localeString = (path, info) => serv.localeString(player.lang, path, info)
+  player.localeString = (path, ...info) => serv.localeString(player.locale, path, ...info)
 }
 
-module.exports.server = (serv, options) => {
-  serv.locales = {
-    langs: {},
-    setStringLang: (lang, path, value) => {
-      serv.locales.langs[lang] = serv.locales.langs[lang] || {}
-      set(serv.locales.langs[lang], path, value)
-    },
-    setStringLangs: (path, langsvalues) => {
-      Object.keys(langsvalues).map(lang => {
-        serv.locales.langs[lang] = serv.locales.langs[lang] || {}
-        const value = langsvalues[lang]
-        const localPath = path
-        set(serv.locales.langs[lang], localPath, value)
+module.exports.server = async (serv, options) => {
+  serv.localeManager = new LocaleManager()
+
+  serv.localeString = (lang, path, ...info) => serv.localeManager.getString(lang, path, ...info)
+
+  async function loadLang(lang, data) {
+    data = JSON.stringify(data)
+    let dataToLoad = {}
+
+    if (/.+=.+/gm.test(data)) {
+      const langData = data.split(/\\n/)
+      let dataFromLang = {}
+      langData.forEach((str) => {
+        const [path, val] = str.split('=')
+        dataFromLang[path] = val
       })
-    },
-    setStringJSON: (lang, json) => {
-      serv.locales.langs[lang] = serv.locales.langs[lang] || {}
-      Object.entries(json).map((entry) => {
-        set(serv.locales.langs[lang], entry[0] + '.value', entry[1])
-      })
-    },
-    getString: (lang, path, info) => {
-      lang = lang || 'en_us'
-      lang = serv.locales.langs[lang] ? lang : 'en_us'
-      if (info) {
-        var splitted = get(serv.locales.langs[lang], path, `'${path}' not found`).value.split(/(%s|%[0-9]\$s)/)
-        var sindex = 0
-        splitted.forEach((str, i) => {
-          if (/(%s)/.test(str)) {
-            splitted[i] = info[sindex]
-            sindex++
-          } else if (/(%[0-9]\$s)/.test(str)) {
-            const iex = /(?!(\$s|%))([0-9]+)/.exec(str)[0] - 1
-            splitted[i] = info[iex]
-          }
-        })
-        return splitted.join('')
-      } else return get(serv.locales.langs[lang], path, `'${path}' not found`).value
+
+      dataToLoad = dataFromLang
+    } else {
+      dataToLoad = JSON.parse(JSON.stringify(data))
     }
+
+    serv.localeManager.setStringJSON(lang, dataToLoad)
+    // serv.debug(`Loaded locale ${lang}`)
   }
 
-  serv.localeBroadcast = (message, { whitelist = serv.players, blacklist = [], system = false, localize = {} } = {}) => {
-    if (whitelist.type === 'player') whitelist = [whitelist]
-
-    whitelist.filter(w => blacklist.indexOf(w) === -1).forEach(player => {
-      if (localize !== {}) {
-        var nos = message.split(/(%s)/)
-        // var splitted = message.split(/%s/)
-        var sindex = 0
-
-        nos.forEach((msg, i) => {
-          if (/(%s)/.test(msg)) {
-            var keys = Object.keys(localize)
-            nos[i] = player.localeString(keys[sindex], Array.isArray(localize[keys[sindex]]) ? localize[keys[sindex]] : [localize[keys[sindex]]])
-            sindex++
-          }
-        })
-
-        message = removeItemAll(nos, '%s').join('')
-      }
-
-      if (typeof message === 'string') message = serv.parseClassic(message)
-
-      if (!system) player.chat(message)
-      else player.system(message)
-    })
-  }
-
-  fs.readdir(path.join(appdata, 'locale/'+options.version), (err, files) => {
-    mkdirp(path.join(appdata, 'locale/'+options.version))
-    if (!files) {
-      const assetsCurrent = []
-      ld.getAssetIndex(options.version).then(assets => {
-  
-        Object.keys(assets.objects).forEach(asset => {
-          if (/^(minecraft\/lang\/)/.test(asset)) {
-            assetsCurrent.push(asset)
-          }
-        })
-        downloadLangs(options.version, assetsCurrent)
-      }).catch(err => {
-        console.log(err)
-      })
-  
-      const downloadLangs = (version, assets) => {
-        assets.forEach(asset => {
-          ld.getAsset(asset, version).then(r => {
-            fs.readFile(r, { encoding: 'utf8' }, (err, data) => {
-              if (err) console.error(err)
-              fs.writeFileSync(path.join(appdata, 'locale/'+version+'/'+asset.split('/')[2]), data)
-            })
-          })
-        })
-        serv.info('Downloaded locales!')
-      }
-    }
-  })
-
-  fs.readdirSync(path.join(appdata, 'locale/'+options.version)).forEach(e => {
-    fs.readFile(path.join(appdata, 'locale/'+options.version+'/'+e), {encoding: 'utf8'}, (err, data) => {
+  async function loadLangs() {
+    fs.readdir(path.join(appdata, 'locale/' + options.version), (err, files) => {
       if (err) console.error(err)
       else {
-        var lang = e.split('.')[0],
-        ext = e.split('.')[1]
-        if (ext === 'lang') {
-          var langData = data.split('\n'),
-            newData = {}
-          langData.forEach((str) => {
-            var string = str.split('=')
-            newData[string[0]] = string[1]
+        files.forEach(e => {
+          fs.readFile(path.join(appdata, 'locale/' + options.version + '/' + e), { encoding: 'utf8' }, (err, data) => {
+            if (err) console.error(err)
+            else {
+              const [lang, ext] = e.split('.')
+
+              loadLang(lang, data)
+            }
           })
-          serv.locales.setStringJSON(lang, newData)
-        } else if (ext === 'json') {
-          var json = JSON.parse(data)
-          serv.locales.setStringJSON(lang, json)
-        }
+        })
       }
+    })
+  }
+
+  function downloadLangs(assets) {
+    let version = options.version
+
+    assets.forEach(asset => {
+      ld.getAsset(asset, version).then(r => {
+        fs.readFile(r, { encoding: 'utf8' }, (err, data) => {
+          if (err) console.error(err)
+
+          let [lang, ext] = asset.split('/')[2].split('.')
+
+          fs.writeFileSync(path.join(appdata, 'locale/' + version + '/' + asset.split('/')[2]), data)
+          loadLang(lang, data)
+        })
+      })
+    })
+
+    let en_us = require('minecraft-data')(version).language
+    loadLang('en_us', en_us)
+    fs.writeFileSync(path.join(appdata, 'locale/' + version + '/en_us.json'), en_us)
+
+    serv.debug('Downloaded locales!')
+  }
+
+  let b = new Promise((resolve, reject) => {
+    mkdirp(path.join(appdata, 'locale/' + options.version))
+    fs.readdir(path.join(appdata, 'locale/' + options.version), async (err, files) => {
+      if (err || !files || files.length < 1) resolve(false)
+      else resolve(true)
     })
   })
 
-  serv.localeString = (lang, path, ...info) => serv.locales.getString(lang, path, ...info)
+  b.then(async isDownloaded => {
+    if (!isDownloaded) {
+      const langAssets = []
+
+      let assets = await ld.getAssetIndex(options.version)
+      Object.keys(assets.objects).forEach(asset => {
+        if (/^(minecraft\/lang\/)/.test(asset)) langAssets.push(asset)
+      })
+
+      await downloadLangs(langAssets)
+    }
+  }).then(async e => {
+    await loadLangs()
+  }).catch(err => {
+    console.log(err)
+  })
 
   serv.commands.add({
     base: 'localetest',
     info: 'Test localization',
-    usage: '/localetest [where] [lang] [replace]',
+    usage: '/localetest [lang] [path] [replacers]',
     op: true,
     parse (args) {
+      args = args.split(' ')
+      if (!args[0] || !args[1]) return false
+      if (!serv.localeManager.langs[args[0]]) return 'Language ' + args[0] + ' is not found'
+
       return args || false
     },
-    action (args, ctx) {
-      args = args.split(' ')
-      const lang = args[1] === '' ? undefined : args[1]
-      const path = args[0] || 'localeTest.works'
-      const replace = args.slice(2)
-
+    action ([lang, path, ...replacers], ctx) {
       if (ctx.player) {
-        if (lang) ctx.player.chat(serv.localeString(lang, path))
-        else ctx.player.chat(ctx.player.localeString(path))
-      } else console.log(serv.localeString(lang, path))
+        if (lang) ctx.player.chat(serv.localeString(lang, path, replacers))
+        else ctx.player.chat(ctx.player.localeString(path, replacers))
+      } else console.log(serv.localeString(lang, path, replacers))
+    }
+  })
+
+  serv.commands.add({
+    base: 'test',
+    action([], ctx) {
+      ctx.player.chat({
+        translate: 'multiplayer.player.joined'
+      })
     }
   })
 }
