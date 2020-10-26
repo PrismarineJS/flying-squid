@@ -123,18 +123,20 @@ module.exports.player = function (player, serv) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
-      serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
+      serv.info(`${player.username} issued command: ${message}`)
     } else {
       player.behavior('chat', {
         message: message,
-        prefix: '<' + player.username + '> ',
+        username: player.username,
         text: message,
         whitelist: serv.players,
         blacklist: []
-      }, ({ prefix, text, whitelist, blacklist }) => {
-        const obj = serv.parseClassic(prefix)
-        if (!obj.extra) obj.extra = []
-        obj.extra.push(serv.parseClassic(text))
+      }, ({ username, text, whitelist, blacklist }) => {
+        const obj = {
+          translate: 'chat.type.text',
+          with: [serv.parseClassic(username), serv.parseClassic(text)]
+        }
+
         serv.broadcast(obj, {
           whitelist: whitelist,
           blacklist: blacklist

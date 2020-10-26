@@ -111,7 +111,7 @@ module.exports.server = (serv, { version }) => {
   serv.onBlockUpdate = (name, handler) => {
     const block = mcData.blocksByName[name]
     if (updateHandlers.has(block.id)) {
-      serv.log(`[Warning] onBlockUpdate handler was registered twice for ${name}`)
+      serv.warn(`onBlockUpdate handler was registered twice for ${name}`)
     }
     updateHandlers.set(block.id, handler)
   }

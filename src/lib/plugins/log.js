@@ -41,6 +41,10 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.green('INFO') + ']: ' + message)
   }
 
+  serv.warn = message => {
+    serv.log('[' + colors.yellow('WARN') + ']: ' + message)
+  }
+
   serv.err = message => {
     serv.log('[' + colors.red('ERR') + ']: ' + message)
   }

@@ -148,7 +148,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/stop',
     op: true,
     action () {
-      serv.quit('Closed')
+      serv.quit()
       process.exit()
     }
   })
@@ -161,11 +161,15 @@ module.exports.server = function (serv, { version }) {
     parse (params) {
       return params || false
     },
-    action (params, ctx) {
-      var who = ctx.player ? ctx.player.username : 'Server'
-      serv.broadcast(`[${who}] ` + params)
-
-      serv.log(`[CHAT]: [${who}] ` + params)
+    action (message, ctx) {
+      serv.broadcast({
+        translate: 'chat.type.announcement',
+        with: [{
+          text: ctx.player ? ctx.player.username : '@'
+        }, {
+          text: message
+        }]
+      })
     }
   })
 

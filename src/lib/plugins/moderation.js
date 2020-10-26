@@ -320,16 +320,33 @@ module.exports.server = function (serv, settings) {
     usage: '/pardon-ip <ip>',
     op: true,
     action (IP, ctx) {
-      serv.pardonIP(IP)
-        .then(result => {
-          if (result) {
-            if (ctx.player) ctx.player.chat(`IP ${IP} was pardoned`)
-            else serv.info(`IP ${IP} was pardoned`)
-          } else {
-            if (ctx.player) ctx.player.chat(`IP ${IP} is not banned`)
-            else serv.err(`IP ${IP} is not banned`)
-          }
-        })
+      let messages = {
+        success: {
+          translate: 'commands.pardonip.success',
+          with: [{ text: IP }]
+        },
+        failed: {
+          translate: 'commands.pardonip.failed'
+        },
+        invalid: {
+          translate: 'commands.pardonip.invalid'
+        }
+      }
+
+      if (!/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(IP)) {
+        if (ctx.player) return ctx.player.chat(messages.invalid)
+        return serv.err(`Invalid IP address`)
+      }
+
+      serv.pardonIP(IP).then(result => {
+        if (ctx.player) {
+          if (result) return ctx.player.chat(messages.success)
+          return ctx.player.chat(messages.failed)
+        }
+
+        if (result) return serv.info(`Unbanned IP ${IP}`)
+        return serv.err(`Nothing changed. That IP isn't banned`)
+      })
     }
   })
 
@@ -339,40 +356,44 @@ module.exports.server = function (serv, settings) {
     usage: '/pardon <player>',
     op: true,
     parse (str) {
-      if (!str.match(/([a-zA-Z0-9_]+)/)) { return false }
+      if (/^\w{3,16}$/i.test(str)) return false
       return str
     },
     action (nick, ctx) {
-      if (settings['online-mode']) {
-        serv.pardonUUID(nick)
-          .then((result) => {
-            if (result) {
-              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
-              else serv.info(nick + ' is unbanned')
-            } else {
-              if (ctx.player) ctx.player.chat(nick + ' is not banned')
-              else serv.err(nick + ' is not banned')
-            }
-          })
-      } else {
-        serv.pardonUsername(nick)
-          .then((result) => {
-            if (result) {
-              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
-              else serv.info(nick + ' is unbanned')
-            } else {
-              if (ctx.player) ctx.player.chat(nick + ' is not banned')
-              else serv.err(nick + ' is not banned')
-            }
-          })
+      let messages = {
+        success: {
+          translate: 'commands.pardon.success',
+          with: [{ text: nick }]
+        },
+        failed: { translate: 'commands.pardon.failed' }
       }
+
+      serv.info(serv.localeString(messages.success))
+
+      let pardonPromise
+      if (settings['online-mode']) pardonPromise = serv.pardonUUID(nick)
+      else pardonPromise = serv.pardonUsername(nick)
+
+      pardonPromise.then((result) => {
+        if (ctx.player) {
+          if (result) return ctx.player.chat(messages.success)
+          return ctx.player.chat(messages.failed)
+        }
+
+        if (result) return serv.info('Unbanned ' + nick)
+        return serv.err(nick + ' is not banned')
+      })
     }
   })
 }
 
 module.exports.player = function (player, serv) {
-  player.kick = (reason = 'You were kicked!') =>
-    player._client.end(reason)
+  player.kick = (reason = 'You were kicked!') => {
+    var fullReason
+    if (typeof reason === 'string') fullReason = {text:reason}
+    else fullReason = reason
+    player._client.end(reason, JSON.stringify(fullReason))
+  }
 
   player.banUUID = reason => {
     reason = reason || 'You were banned!'

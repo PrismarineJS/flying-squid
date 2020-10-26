@@ -2,7 +2,7 @@ const once = require('event-promise')
 const playerDat = require('../playerDat')
 
 module.exports.server = function (serv) {
-  serv.quit = async (reason = 'Going down') => {
+  serv.quit = async (reason = { translate: 'multiplayer.disconnect.server_shutdown' }) => {
     await Promise.all(serv.players.map((player) => {
       player.kick(reason)
       return once(player, 'disconnected')
@@ -19,7 +19,13 @@ module.exports.player = function (player, serv, { worldFolder }) {
 
   player._client.on('end', async () => {
     if (player && player.username) {
-      serv.broadcast(serv.color.yellow + player.username + ' quit the game.')
+      serv.broadcast({
+        translate: 'multiplayer.player.left',
+        with: [{
+          text: player.username
+        }],
+        color: 'yellow'
+      })
       player._writeOthers('player_info', {
         action: 4,
         data: [{

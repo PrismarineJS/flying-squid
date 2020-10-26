@@ -185,7 +185,13 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
+    serv.broadcast({
+      translate: 'multiplayer.player.joined',
+      with: [{
+        text: player.username
+      }],
+      color: 'yellow'
+    })
     player.emit('connected')
   }
 
@@ -202,7 +208,9 @@ module.exports.player = async function (player, serv, settings) {
 
   player.login = async () => {
     if (serv.uuidToPlayer[player.uuid]) {
-      player.kick('You are already connected')
+      player.kick({
+        translate: 'multiplayer.disconnect.duplicate_login'
+      })
       return
     }
     if (serv.bannedPlayers[player.uuid]) {
