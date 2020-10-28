@@ -64,6 +64,21 @@ module.exports.server = function (serv, settings) {
     }
   })()
 
+  console.error = (function () {
+    var orig = console.error
+    return function () {
+      readline.cursorTo(process.stdout, 0)
+      try {
+        var tmp = process.stdout
+        process.stdout = process.stderr
+        orig.apply(console, arguments)
+      } finally {
+        process.stdout = tmp
+      }
+      rl.prompt(true)
+    }
+  })()
+
   serv.createLog = () => {
     if (!settings.logging) return
     mkdirp('logs', (err) => {
@@ -86,13 +101,11 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = function (player, serv) {
-  player.on('connected', () => serv.log('[' + colors.green('INFO') + ']: ' + player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
+  player.on('connected', () => serv.info(player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
 
-  player.on('spawned', () => serv.log('[' + colors.green('INFO') + ']: position written, player spawning...'))
+  player.on('spawned', () => serv.info('position written, player spawning...'))
 
-  player.on('disconnected', () => serv.log('[' + colors.green('INFO') + ']: ' + player.username + ' disconnected'))
-
-  player.on('chat', ({ message }) => serv.log('[' + colors.green('INFO') + '] ' + '<' + player.username + '>' + ' ' + message))
+  player.on('disconnected', () => serv.info(player.username + ' disconnected'))
 
   player.on('kicked', (kicker, reason) =>
     serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))

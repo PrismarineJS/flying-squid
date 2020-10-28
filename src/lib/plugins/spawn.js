@@ -10,7 +10,7 @@ module.exports.server = function (serv, options) {
   const version = options.version
 
   const mobsById = require('minecraft-data')(version).mobs
-  const objectsById = require('minecraft-data')(version).objects
+  const objectsById = require('minecraft-data')(version)
 
   serv.initEntity = (type, entityType, world, position) => {
     if (Object.keys(serv.entities).length > options['max-entities']) { throw new Error('Too many mobs !') }
@@ -29,9 +29,10 @@ module.exports.server = function (serv, options) {
   }
 
   serv.spawnObject = (type, world, position, { pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, itemCount = 1, pickupTime = undefined, deathTime = undefined }) => {
+    console.log(objectsById)
     const object = serv.initEntity('object', type, world, position)
     object.uuid = UUID.v4()
-    object.name = objectsById[type].name
+    object.name = objectsById[itemId].name
     object.data = data
     object.velocity = velocity
     object.pitch = pitch

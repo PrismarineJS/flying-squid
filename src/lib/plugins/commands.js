@@ -4,10 +4,10 @@ var colors = require('colors')
 module.exports.player = function (player, serv, { version }) {
   player.handleCommand = async (str) => {
     try {
-      const res = await serv.commands.use(str, { player: player }, player.op)
-      if (res) player.chat(serv.color.red + res)
+      const res = await serv.commands.use(str, { player }, player.op)
+      if (res) player.chat(res)
     } catch (err) {
-      if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message)
+      if (err.userError) player.chat(serv.color.red + err.message)
       else setTimeout(() => { throw err }, 0)
     }
   }
@@ -17,7 +17,7 @@ module.exports.entity = function (entity, serv) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
 }
 
-module.exports.server = function (serv, { version }) {
+module.exports.server = function (serv, settings) {
   serv.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str)
@@ -117,7 +117,7 @@ module.exports.server = function (serv, { version }) {
         const usage = (cmd.params && cmd.params.usage) || cmd.base
         const info = (cmd.params && cmd.params.info) || 'No info'
         if (ctx.player) ctx.player.chat(usage + ': ' + info)
-        else console.log(usage + ': ' + info)
+        else console.log(colors.yellow(usage) + ': ' + info)
       } else { // Multiple commands found, give list with pages
         const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
@@ -148,6 +148,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/stop',
     op: true,
     action () {
+      serv.log('Stopping server...')
       serv.quit()
       process.exit()
     }

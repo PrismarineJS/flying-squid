@@ -1,4 +1,9 @@
-module.exports.server = function (serv) {
+let pc = require('prismarine-chat')
+const { supportedVersions } = require('../version')
+
+module.exports.server = function (serv, { version }) {
+  const ChatMessage = pc(version)
+
   serv.setTime = (time) => {
     serv.time = time
     serv._writeAll('update_time', {
@@ -24,17 +29,6 @@ module.exports.server = function (serv) {
   })
 
   serv.commands.add({
-    base: 'night',
-    info: 'to change a time to night',
-    usage: '/night',
-    tab: [],
-    op: true,
-    action () {
-      return serv.handleCommand('time set night')
-    }
-  })
-
-  serv.commands.add({
     base: 'time',
     info: 'to change a time',
     usage: '/time <add|query|set> <value>',
@@ -50,23 +44,62 @@ module.exports.server = function (serv) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-        if (ctx.player) ctx.player.chat('It is ' + serv.time)
-        else serv.log('It is ' + serv.time)
+        let queryMessage = {
+          translate: 'commands.time.query',
+          with: [{ text: String(serv.time) }]
+        }
+
+        if (ctx.player) ctx.player.chat(queryMessage)
+        else serv.info(new ChatMessage(queryMessage))
       } else {
         if (isNaN(value)) {
-          return 'That isn\'t a valid number!'
+          let invalidNumMessage
+
+          if (supportedVersions.indexOf(version) < 5) {
+            invalidNumMessage = {
+              translate: 'commands.generic.num.invalid',
+              with: [{ text: String(value) }]
+            }
+          } else {
+            invalidNumMessage = {
+              translate: 'argument.time.invalid_unit'
+            }
+          }
+
+          if (ctx.player) return ctx.player.chat(invalidNumMessage)
+          return serv.info(new ChatMessage(invalidNumMessage))
         } else {
           let newTime
 
+          let message
+
           if (action === 'set') {
             newTime = value
+
+            message = {
+              translate: 'commands.time.set',
+              with: [{ text: String(newTime) }]
+            }
           } else if (action === 'add') {
             newTime = value + serv.time
+
+            if (supportedVersions.indexOf(version) < 5) {
+              message = {
+                translate: 'commands.time.added',
+                with: [{ text: String(value) }]
+              }
+            } else {
+              message = {
+                translate: 'commands.time.set',
+                with: [{ text: String(newTime) }]
+              }
+            }
           }
 
-          if (ctx.player) ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
-          else serv.log('Time was changed from ' + serv.time + ' to ' + newTime)
           serv.setTime(newTime)
+
+          if (ctx.player) return ctx.player.chat(message)
+          return serv.info(new ChatMessage(message))
         }
       }
     }
@@ -78,8 +111,19 @@ module.exports.server = function (serv) {
     usage: '/day',
     tab: [],
     op: true,
+    action (_, ctx) {
+      return ctx.player ? ctx.player.handleCommand('time set day') : serv.handleCommand('time set day')
+    }
+  })
+
+  serv.commands.add({
+    base: 'night',
+    info: 'to change a time to night',
+    usage: '/night',
+    tab: [],
+    op: true,
     action () {
-      return serv.handleCommand('time set day')
+      return ctx.player ? ctx.player.handleCommand('time set day') : serv.handleCommand('time set day')
     }
   })
 }

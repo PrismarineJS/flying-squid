@@ -1,22 +1,48 @@
 const moment = require('moment')
 const needle = require('needle')
+const uuid1345 = require('uuid-1345')
+const crypto = require('crypto')
+const { supportedVersions } = require('../version')
 const UserError = require('flying-squid').UserError
 
+const ipRegex = /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/
+const uuidRegex = /^(\S{8})-?(\S{4})-?(\S{4})-?(\S{4})-?(\S{12})$/
+const nameRegex = /^\w{3,16}$/
+const selectorRegex = /^@([arpe])(?:\[([^\]]+)\])?$/
+
+let pc = require('prismarine-chat')
+
 module.exports.server = function (serv, settings) {
-  serv.ban = async (uuid, reason) => {
+  const ChatMessage = pc(settings.version)
+
+  let moderationMessages = {
+    banned: {
+      translate: 'multiplayer.disconnect.banned'
+    },
+    ip_banned: {
+      translate: 'multiplayer.disconnect.ip_banned'
+    },
+    kicked: {
+      translate: 'multiplayer.disconnect.kicked'
+    }
+  }
+  
+  serv.ban = async (uuid, reason, who) => {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
         time: +moment(),
-        reason: reason || 'Your account is banned!'
+        reason: reason || moderationMessages.banned,
+        who: who || 'Server'
       }
       return true
     } else return false
   }
-  serv.banIP = async (IP, reason) => {
+  serv.banIP = async (IP, reason, who) => {
     if (!serv.bannedIPs[IP]) {
       serv.bannedIPs[IP] = {
         time: +moment(),
-        reason: reason || 'Your IP is banned!'
+        reason: reason || moderationMessages.ip_banned,
+        who: who || 'Server'
       }
       Object.keys(serv.players)
         .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
@@ -26,7 +52,17 @@ module.exports.server = function (serv, settings) {
   }
 
   function uuidInParts (plainUUID) {
-    return plainUUID.length === 32 ? plainUUID.substring(0, 8) + '-' + plainUUID.substring(8, 12) + '-' + plainUUID.substring(12, 16) + '-' + plainUUID.substring(16, 20) + '-' + plainUUID.substring(20) : plainUUID
+    const partArray = plainUUID.split(uuidRegex).filter(Boolean)
+    return partArray.join('-')
+  }
+
+  function nameFromBytesUUID(input) {
+    let md5Bytes = crypto.createHash('md5').update(input).digest()
+    md5Bytes[6]  &= 0x0f;  /* clear version        */
+    md5Bytes[6]  |= 0x30;  /* set to version 3     */
+    md5Bytes[8]  &= 0x3f;  /* clear variant        */
+    md5Bytes[8]  |= 0x80;  /* set to IETF variant  */
+    return uuid1345.stringify(md5Bytes)
   }
 
   serv.getUUIDFromUsername = async username => {
@@ -42,12 +78,25 @@ module.exports.server = function (serv, settings) {
     })
   }
 
-  serv.banUsername = async (username, reason) => {
-    return serv.ban(username, reason)
+  serv.getUsernameFromUUID = async uuid => {
+    return await new Promise((resolve, reject) => {
+      needle('get', 'https://mcapi.ca/player/profile/' + uuidInParts(uuid), { json: true })
+        .then((response) => {
+          if (!response.body) throw new Error('UUID not found')
+          var username = response.body.name
+          if (typeof username !== 'string') throw new Error('UUID not found')
+          resolve(username)
+        })
+        .catch(err => { throw err })
+    })
   }
 
-  serv.banUUID = async (username, reason) => {
-    return serv.getUUIDFromUsername(username).then(uuid => serv.ban(uuid, reason))
+  serv.banUsername = async (username, reason, who) => {
+    return serv.ban(username, reason, who)
+  }
+
+  serv.banUUID = async (username, reason, who) => {
+    return serv.getUUIDFromUsername(username).then(uuid => serv.ban(uuid, reason, who))
   }
 
   serv.pardonUsername = async (username) => {
@@ -80,30 +129,70 @@ module.exports.server = function (serv, settings) {
     usage: '/op <player>',
     op: true,
     parse (params) {
-      if (!params.match(/([a-zA-Z0-9_]+)/)) return false
+      // if (!nameRegex.test(params) || !selectorRegex.test(params)) return false
       return params
     },
-    action (params) {
-      params = params.split(' ')
-      var player = serv.getPlayer(params[0])
-      if (player === undefined || player === null) {
-        const arr = serv.selectorString(params)
-        if (arr.length === 0) throw new UserError('Could not find player')
+    action (username, ctx) {
+      const selectorArray = serv.selectorString(username, 
+        ctx.player ? ctx.player.position : undefined, 
+        ctx.player ? ctx.player.world : serv.overworld, 
+        true)
 
-        arr.map(entity => {
-          entity.op = true
-          return `Opped ${entity}`
-        })
+      let messages
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.op.success',
+            with: [{ text: username }]
+          },
+          failed: {
+            translate: 'commands.op.failed',
+            with: [{ text: username }]
+          },
+          notFound: {
+            translate: 'commands.generic.player.notFound',
+            with: [{ text: username }]
+          }
+        }
       } else {
-        if (!player.op) {
-          player.op = true
-
-          player.chat(`§7§o[Server: Opped ${params[0]}]`)
-          return `Opped ${params[0]}`
-        } else {
-          return `${params[0]} is opped already`
+        messages = {
+          success: {
+            translate: 'commands.op.success',
+            with: [{ text: username }]
+          },
+          failed: {
+            translate: 'commands.op.failed'
+          },
+          notFound: {
+            translate: 'argument.entity.notfound.player',
+            with: [{ text: username }]
+          }
         }
       }
+
+      if (selectorArray.length < 0) {
+        if (ctx.player) return ctx.player.chat(messages.notFound)
+        return serv.err(new ChatMessage(messages.notFound))
+      }
+
+      selectorArray.forEach(entity => {
+        let successMessage = {
+          translate: 'commands.op.success',
+          with: [{ text: entity.username }]
+        }
+
+        let systemMessage = {
+          translate: 'chat.type.admin',
+          with: [{ 
+            text: ctx.player ? ctx.player.username : 'Server' 
+          }, successMessage],
+          color: 'gray',
+          italic: 'true'
+        }
+
+        entity.op = true
+        serv.broadcast(systemMessage, { system: true })
+      })
     }
   })
 
@@ -117,26 +206,66 @@ module.exports.server = function (serv, settings) {
       return params
     },
     action (params) {
-      params = params.split(' ')
-      var player = serv.getPlayer(params[0])
-      if (player === undefined || player === null) {
-        const arr = serv.selectorString(params)
-        if (arr.length === 0) throw new UserError('Could not find player')
+      const selectorArray = serv.selectorString(username, 
+        ctx.player ? ctx.player.position : undefined, 
+        ctx.player ? ctx.player.world : serv.overworld, 
+        true)
 
-        arr.map(entity => {
-          entity.op = false
-          return `Deopped ${entity}`
-        })
+      let messages
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.deop.success',
+            with: [{ text: username }]
+          },
+          failed: {
+            translate: 'commands.deop.failed',
+            with: [{ text: username }]
+          },
+          notFound: {
+            translate: 'commands.generic.player.notFound',
+            with: [{ text: username }]
+          }
+        }
       } else {
-        if (player.op) {
-          player.op = false
-
-          player.chat(`§7§o[Server: Deopped ${params[0]}]`)
-          return `Deopped ${params[0]}`
-        } else {
-          return `${params[0]} isn't opped`
+        messages = {
+          success: {
+            translate: 'commands.deop.success',
+            with: [{ text: username }]
+          },
+          failed: {
+            translate: 'commands.deop.failed'
+          },
+          notFound: {
+            translate: 'argument.entity.notfound.player',
+            with: [{ text: username }]
+          }
         }
       }
+
+      if (selectorArray.length < 0) {
+        if (ctx.player) return ctx.player.chat(messages.notFound)
+        return serv.err(new ChatMessage(messages.notFound))
+      }
+
+      selectorArray.forEach(entity => {
+        let successMessage = {
+          translate: 'commands.deop.success',
+          with: [{ text: entity.username }]
+        }
+
+        let systemMessage = {
+          translate: 'chat.type.admin',
+          with: [{ 
+            text: ctx.player ? ctx.player.username : 'Server' 
+          }, successMessage],
+          color: 'gray',
+          italic: 'true'
+        }
+
+        entity.op = true
+        serv.broadcast(systemMessage, { system: true })
+      })
     }
   })
 
@@ -146,22 +275,61 @@ module.exports.server = function (serv, settings) {
     usage: '/kick <player> [reason]',
     op: true,
     parse (str) {
-      if (!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/)) { return false }
       const parts = str.split(' ')
-      return {
+      let obj = {
         username: parts.shift(),
-        reason: parts.join(' ')
+        reason: parts.join(' ') || moderationMessages.kicked
       }
+
+      if (!nameRegex.test(obj.username)) return false
+      return obj
     },
     action ({ username, reason }, ctx) {
       const kickPlayer = serv.getPlayer(username)
-      if (!kickPlayer) {
-        if (ctx.player) ctx.player.chat(username + ' is not on this server!')
-        else throw new UserError(username + ' is not on this server!')
+
+      let messages
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.kick.success',
+            with: [{ text: username }]
+          },
+          successReason: {
+            translate: 'commands.kick.success.reason',
+            with: [{ text: username }, typeof reason === 'string' ? { text: reason } : reason]
+          },
+          notFound: {
+            translate: 'commands.generic.player.notFound',
+            with: [{ text: username }],
+            color: 'red'
+          }
+        }
       } else {
-        kickPlayer.kick(reason)
-        kickPlayer.emit('kicked', ctx.player ? ctx.player : { username: '[@]' }, reason)
+        messages = {
+          success: {
+            translate: 'commands.kick.success',
+            with: [{ text: username }, typeof reason === 'string' ? { text: reason } : reason]
+          },
+          notFound: {
+            translate: 'argument.entity.notfound.player',
+            with: [{ text: username }],
+            color: 'red'
+          }
+        }
       }
+
+
+      if (!kickPlayer) {
+        if (ctx.player) return ctx.player.chat(messages.notFound)
+        return serv.err(new ChatMessage(messages.notFound))
+      }
+
+      kickPlayer.kick(reason)
+
+      let successMessage = supportedVersions.indexOf(settings.version) < 5 ? reason ? messages.successReason : messages.success : messages.success
+
+      if (ctx.player) return ctx.player.chat(successMessage)
+      return serv.info(new ChatMessage(successMessage))
     }
   })
 
@@ -175,77 +343,54 @@ module.exports.server = function (serv, settings) {
       const parts = str.split(' ')
       return {
         username: parts.shift(),
-        reason: parts.join(' ')
+        reason: parts.join(' ') || moderationMessages.banned
       }
     },
     action ({ username, reason }, ctx) {
       const banPlayer = serv.getPlayer(username)
 
-      if (!banPlayer) {
-        if (settings['online-mode']) {
-          serv.banUUID(username, reason)
-            .then(result => {
-              if (result) {
-                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player) ctx.player.chat(username + ' was banned')
-                else serv.info(username + ' was banned')
-              } else {
-                if (ctx.player) ctx.player.chat(username + ' is banned!')
-                else serv.err(username + ' is banned!')
-              }
-            })
-            .catch(err => {
-              if (err) { // This tricks eslint
-                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
-                else serv.err(username + ' is not a valid player!')
-              }
-            })
-        } else {
-          serv.banUsername(username, reason)
-            .then(result => {
-              if (result) {
-                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player) ctx.player.chat(username + ' was banned')
-                else serv.info(username + ' was banned')
-              } else {
-                if (ctx.player) ctx.player.chat(username + ' is banned!')
-                else serv.err(username + ' is banned!')
-              }
-            })
-            .catch(err => {
-              if (err) { // This tricks eslint
-                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
-                else serv.err(username + ' is not a valid player!')
-              }
-            })
+      let messages
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.ban.success',
+            with: [{ text: username }]
+          },
+          failed: {
+            translate: 'commands.ban.failed',
+            with: [{ text: username }],
+            color: 'red'
+          }
         }
       } else {
-        if (settings['online-mode']) {
-          banPlayer.banUUID(reason)
-            .then(result => {
-              if (result) {
-                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player) ctx.player.chat(username + ' was banned')
-                else serv.info(username + ' was banned')
-              } else {
-                if (ctx.player) ctx.player.chat(username + ' is banned!')
-                else serv.err(username + ' is banned!')
-              }
-            })
-        } else {
-          banPlayer.banUsername(reason)
-            .then(result => {
-              if (result) {
-                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player) ctx.player.chat(username + ' was banned')
-                else serv.info(username + ' was banned')
-              } else {
-                if (ctx.player) ctx.player.chat(username + ' is banned!')
-                else serv.err(username + ' is banned!')
-              }
-            })
+        messages = {
+          success: {
+            translate: 'commands.ban.success',
+            with: [{ text: username }, typeof reason === 'string' ? { text: reason } : reason]
+          },
+          failed: {
+            translate: 'commands.ban.failed',
+            color: 'red'
+          }
         }
       }
+
+      function resulter(result) {
+        if (ctx.player) {
+          if (result) return ctx.player.chat(messages.success)
+          return ctx.player.chat(messages.failed)
+        }
+        
+        if (result) return serv.info(new ChatMessage(messages.success))
+        return serv.err(new ChatMessage(messages.failed))
+      }
+
+      if (!banPlayer) {
+        if (settings['online-mode']) return serv.banUUID(username, reason, ctx.player ? ctx.player.username : undefined).then(resulter)
+        else return serv.banUsername(username, reason, ctx.player ? ctx.player.username : undefined).then(resulter)
+      }
+
+      return banPlayer.ban(reason, ctx.player ? ctx.player.username : undefined).then(resulter)
     }
   })
 
@@ -257,58 +402,159 @@ module.exports.server = function (serv, settings) {
     parse (str) {
       const argv = str.split(' ')
       if (argv[0] === '') return false
-      if (!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(argv[0])) throw new UserError('IP is not correct')
 
       return {
         IP: argv.shift(),
-        reason: argv.shift()
+        reason: argv.shift() || 'Banned by an operator.'
       }
     },
     action ({ IP, reason }, ctx) {
-      serv.banIP(IP, reason)
-        .then(result => {
-          if (result) {
-            if (ctx.player) ctx.player.chat(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
-            else serv.info(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
-          } else {
-            if (ctx.player) ctx.player.chat(`IP ${IP} is banned!`)
-            else serv.err(`IP ${IP} is banned!`)
+      let messages, resulter
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.banip.success',
+            with: [{ text: IP }]
+          },
+          successPlayers: {
+            translate: 'commands.banip.success.players',
+            with: [{ text: IP }, { text: String(Object.keys(serv.players).filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)) }]
+          },
+          invalid: {
+            translate: 'commands.banip.invalid',
+            color: 'red'
           }
-        })
+        }
+
+        if(!ipRegex.test(IP)) {
+          if (ctx.player) return ctx.player.chat(messages.invalid)
+
+          return serv.err(new ChatMessage(messages.invalid))
+        }
+
+        resulter = (result) => {
+          const bannedIPPlayers = Object.keys(serv.players).filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
+
+          if (ctx.player) return ctx.player.chat(bannedIPPlayers > 0 ? messages.successPlayers : messages.success)
+          return serv.info(new ChatMessage(bannedIPPlayers > 0 ? messages.successPlayers : messages.success))
+        }
+      } else {
+        messages = {
+          failed: {
+            translate: 'commands.banip.failed',
+            color: 'red'
+          },
+          info: {
+            // TODO
+            translate: 'commands.banip.info'
+          },
+          invalid: {
+            translate: 'commands.banip.invalid',
+            color: 'red'
+          },
+          success: {
+            translate: 'commands.banip.success',
+            with: [{ text: IP }, { text: reason }]
+          }
+        }
+
+        resulter = (result) => {
+          if (ctx.player) {
+            if (result) return ctx.player.chat(messages.success)
+            return ctx.player.chat(messages.failed)
+          }
+
+          if (result) return serv.info(new ChatMessage(messages.success))
+          return serv.err(new ChatMessage(messages.failed))
+        }
+      }
+
+      if(!ipRegex.test(IP)) {
+        if (ctx.player) return ctx.player.chat(messages.invalid)
+
+        return serv.err(new ChatMessage(messages.invalid))
+      }
+
+      serv.banIP(IP, reason, ctx.player ? ctx.player.username : undefined).then(resulter)
     }
   })
 
   serv.commands.add({
     base: 'banlist',
     info: 'Displays banlist.',
-    usage: '/banlist',
+    usage: '/banlist [ips|players]',
     op: true,
-    action (v, ctx) {
-      var pllist = Object.keys(serv.bannedPlayers)
-      var iplist = Object.keys(serv.bannedIPs)
-      if (v !== 'ips') {
-        if (ctx.player) {
-          ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
-          pllist.forEach(e => {
-            ctx.player.chat(e)
-          })
-        } else {
-          serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
-          pllist.forEach(e => {
-            serv.info(e)
-          })
+    parse (str) {
+      if (/^ips$/.test(str)) return 1
+      return 0
+    },
+    action (type, ctx) {
+      var bannedList = type === 0 ? Object.keys(serv.bannedPlayers) : Object.keys(serv.bannedIPs)
+
+      let messages
+
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          ips: {
+            translate: 'commands.banlist.ips',
+            with: [{ text: String(bannedList.length) }]
+          },
+          players: {
+            translate: 'commands.banlist.players',
+            with: [{ text: String(bannedList.length) }]
+          }
         }
+
+        if (ctx.player) 
+          ctx.player.chat(type === 0 ? messages.players : messages.ips)
+        else 
+          serv.info(new ChatMessage(type === 0 ? messages.players : messages.ips))
+
+        bannedList.forEach(async banned => {
+          if (ctx.player) 
+            ctx.player.chat(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned)
+          else 
+            serv.info(new ChatMessage(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned))
+        })
       } else {
-        if (ctx.player) {
-          ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
-          iplist.forEach(e => {
-            ctx.player.chat(e)
+        messages = {
+          list: {
+            translate: 'commands.banlist.list',
+            with: [{ text: String(bannedList.length) }]
+          },
+          none: {
+            translate: 'commands.banlist.none'
+          }
+        }
+
+        if (bannedList.length > 0) {
+          if (ctx.player) 
+            ctx.player.chat(messages.list)
+          else 
+            serv.info(new ChatMessage(messages.list))
+
+          bannedList.forEach(async banned => {
+            let bannedEntry = {
+              translate: 'commands.banlist.entry',
+              with: [{ 
+                text: type === 0 ? await serv.getUsernameFromUUID(banned) : banned
+              }, { 
+                text: (type === 0 ? serv.bannedPlayers[banned] : serv.bannedIPs[banned]).who
+              }, { 
+                text: (type === 0 ? serv.bannedPlayers[banned] : serv.bannedIPs[banned]).reason 
+              }]
+            }
+
+            if (ctx.player) 
+              ctx.player.chat(bannedEntry)
+            else 
+              serv.info(new ChatMessage(bannedEntry))
           })
         } else {
-          serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
-          iplist.forEach(e => {
-            serv.info(e)
-          })
+          if (ctx.player) 
+            ctx.player.chat(messages.none)
+          else 
+            serv.info(new ChatMessage(messages.none))
         }
       }
     }
@@ -320,33 +566,56 @@ module.exports.server = function (serv, settings) {
     usage: '/pardon-ip <ip>',
     op: true,
     action (IP, ctx) {
-      let messages = {
-        success: {
-          translate: 'commands.pardonip.success',
-          with: [{ text: IP }]
-        },
-        failed: {
-          translate: 'commands.pardonip.failed'
-        },
-        invalid: {
-          translate: 'commands.pardonip.invalid'
+      let messages, resulter
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.unbanip.success',
+            with: [{ text: IP }]
+          },
+          invalid: {
+            translate: 'commands.unbanip.invalid',
+            color: 'red'
+          }
+        }
+
+        resulter = () => {
+          if (ctx.player) return ctx.player.chat(messages.success)
+          return serv.info(new ChatMessage(messages.success))
+        }
+      } else {
+        messages = {
+          success: {
+            translate: 'commands.pardonip.success',
+            with: [{ text: IP }]
+          },
+          failed: {
+            translate: 'commands.pardonip.failed',
+            color: 'red'
+          },
+          invalid: {
+            translate: 'commands.pardonip.invalid',
+            color: 'red'
+          }
+        }
+
+        resulter = (result) => {
+          if (ctx.player) {
+            if (result) return ctx.player.chat(messages.success)
+            return ctx.player.chat(messages.failed)
+          }
+  
+          if (result) return serv.info(new ChatMessage(messages.success))
+          return serv.err(new ChatMessage(messages.failed))
         }
       }
 
-      if (!/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(IP)) {
+      if (!ipRegex.test(IP)) {
         if (ctx.player) return ctx.player.chat(messages.invalid)
-        return serv.err(`Invalid IP address`)
+        return serv.err(new ChatMessage(messages.invalid))
       }
 
-      serv.pardonIP(IP).then(result => {
-        if (ctx.player) {
-          if (result) return ctx.player.chat(messages.success)
-          return ctx.player.chat(messages.failed)
-        }
-
-        if (result) return serv.info(`Unbanned IP ${IP}`)
-        return serv.err(`Nothing changed. That IP isn't banned`)
-      })
+      serv.pardonIP(IP).then(resulter)
     }
   })
 
@@ -356,64 +625,78 @@ module.exports.server = function (serv, settings) {
     usage: '/pardon <player>',
     op: true,
     parse (str) {
-      if (/^\w{3,16}$/i.test(str)) return false
+      if (!/^\w{3,16}$/i.test(str)) return false
       return str
     },
     action (nick, ctx) {
-      let messages = {
-        success: {
-          translate: 'commands.pardon.success',
-          with: [{ text: nick }]
-        },
-        failed: { translate: 'commands.pardon.failed' }
+      let messages
+      if (supportedVersions.indexOf(settings.version) < 5) {
+        messages = {
+          success: {
+            translate: 'commands.unban.success',
+            with: [{ text: nick }]
+          },
+          failed: { 
+            translate: 'commands.unban.failed',
+            with: [{ text: nick }],
+            color: 'red'
+          }
+        }
+      } else {
+        messages = {
+          success: {
+            translate: 'commands.pardon.success',
+            with: [{ text: nick }]
+          },
+          failed: { 
+            translate: 'commands.pardon.failed',
+            color: 'red' 
+          }
+        }
       }
 
-      serv.info(serv.localeString(messages.success))
-
       let pardonPromise
-      if (settings['online-mode']) pardonPromise = serv.pardonUUID(nick)
-      else pardonPromise = serv.pardonUsername(nick)
 
-      pardonPromise.then((result) => {
+      if (settings['online-mode']) 
+        pardonPromise = serv.pardonUUID(nick)
+      else 
+        pardonPromise = serv.pardonUsername(nick)
+
+      pardonPromise.then(result => {
         if (ctx.player) {
           if (result) return ctx.player.chat(messages.success)
           return ctx.player.chat(messages.failed)
         }
 
-        if (result) return serv.info('Unbanned ' + nick)
-        return serv.err(nick + ' is not banned')
+        if (result) return serv.info(new ChatMessage(messages.success))
+        return serv.err(new ChatMessage(messages.failed))
       })
     }
   })
 }
 
 module.exports.player = function (player, serv) {
-  player.kick = (reason = 'You were kicked!') => {
+  player.kick = (reason) => {
     var fullReason
-    if (typeof reason === 'string') fullReason = {text:reason}
-    else fullReason = reason
+    if (typeof reason === 'string') fullReason = { text: reason }
+    else fullReason = reason || moderationMessages.kicked
     player._client.end(reason, JSON.stringify(fullReason))
   }
 
-  player.banUUID = reason => {
-    reason = reason || 'You were banned!'
-    player.kick(reason)
-    const uuid = player.uuid
-    return serv.ban(uuid, reason)
-  }
-  player.banUsername = reason => {
-    reason = reason || 'You were banned!'
+  player.ban = (reason, who) => {
+    reason = reason || moderationMessages.banned
     player.kick(reason)
     const nick = player.username
-    return serv.banUsername(nick, reason)
+    const uuid = player.uuid
+    if (settins['online-mode']) return serv.ban(uuid, reason, who)
+    return serv.banUsername(nick, reason, who)
   }
-  player.banIP = reason => {
-    reason = reason || 'You were IP banned!'
+  player.banIP = (reason, who) => {
+    reason = reason || moderationMessages.ip_banned
     player.kick(reason)
-    return serv.banIP(player._client.socket.remoteAddress)
+    return serv.banIP(player._client.socket.remoteAddress, who)
   }
 
   // I think it doesn't do anything but ok well...
-  player.pardonUUID = () => serv.pardonUsername(player.uuid)
-  player.pardonUsername = () => serv.pardonUsername(player.username)
+  player.pardon = () => settins['online-mode'] ? serv.pardonUUID(player.uuid) : serv.pardonUsername(player.username)
 }

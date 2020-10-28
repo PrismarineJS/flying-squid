@@ -1,4 +1,5 @@
-module.exports.server = function (serv) {
+module.exports.server = function (serv, options) {
+
   serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false } = {}) => {
     if (whitelist.type === 'player') whitelist = [whitelist]
 
@@ -128,13 +129,23 @@ module.exports.player = function (player, serv) {
       player.behavior('chat', {
         message: message,
         username: player.username,
+        uuid: player.uuid,
         text: message,
         whitelist: serv.players,
         blacklist: []
-      }, ({ username, text, whitelist, blacklist }) => {
+      }, ({ username, uuid, text, whitelist, blacklist }) => {
         const obj = {
           translate: 'chat.type.text',
-          with: [serv.parseClassic(username), serv.parseClassic(text)]
+          with: [{ ...serv.parseClassic(username),
+            clickEvent: {
+              action: 'suggest_command', 
+              value: `/msg ${username} `
+            },
+            hoverEvent: {
+              action: 'show_entity', 
+              value: JSON.stringify({ id: uuid, type: 'minecraft:player' })
+            }
+          }, serv.parseClassic(text)]
         }
 
         serv.broadcast(obj, {
@@ -144,6 +155,8 @@ module.exports.player = function (player, serv) {
       })
     }
   })
+
+  player.on('chat', ({ username, message }) => serv.info('<' + player.username + '>' + ' ' + message))
 
   player.chat = message => {
     if (typeof message === 'string') message = serv.parseClassic(message)
@@ -157,6 +170,11 @@ module.exports.player = function (player, serv) {
   }
 
   player.system = message => {
+    if (typeof message === 'string') message = serv.parseClassic(message)
+    player._client.write('chat', { message: JSON.stringify(message), position: 1, sender: '0' })
+  }
+
+  player.gameInfo = message => {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2, sender: '0' })
   }
