@@ -43,10 +43,9 @@ class Command {
 
       res = await com.params.action(pars, ctx)
 
-      if (res) return '' + res
+      if (res) return res
     } else {
-      if (ctx.player) return 'Command not found'
-      else throw new UserError('Command not found')
+      throw new UserError('Command not found')
     }
   }
 

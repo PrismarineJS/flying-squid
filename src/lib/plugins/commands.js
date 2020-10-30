@@ -1,13 +1,24 @@
 const UserError = require('flying-squid').UserError
 var colors = require('colors')
+const pc = require('prismarine-chat')
 
 module.exports.player = function (player, serv, { version }) {
+  const ChatMessage = pc(version)
+
   player.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str, { player }, player.op)
-      if (res) player.chat(res)
+      if (res) {
+        let cm = new ChatMessage(res)
+        console.log(typeof res, res, cm)
+        player.chat(cm.json)
+      }
     } catch (err) {
-      if (err.userError) player.chat(serv.color.red + err.message)
+      if (err.userError) {
+        let cm = new ChatMessage(err.message)
+        console.log(err.message, cm)
+        player.chat(Object.assign(cm.json, { color: 'red' }))
+      }
       else setTimeout(() => { throw err }, 0)
     }
   }
@@ -18,12 +29,31 @@ module.exports.entity = function (entity, serv) {
 }
 
 module.exports.server = function (serv, settings) {
+  const ChatMessage = pc(settings.version)
+
   serv.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str)
-      if (res) serv.info(res)
+      if (res) {
+        try {
+          let cm = new ChatMessage(res)
+          serv.info(cm)
+        } catch {
+          serv.info(res)
+        }
+      }
     } catch (err) {
-      if (err.userError) serv.err(err.message)
+      if (err.userError) {
+        const res = err.message
+        if (res) {
+          try {
+            let cm = new ChatMessage(res)
+            serv.err(cm)
+          } catch {
+            serv.err(res)
+          }
+        }
+      }
       else setTimeout(() => { throw err }, 0)
     }
   }
@@ -148,7 +178,9 @@ module.exports.server = function (serv, settings) {
     usage: '/stop',
     op: true,
     action () {
-      serv.log('Stopping server...')
+      serv.log(new ChatMessage({
+        translate: 'commands.stop.stopping'
+      }))
       serv.quit()
       process.exit()
     }

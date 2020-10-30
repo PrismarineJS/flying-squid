@@ -1,3 +1,5 @@
+const { supportedVersions } = require('../version')
+
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
@@ -13,6 +15,18 @@ module.exports.server = function (serv, { version }) {
     return null
   }
 
+  serv.getPlayerCaseInsensetive = username => {
+    if (!username) return null
+    const found = serv.players.filter(pl => pl.username === username 
+      || pl.username === username.toLowerCase() 
+      || pl.username.toLowerCase() === username
+      || pl.username === username.toUpperCase() 
+      || pl.username.toUpperCase() === username)
+    if (found.length > 0) { return found[0] }
+    return null
+  }
+
+  // TODO
   serv.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
@@ -21,21 +35,52 @@ module.exports.server = function (serv, { version }) {
     op: true,
     parse (str, ctx) {
       var paramsSplit = str.split(' ')
+
+      let msgs
+      if (supportedVersions.indexOf(version) < 5) {
+        msgs = {
+          invalid: {
+            translate: 'commands.generic.num.invalid', // no gamemode error... soo..
+            with: [ String(paramsSplit[0]) ]
+          },
+          playerPerm: {
+            translate: 'commands.generic.player.unspecified'
+          }
+        }
+      } else {
+        msgs = {
+          invalid: {
+            translate: 'argument.entity.options.mode.invalid',
+            with: [ String(paramsSplit[0]) ]
+          },
+          playerPerm: {
+            translate: 'permissions.requires.player'
+          }
+        }
+      }
+
       if (paramsSplit[0] === '') {
         return false
       }
       if (!paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)) {
-        throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be survival, creative, adventure, spectator, or a number from 0-3`)
+        throw new UserError(msgs.invalid)
       }
       if (!paramsSplit[1]) {
         if (ctx.player) return paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)
-        else throw new UserError('Console cannot set gamemode itself')
+        else throw new UserError(msgs.playerPerm)
       }
 
       return str.match(/^(survival|creative|adventure|spectator|[0-3]) (\w+)$/) || false
       // return params || false
     },
     action (str, ctx) {
+      var gamemodesTranslated = {
+        survival: { translate: 'gameMode.survival' },
+        creative: { translate: 'gameMode.creative' },
+        adventure: { translate: 'gameMode.adventure' },
+        changed: { translate: 'gameMode.changed' }
+      }
+
       var gamemodes = {
         survival: 0,
         creative: 1,
@@ -45,23 +90,59 @@ module.exports.server = function (serv, { version }) {
       var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
       var gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
       var mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
-      var plyr = serv.getPlayer(str[2])
+      var plyr = serv.getPlayerCaseInsensetive(str[2])
+
+      var msgs = {
+        self: {
+          translate: 'commands.gamemode.success.self',
+          with: [{
+            ...gamemodesTranslated[mode],
+            color: 'gray',
+            italic: 'true'
+          }]
+        }, 
+        other: {
+          translate: 'commands.gamemode.success.other',
+          with: [{
+            ...gamemodesTranslated[mode],
+            color: 'gray',
+            italic: 'true'
+          }]
+        }
+      }
+
+      var playerNotFound
+      if (supportedVersions.indexOf(version) < 5) {
+        playerNotFound = {
+          translate: 'commands.generic.player.notFound',
+          with: [ String(str[2]) ]
+        }
+      } else {
+        playerNotFound = {
+          translate: 'argument.entity.notfound.player',
+          with: [ String(str[2]) ]
+        }
+      }
+
       if (ctx.player) {
         if (str[2]) {
           if (plyr !== null) {
             plyr.setGameMode(gamemode)
-            return `Set ${str[2]}'s game mode to ${mode} Mode`
-          } else {
-            throw new UserError(`Player '${str[2]}' cannot be found`)
+            return msgs.other
           }
-        } else ctx.player.setGameMode(gamemode)
+
+          throw new UserError(playerNotFound)
+        }
+
+        ctx.player.setGameMode(gamemode)
+        return msgs.self
       } else {
         if (plyr !== null) {
           plyr.setGameMode(gamemode)
-          return `Set ${str[2]}'s game mode to ${mode} Mode`
-        } else {
-          throw new UserError(`Player '${str[2]}' cannot be found`)
-        }
+          return msgs.other
+        } 
+
+        throw new UserError(playerNotFound)
       }
     }
   })

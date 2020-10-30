@@ -1,3 +1,6 @@
+const { ChatMessage } = require('mineflayer')
+const { supportedVersions } = require('../version')
+
 const UserError = require('flying-squid').UserError
 
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
@@ -33,7 +36,7 @@ module.exports.player = function (player, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
   serv.commands.add({
     base: 'xp',
     info: 'Give yourself experience',
@@ -46,8 +49,16 @@ module.exports.server = function (serv) {
       const isLevel = !!args[2]
       const amt = parseInt(args[1])
       if (!ctx.player && !args[3]) throw new UserError('Console can\'t give itself experience.')
-      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
-      if (!user) throw new UserError(args[3] + ' is not on this server!')
+
+      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player 
+      if (!user) {
+        let unknownPlayerMsg
+        if (supportedVersions.indexOf(version) < 5) unknownPlayerMsg = { translate: 'argument.player.unknown' }
+        else unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
+
+        if (ctx.player) return ctx.player.chat(unknownPlayerMsg)
+          return serv.err(new ChatMessage(unknownPlayerMsg))
+      }
 
       if (!isLevel) {
         user.setXp(user.xp + amt)

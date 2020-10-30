@@ -14,7 +14,9 @@ module.exports.player = function (player) {
         player._client.write('open_window', {
           windowId: 165,
           inventoryType: 'minecraft:chest',
-          windowTitle: JSON.stringify('Chest'),
+          windowTitle: {
+            translate: 'container.chest'
+          },
           slotCount: 9 * 3 + 8 // 3 rows, make nicer later
         })
         cancel()

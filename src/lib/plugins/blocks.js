@@ -1,3 +1,6 @@
+// const { supportedVersions } = require('../version')
+const pc = require('prismarine-chat') 
+
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv) {
@@ -52,6 +55,7 @@ module.exports.player = function (player, serv) {
 module.exports.server = function (serv, { version }) {
   const mcData = require('minecraft-data')(version)
   const blocks = mcData.blocks
+  const ChatMessage = pc(version)
 
   serv.commands.add({
     base: 'setblock',
@@ -73,8 +77,22 @@ module.exports.server = function (serv, { version }) {
       const data = parseInt(params[5] || 0, 10)
       const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
 
-      if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), stateId)
-      else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), stateId)
+      const pos = [res[0], res[1], res[2]]
+      const posFloored = new Vec3(...pos).floored()
+
+      if (ctx.player) {
+        ctx.player.setBlock(posFloored, stateId)
+        ctx.player.chat({
+          translate: 'commands.setblock.success',
+          with: [pos.map(e => String(e))]
+        })
+      } else {
+        serv.setBlock(serv.overworld, posFloored, stateId)
+        serv.info(new ChatMessage({
+          translate: 'commands.setblock.success',
+          with: [pos.map(e => String(e))]
+        }))
+      }
     }
   })
 

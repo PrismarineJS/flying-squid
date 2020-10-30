@@ -1,3 +1,5 @@
+const { supportedVersions } = require("../version")
+const pc = require('prismarine-chat')
 
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
@@ -50,7 +52,9 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
+  const ChatMessage = pc(version)
+
   serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',
@@ -61,10 +65,25 @@ module.exports.server = function (serv) {
     },
     action (params, ctx) {
       const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
+      const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
       if (params[2] === 'clear') {
         targets.forEach(e => Object.keys(e.effects).forEach(effectId => {
           if (e.effects[effectId] !== null) e.removeEffect(effectId)
         }))
+
+        let removeMsg
+        if (supportedVersions.indexOf(version) < 5) {
+          removeMsg = {
+            translate: 'commands.effect.success.removed.all'
+          }
+        } else {
+          removeMsg = { // anyway used for multiple
+            translate: 'commands.effect.clear.everything.success.single',
+            with: [String(chatSelect)]
+          }
+        }
+        if (ctx.player) ctx.player.chat(removeMsg)
+        else serv.log(new ChatMessage(removeMsg))
       } else {
         targets.forEach(e => {
           const effId = parseInt(params[2])
@@ -77,18 +96,28 @@ module.exports.server = function (serv) {
             particles: params[5] !== 'true' // hidesParticles vs particles (i.e. "showParticles")
           })
         })
-      }
-      const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
-      if (params[2] === 'clear') {
-        if (ctx.player) ctx.player.chat('Remove all effects from ' + chatSelect + '.')
-        else serv.log('Remove all effects from ' + chatSelect + '.')
-      } else {
-        if (ctx.player) {
-          ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
-                        (parseInt(params[3]) || 30) + ' seconds')
+
+        let giveMsgs
+        if (supportedVersions.indexOf(version) < 5) {
+          giveMsgs = {
+            success: {
+              translate: 'commands.effect.success',
+              with: [ String(params[2]), String((params[4] || 0)), String(chatSelect), String((parseInt(params[3]) || 30)) ]
+            }
+          }
         } else {
-          serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
-                        (parseInt(params[3]) || 30) + ' seconds')
+          giveMsgs = {
+            success: {
+              translate: 'commands.effect.give.success.single',
+              with: [ String(params[2]), String(params[1]) ]
+            }
+          }
+        }
+
+        if (ctx.player) {
+          ctx.player.chat(giveMsgs.success)
+        } else {
+          serv.info(new ChatMessage(giveMsgs.success))
         }
       }
     }

@@ -143,29 +143,29 @@ module.exports.server = function (serv, settings) {
         messages = {
           success: {
             translate: 'commands.op.success',
-            with: [{ text: username }]
+            with: [username]
           },
           failed: {
             translate: 'commands.op.failed',
-            with: [{ text: username }]
+            with: [username]
           },
           notFound: {
             translate: 'commands.generic.player.notFound',
-            with: [{ text: username }]
+            with: [username]
           }
         }
       } else {
         messages = {
           success: {
             translate: 'commands.op.success',
-            with: [{ text: username }]
+            with: [username]
           },
           failed: {
             translate: 'commands.op.failed'
           },
           notFound: {
             translate: 'argument.entity.notfound.player',
-            with: [{ text: username }]
+            with: [username]
           }
         }
       }
@@ -216,29 +216,29 @@ module.exports.server = function (serv, settings) {
         messages = {
           success: {
             translate: 'commands.deop.success',
-            with: [{ text: username }]
+            with: [username]
           },
           failed: {
             translate: 'commands.deop.failed',
-            with: [{ text: username }]
+            with: [username]
           },
           notFound: {
             translate: 'commands.generic.player.notFound',
-            with: [{ text: username }]
+            with: [username]
           }
         }
       } else {
         messages = {
           success: {
             translate: 'commands.deop.success',
-            with: [{ text: username }]
+            with: [username]
           },
           failed: {
             translate: 'commands.deop.failed'
           },
           notFound: {
             translate: 'argument.entity.notfound.player',
-            with: [{ text: username }]
+            with: [username]
           }
         }
       }

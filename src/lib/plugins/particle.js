@@ -1,6 +1,8 @@
+const { supportedVersions } = require('../version')
+
 const Vec3 = require('vec3').Vec3
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
   serv.emitParticle = (particle, world, position, { whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1 } = {}) => {
     const players = (typeof whitelist !== 'undefined'
       ? (whitelist instanceof Array ? whitelist : [whitelist])
@@ -42,10 +44,28 @@ module.exports.server = function (serv) {
     },
     action ({ particle, amount, size }, ctx) {
       if (amount >= 100000) {
-        ctx.player.chat('You cannot emit more than 100,000 particles!')
+        let tooBig
+        if (supportedVersions.indexOf(version) < 5) {
+          tooBig = {
+            translate: 'commands.generic.num.tooBig',
+            with: [ String(amount), String(100000) ]
+          }
+        } else {
+          tooBig = {
+            translate: 'argument.integer.big',
+            with: [ String(100000), String(amount) ]
+          }
+        }
+        ctx.player.chat(tooBig)
         return
       }
-      ctx.player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')')
+
+      let successMsg = {
+        translate: 'commands.particle.success',
+        with: [ String(particle), supportedVersions.indexOf(version) < 5 ? amount : '' ]
+      }
+
+      ctx.player.chat(successMsg)
       serv.emitParticle(particle, ctx.player.world, ctx.player.position, { count: amount, size: size })
     }
   })
