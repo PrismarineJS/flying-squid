@@ -243,15 +243,12 @@ module.exports.server = function (serv, settings) {
         }
       }
 
-      if (selectorArray.length < 0) {
-        if (ctx.player) return ctx.player.chat(messages.notFound)
-        return serv.err(new ChatMessage(messages.notFound))
-      }
+      if (selectorArray.length < 0) throw new UserError(messages.notFound)
 
       selectorArray.forEach(entity => {
         let successMessage = {
           translate: 'commands.deop.success',
-          with: [{ text: entity.username }]
+          with: [entity.username || entity.name]
         }
 
         let systemMessage = {
@@ -292,15 +289,15 @@ module.exports.server = function (serv, settings) {
         messages = {
           success: {
             translate: 'commands.kick.success',
-            with: [{ text: username }]
+            with: [username]
           },
           successReason: {
             translate: 'commands.kick.success.reason',
-            with: [{ text: username }, typeof reason === 'string' ? { text: reason } : reason]
+            with: [username, typeof reason === 'string' ? { text: reason } : reason]
           },
           notFound: {
             translate: 'commands.generic.player.notFound',
-            with: [{ text: username }],
+            with: [username],
             color: 'red'
           }
         }
@@ -308,28 +305,24 @@ module.exports.server = function (serv, settings) {
         messages = {
           success: {
             translate: 'commands.kick.success',
-            with: [{ text: username }, typeof reason === 'string' ? { text: reason } : reason]
+            with: [username, typeof reason === 'string' ? { text: reason } : reason]
           },
           notFound: {
             translate: 'argument.entity.notfound.player',
-            with: [{ text: username }],
+            with: [username],
             color: 'red'
           }
         }
       }
 
 
-      if (!kickPlayer) {
-        if (ctx.player) return ctx.player.chat(messages.notFound)
-        return serv.err(new ChatMessage(messages.notFound))
-      }
+      if (!kickPlayer) throw new UserError(messages.notFound)
 
       kickPlayer.kick(reason)
 
       let successMessage = supportedVersions.indexOf(settings.version) < 5 ? reason ? messages.successReason : messages.success : messages.success
 
-      if (ctx.player) return ctx.player.chat(successMessage)
-      return serv.info(new ChatMessage(successMessage))
+      return successMessage
     }
   })
 
@@ -376,13 +369,8 @@ module.exports.server = function (serv, settings) {
       }
 
       function resulter(result) {
-        if (ctx.player) {
-          if (result) return ctx.player.chat(messages.success)
-          return ctx.player.chat(messages.failed)
-        }
-        
-        if (result) return serv.info(new ChatMessage(messages.success))
-        return serv.err(new ChatMessage(messages.failed))
+        if (result) return messages.success
+        return messages.failed
       }
 
       if (!banPlayer) {
@@ -432,17 +420,15 @@ module.exports.server = function (serv, settings) {
           return serv.err(new ChatMessage(messages.invalid))
         }
 
-        resulter = (result) => {
+        resulter = () => {
           const bannedIPPlayers = Object.keys(serv.players).filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
 
-          if (ctx.player) return ctx.player.chat(bannedIPPlayers > 0 ? messages.successPlayers : messages.success)
-          return serv.info(new ChatMessage(bannedIPPlayers > 0 ? messages.successPlayers : messages.success))
+          return bannedIPPlayers > 0 ? messages.successPlayers : messages.success
         }
       } else {
         messages = {
           failed: {
             translate: 'commands.banip.failed',
-            color: 'red'
           },
           info: {
             // TODO
@@ -450,7 +436,6 @@ module.exports.server = function (serv, settings) {
           },
           invalid: {
             translate: 'commands.banip.invalid',
-            color: 'red'
           },
           success: {
             translate: 'commands.banip.success',
@@ -459,21 +444,12 @@ module.exports.server = function (serv, settings) {
         }
 
         resulter = (result) => {
-          if (ctx.player) {
-            if (result) return ctx.player.chat(messages.success)
-            return ctx.player.chat(messages.failed)
-          }
-
-          if (result) return serv.info(new ChatMessage(messages.success))
-          return serv.err(new ChatMessage(messages.failed))
+          if (result) return messages.success
+          return messages.failed
         }
       }
 
-      if(!ipRegex.test(IP)) {
-        if (ctx.player) return ctx.player.chat(messages.invalid)
-
-        return serv.err(new ChatMessage(messages.invalid))
-      }
+      if(!ipRegex.test(IP)) return messages.invalid
 
       serv.banIP(IP, reason, ctx.player ? ctx.player.username : undefined).then(resulter)
     }
@@ -497,11 +473,11 @@ module.exports.server = function (serv, settings) {
         messages = {
           ips: {
             translate: 'commands.banlist.ips',
-            with: [{ text: String(bannedList.length) }]
+            with: [ String(bannedList.length) ]
           },
           players: {
             translate: 'commands.banlist.players',
-            with: [{ text: String(bannedList.length) }]
+            with: [ String(bannedList.length) ]
           }
         }
 
