@@ -10,13 +10,11 @@ module.exports.player = function (player, serv, { version }) {
       const res = await serv.commands.use(str, { player }, player.op)
       if (res) {
         let cm = new ChatMessage(res)
-        console.log(typeof res, res, cm)
         player.chat(cm.json)
       }
     } catch (err) {
       if (err.userError) {
         let cm = new ChatMessage(err.message)
-        console.log(err.message, cm)
         player.chat(Object.assign(cm.json, { color: 'red' }))
       }
       else setTimeout(() => { throw err }, 0)
