@@ -34,7 +34,7 @@ module.exports.server = function (serv, settings) {
       needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
         .then((response) => {
           if (!response.body) throw new Error('username not found')
-          var idstr = response.body.id
+          const idstr = response.body.id
           if (typeof idstr !== 'string') throw new Error('username not found')
           resolve(uuidInParts(idstr))
         })
@@ -85,7 +85,7 @@ module.exports.server = function (serv, settings) {
     },
     action (params) {
       params = params.split(' ')
-      var player = serv.getPlayer(params[0])
+      const player = serv.getPlayer(params[0])
       if (player === undefined || player === null) {
         const arr = serv.selectorString(params)
         if (arr.length === 0) throw new UserError('Could not find player')
@@ -118,7 +118,7 @@ module.exports.server = function (serv, settings) {
     },
     action (params) {
       params = params.split(' ')
-      var player = serv.getPlayer(params[0])
+      const player = serv.getPlayer(params[0])
       if (player === undefined || player === null) {
         const arr = serv.selectorString(params)
         if (arr.length === 0) throw new UserError('Could not find player')
@@ -284,8 +284,8 @@ module.exports.server = function (serv, settings) {
     usage: '/banlist',
     op: true,
     action (v, ctx) {
-      var pllist = Object.keys(serv.bannedPlayers)
-      var iplist = Object.keys(serv.bannedIPs)
+      const pllist = Object.keys(serv.bannedPlayers)
+      const iplist = Object.keys(serv.bannedIPs)
       if (v !== 'ips') {
         if (ctx.player) {
           ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)

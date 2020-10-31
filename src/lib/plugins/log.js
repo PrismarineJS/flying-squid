@@ -3,7 +3,7 @@ const timeStarted = Math.floor(new Date() / 1000).toString()
 const path = require('path')
 const mkdirp = require('mkdirp')
 const moment = require('moment')
-var colors = require('colors')
+const colors = require('colors')
 
 const readline = require('readline')
 const rl = readline.createInterface({
@@ -46,11 +46,12 @@ module.exports.server = function (serv, settings) {
   }
 
   console.log = (function () {
-    var orig = console.log
+    const orig = console.log
     return function () {
       readline.cursorTo(process.stdout, 0)
+      let tmp
       try {
-        var tmp = process.stdout
+        tmp = process.stdout
         process.stdout = process.stderr
         orig.apply(console, arguments)
       } finally {

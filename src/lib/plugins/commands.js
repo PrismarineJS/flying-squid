@@ -1,5 +1,5 @@
 const UserError = require('flying-squid').UserError
-var colors = require('colors')
+const colors = require('colors')
 
 module.exports.player = function (player, serv, { version }) {
   player.handleCommand = async (str) => {
@@ -162,7 +162,7 @@ module.exports.server = function (serv, { version }) {
       return params || false
     },
     action (params, ctx) {
-      var who = ctx.player ? ctx.player.username : 'Server'
+      const who = ctx.player ? ctx.player.username : 'Server'
       serv.broadcast(`[${who}] ` + params)
 
       serv.log(`[CHAT]: [${who}] ` + params)

@@ -20,7 +20,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/gamemode <mode> [player]',
     op: true,
     parse (str, ctx) {
-      var paramsSplit = str.split(' ')
+      const paramsSplit = str.split(' ')
       if (paramsSplit[0] === '') {
         return false
       }
@@ -36,16 +36,16 @@ module.exports.server = function (serv, { version }) {
       // return params || false
     },
     action (str, ctx) {
-      var gamemodes = {
+      const gamemodes = {
         survival: 0,
         creative: 1,
         adventure: 2,
         spectator: 3
       }
-      var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
-      var gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
-      var mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
-      var plyr = serv.getPlayer(str[2])
+      const gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
+      const gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
+      const mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
+      const plyr = serv.getPlayer(str[2])
       if (ctx.player) {
         if (str[2]) {
           if (plyr !== null) {

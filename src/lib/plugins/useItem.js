@@ -5,7 +5,7 @@ module.exports.server = (serv, { version }) => {
   function getEntID (entName) {
     let foundID = ''
 
-    Object.keys(mobs).some(mobID => {
+    Object.keys(mobs).forEach(mobID => {
       const mob = mobs[mobID]
       if ('minecraft:' + mob.name === entName) {
         foundID = mobID

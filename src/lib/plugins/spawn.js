@@ -157,6 +157,8 @@ module.exports.server = function (serv, options) {
           return serv.spawnObject(entity.id, ctx.player.world, ctx.player.position, {
             velocity: new Vec3((Math.random() - 0.5) * 10, Math.random() * 10 + 10, (Math.random() - 0.5) * 10)
           })
+        } else {
+          return Promise.resolve()
         }
       })
         .reduce((prec, entity) => {
