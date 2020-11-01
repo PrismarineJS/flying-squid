@@ -1,5 +1,5 @@
 const UserError = require('flying-squid').UserError
-var colors = require('colors')
+const colors = require('colors')
 const pc = require('prismarine-chat')
 
 module.exports.player = function (player, serv, { version }) {

@@ -58,7 +58,7 @@ module.exports.server = function (serv, { version }) {
           }
         }
       }
-
+      
       if (paramsSplit[0] === '') {
         return false
       }
@@ -81,7 +81,7 @@ module.exports.server = function (serv, { version }) {
         changed: { translate: 'gameMode.changed' }
       }
 
-      var gamemodes = {
+      const gamemodes = {
         survival: 0,
         creative: 1,
         adventure: 2,

@@ -4,8 +4,8 @@ module.exports.player = function (player, serv) {
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
       const cmds = []
-      for (var cmd in serv.commands.uniqueHash) {
-        var cmdFull = serv.commands.uniqueHash[cmd]
+      for (const cmd in serv.commands.uniqueHash) {
+        const cmdFull = serv.commands.uniqueHash[cmd]
         if (!player.op && cmdFull.params.op) continue
         cmds.push(`/${cmd}`)
       }
@@ -57,8 +57,8 @@ module.exports.player = function (player, serv) {
 
   serv.tabComplete.add('command', () => {
     const cmds = []
-    for (var cmd in serv.commands.uniqueHash) {
-      var cmdFull = serv.commands.uniqueHash[cmd]
+    for (const cmd in serv.commands.uniqueHash) {
+      const cmdFull = serv.commands.uniqueHash[cmd]
       if (!player.op && cmdFull.params.op) continue
       cmds.push(cmd)
     }
@@ -71,17 +71,17 @@ module.exports.player = function (player, serv) {
 
   serv.tabComplete.add('blockX', (blockInfo) => {
     if (blockInfo === null) return ['']
-    var x = String(blockInfo.x)
+    const x = String(blockInfo.x)
     return [x] || ['']
   })
   serv.tabComplete.add('blockY', (blockInfo) => {
     if (blockInfo === null) return ['']
-    var y = String(blockInfo.y)
+    const y = String(blockInfo.y)
     return [y] || ['']
   })
   serv.tabComplete.add('blockZ', (blockInfo) => {
     if (blockInfo === null) return ['']
-    var z = String(blockInfo.z)
+    const z = String(blockInfo.z)
     return [z] || ['']
   })
 }

@@ -70,7 +70,7 @@ module.exports.server = function (serv, settings) {
       needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
         .then((response) => {
           if (!response.body) throw new Error('username not found')
-          var idstr = response.body.id
+          const idstr = response.body.id
           if (typeof idstr !== 'string') throw new Error('username not found')
           resolve(uuidInParts(idstr))
         })

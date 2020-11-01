@@ -68,6 +68,6 @@
     "minecraft-wrap": "^1.2.3",
     "mineflayer": "^2.7.3",
     "require-self": "^0.2.3",
-    "standard": "^15.0.0"
+    "standard": "^16.0.1"
   }
 }
