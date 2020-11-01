@@ -53,6 +53,8 @@ module.exports.entity = function (entity, serv) {
         animation: 1
       })
     }
+
+    entity.kill = () => entity.takeDamage({ damage: 20 })
   }
 
   if (entity.type !== 'player') {
@@ -73,18 +75,16 @@ module.exports.server = function (serv) {
     action (sel, ctx) {
       if (sel !== '') {
         if (serv.getPlayer(sel) !== null) {
-          serv.getPlayer(sel).takeDamage({ damage: 20 })
-          serv.info(`Killed ${colors.bold(sel)}`)
+          serv.getPlayer(sel).kill()
         } else {
           const arr = serv.selectorString(sel)
           if (arr.length === 0) throw new UserError('Could not find player')
           arr.map(entity => {
-            entity.takeDamage({ damage: 20 })
-            serv.info(`Killed ${colors.bold(entity.type === 'player' ? entity.username : entity.name)}`)
+            entity.kill()
           })
         }
       } else {
-        if (ctx.player) ctx.player.takeDamage({ damage: 20 })
+        if (ctx.player) ctx.player.kill()
         else serv.err('Can\'t kill console')
       }
     }

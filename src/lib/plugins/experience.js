@@ -1,8 +1,5 @@
-const { ChatMessage } = require('mineflayer')
 const { supportedVersions } = require('../version')
-
 const UserError = require('flying-squid').UserError
-
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
 
 module.exports.player = function (player, serv) {
@@ -53,24 +50,49 @@ module.exports.server = function (serv, { version }) {
       const user = args[3] ? serv.getPlayer(args[3]) : ctx.player 
       if (!user) {
         let unknownPlayerMsg
-        if (supportedVersions.indexOf(version) < 5) unknownPlayerMsg = { translate: 'argument.player.unknown' }
-        else unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
+        if (supportedVersions.indexOf(version) < 5) 
+          unknownPlayerMsg = { translate: 'argument.player.unknown' }
+        else 
+          unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
 
-        if (ctx.player) return ctx.player.chat(unknownPlayerMsg)
-          return serv.err(new ChatMessage(unknownPlayerMsg))
+        throw new UserError(unknownPlayerMsg)
       }
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
-        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
-        else serv.info('Gave ' + user.username + ' ' + amt + ' xp')
+
+        let xpMessage
+        if (supportedVersions.indexOf(version) < 5) 
+          xpMessage = { 
+            translate: 'commands.xp.success',
+            with: [ String(amt), user.username ]
+          }
+        else 
+          xpMessage = { 
+            translate: 'commands.experience.add.points.success.single',
+            with: [ String(amt), user.username ]
+          }
+        
+        return xpMessage
       } else {
         const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
         const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
-        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
-        else serv.info('Gave ' + user.username + ' ' + amt + ' levels')
+        
+        let xpMessage
+        if (supportedVersions.indexOf(version) < 5) 
+          xpMessage = { 
+            translate: 'commands.xp.success.levels',
+            with: [ String(amt), user.username ]
+          }
+        else 
+          xpMessage = { 
+            translate: 'commands.experience.add.levels.success.single',
+            with: [ String(amt), user.username ]
+          }
+        
+        return xpMessage
       }
     }
   })

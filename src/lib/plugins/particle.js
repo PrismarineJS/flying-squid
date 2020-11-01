@@ -62,7 +62,7 @@ module.exports.server = function (serv, { version }) {
 
       let successMsg = {
         translate: 'commands.particle.success',
-        with: [ String(particle), supportedVersions.indexOf(version) < 5 ? amount : '' ]
+        with: [ String(particle), String(supportedVersions.indexOf(version) < 5 ? amount : '') ]
       }
 
       ctx.player.chat(successMsg)
