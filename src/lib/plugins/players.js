@@ -4,6 +4,7 @@ const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
   const Item = require('prismarine-item')(version)
+  const mcData = require('minecraft-data')(version)
   serv.entityMaxId = 0
   serv.players = []
   serv.uuidToPlayer = {}
@@ -171,17 +172,45 @@ module.exports.server = function (serv, { version }) {
     op: true,
     parse (args) {
       args = args.split(' ')
+
+      var playerNotFound, numInvalid
+      playerNotFound = {
+        translate: supportedVersions.indexOf(version) < 5 ? 'commands.generic.player.notFound' : 'argument.entity.notfound.player',
+        with: [ String(args[0]) ]
+      }
+
+      numInvalid = {
+        translate: supportedVersions.indexOf(version) < 5 ? 'commands.generic.num.invalid' : 'parsing.int.invalid',
+        with: [ String(args[2]) ]
+      }
+
       if (args[0] === '') return false
-      if (!serv.getPlayer(args[0])) throw new UserError('Player is not found')
-      if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
+      if (!serv.getPlayerCaseInsensetive(args[0])) throw new UserError(playerNotFound)
+      if (args[2] && !args[2].match(/\d/)) throw new UserError(numInvalid)
       return {
-        player: serv.getPlayer(args[0]),
+        player: serv.getPlayerCaseInsensetive(args[0]),
         item: args[1],
         count: args[2] ? args[2] : 1
       }
     },
     action ({ player, item, count }, ctx) {
+      
       const newItem = new Item(item, count)
+
+      let unknownId
+      if (supportedVersions.indexOf(version) < 5) {
+        unknownId = {
+          translate: 'commands.give.item.notFound',
+          with: [item]
+        }
+      } else {
+        unknownId = {
+          translate: 'argument.id.unknown',
+          with: [item]
+        }
+      }
+
+      if (newItem.name === 'unknown') throw new UserError()
 
       player.inventory.slots.forEach((e, i) => {
         if (e === undefined) return
@@ -199,6 +228,43 @@ module.exports.server = function (serv, { version }) {
       if (player.inventory.items().length === 0) {
         player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
       }
+
+      let translatedItemName
+      if (supportedVersions.indexOf(version) > 5) {
+        const isBlock = mcData.blocksByName[newItem.name] !== undefined ? 
+          mcData.blocksByName[newItem.name] : 
+          mcData.itemsByName[newItem.name]
+
+        translatedItemName = {
+          translate: `${isBlock ? 'block' : 'item'}.minecraft.${newItem.name}`
+        }
+      } else {
+        const camelCaseId = newItem.name.replace(/(\_\w)/g, function(k) { return k[1].toUpperCase() })
+
+        translatedItemName = {
+          translate: `item.${camelCaseId}.name`
+        }
+      }
+
+      const success = {
+        translate: supportedVersions.indexOf(version) < 5 ? 'commands.give.success' : 'commands.give.success.single',
+        with: [
+          String(count), 
+          Object.assign(translatedItemName, 
+            { 
+              hoverEvent: {
+                action: 'show_item', 
+                contents: {
+                  id: newItem.name, 
+                  count: parseInt(newItem.count),
+                  tag: JSON.stringify(newItem.count)
+                }
+              }
+            }), 
+          player.username]
+      }
+
+      return success
     }
   })
 }

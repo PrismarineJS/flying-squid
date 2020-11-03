@@ -1,7 +1,9 @@
+const { supportedVersions } = require('../version')
+
 const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
-module.exports.server = (serv) => {
+module.exports.server = (serv, { version }) => {
   serv.commands.add({
     base: 'teleport',
     aliases: ['tp'],
@@ -16,7 +18,14 @@ module.exports.server = (serv) => {
       if (args.length === 2) {
         const entitiesFrom = ctx.player.selectorString(args[0])
         let entityTo = ctx.player.selectorString(args[1])
-        if (entityTo.length === 0) throw new UserError('Invalid target')
+
+        let selectorNull
+        if (supportedVersions.indexOf(version) < 5) 
+          selectorNull = { translate: 'commands.generic.selector.notFound' }
+        else
+          selectorNull = { translate: 'argument.entity.notfound.player', with: [args[1]] }
+
+        if (entityTo.length === 0) throw new UserError(selectorNull)
         entityTo = entityTo[0]
 
         entitiesFrom.forEach(e => e.teleport(entityTo.position))

@@ -4,6 +4,7 @@ const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const UserError = require('flying-squid').UserError
 const UUID = require('uuid-1345')
+const { supportedVersions } = require('../version')
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, options) {
@@ -87,7 +88,13 @@ module.exports.server = function (serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities']) { throw new UserError('Too many mobs !') }
       const entity = entitiesByName[name]
       if (!entity) {
-        return 'No entity named ' + name
+        let unknownEntity
+        if (supportedVersions.indexOf(version) < 5)
+          unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] }
+        else
+          unknownEntity = { translate: 'argument.entity.invalid' }
+
+        throw new UserError(unknownEntity)
       }
       if (entity.type === 'mob') {
         serv.spawnMob(entity.id, ctx.player.world, ctx.player.position, {
@@ -116,7 +123,13 @@ module.exports.server = function (serv, options) {
       if (Object.keys(serv.entities).length > options['max-entities'] - number) { throw new UserError('Too many mobs !') }
       const entity = entitiesByName[name]
       if (!entity) {
-        return 'No entity named ' + name
+        let unknownEntity
+        if (supportedVersions.indexOf(version) < 5)
+          unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] }
+        else
+          unknownEntity = { translate: 'argument.entity.invalid' }
+
+        throw new UserError(unknownEntity)
       }
       const s = Math.floor(Math.sqrt(number))
       for (let i = 0; i < number; i++) {

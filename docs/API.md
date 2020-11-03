@@ -43,6 +43,7 @@
       - [serv.log(message)](#servlogmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.getPlayer(username)](#servgetplayerusername)
+      - [serv.getPlayerCaseInsensetive(username)](#servgetplayerusernamecaseinsensetiveusername)
       - [serv.getNearby(loc)](#servgetnearbyloc)
       - [serv.onItemPlace(name, handler)](#servonitemplacename-handler)
       - [serv.onBlockInteraction(name, handler)](#servonblockinteractionname-handler)
@@ -381,6 +382,10 @@ broadcasts `message` to all the players with the optional `color`.
 #### serv.getPlayer(username)
 
 Returns player object with that username or, if no such player is on the server, null.
+
+#### serv.getPlayerCaseInsensetive(username)
+
+Works as [serv.getPlayer()](#servgetplayerusername), but it's case insensetive
 
 #### serv.getNearby(loc)
 

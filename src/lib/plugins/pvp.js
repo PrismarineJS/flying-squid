@@ -66,7 +66,7 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, { version }) {
   serv.commands.add({
     base: 'kill',
     info: 'Kill entities',
@@ -76,18 +76,38 @@ module.exports.server = function (serv) {
     },
     action (sel, ctx) {
       if (sel !== '') {
-        if (serv.getPlayer(sel) !== null) {
-          serv.getPlayer(sel).kill()
-        } else {
+        if (serv.getPlayerCaseInsensetive(sel) !== null) serv.getPlayerCaseInsensetive(sel).kill()
+        else {
           const arr = serv.selectorString(sel)
+          
+          let playerNotFound
+          if (supportedVersions.indexOf(version) < 5) {
+            playerNotFound = {
+              translate: 'commands.generic.player.notFound',
+              with: [sel]
+            }
+          } else {
+            playerNotFound = {
+              translate: 'argument.entity.notfound.player',
+              with: [sel]
+            }
+          }
+
           if (arr.length === 0) throw new UserError('Could not find player')
           arr.map(entity => {
             entity.kill()
           })
         }
       } else {
-        if (ctx.player) ctx.player.kill()
-        else serv.err('Can\'t kill console')
+        if (ctx.player) return ctx.player.kill()
+        
+        let unknownPlayerMsg
+        if (supportedVersions.indexOf(version) < 5) 
+          unknownPlayerMsg = { translate: 'argument.player.unknown' }
+        else 
+          unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
+
+        throw new UserError(unknownPlayerMsg)
       }
     }
   })

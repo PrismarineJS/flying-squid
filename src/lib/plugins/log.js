@@ -4,6 +4,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const moment = require('moment')
 const colors = require('colors')
+const pc = require('prismarine-chat')
 
 const readline = require('readline')
 const rl = readline.createInterface({
@@ -95,12 +96,24 @@ module.exports.server = function (serv, settings) {
   })
 }
 
-module.exports.player = function (player, serv) {
-  player.on('connected', () => serv.info(player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
+module.exports.player = function (player, serv, { version }) {
+  const ChatMessage = pc(version)
+  
+  player.on('connected', () => serv.info(
+    new ChatMessage({ 
+      translate: 'multiplayer.player.joined', 
+      with: [ String(player.username + ' (' + player._client.socket.remoteAddress + ')' ) ] 
+    })
+  ))
 
   player.on('spawned', () => serv.info('position written, player spawning...'))
 
-  player.on('disconnected', () => serv.info(player.username + ' disconnected'))
+  player.on('disconnected', () => serv.info(
+    new ChatMessage({ 
+      translate: 'multiplayer.player.left', 
+      with: [ String(player.username) ] 
+    })
+  ))
 
   player.on('kicked', (kicker, reason) =>
     serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
