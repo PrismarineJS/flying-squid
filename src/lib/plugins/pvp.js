@@ -1,6 +1,7 @@
+const { supportedVersions } = require('../version')
+
 const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
-const colors = require('colors')
 
 module.exports.player = function (player, serv) {
   player.updateHealth = (health) => {
@@ -79,7 +80,7 @@ module.exports.server = function (serv, { version }) {
         if (serv.getPlayerCaseInsensetive(sel) !== null) serv.getPlayerCaseInsensetive(sel).kill()
         else {
           const arr = serv.selectorString(sel)
-          
+
           let playerNotFound
           if (supportedVersions.indexOf(version) < 5) {
             playerNotFound = {
@@ -93,19 +94,16 @@ module.exports.server = function (serv, { version }) {
             }
           }
 
-          if (arr.length === 0) throw new UserError('Could not find player')
-          arr.map(entity => {
+          if (arr.length === 0) throw new UserError(playerNotFound)
+          arr.forEach(entity => {
             entity.kill()
           })
         }
       } else {
         if (ctx.player) return ctx.player.kill()
-        
+
         let unknownPlayerMsg
-        if (supportedVersions.indexOf(version) < 5) 
-          unknownPlayerMsg = { translate: 'argument.player.unknown' }
-        else 
-          unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
+        if (supportedVersions.indexOf(version) < 5) { unknownPlayerMsg = { translate: 'argument.player.unknown' } } else { unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' } }
 
         throw new UserError(unknownPlayerMsg)
       }

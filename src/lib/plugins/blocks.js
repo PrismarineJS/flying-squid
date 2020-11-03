@@ -1,5 +1,5 @@
 // const { supportedVersions } = require('../version')
-const pc = require('prismarine-chat') 
+const pc = require('prismarine-chat')
 
 const Vec3 = require('vec3').Vec3
 

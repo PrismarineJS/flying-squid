@@ -9,15 +9,14 @@ module.exports.player = function (player, serv, { version }) {
     try {
       const res = await serv.commands.use(str, { player }, player.op)
       if (res) {
-        let cm = new ChatMessage(res)
+        const cm = new ChatMessage(res)
         player.chat(cm.json)
       }
     } catch (err) {
       if (err.userError) {
-        let cm = new ChatMessage(err.message)
+        const cm = new ChatMessage(err.message)
         player.chat(Object.assign(cm.json, { color: 'red' }))
-      }
-      else setTimeout(() => { throw err }, 0)
+      } else setTimeout(() => { throw err }, 0)
     }
   }
 }
@@ -34,7 +33,7 @@ module.exports.server = function (serv, settings) {
       const res = await serv.commands.use(str)
       if (res) {
         try {
-          let cm = new ChatMessage(res)
+          const cm = new ChatMessage(res)
           serv.info(cm)
         } catch {
           serv.info(res)
@@ -45,14 +44,13 @@ module.exports.server = function (serv, settings) {
         const res = err.message
         if (res) {
           try {
-            let cm = new ChatMessage(res)
+            const cm = new ChatMessage(res)
             serv.err(cm)
           } catch {
             serv.err(res)
           }
         }
-      }
-      else setTimeout(() => { throw err }, 0)
+      } else setTimeout(() => { throw err }, 0)
     }
   }
 
@@ -87,7 +85,7 @@ module.exports.server = function (serv, settings) {
     info: 'to get version of the server',
     usage: '/version',
     action () {
-      return 'This server is running flying-squid version ' + version
+      return 'This server is running flying-squid version ' + settings.version
     }
   })
 

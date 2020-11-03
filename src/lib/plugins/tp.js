@@ -20,10 +20,7 @@ module.exports.server = (serv, { version }) => {
         let entityTo = ctx.player.selectorString(args[1])
 
         let selectorNull
-        if (supportedVersions.indexOf(version) < 5) 
-          selectorNull = { translate: 'commands.generic.selector.notFound' }
-        else
-          selectorNull = { translate: 'argument.entity.notfound.player', with: [args[1]] }
+        if (supportedVersions.indexOf(version) < 5) { selectorNull = { translate: 'commands.generic.selector.notFound' } } else { selectorNull = { translate: 'argument.entity.notfound.player', with: [args[1]] } }
 
         if (entityTo.length === 0) throw new UserError(selectorNull)
         entityTo = entityTo[0]

@@ -61,11 +61,12 @@ module.exports.server = function (serv, settings) {
   })()
 
   console.error = (function () {
-    var orig = console.error
+    const orig = console.error
     return function () {
       readline.cursorTo(process.stdout, 0)
+      let tmp
       try {
-        var tmp = process.stdout
+        tmp = process.stdout
         process.stdout = process.stderr
         orig.apply(console, arguments)
       } finally {
@@ -98,20 +99,20 @@ module.exports.server = function (serv, settings) {
 
 module.exports.player = function (player, serv, { version }) {
   const ChatMessage = pc(version)
-  
+
   player.on('connected', () => serv.info(
-    new ChatMessage({ 
-      translate: 'multiplayer.player.joined', 
-      with: [ String(player.username + ' (' + player._client.socket.remoteAddress + ')' ) ] 
+    new ChatMessage({
+      translate: 'multiplayer.player.joined',
+      with: [String(player.username + ' (' + player._client.socket.remoteAddress + ')')]
     })
   ))
 
   player.on('spawned', () => serv.info('position written, player spawning...'))
 
   player.on('disconnected', () => serv.info(
-    new ChatMessage({ 
-      translate: 'multiplayer.player.left', 
-      with: [ String(player.username) ] 
+    new ChatMessage({
+      translate: 'multiplayer.player.left',
+      with: [String(player.username)]
     })
   ))
 

@@ -1,5 +1,4 @@
 module.exports.server = function (serv, options) {
-
   serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false } = {}) => {
     if (whitelist.type === 'player') whitelist = [whitelist]
 
@@ -136,13 +135,14 @@ module.exports.player = function (player, serv) {
       }, ({ username, uuid, text, whitelist, blacklist }) => {
         const obj = {
           translate: 'chat.type.text',
-          with: [{ ...serv.parseClassic(username),
+          with: [{
+            ...serv.parseClassic(username),
             clickEvent: {
-              action: 'suggest_command', 
+              action: 'suggest_command',
               value: `/msg ${username} `
             },
             hoverEvent: {
-              action: 'show_entity', 
+              action: 'show_entity',
               value: JSON.stringify({ id: uuid, type: 'minecraft:player' })
             }
           }, serv.parseClassic(text)]

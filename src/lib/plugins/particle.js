@@ -48,21 +48,21 @@ module.exports.server = function (serv, { version }) {
         if (supportedVersions.indexOf(version) < 5) {
           tooBig = {
             translate: 'commands.generic.num.tooBig',
-            with: [ String(amount), String(100000) ]
+            with: [String(amount), String(100000)]
           }
         } else {
           tooBig = {
             translate: 'argument.integer.big',
-            with: [ String(100000), String(amount) ]
+            with: [String(100000), String(amount)]
           }
         }
         ctx.player.chat(tooBig)
         return
       }
 
-      let successMsg = {
+      const successMsg = {
         translate: 'commands.particle.success',
-        with: [ String(particle), String(supportedVersions.indexOf(version) < 5 ? amount : '') ]
+        with: [String(particle), String(supportedVersions.indexOf(version) < 5 ? amount : '')]
       }
 
       ctx.player.chat(successMsg)

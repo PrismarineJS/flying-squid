@@ -47,13 +47,10 @@ module.exports.server = function (serv, { version }) {
       const amt = parseInt(args[1])
       if (!ctx.player && !args[3]) throw new UserError('Console can\'t give itself experience.')
 
-      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player 
+      const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
       if (!user) {
         let unknownPlayerMsg
-        if (supportedVersions.indexOf(version) < 5) 
-          unknownPlayerMsg = { translate: 'argument.player.unknown' }
-        else 
-          unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' }
+        if (supportedVersions.indexOf(version) < 5) { unknownPlayerMsg = { translate: 'argument.player.unknown' } } else { unknownPlayerMsg = { translate: 'commands.generic.player.unspecified' } }
 
         throw new UserError(unknownPlayerMsg)
       }
@@ -62,36 +59,38 @@ module.exports.server = function (serv, { version }) {
         user.setXp(user.xp + amt)
 
         let xpMessage
-        if (supportedVersions.indexOf(version) < 5) 
-          xpMessage = { 
+        if (supportedVersions.indexOf(version) < 5) {
+          xpMessage = {
             translate: 'commands.xp.success',
-            with: [ String(amt), user.username ]
+            with: [String(amt), user.username]
           }
-        else 
-          xpMessage = { 
+        } else {
+          xpMessage = {
             translate: 'commands.experience.add.points.success.single',
-            with: [ String(amt), user.username ]
+            with: [String(amt), user.username]
           }
-        
+        }
+
         return xpMessage
       } else {
         const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
         const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
-        
+
         let xpMessage
-        if (supportedVersions.indexOf(version) < 5) 
-          xpMessage = { 
+        if (supportedVersions.indexOf(version) < 5) {
+          xpMessage = {
             translate: 'commands.xp.success.levels',
-            with: [ String(amt), user.username ]
+            with: [String(amt), user.username]
           }
-        else 
-          xpMessage = { 
+        } else {
+          xpMessage = {
             translate: 'commands.experience.add.levels.success.single',
-            with: [ String(amt), user.username ]
+            with: [String(amt), user.username]
           }
-        
+        }
+
         return xpMessage
       }
     }

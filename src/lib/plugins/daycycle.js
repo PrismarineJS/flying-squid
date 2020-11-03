@@ -1,4 +1,4 @@
-let pc = require('prismarine-chat')
+const pc = require('prismarine-chat')
 const { supportedVersions } = require('../version')
 
 module.exports.server = function (serv, { version }) {
@@ -44,7 +44,7 @@ module.exports.server = function (serv, { version }) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-        let queryMessage = {
+        const queryMessage = {
           translate: 'commands.time.query',
           with: [{ text: String(serv.time) }]
         }
@@ -122,7 +122,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/night',
     tab: [],
     op: true,
-    action () {
+    action (_, ctx) {
       return ctx.player ? ctx.player.handleCommand('time set day') : serv.handleCommand('time set day')
     }
   })

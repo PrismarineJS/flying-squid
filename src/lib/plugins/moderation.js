@@ -1,21 +1,19 @@
 const moment = require('moment')
 const needle = require('needle')
-const uuid1345 = require('uuid-1345')
-const crypto = require('crypto')
 const { supportedVersions } = require('../version')
 const UserError = require('flying-squid').UserError
 
 const ipRegex = /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/
 const uuidRegex = /^(\S{8})-?(\S{4})-?(\S{4})-?(\S{4})-?(\S{12})$/
 const nameRegex = /^\w{3,16}$/
-const selectorRegex = /^@([arpe])(?:\[([^\]]+)\])?$/
+// const selectorRegex = /^@([arpe])(?:\[([^\]]+)\])?$/
 
-let pc = require('prismarine-chat')
+const pc = require('prismarine-chat')
 
 module.exports.server = function (serv, settings) {
   const ChatMessage = pc(settings.version)
 
-  let moderationMessages = {
+  const moderationMessages = {
     banned: {
       translate: 'multiplayer.disconnect.banned'
     },
@@ -26,7 +24,7 @@ module.exports.server = function (serv, settings) {
       translate: 'multiplayer.disconnect.kicked'
     }
   }
-  
+
   serv.ban = async (uuid, reason, who) => {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
@@ -74,7 +72,7 @@ module.exports.server = function (serv, settings) {
       needle('get', 'https://mcapi.ca/player/profile/' + uuidInParts(uuid), { json: true })
         .then((response) => {
           if (!response.body) throw new Error('UUID not found')
-          var username = response.body.name
+          const username = response.body.name
           if (typeof username !== 'string') throw new Error('UUID not found')
           resolve(username)
         })
@@ -124,9 +122,9 @@ module.exports.server = function (serv, settings) {
       return params
     },
     action (username, ctx) {
-      const selectorArray = serv.selectorString(username, 
-        ctx.player ? ctx.player.position : undefined, 
-        ctx.player ? ctx.player.world : serv.overworld, 
+      const selectorArray = serv.selectorString(username,
+        ctx.player ? ctx.player.position : undefined,
+        ctx.player ? ctx.player.world : serv.overworld,
         true)
 
       let messages
@@ -167,15 +165,15 @@ module.exports.server = function (serv, settings) {
       }
 
       selectorArray.forEach(entity => {
-        let successMessage = {
+        const successMessage = {
           translate: 'commands.op.success',
           with: [{ text: entity.username }]
         }
 
-        let systemMessage = {
+        const systemMessage = {
           translate: 'chat.type.admin',
-          with: [{ 
-            text: ctx.player ? ctx.player.username : 'Server' 
+          with: [{
+            text: ctx.player ? ctx.player.username : 'Server'
           }, successMessage],
           color: 'gray',
           italic: 'true'
@@ -196,10 +194,10 @@ module.exports.server = function (serv, settings) {
       if (!params.match(/([a-zA-Z0-9_]+)/)) return false
       return params
     },
-    action (params) {
-      const selectorArray = serv.selectorString(username, 
-        ctx.player ? ctx.player.position : undefined, 
-        ctx.player ? ctx.player.world : serv.overworld, 
+    action (username, ctx) {
+      const selectorArray = serv.selectorString(username,
+        ctx.player ? ctx.player.position : undefined,
+        ctx.player ? ctx.player.world : serv.overworld,
         true)
 
       let messages
@@ -237,15 +235,15 @@ module.exports.server = function (serv, settings) {
       if (selectorArray.length < 0) throw new UserError(messages.notFound)
 
       selectorArray.forEach(entity => {
-        let successMessage = {
+        const successMessage = {
           translate: 'commands.deop.success',
           with: [entity.username || entity.name]
         }
 
-        let systemMessage = {
+        const systemMessage = {
           translate: 'chat.type.admin',
-          with: [{ 
-            text: ctx.player ? ctx.player.username : 'Server' 
+          with: [{
+            text: ctx.player ? ctx.player.username : 'Server'
           }, successMessage],
           color: 'gray',
           italic: 'true'
@@ -264,7 +262,7 @@ module.exports.server = function (serv, settings) {
     op: true,
     parse (str) {
       const parts = str.split(' ')
-      let obj = {
+      const obj = {
         username: parts.shift(),
         reason: parts.join(' ') || moderationMessages.kicked
       }
@@ -306,12 +304,11 @@ module.exports.server = function (serv, settings) {
         }
       }
 
-
       if (!kickPlayer) throw new UserError(messages.notFound)
 
       kickPlayer.kick(reason)
 
-      let successMessage = supportedVersions.indexOf(settings.version) < 5 ? reason ? messages.successReason : messages.success : messages.success
+      const successMessage = supportedVersions.indexOf(settings.version) < 5 ? reason ? messages.successReason : messages.success : messages.success
 
       return successMessage
     }
@@ -359,7 +356,7 @@ module.exports.server = function (serv, settings) {
         }
       }
 
-      function resulter(result) {
+      function resulter (result) {
         if (result) return messages.success
         return messages.failed
       }
@@ -405,7 +402,7 @@ module.exports.server = function (serv, settings) {
           }
         }
 
-        if(!ipRegex.test(IP)) {
+        if (!ipRegex.test(IP)) {
           if (ctx.player) return ctx.player.chat(messages.invalid)
 
           return serv.err(new ChatMessage(messages.invalid))
@@ -419,14 +416,14 @@ module.exports.server = function (serv, settings) {
       } else {
         messages = {
           failed: {
-            translate: 'commands.banip.failed',
+            translate: 'commands.banip.failed'
           },
           info: {
             // TODO
             translate: 'commands.banip.info'
           },
           invalid: {
-            translate: 'commands.banip.invalid',
+            translate: 'commands.banip.invalid'
           },
           success: {
             translate: 'commands.banip.success',
@@ -440,7 +437,7 @@ module.exports.server = function (serv, settings) {
         }
       }
 
-      if(!ipRegex.test(IP)) return messages.invalid
+      if (!ipRegex.test(IP)) return messages.invalid
 
       serv.banIP(IP, reason, ctx.player ? ctx.player.username : undefined).then(resulter)
     }
@@ -456,7 +453,7 @@ module.exports.server = function (serv, settings) {
       return 0
     },
     action (type, ctx) {
-      var bannedList = type === 0 ? Object.keys(serv.bannedPlayers) : Object.keys(serv.bannedIPs)
+      const bannedList = type === 0 ? Object.keys(serv.bannedPlayers) : Object.keys(serv.bannedIPs)
 
       let messages
 
@@ -464,24 +461,18 @@ module.exports.server = function (serv, settings) {
         messages = {
           ips: {
             translate: 'commands.banlist.ips',
-            with: [ String(bannedList.length) ]
+            with: [String(bannedList.length)]
           },
           players: {
             translate: 'commands.banlist.players',
-            with: [ String(bannedList.length) ]
+            with: [String(bannedList.length)]
           }
         }
 
-        if (ctx.player) 
-          ctx.player.chat(type === 0 ? messages.players : messages.ips)
-        else 
-          serv.info(new ChatMessage(type === 0 ? messages.players : messages.ips))
+        if (ctx.player) { ctx.player.chat(type === 0 ? messages.players : messages.ips) } else { serv.info(new ChatMessage(type === 0 ? messages.players : messages.ips)) }
 
         bannedList.forEach(async banned => {
-          if (ctx.player) 
-            ctx.player.chat(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned)
-          else 
-            serv.info(new ChatMessage(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned))
+          if (ctx.player) { ctx.player.chat(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned) } else { serv.info(new ChatMessage(type === 0 && settings['online-mode'] ? await serv.getUsernameFromUUID(banned) : banned)) }
         })
       } else {
         messages = {
@@ -495,33 +486,24 @@ module.exports.server = function (serv, settings) {
         }
 
         if (bannedList.length > 0) {
-          if (ctx.player) 
-            ctx.player.chat(messages.list)
-          else 
-            serv.info(new ChatMessage(messages.list))
+          if (ctx.player) { ctx.player.chat(messages.list) } else { serv.info(new ChatMessage(messages.list)) }
 
           bannedList.forEach(async banned => {
-            let bannedEntry = {
+            const bannedEntry = {
               translate: 'commands.banlist.entry',
-              with: [{ 
+              with: [{
                 text: type === 0 ? await serv.getUsernameFromUUID(banned) : banned
-              }, { 
+              }, {
                 text: (type === 0 ? serv.bannedPlayers[banned] : serv.bannedIPs[banned]).who
-              }, { 
-                text: (type === 0 ? serv.bannedPlayers[banned] : serv.bannedIPs[banned]).reason 
+              }, {
+                text: (type === 0 ? serv.bannedPlayers[banned] : serv.bannedIPs[banned]).reason
               }]
             }
 
-            if (ctx.player) 
-              ctx.player.chat(bannedEntry)
-            else 
-              serv.info(new ChatMessage(bannedEntry))
+            if (ctx.player) { ctx.player.chat(bannedEntry) } else { serv.info(new ChatMessage(bannedEntry)) }
           })
         } else {
-          if (ctx.player) 
-            ctx.player.chat(messages.none)
-          else 
-            serv.info(new ChatMessage(messages.none))
+          if (ctx.player) { ctx.player.chat(messages.none) } else { serv.info(new ChatMessage(messages.none)) }
         }
       }
     }
@@ -571,7 +553,7 @@ module.exports.server = function (serv, settings) {
             if (result) return ctx.player.chat(messages.success)
             return ctx.player.chat(messages.failed)
           }
-  
+
           if (result) return serv.info(new ChatMessage(messages.success))
           return serv.err(new ChatMessage(messages.failed))
         }
@@ -603,7 +585,7 @@ module.exports.server = function (serv, settings) {
             translate: 'commands.unban.success',
             with: [{ text: nick }]
           },
-          failed: { 
+          failed: {
             translate: 'commands.unban.failed',
             with: [{ text: nick }],
             color: 'red'
@@ -615,19 +597,16 @@ module.exports.server = function (serv, settings) {
             translate: 'commands.pardon.success',
             with: [{ text: nick }]
           },
-          failed: { 
+          failed: {
             translate: 'commands.pardon.failed',
-            color: 'red' 
+            color: 'red'
           }
         }
       }
 
       let pardonPromise
 
-      if (settings['online-mode']) 
-        pardonPromise = serv.pardonUUID(nick)
-      else 
-        pardonPromise = serv.pardonUsername(nick)
+      if (settings['online-mode']) { pardonPromise = serv.pardonUUID(nick) } else { pardonPromise = serv.pardonUsername(nick) }
 
       pardonPromise.then(result => {
         if (ctx.player) {
@@ -642,9 +621,21 @@ module.exports.server = function (serv, settings) {
   })
 }
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, settings) {
+  const moderationMessages = {
+    banned: {
+      translate: 'multiplayer.disconnect.banned'
+    },
+    ip_banned: {
+      translate: 'multiplayer.disconnect.ip_banned'
+    },
+    kicked: {
+      translate: 'multiplayer.disconnect.kicked'
+    }
+  }
+
   player.kick = (reason) => {
-    var fullReason
+    let fullReason
     if (typeof reason === 'string') fullReason = { text: reason }
     else fullReason = reason || moderationMessages.kicked
     player._client.end(reason, JSON.stringify(fullReason))
@@ -655,7 +646,7 @@ module.exports.player = function (player, serv) {
     player.kick(reason)
     const nick = player.username
     const uuid = player.uuid
-    if (settins['online-mode']) return serv.ban(uuid, reason, who)
+    if (settings['online-mode']) return serv.ban(uuid, reason, who)
     return serv.banUsername(nick, reason, who)
   }
   player.banIP = (reason, who) => {
@@ -665,5 +656,5 @@ module.exports.player = function (player, serv) {
   }
 
   // I think it doesn't do anything but ok well...
-  player.pardon = () => settins['online-mode'] ? serv.pardonUUID(player.uuid) : serv.pardonUsername(player.username)
+  player.pardon = () => settings['online-mode'] ? serv.pardonUUID(player.uuid) : serv.pardonUsername(player.username)
 }

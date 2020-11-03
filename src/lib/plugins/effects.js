@@ -1,4 +1,4 @@
-const { supportedVersions } = require("../version")
+const { supportedVersions } = require('../version')
 const pc = require('prismarine-chat')
 
 module.exports.entity = function (entity, serv) {
@@ -102,14 +102,14 @@ module.exports.server = function (serv, { version }) {
           giveMsgs = {
             success: {
               translate: 'commands.effect.success',
-              with: [ String(params[2]), String((params[4] || 0)), String(chatSelect), String((parseInt(params[3]) || 30)) ]
+              with: [String(params[2]), String((params[4] || 0)), String(chatSelect), String((parseInt(params[3]) || 30))]
             }
           }
         } else {
           giveMsgs = {
             success: {
               translate: 'commands.effect.give.success.single',
-              with: [ String(params[2]), String(params[1]) ]
+              with: [String(params[2]), String(params[1])]
             }
           }
         }

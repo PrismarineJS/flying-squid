@@ -18,11 +18,11 @@ module.exports.server = function (serv, { version }) {
 
   serv.getPlayerCaseInsensetive = username => {
     if (!username) return null
-    const found = serv.players.filter(pl => pl.username === username 
-      || pl.username === username.toLowerCase() 
-      || pl.username.toLowerCase() === username
-      || pl.username === username.toUpperCase() 
-      || pl.username.toUpperCase() === username)
+    const found = serv.players.filter(pl => pl.username === username ||
+      pl.username === username.toLowerCase() ||
+      pl.username.toLowerCase() === username ||
+      pl.username === username.toUpperCase() ||
+      pl.username.toUpperCase() === username)
     if (found.length > 0) { return found[0] }
     return null
   }
@@ -35,14 +35,14 @@ module.exports.server = function (serv, { version }) {
     usage: '/gamemode <mode> [player]',
     op: true,
     parse (str, ctx) {
-      var paramsSplit = str.split(' ')
+      const paramsSplit = str.split(' ')
 
       let msgs
       if (supportedVersions.indexOf(version) < 5) {
         msgs = {
           invalid: {
             translate: 'commands.generic.num.invalid', // no gamemode error... soo..
-            with: [ String(paramsSplit[0]) ]
+            with: [String(paramsSplit[0])]
           },
           playerPerm: {
             translate: 'commands.generic.player.unspecified'
@@ -52,14 +52,14 @@ module.exports.server = function (serv, { version }) {
         msgs = {
           invalid: {
             translate: 'argument.entity.options.mode.invalid',
-            with: [ String(paramsSplit[0]) ]
+            with: [String(paramsSplit[0])]
           },
           playerPerm: {
             translate: 'permissions.requires.player'
           }
         }
       }
-      
+
       if (paramsSplit[0] === '') {
         return false
       }
@@ -75,7 +75,7 @@ module.exports.server = function (serv, { version }) {
       // return params || false
     },
     action (str, ctx) {
-      var gamemodesTranslated = {
+      const gamemodesTranslated = {
         survival: { translate: 'gameMode.survival' },
         creative: { translate: 'gameMode.creative' },
         adventure: { translate: 'gameMode.adventure' },
@@ -88,12 +88,12 @@ module.exports.server = function (serv, { version }) {
         adventure: 2,
         spectator: 3
       }
-      var gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
-      var gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
-      var mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
-      var plyr = serv.getPlayerCaseInsensetive(str[2])
+      const gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
+      const gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
+      const mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
+      const plyr = serv.getPlayerCaseInsensetive(str[2])
 
-      var msgs = {
+      const msgs = {
         self: {
           translate: 'commands.gamemode.success.self',
           with: [{
@@ -101,7 +101,7 @@ module.exports.server = function (serv, { version }) {
             color: 'gray',
             italic: 'true'
           }]
-        }, 
+        },
         other: {
           translate: 'commands.gamemode.success.other',
           with: [{
@@ -112,16 +112,16 @@ module.exports.server = function (serv, { version }) {
         }
       }
 
-      var playerNotFound
+      let playerNotFound
       if (supportedVersions.indexOf(version) < 5) {
         playerNotFound = {
           translate: 'commands.generic.player.notFound',
-          with: [ String(str[2]) ]
+          with: [String(str[2])]
         }
       } else {
         playerNotFound = {
           translate: 'argument.entity.notfound.player',
-          with: [ String(str[2]) ]
+          with: [String(str[2])]
         }
       }
 
@@ -141,7 +141,7 @@ module.exports.server = function (serv, { version }) {
         if (plyr !== null) {
           plyr.setGameMode(gamemode)
           return msgs.other
-        } 
+        }
 
         throw new UserError(playerNotFound)
       }
@@ -173,15 +173,13 @@ module.exports.server = function (serv, { version }) {
     parse (args) {
       args = args.split(' ')
 
-      var playerNotFound, numInvalid
-      playerNotFound = {
+      const playerNotFound = {
         translate: supportedVersions.indexOf(version) < 5 ? 'commands.generic.player.notFound' : 'argument.entity.notfound.player',
-        with: [ String(args[0]) ]
+        with: [String(args[0])]
       }
-
-      numInvalid = {
+      const numInvalid = {
         translate: supportedVersions.indexOf(version) < 5 ? 'commands.generic.num.invalid' : 'parsing.int.invalid',
-        with: [ String(args[2]) ]
+        with: [String(args[2])]
       }
 
       if (args[0] === '') return false
@@ -194,7 +192,6 @@ module.exports.server = function (serv, { version }) {
       }
     },
     action ({ player, item, count }, ctx) {
-      
       const newItem = new Item(item, count)
 
       let unknownId
@@ -210,7 +207,7 @@ module.exports.server = function (serv, { version }) {
         }
       }
 
-      if (newItem.name === 'unknown') throw new UserError()
+      if (newItem.name === 'unknown') throw new UserError(unknownId)
 
       player.inventory.slots.forEach((e, i) => {
         if (e === undefined) return
@@ -231,15 +228,15 @@ module.exports.server = function (serv, { version }) {
 
       let translatedItemName
       if (supportedVersions.indexOf(version) > 5) {
-        const isBlock = mcData.blocksByName[newItem.name] !== undefined ? 
-          mcData.blocksByName[newItem.name] : 
-          mcData.itemsByName[newItem.name]
+        const isBlock = mcData.blocksByName[newItem.name] !== undefined
+          ? mcData.blocksByName[newItem.name]
+          : mcData.itemsByName[newItem.name]
 
         translatedItemName = {
           translate: `${isBlock ? 'block' : 'item'}.minecraft.${newItem.name}`
         }
       } else {
-        const camelCaseId = newItem.name.replace(/(\_\w)/g, function(k) { return k[1].toUpperCase() })
+        const camelCaseId = newItem.name.replace(/(_\w)/g, function (k) { return k[1].toUpperCase() })
 
         translatedItemName = {
           translate: `item.${camelCaseId}.name`
@@ -249,18 +246,18 @@ module.exports.server = function (serv, { version }) {
       const success = {
         translate: supportedVersions.indexOf(version) < 5 ? 'commands.give.success' : 'commands.give.success.single',
         with: [
-          String(count), 
-          Object.assign(translatedItemName, 
-            { 
+          String(count),
+          Object.assign(translatedItemName,
+            {
               hoverEvent: {
-                action: 'show_item', 
+                action: 'show_item',
                 contents: {
-                  id: newItem.name, 
+                  id: newItem.name,
                   count: parseInt(newItem.count),
                   tag: JSON.stringify(newItem.count)
                 }
               }
-            }), 
+            }),
           player.username]
       }
 

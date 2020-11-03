@@ -89,10 +89,7 @@ module.exports.server = function (serv, options) {
       const entity = entitiesByName[name]
       if (!entity) {
         let unknownEntity
-        if (supportedVersions.indexOf(version) < 5)
-          unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] }
-        else
-          unknownEntity = { translate: 'argument.entity.invalid' }
+        if (supportedVersions.indexOf(version) < 5) { unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] } } else { unknownEntity = { translate: 'argument.entity.invalid' } }
 
         throw new UserError(unknownEntity)
       }
@@ -124,10 +121,7 @@ module.exports.server = function (serv, options) {
       const entity = entitiesByName[name]
       if (!entity) {
         let unknownEntity
-        if (supportedVersions.indexOf(version) < 5)
-          unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] }
-        else
-          unknownEntity = { translate: 'argument.entity.invalid' }
+        if (supportedVersions.indexOf(version) < 5) { unknownEntity = { translate: 'commands.generic.entity.invalidType', with: [name] } } else { unknownEntity = { translate: 'argument.entity.invalid' } }
 
         throw new UserError(unknownEntity)
       }
