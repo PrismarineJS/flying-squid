@@ -56,9 +56,9 @@ module.exports.entity = function (entity, serv) {
         animation: 1
       })
     }
-
-    entity.kill = () => entity.takeDamage({ damage: 20 })
   }
+
+  entity.kill = () => entity.takeDamage({ damage: 20 })
 
   if (entity.type !== 'player') {
     entity.updateHealth = (health) => {
