@@ -69,7 +69,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     }
 
     async function waitLoginMessage (bot) {
-      return Promise.all([waitMessages(bot, ['bot joined the game.', 'bot2 joined the game.'])])
+      return Promise.all([waitMessages(bot, ['bot joined the game', 'bot2 joined the game'])])
     }
 
     beforeEach(async () => {
