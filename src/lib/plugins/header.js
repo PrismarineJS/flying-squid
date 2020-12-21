@@ -6,6 +6,6 @@ module.exports.player = function (player, serv, settings) {
     })
 
   if (settings['player-list-text']) {
-    player.playerlistUpdateText(settings['player-list-text'].header || { text: '' }, settings['player-list-text'].footer || { text: ''})
+    player.playerlistUpdateText(settings['player-list-text'].header || { text: '' }, settings['player-list-text'].footer || { text: '' })
   }
 }
