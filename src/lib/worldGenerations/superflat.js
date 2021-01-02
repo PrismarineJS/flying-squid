@@ -4,7 +4,7 @@ function generation (options = {}) {
   const Chunk = require('prismarine-chunk')(options.version)
   const mcData = require('minecraft-data')(options.version)
   const version = mcData.version
-  const theFlattening = require('./lib/supportFeature')('theFlattening', version.majorVersion)
+  const theFlattening = require('../supportFeature')('theFlattening', version.majorVersion)
 
   const bottomId = options.bottomId || mcData.blocksByName.bedrock.id
   const middleId = options.middleId || mcData.blocksByName.dirt.id
