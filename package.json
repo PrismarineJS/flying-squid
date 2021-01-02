@@ -14,7 +14,6 @@
     "flying-squid": "app.js"
   },
   "scripts": {
-    "prepare": "npm install require-self && require-self",
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
@@ -66,7 +65,7 @@
     "longjohn": "^0.2.12",
     "minecraft-wrap": "^1.2.3",
     "mineflayer": "^2.7.3",
-    "require-self": "^0.2.3",
-    "standard": "^16.0.1"
+    "standard": "^16.0.1",
+    "flying-squid": "file:."
   }
 }
