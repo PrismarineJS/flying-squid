@@ -215,7 +215,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     describe('commands', () => {
-      jest.setTimeout(60 * 1000)
+      jest.setTimeout(120 * 1000)
       test('has an help command', async () => {
         await waitLoginMessage(bot)
         bot.chat('/help')
