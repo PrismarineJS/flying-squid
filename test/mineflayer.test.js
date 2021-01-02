@@ -138,9 +138,10 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
         const pos = bot.entity.position.offset(0, -1, 0).floored()
+        const p = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
 
-        const [, newBlock] = await once(bot2, 'blockUpdate', { array: true })
+        const [, newBlock] = await p
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
@@ -296,8 +297,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         const chestId = mcData.blocksByName.chest.id
+        const p = once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         bot.chat(`/setblock 1 2 3 ${chestId} 0`)
-        const [, newBlock] = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
+        const [, newBlock] = await p
         expect(newBlock.type).toEqual(chestId)
       })
       test('can use /xp', async () => {
