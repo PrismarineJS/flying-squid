@@ -1,3 +1,7 @@
+## 1.4.0
+* Server brand (@GroobleDierne)
+* minor fixes
+
 ## 1.3.2
 * docker support (thanks @SonLight)
 
