@@ -31,7 +31,8 @@ module.exports.server = function (serv, options) {
   serv.spawnObject = (type, world, position, { pitch = 0, yaw = 0, velocity = new Vec3(0, 0, 0), data = 1, itemId, itemDamage = 0, itemCount = 1, pickupTime = undefined, deathTime = undefined }) => {
     const object = serv.initEntity('object', type, world, position)
     object.uuid = UUID.v4()
-    object.name = objectsById[type].name
+    // TODO: don't use objectsById, it doesn't exist
+    object.name = objectsById[type] === undefined ? 'unknown' : objectsById[type].name
     object.data = data
     object.velocity = velocity
     object.pitch = pitch
