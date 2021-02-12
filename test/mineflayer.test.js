@@ -158,7 +158,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(newBlock.type).toEqual(0)
 
         const invPromise = new Promise((resolve) => {
-          bot.inventory.on('windowUpdate', (slot, oldItem, newItem) => {
+          bot.inventory.on('updateSlot', (slot, oldItem, newItem) => {
             if (slot === 36 && newItem && newItem.type === 1) { resolve() }
           })
         })
@@ -309,8 +309,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
       test('can use /give', async () => {
         bot.chat('/give bot2 1 1')
-        await once(bot2.inventory, 'windowUpdate')
-        expect(bot2.inventory.slots[9].type).toEqual(1)
+        await once(bot2.inventory, 'updateSlot')
+        expect(bot2.inventory.slots[36].type).toEqual(1)
       })
       test.skip('can use tabComplete', () => { // TODO to fix
         return new Promise((resolve, reject) => {
