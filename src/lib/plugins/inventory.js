@@ -163,7 +163,7 @@ module.exports.player = function (player, serv, { version }) {
     player.inventory.updateSlot(slot, newItem)
   })
 
-  player.inventory.on('windowUpdate', function (slot, oldItem, newItem) {
+  player.inventory.on('updateSlot', function (slot, oldItem, newItem) {
     const equipments = {
       5: 4,
       6: 3,
