@@ -2,7 +2,20 @@ module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
   const mobs = mcData.mobs
 
-  function getEntID (entName) {
+  function getEntID (entName) { // 1.9x, 1.10x and 1.11x
+    let foundID = ''
+
+    Object.keys(mobs).forEach(mobID => {
+      const mob = mobs[mobID]
+      if (mob.name === entName) {
+        foundID = mobID
+      }
+    })
+
+    return foundID
+  }
+  
+  function getEntIDmc (entName) { // 1.12x
     let foundID = ''
 
     Object.keys(mobs).forEach(mobID => {
@@ -27,10 +40,24 @@ module.exports.server = (serv, { version }) => {
         }
       }
     } else {
-      serv.onItemPlace('spawn_egg', ({ heldItem, player, placedPosition }) => {
-        serv.spawnMob(getEntID(heldItem.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
-        return { id: -1, data: 0 }
-      })
-    }
+	if (version === "1.12.2") {
+		serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
+		serv.spawnMob(getEntIDmc(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
+		return { id: -1, data: 0 }
+		})
+	} else {
+		if (version === "1.8.8") {
+			serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
+			serv.spawnMob(item.metadata, player.world, placedPosition)
+			return { id: -1, data: 0 }
+		})
+		} else {
+			serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
+			serv.spawnMob(getEntID(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
+			return { id: -1, data: 0 }
+		})
+		}
+	}	
+	}
   })
 }
