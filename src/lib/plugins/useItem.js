@@ -15,7 +15,7 @@ module.exports.server = (serv, { version }) => {
     return foundID
   }
 
-  function getEntIDmc(entName) { // 1.12x
+  function getEntIDmc(entName) { // 1.12x [working 2021]
     let foundID = ''
 
     Object.keys(mobs).forEach(mobID => {
