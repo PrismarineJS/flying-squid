@@ -91,9 +91,9 @@ module.exports.server = (serv, { version }) => {
             }
           }
         }
-        // check inventory
         if (currCount !== count) {
-          for (let i = player.inventory.inventoryStart; i < player.inventory.inventoryEnd - 1; i++) {
+          // start before hotbar
+          for (let i = player.inventory.inventoryStart; i < player.inventory.inventoryEnd - 10; i++) {
             const currSlot = player.inventory.slots[i]
             const blocksNeeded = count - currCount
             if (currSlot?.type === BLOCK_ID) {
@@ -138,8 +138,6 @@ module.exports.server = (serv, { version }) => {
         }
 
         return clearedCount
-        // implement picking which stacks to take from
-        // serv._writeArray(packetName, packetFields, playerArray)
       } else {
         const BLOCK_ID = mcData.blocksByName[blockType].id
         const blocks = player.inventory.slots
