@@ -215,10 +215,7 @@ module.exports.player = function (player, serv, { version }) {
     }
 
     // If we couldn't add it to a already existing stack, put it in a new stack if the inventory has room
-    let emptySlot = player.inventory.firstEmptySlotRange(36, 36 + 9) // first check for room in hotbar
-    if (!emptySlot) {
-      emptySlot = player.inventory.firstEmptyInventorySlot()
-    }
+    const emptySlot = player.inventory.firstEmptyInventorySlot()
     if (emptySlot) {
       collectEntity._writeOthersNearby('collect', {
         collectedEntityId: collectEntity.id,
