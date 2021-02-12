@@ -44,7 +44,6 @@ class Command {
       let output
       if (parsedResponse) output = await wantedCommand.params.action(parsedResponse, ctx)
       else output = await wantedCommand.params.action(resultsFound[1], ctx) // just give back the passed arg
-
       if (output) return '' + output
     } else {
       if (ctx.player) return 'Command not found'
