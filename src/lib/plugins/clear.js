@@ -13,13 +13,9 @@ module.exports.server = (serv, { version }) => {
       if (params[3] && isNaN(parseInt(params[3]))) return 'The number of blocks to remove given is invalid.'
       const player = params[1] ? serv.getPlayer(params[1]) : ctx.player
       if (!player) return "Player given doesn't exist"
-      const blocksCleared = clearInventory(player, params[2], parseInt(params[3]))
+      const id = params[2] ? mcData.blocksByName[params[2]].id : null
+      const blocksCleared = player.inventory.clear(id, params[3] ? parseInt(params[3]) : undefined)
       return `Removed ${blocksCleared} items from player ${params[1] || ctx.player.username}`
     }
   })
-
-  function clearInventory (player, blockType, count) {
-    const id = blockType ? mcData.blocksByName[blockType].id : null
-    return player.inventory.clear(id, count)
-  }
 }
