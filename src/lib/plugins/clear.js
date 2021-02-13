@@ -1,11 +1,4 @@
-// params format:
-// 0: initial match
-// 1: ign
-// 2: block
-// 3: number of blocks to remove
-
 module.exports.server = (serv, { version }) => {
-  const Item = require('prismarine-item')(version)
   const mcData = require('minecraft-data')(version)
   serv.commands.add({
     base: 'clear',
