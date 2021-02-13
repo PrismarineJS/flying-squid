@@ -27,7 +27,7 @@ module.exports.server = (serv, { version }) => {
         }
       }
     } else {
-      if (serv.supportFeature('entityMCPrefixed') {
+      if (serv.supportFeature('entityMCPrefixed')) {
         serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
           serv.spawnMob(getEntID(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
           return { id: -1, data: 0 }
