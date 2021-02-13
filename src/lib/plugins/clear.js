@@ -6,8 +6,7 @@ module.exports.server = (serv, { version }) => {
     usage: '/clear <player> <item> <maxCount>',
     parse: /^(\w+)?(?: (\w+))?(?: (\d+))?$/, // ex: /clear USERNAME_ stone 1
     action (params, ctx) {
-      // the parsing failed so it just returned initial input
-      if (typeof params === 'string') return `${this.usage}: ${this.info}`
+      if (typeof params === 'string') return `${this.usage}: ${this.info}` // parsing failed
       const isOp = ctx.player ? ctx.player.op : true
       if (!isOp && params[1]) return 'Command not found'
       if (params[2] && !mcData.blocksByName[params[2]]) return 'The block given is invalid.'
