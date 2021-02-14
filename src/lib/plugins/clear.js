@@ -19,6 +19,7 @@ module.exports.server = (serv, { version }) => {
       const players = playerInput.map(p => p[1])
       if (players.some(player => !player)) return "Player given doesn't exist"
       const id = params[2] ? mcData.blocksByName[params[2]].id : null
+      // also clear held item if players are in survival
       const blocksCleared = players.reduce((accumulator, player) => {
         const res = player.inventory.clear(id, params[3] ? parseInt(params[3]) : undefined)
         return accumulator + res
