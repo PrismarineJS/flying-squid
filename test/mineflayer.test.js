@@ -134,14 +134,13 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     }
 
     describe('actions', () => {
+      // jest.setTimeout(20 * 1000)
       test('can dig', async () => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
-
         const pos = bot.entity.position.offset(0, -1, 0).floored()
-        const p = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
-
-        const [, newBlock] = await p
+        const blockChanges = await once(bot2, 'blockUpdate', { array: true })
+        const newBlock = blockChanges[1]
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
@@ -150,12 +149,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
 
         const pos = bot.entity.position.offset(0, -2, 0).floored()
-        const digPromise = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
-
-        let [, newBlock] = await digPromise
-        assertPosEqual(newBlock.position, pos)
-        expect(newBlock.type).toEqual(0)
+        const blockChangesOne = await once(bot2, 'blockUpdate', { array: true })
+        const newBlockOne = blockChangesOne[1]
+        assertPosEqual(newBlockOne.position, pos)
+        expect(newBlockOne.type).toEqual(0)
 
         const invPromise = new Promise((resolve) => {
           bot.inventory.on('updateSlot', (slot, oldItem, newItem) => {
@@ -165,11 +163,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.creative.setInventorySlot(36, new Item(1, 1))
         await invPromise
 
-        const placePromise = once(bot2, 'blockUpdate', { array: true })
-        bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0));
-        [, newBlock] = await placePromise
-        assertPosEqual(newBlock.position, pos)
-        expect(newBlock.type).toEqual(1)
+        bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0))
+        const blockChangesTwo = await once(bot2, 'blockUpdate', { array: true })
+        const newBlockTwo = blockChangesTwo[1]
+        assertPosEqual(newBlockTwo.position, pos)
+        expect(newBlockTwo.type).toEqual(1)
       })
 
       test('can open and close a chest', async () => {
@@ -193,10 +191,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           }
         }
 
-        const setBlockPromise = once(bot, 'blockUpdate')
         bot.chat(`/setblock ${x} ${y} ${z} ${chestId} 2`) // place a chest facing north
-        await setBlockPromise
-
+        await once(bot, 'blockUpdate', { array: true })
         const openPromise1 = once(bot._client, 'block_action', { array: true })
         const openPromise2 = once(bot2._client, 'block_action', { array: true })
         bot.chat(`/setblockaction ${x} ${y} ${z} 1 1`) // open the chest
@@ -297,9 +293,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       test('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         const chestId = mcData.blocksByName.chest.id
-        const p = once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         bot.chat(`/setblock 1 2 3 ${chestId} 0`)
-        const [, newBlock] = await p
+        const blockUpdates = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
+        const newBlock = blockUpdates[1]
         expect(newBlock.type).toEqual(chestId)
       })
       test('can use /xp', async () => {
