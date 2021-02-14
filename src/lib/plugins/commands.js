@@ -335,6 +335,12 @@ module.exports.server = function (serv, { version }) {
     return serv.selector(type, data)
   }
 
+  serv.parseSelectorString = (str, pos, world, allowUser) => {
+    if (/^@/.test(str) && !(/^@([arpe])(?:\[([^\]]+)\])?$/.test(str))) throw new UserError('Unknown selector type')
+    if (!(/^@/.test(str))) { return { str: serv.getPlayer(str) } }
+    return serv.selectorString(str, pos, world, allowUser)
+  }
+
   serv.posFromString = (str, pos) => {
     if (str.indexOf('~') === -1) return parseFloat(str)
     if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos
