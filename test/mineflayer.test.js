@@ -47,27 +47,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       expect(msg1.extra[0].text).toEqual(message)
     }
 
-    function waitMessages (bot, messages) {
-      function removeElement (array, elem) {
-        const index = array.indexOf(elem)
-        if (index > -1) array.splice(index, 1)
-      }
-
-      return new Promise((resolve, reject) => {
-        const listener = (message) => {
-          const msg = message.toString()
-          if (messages.includes(msg)) {
-            removeElement(messages, msg)
-            if (messages.length === 0) {
-              bot.off('message', listener)
-              resolve()
-            }
-          }
-        }
-        bot.on('message', listener)
-      })
-    }
-
     beforeEach(async () => {
       const options = settings
       options['online-mode'] = false
