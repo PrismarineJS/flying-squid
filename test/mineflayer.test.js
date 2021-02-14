@@ -30,18 +30,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     let serv
     let entityName
 
-    async function onGround (bot) {
-      await new Promise((resolve) => {
-        const l = () => {
-          if (bot.entity.onGround) {
-            bot.removeListener('move', l)
-            resolve()
-          }
-        }
-        bot.on('move', l)
-      })
-    }
-
     async function waitMessage (bot, message) {
       const msg1 = await once(bot, 'message')
       expect(msg1.extra[0].text).toEqual(message)
@@ -93,34 +81,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       await serv.quit()
     })
 
-    function waitSpawnZone (bot, view) {
-      const nbChunksExpected = (view * 2) * (view * 2)
-      let c = 0
-      return new Promise(resolve => {
-        const listener = () => {
-          c++
-          if (c === nbChunksExpected) {
-            bot.removeListener('chunkColumnLoad', listener)
-            resolve()
-          }
-        }
-        bot.on('chunkColumnLoad', listener)
-      })
-    }
-
     describe('actions', () => {
-      function waitMessagePromise (_bot, message) {
-        return new Promise((resolve) => {
-          const listener = (msg) => {
-            if (msg.extra[0].text === message) {
-              _bot.removeListener('message', listener)
-              resolve()
-            }
-          }
-          _bot.on('message', listener)
-        })
-      }
-
       test('can dig', async () => {
         // await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
         await once(bot, 'move')
@@ -249,20 +210,20 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4))
         })
         test('can tp to somebody else', async () => {
-          await onGround(bot)
+          await once(bot, 'move')
           bot.chat('/tp bot2 bot')
           await once(bot2, 'forcedMove')
           assertPosEqual(bot2.entity.position, bot.entity.position)
         })
         test('can tp with relative positions', async () => {
-          await onGround(bot)
+          await once(bot, 'move')
           const initialPosition = bot.entity.position.clone()
           bot.chat('/tp ~1 ~-2 ~3')
           await once(bot, 'forcedMove')
           assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
         test('can tp somebody else with relative positions', async () => {
-          await Promise.all([onGround(bot), onGround(bot2)])
+          await Promise.all([await once(bot, 'move'), await once(bot2, 'move')])
           const initialPosition = bot2.entity.position.clone()
           bot.chat('/tp bot2 ~1 ~-2 ~3')
           await once(bot2, 'forcedMove')
@@ -278,7 +239,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         serv.getPlayer('bot').op = true
       })
       test('can use /setblock', async () => {
-        await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
+        await once(bot, 'move')
         const chestId = mcData.blocksByName.chest.id
         bot.chat(`/setblock 1 2 3 ${chestId} 0`)
         const blockUpdates = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
