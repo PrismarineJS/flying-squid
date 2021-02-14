@@ -213,6 +213,15 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(blockActionClosed).toEqual(states.closed)
         expect(blockActionClosed2).toEqual(states.closed)
       })
+
+      test.only('setSlot works', () => {
+        const player = serv.getPlayer('bot')
+        player.inventory.updateSlot(36, new Item(1, 1))
+        expect(player.inventory.slots[36].type).toEqual(1)
+        expect(player.inventory.slots[36].count).toEqual(1)
+        player.inventory.updateSlot(36, null)
+        expect(player.inventory.slots[36]).toBeNull()
+      })
     })
 
     describe('commands', () => {
