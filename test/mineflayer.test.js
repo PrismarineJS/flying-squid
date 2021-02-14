@@ -47,29 +47,25 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       expect(msg1.extra[0].text).toEqual(message)
     }
 
-    async function waitMessages (bot, messages) {
-      const toReceive = messages.reduce((acc, message) => {
-        acc[message] = 1
-        return acc
-      }, {})
-      const received = {}
-      return new Promise(resolve => {
-        const listener = msg => {
-          const message = msg.extra[0].text
-          if (!toReceive[message]) throw new Error('Received ' + message + ' , expected to receive one of ' + messages)
-          if (received[message]) throw new Error('Received ' + message + ' two times')
-          received[message] = 1
-          if (Object.keys(received).length === messages.length) {
-            bot.removeListener('message', listener)
-            resolve()
+    function waitMessages (bot, messages) {
+      function removeElement (array, elem) {
+        const index = array.indexOf(elem)
+        if (index > -1) array.splice(index, 1)
+      }
+
+      return new Promise((resolve, reject) => {
+        const listener = (message) => {
+          const msg = message.toString()
+          if (messages.includes(msg)) {
+            removeElement(messages, msg)
+            if (messages.length === 0) {
+              bot.off('message', listener)
+              resolve()
+            }
           }
         }
         bot.on('message', listener)
       })
-    }
-
-    async function waitLoginMessage (bot) {
-      return Promise.all([waitMessages(bot, ['bot joined the game.', 'bot2 joined the game.'])])
     }
 
     beforeEach(async () => {
@@ -214,7 +210,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     describe('commands', () => {
       jest.setTimeout(120 * 1000)
       test('has an help command', async () => {
-        await waitLoginMessage(bot)
         bot.chat('/help')
         await once(bot, 'message')
       })
@@ -283,7 +278,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         })
       })
       test('can use /deop', async () => {
-        await waitLoginMessage(bot)
         bot.chat('/deop bot')
         await waitMessage(bot, '§7§o[Server: Deopped bot]')
         bot.chat('/op bot')
@@ -333,7 +327,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       }
 
       test('can use /banlist, /ban, /pardon', async () => {
-        await waitLoginMessage(bot)
         bot.chat('/banlist')
         await waitMessagePromise('There are 0 total banned players')
         bot.chat('/ban bot2')
