@@ -6,7 +6,7 @@ module.exports.player = function (player, serv, { version }) {
 
   player.heldItemSlot = 0
   player.heldItem = new Item(256, 1)
-  player.inventory = windows.createWindow(1, 'minecraft:inventory', 'inv', 36)
+  player.inventory = windows.createWindow(0, 'minecraft:inventory', 'inv', 36)
 
   player.inventory.on('updateSlot', (slot, oldItem, newItem) => {
     player._client.write('set_slot', {
