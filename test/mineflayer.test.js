@@ -295,18 +295,30 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         })
       })
 
+      function waitMessagePromise (message) {
+        return new Promise((resolve) => {
+          const listener = (msg) => {
+            if (msg.extra[0].text === message) {
+              bot.removeListener('message', listener)
+              resolve()
+            }
+          }
+          bot.on('message', listener)
+        })
+      }
+
       test('can use /banlist, /ban, /pardon', async () => {
-        await waitMessage(bot, 'bot joined the game.')
+        await waitMessagePromise('bot joined the game.')
         bot.chat('/banlist')
-        await waitMessage(bot, 'There are 0 total banned players')
+        await waitMessagePromise('There are 0 total banned players')
         bot.chat('/ban bot2')
-        await waitMessage(bot, 'bot2 was banned')
+        await waitMessagePromise('bot2 was banned')
         bot.chat('/banlist')
-        await waitMessage(bot, 'There are 1 total banned players:')
+        await waitMessagePromise('There are 1 total banned players:')
         bot.chat('/pardon bot2')
-        await waitMessage(bot, 'bot2 is unbanned')
+        await waitMessagePromise('bot2 is unbanned')
         bot.chat('/banlist')
-        await waitMessage(bot, 'There are 0 total banned players')
+        await waitMessagePromise('There are 0 total banned players')
       })
     })
   })
