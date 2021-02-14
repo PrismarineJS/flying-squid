@@ -2,7 +2,7 @@ module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
   serv.commands.add({
     base: 'clear',
-    info: "Clear a player's inventory.",
+    info: 'Clears items from player(s) inventory.',
     usage: '/clear <player> <item> <maxCount>',
     parse: /^((?:@|\w)+)?(?: (\w+))?(?: (\d+))?$/, // ex: /clear USERNAME_ stone 1
     action (params, ctx) {
