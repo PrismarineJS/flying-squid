@@ -134,9 +134,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     }
 
     describe('actions', () => {
-      // jest.setTimeout(20 * 1000)
       test('can dig', async () => {
         await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
+        console.log('successfully spawned in')
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         bot.dig(bot.blockAt(pos))
         const blockChanges = await once(bot2, 'blockUpdate', { array: true })
