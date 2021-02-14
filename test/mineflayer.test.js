@@ -122,9 +122,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       }
 
       test('can dig', async () => {
-        await waitMessagePromise(bot, 'bot joined the game.')
-        await waitMessagePromise(bot2, 'bot2 joined the game.')
-        console.log('successfully spawned in')
+        // await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
+        await once(bot, 'move')
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         bot.dig(bot.blockAt(pos))
         const blockChanges = await once(bot2, 'blockUpdate', { array: true })
@@ -134,8 +133,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
 
       test('can place a block', async () => {
-        await waitMessagePromise(bot, 'bot joined the game.')
-        await waitMessagePromise(bot2, 'bot2 joined the game.')
+        // await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
+        await once(bot, 'move')
         const pos = bot.entity.position.offset(0, -2, 0).floored()
         bot.dig(bot.blockAt(pos))
         const blockChangesOne = await once(bot2, 'blockUpdate', { array: true })
@@ -159,8 +158,8 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
 
       test('can open and close a chest', async () => {
-        await waitMessagePromise(bot, 'bot joined the game.')
-        await waitMessagePromise(bot2, 'bot2 joined the game.')
+        await once(bot, 'move')
+        await once(bot2, 'move')
         const chestId = mcData.blocksByName.chest.id
         const [x, y, z] = [1, 2, 3]
 
