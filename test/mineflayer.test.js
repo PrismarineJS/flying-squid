@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 const squid = require('flying-squid')
-const settings = require('../config/default-settings')
+const settings = require('../config/default-settings.json')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
 
@@ -30,9 +30,42 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     let serv
     let entityName
 
+    async function onGround (bot) {
+      await new Promise((resolve) => {
+        const l = () => {
+          if (bot.entity.onGround) {
+            bot.removeListener('move', l)
+            resolve()
+          }
+        }
+        bot.on('move', l)
+      })
+    }
+
     async function waitMessage (bot, message) {
       const msg1 = await once(bot, 'message')
       expect(msg1.extra[0].text).toEqual(message)
+    }
+
+    async function waitMessages (bot, messages) {
+      const toReceive = messages.reduce((acc, message) => {
+        acc[message] = 1
+        return acc
+      }, {})
+      const received = {}
+      return new Promise(resolve => {
+        const listener = msg => {
+          const message = msg.extra[0].text
+          if (!toReceive[message]) throw new Error('Received ' + message + ' , expected to receive one of ' + messages)
+          if (received[message]) throw new Error('Received ' + message + ' two times')
+          received[message] = 1
+          if (Object.keys(received).length === messages.length) {
+            bot.removeListener('message', listener)
+            resolve()
+          }
+        }
+        bot.on('message', listener)
+      })
     }
 
     beforeEach(async () => {
@@ -81,27 +114,44 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       await serv.quit()
     })
 
+    function waitSpawnZone (bot, view) {
+      const nbChunksExpected = (view * 2) * (view * 2)
+      let c = 0
+      return new Promise(resolve => {
+        const listener = () => {
+          c++
+          if (c === nbChunksExpected) {
+            bot.removeListener('chunkColumnLoad', listener)
+            resolve()
+          }
+        }
+        bot.on('chunkColumnLoad', listener)
+      })
+    }
+
     describe('actions', () => {
       test('can dig', async () => {
-        // await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
-        await once(bot, 'move')
+        await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
+
         const pos = bot.entity.position.offset(0, -1, 0).floored()
+        const p = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
-        const blockChanges = await once(bot2, 'blockUpdate', { array: true })
-        const newBlock = blockChanges[1]
+
+        const [, newBlock] = await p
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
 
       test('can place a block', async () => {
-        // await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
-        await once(bot, 'move')
+        await Promise.all([waitSpawnZone(bot, 2), waitSpawnZone(bot2, 2), onGround(bot), onGround(bot2)])
+
         const pos = bot.entity.position.offset(0, -2, 0).floored()
+        const digPromise = once(bot2, 'blockUpdate', { array: true })
         bot.dig(bot.blockAt(pos))
-        const blockChangesOne = await once(bot2, 'blockUpdate', { array: true })
-        const newBlockOne = blockChangesOne[1]
-        assertPosEqual(newBlockOne.position, pos)
-        expect(newBlockOne.type).toEqual(0)
+
+        let [, newBlock] = await digPromise
+        assertPosEqual(newBlock.position, pos)
+        expect(newBlock.type).toEqual(0)
 
         const invPromise = new Promise((resolve) => {
           bot.inventory.on('updateSlot', (slot, oldItem, newItem) => {
@@ -111,16 +161,16 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         bot.creative.setInventorySlot(36, new Item(1, 1))
         await invPromise
 
-        bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0))
-        const blockChangesTwo = await once(bot2, 'blockUpdate', { array: true })
-        const newBlockTwo = blockChangesTwo[1]
-        assertPosEqual(newBlockTwo.position, pos)
-        expect(newBlockTwo.type).toEqual(1)
+        const placePromise = once(bot2, 'blockUpdate', { array: true })
+        bot.placeBlock(bot.blockAt(pos.offset(0, -1, 0)), new Vec3(0, 1, 0));
+        [, newBlock] = await placePromise
+        assertPosEqual(newBlock.position, pos)
+        expect(newBlock.type).toEqual(1)
       })
 
       test('can open and close a chest', async () => {
-        await once(bot, 'move')
-        await once(bot2, 'move')
+        await Promise.all([waitSpawnZone(bot, 2), onGround(bot), waitSpawnZone(bot2, 2), onGround(bot2)])
+
         const chestId = mcData.blocksByName.chest.id
         const [x, y, z] = [1, 2, 3]
 
@@ -139,8 +189,10 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           }
         }
 
+        const setBlockPromise = once(bot, 'blockUpdate')
         bot.chat(`/setblock ${x} ${y} ${z} ${chestId} 2`) // place a chest facing north
-        await once(bot, 'blockUpdate', { array: true })
+        await setBlockPromise
+
         const openPromise1 = once(bot._client, 'block_action', { array: true })
         const openPromise2 = once(bot2._client, 'block_action', { array: true })
         bot.chat(`/setblockaction ${x} ${y} ${z} 1 1`) // open the chest
@@ -162,7 +214,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     describe('commands', () => {
       jest.setTimeout(120 * 1000)
       test('has an help command', async () => {
-        await waitMessage(bot, 'bot joined the game.')
+        await waitMessagePromise('bot joined the game.')
         bot.chat('/help')
         await once(bot, 'message')
       })
@@ -210,20 +262,20 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           assertPosEqual(bot2.entity.position, new Vec3(2, 3, 4))
         })
         test('can tp to somebody else', async () => {
-          await once(bot, 'move')
+          await onGround(bot)
           bot.chat('/tp bot2 bot')
           await once(bot2, 'forcedMove')
           assertPosEqual(bot2.entity.position, bot.entity.position)
         })
         test('can tp with relative positions', async () => {
-          await once(bot, 'move')
+          await onGround(bot)
           const initialPosition = bot.entity.position.clone()
           bot.chat('/tp ~1 ~-2 ~3')
           await once(bot, 'forcedMove')
           assertPosEqual(bot.entity.position, initialPosition.offset(1, -2, 3), 2)
         })
         test('can tp somebody else with relative positions', async () => {
-          await Promise.all([await once(bot, 'move'), await once(bot2, 'move')])
+          await Promise.all([onGround(bot), onGround(bot2)])
           const initialPosition = bot2.entity.position.clone()
           bot.chat('/tp bot2 ~1 ~-2 ~3')
           await once(bot2, 'forcedMove')
@@ -231,7 +283,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         })
       })
       test('can use /deop', async () => {
-        await waitMessage(bot, 'bot joined the game.')
+        await waitMessagePromise('bot joined the game.')
         bot.chat('/deop bot')
         await waitMessage(bot, '§7§o[Server: Deopped bot]')
         bot.chat('/op bot')
@@ -239,11 +291,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         serv.getPlayer('bot').op = true
       })
       test('can use /setblock', async () => {
-        await once(bot, 'move')
+        await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
         const chestId = mcData.blocksByName.chest.id
+        const p = once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         bot.chat(`/setblock 1 2 3 ${chestId} 0`)
-        const blockUpdates = await once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
-        const newBlock = blockUpdates[1]
+        const [, newBlock] = await p
         expect(newBlock.type).toEqual(chestId)
       })
       test('can use /xp', async () => {
