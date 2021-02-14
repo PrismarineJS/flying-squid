@@ -11,14 +11,14 @@ module.exports.server = (serv, { version }) => {
       if (typeof params === 'string') return `${this.usage}: ${this.info}` // parsing failed
       const isOp = ctx.player ? ctx.player.op : true
       if (!isOp && params[1]) return 'Command not found'
-      if (params[2] && !mcData.blocksByName[params[2]]) return 'The block given is invalid.'
+      if (params[2] && !mcData.itemsByName[params[2]]) return 'The block given is invalid.'
       if (params[3] && isNaN(parseInt(params[3]))) return 'The number of blocks to remove given is invalid.'
       const playerInput = params[1]
         ? Object.entries(serv.parseSelectorString(params[1], ctx.player.position, ctx.player.world))
         : [[0, ctx.player]]
       const players = playerInput.map(p => p[1])
       if (players.some(player => !player)) return "Player given doesn't exist"
-      const id = params[2] ? mcData.blocksByName[params[2]].id : null
+      const id = params[2] ? mcData.itemsByName[params[2]].id : null
       // also clear held item if players are in survival
       const blocksCleared = players.reduce((accumulator, player) => {
         const res = player.inventory.clear(id, params[3] ? parseInt(params[3]) : undefined)
