@@ -77,6 +77,10 @@ module.exports.player = async function (player, serv, settings) {
       const slot = convertInventorySlotId.fromNBT(item.Slot.value)
       player.inventory.updateSlot(slot, newItem)
     })
+    for (let ix = player.inventory.inventoryStart; ix < player.inventory.inventoryEnd; ix++) {
+      const slot = player.inventory.slots[ix]
+      if (!slot) player.inventory.updateSlot(ix, null)
+    }
     player._client.write('held_item_slot', {
       slot: player.heldItemSlot
     })
