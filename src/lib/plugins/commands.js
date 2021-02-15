@@ -341,7 +341,7 @@ module.exports.server = function (serv, { version }) {
     return serv.selectorString(str, pos, world, allowUser)
   }
   /**
-   * @description send to a user a prismarine-chat message
+   * @description send users a prismarine-chat message
    * @var {ChatMessage} message message sent to user
    * @param {object} messageInfo info about the message
    */
