@@ -336,7 +336,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await waitMessagePromise('There are 0 total banned players')
       })
 
-      describe('can use /clear', () => {
+      describe.only('can use /clear', () => {
         function expectSlot (_bot, slot, id, count) {
           expect(_bot.inventory.slots[slot].type).toEqual(id)
           expect(_bot.inventory.slots[slot].count).toEqual(count)
@@ -349,9 +349,12 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         }
         async function clear (_player, _bot) {
           // put in the inventory, that way the clear will always send an updateSlot
-          _player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(_bot)
+          await setSlot(_player, _bot, 36, new Item(1, 64))
           _player.inventory.clear()
+          return slot(_bot)
+        }
+        function setSlot (_player, _bot, _slot, item) {
+          _player.inventory.updateSlot(_slot, item)
           return slot(_bot)
         }
 
@@ -359,11 +362,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           await once(bot, 'spawn')
           const player = serv.getPlayer('bot')
           await clear(player, bot)
-          player.inventory.updateSlot(36, null)
-          await slot(bot)
+          await setSlot(player, bot, 36, null)
           expectNull(bot, 36)
-          player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
           expectSlot(bot, 36, 1, 64)
           const p = slot(bot)
           bot.chat('/clear')
@@ -377,14 +378,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           const player = serv.getPlayer('bot')
           await clear(player, bot)
           const player2 = serv.getPlayer('bot2')
-          player2.inventory.clear()
-          await slot(bot2)
+          await clear(player2, bot2)
           // set their slot 36 to have 64 stone each
-          player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
           expectSlot(bot, 36, 1, 64)
-          player2.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot2)
+          await setSlot(player2, bot2, 36, new Item(1, 64))
           expectSlot(bot2, 36, 1, 64)
           // use /clear
           const p = Promise.all([once(bot.inventory, 'updateSlot'), once(bot2.inventory, 'updateSlot')])
@@ -398,8 +396,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn')])
           const player2 = serv.getPlayer('bot2')
           await clear(player2, bot2)
-          player2.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot2)
+          await setSlot(player2, bot2, 36, new Item(1, 64))
           expectSlot(bot2, 36, 1, 64)
           const p = slot(bot2)
           bot.chat('/clear bot2')
@@ -411,8 +408,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           await once(bot, 'spawn')
           const player = serv.getPlayer('bot')
           await clear(player, bot)
-          player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
           expectSlot(bot, 36, 1, 64)
           const p = slot(bot)
           bot.chat('/clear bot stone')
@@ -424,11 +420,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           await once(bot, 'spawn')
           const player = serv.getPlayer('bot')
           await clear(player, bot)
-          player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot)
-          player.inventory.updateSlot(37, new Item(mcData.itemsByName.stick.id, 64))
-          await slot(bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
           expectSlot(bot, 36, 1, 64)
+          await setSlot(player, bot, 37, new Item(mcData.itemsByName.stick.id, 64))
           expectSlot(bot, 37, mcData.itemsByName.stick.id, 64)
           const p = slot(bot)
           bot.chat('/clear bot stone 32')
@@ -440,8 +434,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         test('can use /clear with more item quantity then exist', async () => {
           await once(bot, 'spawn')
           const player = serv.getPlayer('bot')
-          player.inventory.updateSlot(36, new Item(1, 64))
-          await slot(bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
           expectSlot(bot, 36, 1, 64)
           const p = slot(bot)
           bot.chat('/clear bot stone 128')
