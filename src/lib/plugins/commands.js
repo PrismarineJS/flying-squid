@@ -340,6 +340,24 @@ module.exports.server = function (serv, { version }) {
     if (!(/^@/.test(str))) { return { str: serv.getPlayer(str) } }
     return serv.selectorString(str, pos, world, allowUser)
   }
+  /**
+   * @description send to a user a prismarine-chat message
+   * @param {string} aboutUser user the message is about`
+   * @param {boolean} isConsole executed by console (alias for showToUser to be true)
+   * @param {ChatMessage} message message sent to user
+   * @param {string} showToUser show the message to @var aboutUser
+   * @param {string} sender usually is the preset
+   * @param {int} position usually is the preset
+   */
+  serv.sendChatMessage = (aboutUser, isConsole, message, showToUser, sender = '00000000-0000-0000-0000-000000000000', position = 1) => {
+    for (const player of serv.players) {
+      if (!player.op) continue
+      if (isConsole) showToUser = true
+      if (!showToUser && player.username === aboutUser) continue
+      const r = JSON.stringify(message.json)
+      player._client.write('chat', { message: r, position, sender })
+    }
+  }
 
   serv.posFromString = (str, pos) => {
     if (str.indexOf('~') === -1) return parseFloat(str)
