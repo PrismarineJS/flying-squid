@@ -342,21 +342,37 @@ module.exports.server = function (serv, { version }) {
   }
   /**
    * @description send to a user a prismarine-chat message
-   * @param {string} aboutUser user the message is about
-   * @param {boolean} isConsole executed by console (alias for showToUser to be true)
-   * @param {ChatMessage} message message sent to user
-   * @param {boolean} showToUser show the message to @var aboutUser
-   * @param {string} sender usually is the preset
-   * @param {int} position usually is the preset
+   * @var {ChatMessage} message message sent to user
+   * @param {object} messageInfo info about the message
    */
-  serv.sendChatMessage = (aboutUser, isConsole, message, showToUser, sender = '00000000-0000-0000-0000-000000000000', position = 1) => {
-    for (const player of serv.players) {
-      if (!player.op) continue
+  serv.sendChatMessage = (message, messageInfo) => {
+    const chatPositions = {
+      chat: 0,
+      system: 1,
+      game_info: 2
+    }
+    if (messageInfo.messageType === 'system') {
+      // aboutUserUUID: user the message is about
+      // isConsole: executed by console (alias for showToUser to be true)
+      // showToUser: whether to show the message to the aboutUserUUI
+      let { execByUUID, isConsole, showToUser = false } = messageInfo
+      // if console executed the command, send message to all op'd players
       if (isConsole) showToUser = true
-      if (!showToUser && player.username === aboutUser) continue
-      const r = JSON.stringify(message.json)
-      player._client.write('chat', { message: r, position, sender })
-      serv.log(message.toString())
+      for (const player of serv.players) {
+        // we only send the message to op'd players
+        if (!player.op) continue
+        // if we specified we don't want the user to see the message, skip them
+        if (!showToUser && player.uuid === execByUUID) continue
+        player._client.write('chat', {
+          message: JSON.stringify(message.json),
+          position: chatPositions.system,
+          sender: '00000000-0000-0000-0000-000000000000'
+        })
+      }
+      // only send to console if console didn't execute the command
+      if (!isConsole) serv.log(message.toString())
+    } else {
+      throw new Error('Not implemented')
     }
   }
 
