@@ -189,13 +189,15 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(blockActionClosed2).toEqual(states.closed)
       })
 
-      test('setSlot works', () => {
+      test('setSlot works', async () => {
         const player = serv.getPlayer('bot')
         player.inventory.updateSlot(36, new Item(1, 1))
-        expect(player.inventory.slots[36].type).toEqual(1)
-        expect(player.inventory.slots[36].count).toEqual(1)
+        await once(bot, 'slotUpdate')
+        expect(bot.inventory.slots[36].type).toEqual(1)
+        expect(bot.inventory.slots[36].count).toEqual(1)
         player.inventory.updateSlot(36, null)
-        expect(player.inventory.slots[36]).toBeNull()
+        await once(bot, 'slotUpdate')
+        expect(bot.inventory.slots[36]).toBeNull()
       })
     })
 
@@ -439,6 +441,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           await once(bot, 'spawn')
           const player = serv.getPlayer('bot')
           player.inventory.updateSlot(36, new Item(1, 64))
+          await slot(bot)
           expectSlot(bot, 36, 1, 64)
           const p = slot(bot)
           bot.chat('/clear bot stone 128')
