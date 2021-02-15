@@ -346,8 +346,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           return once(_bot.inventory, 'updateSlot')
         }
         async function clear (_player, _bot) {
-          _player.inventory.clear()
+          // put in the inventory, that way the clear will always send an updateSlot
+          _player.inventory.updateSlot(36, new Item(1, 64))
           await slot(_bot)
+          _player.inventory.clear()
+          return slot(_bot)
         }
 
         test('can use /clear on themselves', async () => {
