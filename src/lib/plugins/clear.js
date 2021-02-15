@@ -1,5 +1,3 @@
-const { player } = require('./login')
-
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
   const ChatMessage = require('prismarine-chat')(version)
