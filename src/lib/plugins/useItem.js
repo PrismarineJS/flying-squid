@@ -15,7 +15,7 @@ module.exports.server = (serv, { version }) => {
     return foundID
   }
 
-  serv.on('asap', () => { //On server ready
+  serv.on('asap', () => { // On server ready
     if (serv.supportFeature('theFlattening')) { // >1.12 support
       for (const mob of Object.values(mobs)) {
         const spawnEgg = mcData.itemsByName[mob.name + '_spawn_egg']
