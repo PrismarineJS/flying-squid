@@ -189,7 +189,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(blockActionClosed2).toEqual(states.closed)
       })
 
-      test.only('setSlot works', () => {
+      test('setSlot works', () => {
         const player = serv.getPlayer('bot')
         player.inventory.updateSlot(36, new Item(1, 1))
         expect(player.inventory.slots[36].type).toEqual(1)
@@ -291,7 +291,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot, 'experience')
         expect(bot.experience.points).toEqual(100)
       })
-      test('can use /give', async () => {
+      test.skip('can use /give', async () => {
         bot.chat('/give bot2 1 1')
         await once(bot2.inventory, 'updateSlot')
         expect(bot2.inventory.slots[36].type).toEqual(1)
@@ -334,7 +334,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await waitMessagePromise('There are 0 total banned players')
       })
 
-      describe.only('can use /clear', () => {
+      describe('can use /clear', () => {
         function expectSlot (_bot, slot, id, count) {
           expect(_bot.inventory.slots[slot].type).toEqual(id)
           expect(_bot.inventory.slots[slot].count).toEqual(count)
