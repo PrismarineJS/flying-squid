@@ -345,7 +345,7 @@ module.exports.server = function (serv, { version }) {
    * @param {string} aboutUser user the message is about`
    * @param {boolean} isConsole executed by console (alias for showToUser to be true)
    * @param {ChatMessage} message message sent to user
-   * @param {string} showToUser show the message to @var aboutUser
+   * @param {boolean} showToUser show the message to @var aboutUser
    * @param {string} sender usually is the preset
    * @param {int} position usually is the preset
    */
