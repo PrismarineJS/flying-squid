@@ -43,7 +43,7 @@
     "prismarine-item": "^1.5.0",
     "prismarine-nbt": "^1.3.0",
     "prismarine-provider-anvil": "^2.3.0",
-    "prismarine-windows": "^2.1.0",
+    "prismarine-windows": "PrismarineJS/prismarine-windows",
     "prismarine-world": "^3.0.0",
     "prismarine-chat": "u9g/prismarine-chat#patch-1",
     "random-seed": "^0.3.0",
