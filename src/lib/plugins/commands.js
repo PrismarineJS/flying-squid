@@ -356,6 +356,7 @@ module.exports.server = function (serv, { version }) {
       if (!showToUser && player.username === aboutUser) continue
       const r = JSON.stringify(message.json)
       player._client.write('chat', { message: r, position, sender })
+      serv.log(message.toString())
     }
   }
 
