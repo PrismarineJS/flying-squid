@@ -342,7 +342,7 @@ module.exports.server = function (serv, { version }) {
   }
   /**
    * @description send to a user a prismarine-chat message
-   * @param {string} aboutUser user the message is about`
+   * @param {string} aboutUser user the message is about
    * @param {boolean} isConsole executed by console (alias for showToUser to be true)
    * @param {ChatMessage} message message sent to user
    * @param {boolean} showToUser show the message to @var aboutUser
