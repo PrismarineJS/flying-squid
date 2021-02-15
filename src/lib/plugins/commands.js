@@ -335,6 +335,22 @@ module.exports.server = function (serv, { version }) {
     return serv.selector(type, data)
   }
 
+  serv.parsePlayerTarget = (stringGiven, isConsole, ctx) => {
+    let players
+    if (isConsole) {
+      players = [serv.getPlayer(stringGiven)]
+    } else if (stringGiven !== undefined) {
+      players = Object
+        .entries(
+          serv.parseSelectorString(stringGiven, ctx.player.position, ctx.player.world)
+        )
+        .map(p => p[1])
+    } else { // no input given (so default to executor)
+      players = [ctx.player]
+    }
+    return players
+  }
+
   serv.parseSelectorString = (str, pos, world, allowUser) => {
     if (/^@/.test(str) && !(/^@([arpe])(?:\[([^\]]+)\])?$/.test(str))) throw new UserError('Unknown selector type')
     if (!(/^@/.test(str))) { return { str: serv.getPlayer(str) } }
