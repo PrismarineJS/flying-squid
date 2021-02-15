@@ -1,7 +1,6 @@
 module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
   const ChatMessage = require('prismarine-chat')(version)
-  const notUdf = x => x !== undefined
   const playersString = players => players.length > 1 ? `${players.length} players` : `player ${players[0].username}`
   serv.commands.add({
     base: 'clear',
@@ -15,18 +14,11 @@ module.exports.server = (serv, { version }) => {
       // errors
       if (typeof params === 'string') return `${this.usage}: ${this.info}` // parsing failed
       if (isConsole && playerSelector === undefined) return 'A player is required to run this command here' // console
-      if (!isOp && notUdf(playerSelector)) return 'Command not found'
-      if (notUdf(removeBlockId) && !mcData.itemsByName[removeBlockId]) return `Unknown item tag'${removeBlockId}'`
-      if (notUdf(removeCount) && isNaN(parseInt(removeCount))) return 'The number of blocks to remove given is invalid.'
+      if (!isOp && playerSelector !== undefined) return 'Command not found'
+      if (removeBlockId !== undefined && !mcData.itemsByName[removeBlockId]) return `Unknown item tag'${removeBlockId}'`
+      if (removeCount !== undefined && isNaN(parseInt(removeCount))) return 'The number of blocks to remove given is invalid.'
       // player(s) to execute on
-      let players
-      if (isConsole) {
-        players = [serv.getPlayer(playerSelector)]
-      } else if (notUdf(playerSelector)) {
-        players = Object.entries(serv.parseSelectorString(playerSelector, ctx.player.position, ctx.player.world)).map(p => p[1])
-      } else { // no input given (so default to executor)
-        players = [ctx.player]
-      }
+      const players = serv.parsePlayerTarget(playerSelector, isConsole, ctx)
       if (players.some(player => player == null)) return "Player given doesn't exist"
       const id = removeBlockId ? mcData.itemsByName[removeBlockId].id : null
       // also clear held item if players are in survival
