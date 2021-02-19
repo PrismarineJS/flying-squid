@@ -92,7 +92,7 @@ function build (player, serv) {
 
     currNodeJson.flags = flags
     const children = []
-    for (const [_, childNode] of currNode.children) {
+    for (const [, childNode] of currNode.children) {
       children.push(allNodes.indexOf(childNode))
     }
     currNodeJson.children = children
