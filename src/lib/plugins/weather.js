@@ -1,24 +1,32 @@
-module.exports.server = function (serv) {
-  serv.commands.add({
-    base: 'weather',
-    info: 'Sets the weather.',
-    usage: '/weather <clear|rain>',
-    op: true,
-    parse (str) {
-      const args = str.split(' ')
-      if (args.length !== 1) { return false }
+const { literal } = require('node-brigadier')
 
-      const condition = args[0]
-      if (['clear', 'rain'].indexOf(condition) === -1) { return false }
+const WEATHER_REASON = {
+  thunder: 8,
+  rain: 2,
+  clear: 1
+}
 
-      return { condition: condition }
-    },
-    action ({ condition }) {
-      if (condition === 'rain') {
-        serv._writeAll('game_state_change', { reason: 2, gameMode: 0 })
-      } else if (condition === 'clear') {
-        serv._writeAll('game_state_change', { reason: 1, gameMode: 0 })
-      }
-    }
-  })
+function changeWeather (serv, weatherType, intensity = 0) {
+  const reason = WEATHER_REASON[weatherType]
+  if (weatherType === 'thunder') { // thunder requires rain to render
+    serv._writeAll('game_state_change', { reason: WEATHER_REASON.rain, gameMode: intensity })
+  }
+  serv._writeAll('game_state_change', { reason, gameMode: intensity })
+}
+
+module.exports.brigadier = (dispatcher, serv) => {
+  dispatcher.register(
+    literal('weather')
+      .then(literal('thunder')
+        .executes(executor))
+      .then(literal('rain')
+        .executes(executor))
+      .then(literal('clear')
+        .executes(executor)))
+}
+
+function executor (ctx) {
+  const { serv } = ctx.getSource()
+  const [, weatherType] = ctx.input.split(' ')
+  changeWeather(serv, weatherType)
 }
