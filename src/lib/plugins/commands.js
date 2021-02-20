@@ -1,17 +1,5 @@
 const UserError = require('flying-squid').UserError
-const colors = require('colors')
-
-module.exports.player = function (player, serv, { version }) {
-  player.handleCommand = async (str) => {
-    try {
-      const res = await serv.commands.use(str, { player: player }, player.op)
-      if (res) player.chat(serv.color.red + res)
-    } catch (err) {
-      if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message)
-      else setTimeout(() => { throw err }, 0)
-    }
-  }
-}
+const { literal, argument, string, ArgumentCommandNode, LiteralCommandNode } = require('node-brigadier')
 
 module.exports.entity = function (entity, serv) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
@@ -84,61 +72,6 @@ module.exports.server = function (serv, { version }) {
       const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
       if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
       else serv.log(JSON.stringify(arr.map(a => a.id)))
-    }
-  })
-
-  serv.commands.add({
-    base: 'help',
-    aliases: ['?'],
-    info: 'to show all commands',
-    usage: '/help [command]',
-    tab: ['command'],
-    parse (str) {
-      const params = str.split(' ')
-      const page = parseInt(params[params.length - 1])
-      if (page) {
-        params.pop()
-      }
-      const search = params.join(' ')
-      return { search: search, page: (page && page - 1) || 0 }
-    },
-    action ({ search, page }, ctx) {
-      if (page < 0) return 'Page # must be >= 1'
-      const hash = serv.commands.uniqueHash
-
-      const PAGE_LENGTH = 7
-
-      let found = Object.keys(hash).filter(h => (h + ' ').indexOf((search && search + ' ') || '') === 0)
-
-      if (found.length === 0) { // None found
-        return 'Could not find any matches'
-      } else if (found.length === 1) { // Single command found, giev info on command
-        const cmd = hash[found[0]]
-        const usage = (cmd.params && cmd.params.usage) || cmd.base
-        const info = (cmd.params && cmd.params.info) || 'No info'
-        if (ctx.player) ctx.player.chat(usage + ': ' + info)
-        else console.log(usage + ': ' + info)
-      } else { // Multiple commands found, give list with pages
-        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
-        if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
-        found = found.sort()
-        if (found.indexOf('search') !== -1) {
-          const baseCmd = hash[search]
-          if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
-          else console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
-        } else {
-          if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
-          else console.log(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
-        }
-        for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
-          if (found[i] === search) continue
-          const cmd = hash[found[i]]
-          const usage = (cmd.params && cmd.params.usage) || cmd.base
-          const info = (cmd.params && cmd.params.info) || 'No info'
-          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
-          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
-        }
-      }
     }
   })
 
@@ -341,4 +274,48 @@ module.exports.server = function (serv, { version }) {
     else if (str === '~') return pos
     else throw new UserError('Invalid position')
   }
+}
+
+module.exports.brigadier = (dispatcher) => {
+  dispatcher.register(
+    literal('help')
+      .then(argument('command', string())
+        .executes(executor)))
+  dispatcher.register(
+    literal('help')
+      .executes(executor))
+}
+
+function executor (ctx) {
+  const { player } = ctx.getSource()
+  const rootNodeChildren = Array.from(ctx.getRootNode().children)
+  const cmds = rootNodeChildren.map(o => o[1]).map(enumerateNode)
+  player.chat(cmds.join('\n'))
+  // TODO: implement something if the user actually gives input,
+  // vanilla server @ 1.16.5 just sends nothing
+}
+
+function enumerateNode (node) {
+  const needsSpace = str => str === '' ? '' : ' '
+  const start = node?.literal ? `/${node.literal}` : ''
+  let str = ''
+  if (node.children) {
+    const children = Array.from(node.children)
+    const outer = []
+    if (children.length === 0) str = `[<${node.name}>]`
+    else if (children[0][1] instanceof LiteralCommandNode) {
+      outer.push('(', ')')
+      str = children.map(o => o[0]).join('|')
+      if (children.length === 1) str += needsSpace(str) + enumerateNode(children[0][1])
+      str = `${start} ${outer[0] || ''}${str}${outer[1] || ''}`
+    } else if (children[0][1] instanceof ArgumentCommandNode) {
+      if (children.length === 1) str += needsSpace(str) + enumerateNode(children[0][1])
+      str = `${start}${str ? ' ' + str : ''}`
+    } else {
+      throw new Error('(\'/help\') parsing command tree error')
+    }
+  } else {
+    throw new Error('(\'/help\') parsing command tree error')
+  }
+  return str
 }
