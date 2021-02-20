@@ -49,7 +49,9 @@ function makeNodeMap (rootCommandNode) {
 function getParser (node) {
   return {
     target: 'minecraft:entity',
-    duration: 'brigadier:integer'
+    duration: 'brigadier:integer',
+    command: 'brigadier:string',
+    name: 'brigadier:string'
   }[node.name]
 }
 function getStringType (stringType) {
@@ -78,7 +80,7 @@ function build (player, serv) {
     }
     if (currNode.redirect) {
       flags.has_redirect_node = 1
-      currNodeJson.redirectNode = allNodes.indexOf(currNode.redirectNode)
+      currNodeJson.redirectNode = allNodes.indexOf(currNode.redirect)
     }
     if (currNode.command) {
       flags.has_command = 1
