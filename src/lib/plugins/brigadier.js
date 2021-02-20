@@ -3,8 +3,14 @@ const {
   RootCommandNode,
   LiteralCommandNode,
   ArgumentCommandNode,
-  CommandSyntaxException
+  CommandSyntaxException,
+  string, bool, float, integer
 } = require('node-brigadier')
+// not exported by node-brigadier
+const StringArgumentType = string().constructor
+const BoolArgumentType = bool().constructor
+const FloatArgumentType = float().constructor
+const IntegerArgumentType = integer().constructor
 
 const requireIndex = require('../requireindex')
 const path = require('path')
@@ -41,15 +47,17 @@ function makeNodeMap (rootCommandNode) {
 }
 
 function getParser (node) {
-  if (node.name === 'target') {
-    return 'minecraft:entity'
-  }
+  return {
+    target: 'minecraft:entity',
+    duration: 'brigadier:integer'
+  }[node.name]
 }
-
-const StringPropertiesMap = {
-  words_with_underscores: 0,
-  '"quoted phrase"': 1,
-  'words with spaces': 2
+function getStringType (stringType) {
+  return {
+    words_with_underscores: 0,
+    '"quoted phrase"': 1,
+    'words with spaces': 2
+  }[stringType]
 }
 
 function build (player, serv) {
@@ -62,18 +70,18 @@ function build (player, serv) {
     const currNode = allNodes[ix]
     const currNodeJson = {}
     const flags = {
-      unused: false,
-      has_custom_suggestions: false,
-      has_redirect_node: false,
-      has_command: false,
+      unused: 0,
+      has_custom_suggestions: 0,
+      has_redirect_node: 0,
+      has_command: 0,
       command_node_type: 0
     }
     if (currNode.redirect) {
-      flags.has_redirect_node = true
+      flags.has_redirect_node = 1
       currNodeJson.redirectNode = allNodes.indexOf(currNode.redirectNode)
     }
     if (currNode.command) {
-      flags.has_command = true
+      flags.has_command = 1
     }
     if (currNode instanceof RootCommandNode) {
       flags.command_node_type = 0
@@ -82,11 +90,35 @@ function build (player, serv) {
       currNodeJson.extraNodeData = currNode.literal
     } else if (currNode instanceof ArgumentCommandNode) {
       flags.command_node_type = 2
-      flags.has_command = true
+      flags.has_command = 1
       currNodeJson.extraNodeData = {
         name: currNode.getName(),
-        parser: getParser(currNode),
-        properties: StringPropertiesMap[currNode.type.type] || 1
+        parser: getParser(currNode)
+      }
+      if (currNode.type instanceof FloatArgumentType) {
+        const props = { flags: {} }
+        // max
+        props.flags.unused = 0
+        if (Number.isFinite(currNode.type.maximum)) {
+          props.max = currNode.type.maximum
+          props.flags.max_present = 1
+        } else {
+          props.flags.max_present = 0
+        }
+        // min
+        if (Number.isFinite(currNode.type.maximum)) {
+          props.flags.max_present = 1
+          props.min = currNode.type.minimum
+        } else {
+          props.flags.min_present = 0
+        }
+        if (!Number.isFinite(currNode.type.maximum) && !Number.isFinite(currNode.type.minimum)) {
+          props.unused = 1
+        }
+        currNodeJson.extraNodeData.properties = props
+      }
+      if (currNode.type instanceof StringArgumentType) {
+        currNodeJson.extraNodeData.properties = getStringType(currNode.type.type)
       }
     }
 
