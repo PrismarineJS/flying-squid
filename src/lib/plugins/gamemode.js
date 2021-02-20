@@ -1,4 +1,5 @@
 const { literal, argument, string } = require('node-brigadier')
+
 const GAMEMODES = {
   survival: 0,
   creative: 1,
@@ -7,16 +8,14 @@ const GAMEMODES = {
 }
 
 module.exports.brigadier = (dispatcher, serv) => {
-  // send with-out user
   for (const gamemode of Object.keys(GAMEMODES)) {
+    // send with-out user
     dispatcher.register(
       literal('gamemode')
         .requires(ctx => ctx.player.op)
         .then(literal(gamemode)
           .executes(executor)))
-  }
-  // send with user
-  for (const gamemode of Object.keys(GAMEMODES)) {
+    // send with user
     dispatcher.register(
       literal('gamemode')
         .requires(ctx => ctx.player.op)
