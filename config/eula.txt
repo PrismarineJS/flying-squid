@@ -1,0 +1,2 @@
+# By changing this value to true you agree to the Minecraft EULA @ https://account.mojang.com/documents/minecraft_eula.
+eula=true
