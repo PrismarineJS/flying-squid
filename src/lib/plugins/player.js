@@ -11,12 +11,12 @@ module.exports.player = function (player, serv) {
     player.health = health
     sendHealthPacket()
   }
-  
+
   player.updateFood = (food) => {
     player.food = food
     sendHealthPacket()
   }
-  
+
   player.updateFoodSaturation = (foodSaturation) => {
     player.foodSaturation = foodSaturation
     sendHealthPacket()
