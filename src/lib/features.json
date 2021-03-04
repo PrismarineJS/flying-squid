@@ -113,5 +113,15 @@
     "name": "dimensionIsAString",
     "description": "dimension identifier is a string instead of an id",
     "versions": ["1.16"]
+  },
+  {
+    "name": "entityMCPrefixed",
+    "description": "entity prefixed with minecraft: on this versions",
+    "versions": ["1.12", "1.13", "1.14", "1.15", "1.16"]
+  },
+  {
+    "name": "nbtOnMetadata",
+    "description": "in never versions its nbt but in 1.8 its on metadata",
+    "versions": ["1.8"]
   }
 ]
