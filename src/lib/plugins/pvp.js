@@ -3,15 +3,6 @@ const UserError = require('flying-squid').UserError
 const colors = require('colors')
 
 module.exports.player = function (player, serv) {
-  player.updateHealth = (health) => {
-    player.health = health
-    player._client.write('update_health', {
-      food: player.food,
-      foodSaturation: 0.0,
-      health: player.health
-    })
-  }
-
   function attackEntity (entityId) {
     const attackedEntity = serv.entities[entityId]
     if (!attackedEntity || (attackedEntity.gameMode !== 0 && attackedEntity.type === 'player')) return

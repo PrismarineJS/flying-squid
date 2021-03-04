@@ -153,6 +153,8 @@
       - [player.setBlock(position,blockType,blockData)](#playersetblockpositionblocktypeblockdata)
       - [player.setBlockAction(position,actionId,actionParam)](#playersetblockactionpositionactionidactionparam)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
+      - [player.updateFood(health)](#playerupdatefoodfood)
+      - [player.updateFoodSaturation(health)](#playerupdatefoodsaturationfoodsaturation)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
       - [player.updateAndSpawnNearbyPlayers()](#playerupdateandspawnnearbyplayers)
@@ -1043,7 +1045,15 @@ This will not make any changes to the server's world
 
 #### player.updateHealth(health)
 
-update the player health.
+Updates the player's health and sends the relevant packet.
+
+#### player.updateFood(food)
+
+Updates the player's food and sends the relevant packet.
+
+#### player.updateFoodSaturation(foodSaturation)
+
+Updates the player's food saturation and sends the relevant packet.
 
 #### player.changeWorld(world, opt)
 
