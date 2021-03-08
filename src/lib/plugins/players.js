@@ -103,7 +103,7 @@ module.exports.server = function (serv, { version }) {
       const newItem = new Item(item, count)
 
       player.inventory.slots.forEach((e, i) => {
-        if (e === undefined) return
+        if (!e) return
         if (e.type === parseInt(newItem.type)) {
           e.count += parseInt(count)
           player.inventory.updateSlot(e.slot, e)
