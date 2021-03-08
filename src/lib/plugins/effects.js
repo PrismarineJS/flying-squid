@@ -1,3 +1,4 @@
+const { UserError } = require("../..")
 
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
@@ -60,6 +61,7 @@ module.exports.server = function (serv) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
     action (params, ctx) {
+      if (!params[1]) return new UserError('Invalid selector string')
       const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
       if (params[2] === 'clear') {
         targets.forEach(e => Object.keys(e.effects).forEach(effectId => {
