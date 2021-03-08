@@ -19,6 +19,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
 
   player._client.on('end', async () => {
     if (player && player.username) {
+      player.unloadAllChunks()
       serv.broadcast(serv.color.yellow + player.username + ' quit the game.')
       player._writeOthers('player_info', {
         action: 4,
