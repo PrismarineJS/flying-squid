@@ -1,4 +1,4 @@
-const { UserError } = require("../..")
+const UserError = require('flying-squid').UserError
 
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
