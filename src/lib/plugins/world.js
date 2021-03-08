@@ -148,7 +148,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     onlyPlayer: true,
     op: true,
     action (world, ctx) {
-      player.unloadAllChunks()
+      ctx.player.unloadAllChunks()
     }
   })
 }
@@ -266,7 +266,7 @@ module.exports.player = function (player, serv, settings) {
       location: player.spawnPoint
     })
   }
-  
+
   player.unloadAllChunks = () => {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
