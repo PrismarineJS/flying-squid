@@ -103,6 +103,30 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       })
   }
 
+  serv.chunksUsed = {}
+  serv.loadPlayerChunk = (chunkX, chunkZ, player) => {
+    const id = chunkX + ',' + chunkZ
+    if (!serv.chunksUsed[id]) {
+      serv.chunksUsed[id] = 0
+    }
+    serv.chunksUsed[id]++
+    const loaded = player.loadedChunks[id]
+    if (!loaded) player.loadedChunks[id] = 1
+    return !loaded
+  }
+  serv.unloadPlayerChunk = (chunkX, chunkZ, player) => {
+    const id = chunkX + ',' + chunkZ
+    delete player.loadedChunks[id]
+    if (serv.chunksUsed[id] > 0) {
+      serv.chunksUsed[id]--
+    }
+    if (!serv.chunksUsed[id]) {
+      player.world.unloadColumn(chunkX, chunkZ)
+      return true
+    }
+    return false
+  }
+
   // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
   serv.commands.add({
@@ -116,11 +140,22 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
     }
   })
+
+  serv.commands.add({
+    base: 'unloadchunks',
+    info: 'unload all server chunks related to player',
+    usage: '/unloadchunks',
+    onlyPlayer: true,
+    op: true,
+    action (world, ctx) {
+      player.unloadAllChunks()
+    }
+  })
 }
 
 module.exports.player = function (player, serv, settings) {
   player.unloadChunk = (chunkX, chunkZ) => {
-    delete player.loadedChunks[chunkX + ',' + chunkZ]
+    serv.unloadPlayerChunk(chunkX, chunkZ, player)
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -200,12 +235,7 @@ module.exports.player = function (player, serv, settings) {
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
-      .filter(({ chunkX, chunkZ }) => {
-        const key = chunkX + ',' + chunkZ
-        const loaded = player.loadedChunks[key]
-        if (!loaded) player.loadedChunks[key] = 1
-        return !loaded
-      })
+      .filter(({ chunkX, chunkZ }) => serv.loadPlayerChunk(chunkX, chunkZ, player))
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
           .then(() => player.world.getColumn(chunkX, chunkZ))
@@ -236,12 +266,18 @@ module.exports.player = function (player, serv, settings) {
       location: player.spawnPoint
     })
   }
+  
+  player.unloadAllChunks = () => {
+    Object.keys(player.loadedChunks)
+      .map((key) => key.split(',').map(a => parseInt(a)))
+      .forEach(([x, z]) => player.unloadChunk(x, z))
+  }
 
   player.changeWorld = async (world, opt) => {
     if (player.world === world) return Promise.resolve()
     opt = opt || {}
     player.world = world
-    player.loadedChunks = {}
+    player.unloadAllChunks()
     if (typeof opt.gamemode !== 'undefined') {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode
