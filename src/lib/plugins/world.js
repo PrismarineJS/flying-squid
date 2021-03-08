@@ -140,17 +140,6 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
     }
   })
-
-  serv.commands.add({
-    base: 'unloadchunks',
-    info: 'unload all server chunks related to player',
-    usage: '/unloadchunks',
-    onlyPlayer: true,
-    op: true,
-    action (world, ctx) {
-      ctx.player.unloadAllChunks()
-    }
-  })
 }
 
 module.exports.player = function (player, serv, settings) {
