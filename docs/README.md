@@ -1,4 +1,4 @@
-flying-squid
+flying-squid: netherite edition
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
@@ -31,14 +31,12 @@ Before running or building it is recommended that you configure the server in `c
     npm install
     node app.js
 
-Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
-
 You can also install flying-squid globally with `sudo npm install -g flying-squid`
-and then run it with `flying-squid` command.
+and then run it with `flying-squid` command. [its vanilla flying-squid]
 
 ### Docker
 
-Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
+Docker allows a higher level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
 
 ```bash
 docker run prismarinejs/flying-squid
