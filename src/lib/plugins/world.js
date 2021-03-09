@@ -14,7 +14,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   const mcData = require('minecraft-data')(version)
   const Anvil = require('prismarine-provider-anvil').Anvil(version)
 
-  const newSeed = generation.options ? generation.options.seed : Math.floor(Math.random() * Math.pow(2, 31))
+  const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
   let regionFolder
   if (worldFolder) {
@@ -33,12 +33,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
     }
   } else { seed = newSeed }
-  // generation.options.seed = seed
-  // generation.options.version = version
-  serv.emit('seed', seed)
-  const generationModule = generations[generation.name] ? generations[generation.name] : (generation instanceof Function ? generation : require(generation.name))
+  generation.options.seed = seed
+  generation.options.version = version
+  serv.emit('seed', generation.options.seed)
+  const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
-  // serv.netherworld = new World(generations.nether(generation.options))
+  serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {
