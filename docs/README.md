@@ -45,7 +45,7 @@ docker run netheritejs/flying-squid
 With specific flying-squid configuration, container name and the most important, opening the port to flying-squid:
 
 ```bash
-docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm prismarinejs/flying-squid
+docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm netheritejs/flying-squid
 ```
 
 [docker-compose](https://docs.docker.com/compose/) is useful to quickly launch & stop a single container with a specific configuration.
