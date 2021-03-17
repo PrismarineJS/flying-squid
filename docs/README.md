@@ -39,7 +39,7 @@ and then run it with `flying-squid` command.
 Docker allows a higher level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
 
 ```bash
-docker run prismarinejs/flying-squid
+docker run netheritejs/flying-squid
 
 ```
 With specific flying-squid configuration, container name and the most important, opening the port to flying-squid:
