@@ -144,4 +144,5 @@ For further examples, see the [examples page.](https://PrismarineJS.github.io/fl
  - [@demipixel](https://github.com/demipixel) 
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protocol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
+ - [@NetheriteJS](https://github.com/netheriteJS) for creating new version of flying-squid
  - All of our other awesome contributors!
