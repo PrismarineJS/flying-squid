@@ -1,7 +1,7 @@
 const spiralloop = require('spiralloop')
 const Vec3 = require('vec3').Vec3
 
-const generations = require('flying-squid').generations
+const generations = require('../generations')
 const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')

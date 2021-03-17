@@ -1,6 +1,6 @@
 const moment = require('moment')
 const needle = require('needle')
-const UserError = require('flying-squid').UserError
+const UserError = require('../user_error')
 
 module.exports.server = function (serv, settings) {
   serv.ban = async (uuid, reason) => {

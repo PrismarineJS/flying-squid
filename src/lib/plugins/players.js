@@ -1,4 +1,4 @@
-const UserError = require('flying-squid').UserError
+const UserError = require('../user_error')
 
 module.exports.server = function (serv, { version }) {
   const Item = require('prismarine-item')(version)
