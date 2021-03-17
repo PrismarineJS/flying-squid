@@ -1,4 +1,4 @@
-FLYING_SQUID
+FLYING-SQUID
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
