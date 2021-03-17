@@ -1,4 +1,4 @@
-flying-squid: netherite edition
+FLYING_SQUID
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
@@ -31,8 +31,8 @@ Before running or building it is recommended that you configure the server in `c
     npm install
     node app.js
 
-You can also install flying-squid globally with `sudo npm install -g flying-squid`
-and then run it with `flying-squid` command. [its vanilla flying-squid]
+You can also install flying-squid globally with `sudo npm install -g netheritejs/flying-squid`
+and then run it with `flying-squid` command.
 
 ### Docker
 
@@ -132,7 +132,7 @@ mcServer.createMCServer({
 })
 ```
 
-You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
+You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/NetheriteJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
 
 For further examples, see the [examples page.](https://PrismarineJS.github.io/flying-squid/#/examples)
 
