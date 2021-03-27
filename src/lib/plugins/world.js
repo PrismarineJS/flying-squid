@@ -104,7 +104,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   }
 
   serv.chunksUsed = {}
-  serv.loadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv._loadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
     if (!serv.chunksUsed[id]) {
       serv.chunksUsed[id] = 0
@@ -114,7 +114,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     if (!loaded) player.loadedChunks[id] = 1
     return !loaded
   }
-  serv.unloadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv._unloadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
     delete player.loadedChunks[id]
     if (serv.chunksUsed[id] > 0) {
@@ -143,8 +143,8 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 }
 
 module.exports.player = function (player, serv, settings) {
-  player.unloadChunk = (chunkX, chunkZ) => {
-    serv.unloadPlayerChunk(chunkX, chunkZ, player)
+  player._unloadChunk = (chunkX, chunkZ) => {
+    serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -224,7 +224,7 @@ module.exports.player = function (player, serv, settings) {
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
-      .filter(({ chunkX, chunkZ }) => serv.loadPlayerChunk(chunkX, chunkZ, player))
+      .filter(({ chunkX, chunkZ }) => serv._loadPlayerChunk(chunkX, chunkZ, player))
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
           .then(() => player.world.getColumn(chunkX, chunkZ))
@@ -256,7 +256,7 @@ module.exports.player = function (player, serv, settings) {
     })
   }
 
-  player.unloadAllChunks = () => {
+  player._unloadAllChunks = () => {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
       .forEach(([x, z]) => player.unloadChunk(x, z))
@@ -266,7 +266,7 @@ module.exports.player = function (player, serv, settings) {
     if (player.world === world) return Promise.resolve()
     opt = opt || {}
     player.world = world
-    player.unloadAllChunks()
+    player._unloadAllChunks()
     if (typeof opt.gamemode !== 'undefined') {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode
