@@ -67,6 +67,8 @@
       - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
       - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
       - [server._writeNearby(packetName, packetFields, loc)](#server_writenearbypacketname-packetfields-loc)
+      - [serv._loadPlayerChunk(chunkX, chunkZ, player)](#serv_loadplayerchunk)
+      - [serv._unloadPlayerChunk(chunkX, chunkZ, player)](#serv_unloadplayerchunk)
   - [Entity](#entity-1)
     - [Properties](#properties-1)
       - [entity.id](#entityid)
@@ -166,6 +168,8 @@
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods-1)
+      - [player._unloadChunk(chunkX, chunkZ)](#player_unloadallchunks)
+      - [player._unloadAllChunks](#player_unloadallchunks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -508,6 +512,14 @@ Writes packet to every player in playerArray
 #### server._writeNearby(packetName, packetFields, loc)
 
 Writes packet to all players within distance of loc. loc has the same paramater as loc in server.getNearby()
+
+#### serv._loadPlayerChunk(chunkX, chunkZ, player)
+
+Loads chunk for player
+
+#### serv._unloadPlayerChunk(chunkX, chunkZ, player)
+
+Unloads chunk for player
 
 ## Entity
 
@@ -1102,4 +1114,10 @@ The internal implementation to communicate with a client
 
 ### Low level methods
 
-Same as entity
+#### player._unloadChunk(chunkX, chunkZ)
+
+Unloads a specific chunk
+
+#### player._unloadAllChunks()
+
+Unloads all chunks
