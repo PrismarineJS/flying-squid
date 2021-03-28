@@ -168,7 +168,7 @@
     - [Low level properties](#low-level-properties)
       - [player._client](#player_client)
     - [Low level methods](#low-level-methods-1)
-      - [player._unloadChunk(chunkX, chunkZ)](#player_unloadallchunks)
+      - [player._unloadChunk(chunkX, chunkZ)](#player_unloadchunk)
       - [player._unloadAllChunks](#player_unloadallchunks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
