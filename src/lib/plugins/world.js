@@ -259,7 +259,7 @@ module.exports.player = function (player, serv, settings) {
   player._unloadAllChunks = () => {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
-      .forEach(([x, z]) => player.unloadChunk(x, z))
+      .forEach(([x, z]) => player._unloadChunk(x, z))
   }
 
   player.changeWorld = async (world, opt) => {
