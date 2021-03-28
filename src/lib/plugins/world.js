@@ -1,7 +1,7 @@
 const spiralloop = require('spiralloop')
 const Vec3 = require('vec3').Vec3
 
-const generations = require('flying-squid').generations
+const generations = require('../generations')
 const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')
@@ -103,30 +103,6 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       })
   }
 
-  serv.chunksUsed = {}
-  serv._loadPlayerChunk = (chunkX, chunkZ, player) => {
-    const id = chunkX + ',' + chunkZ
-    if (!serv.chunksUsed[id]) {
-      serv.chunksUsed[id] = 0
-    }
-    serv.chunksUsed[id]++
-    const loaded = player.loadedChunks[id]
-    if (!loaded) player.loadedChunks[id] = 1
-    return !loaded
-  }
-  serv._unloadPlayerChunk = (chunkX, chunkZ, player) => {
-    const id = chunkX + ',' + chunkZ
-    delete player.loadedChunks[id]
-    if (serv.chunksUsed[id] > 0) {
-      serv.chunksUsed[id]--
-    }
-    if (!serv.chunksUsed[id]) {
-      player.world.unloadColumn(chunkX, chunkZ)
-      return true
-    }
-    return false
-  }
-
   // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
   // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
   serv.commands.add({
@@ -143,8 +119,8 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 }
 
 module.exports.player = function (player, serv, settings) {
-  player._unloadChunk = (chunkX, chunkZ) => {
-    serv._unloadPlayerChunk(chunkX, chunkZ, player)
+  player.unloadChunk = (chunkX, chunkZ) => {
+    delete player.loadedChunks[chunkX + ',' + chunkZ]
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -217,14 +193,19 @@ module.exports.player = function (player, serv, settings) {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
-      .forEach(([x, z]) => player._unloadChunk(x, z))
+      .forEach(([x, z]) => player.unloadChunk(x, z))
 
     return spiral([view * 2, view * 2])
       .map(t => ({
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
-      .filter(({ chunkX, chunkZ }) => serv._loadPlayerChunk(chunkX, chunkZ, player))
+      .filter(({ chunkX, chunkZ }) => {
+        const key = chunkX + ',' + chunkZ
+        const loaded = player.loadedChunks[key]
+        if (!loaded) player.loadedChunks[key] = 1
+        return !loaded
+      })
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
           .then(() => player.world.getColumn(chunkX, chunkZ))
@@ -256,17 +237,11 @@ module.exports.player = function (player, serv, settings) {
     })
   }
 
-  player._unloadAllChunks = () => {
-    Object.keys(player.loadedChunks)
-      .map((key) => key.split(',').map(a => parseInt(a)))
-      .forEach(([x, z]) => player._unloadChunk(x, z))
-  }
-
   player.changeWorld = async (world, opt) => {
     if (player.world === world) return Promise.resolve()
     opt = opt || {}
     player.world = world
-    player._unloadAllChunks()
+    player.loadedChunks = {}
     if (typeof opt.gamemode !== 'undefined') {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode

@@ -1,4 +1,4 @@
-const UserError = require('flying-squid').UserError
+const UserError = require('../user_error')
 
 module.exports.server = function (serv, { version }) {
   const Item = require('prismarine-item')(version)
@@ -103,7 +103,7 @@ module.exports.server = function (serv, { version }) {
       const newItem = new Item(item, count)
 
       player.inventory.slots.forEach((e, i) => {
-        if (!e) return
+        if (e === undefined) return
         if (e.type === parseInt(newItem.type)) {
           e.count += parseInt(count)
           player.inventory.updateSlot(e.slot, e)
