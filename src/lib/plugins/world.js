@@ -168,7 +168,7 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
-      var blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
+      const blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
         return {
           type: 'compound',
           name: '',
@@ -245,7 +245,7 @@ module.exports.player = function (player, serv, settings) {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
-      .forEach(([x, z]) => player.unloadChunk(x, z))
+      .forEach(([x, z]) => player._unloadChunk(x, z))
 
     return spiral([view * 2, view * 2])
       .map(t => ({

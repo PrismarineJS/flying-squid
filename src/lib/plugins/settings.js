@@ -16,16 +16,6 @@ module.exports.server = function (serv, settings) {
 
   async function findSpawnZone (world, initialPoint) {
     return initialPoint
-    let point = initialPoint
-    while ((await (world.getBlockType(point))) === 0) { point = point.offset(0, -1, 0) }
-    while (true) {
-      const p = await world.getBlockType(point)
-      if (!waterBlocks.has(p)) { break }
-      point = point.offset(1, 0, 0)
-    }
-    while ((await world.getBlockType(point)) !== 0) { point = point.offset(0, 1, 0) }
-
-    return point
   }
 
   serv.getSpawnPoint = async (world) => {

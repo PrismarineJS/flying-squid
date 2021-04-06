@@ -21,29 +21,30 @@ class Command {
   }
 
   async use (command, ctx = {}, op = true) {
-    let res = this.find(command)
-
-    if (res) {
-      let [com, pars] = res
-      if (com.params.onlyConsole && ctx.player) return 'This command is console only'
-      if (com.params.onlyPlayer && !ctx.player) throw new UserError('This command is player only')
-      if (com.params.op && !op) return 'You do not have permission to use this command'
-      const parse = com.params.parse
-      if (parse) {
-        if (typeof parse === 'function') {
-          pars = parse(pars, ctx)
-          if (pars === false) {
-            if (ctx.player) return com.params.usage ? 'Usage: ' + com.params.usage : 'Bad syntax'
-            else throw new UserError(com.params.usage ? 'Usage: ' + com.params.usage : 'Bad syntax')
+    const resultsFound = this.find(command)
+    let parsedResponse
+    if (resultsFound) {
+      const wantedCommand = resultsFound[0]
+      const passedArgs = resultsFound[1]
+      if (wantedCommand.params.onlyConsole && ctx.player) return 'This command is console only'
+      if (wantedCommand.params.onlyPlayer && !ctx.player) throw new UserError('This command is player only')
+      if (wantedCommand.params.op && !op) return 'You do not have permission to use this command'
+      const customArgsParser = wantedCommand.params.parse
+      if (customArgsParser) {
+        if (typeof customArgsParser === 'function') {
+          parsedResponse = customArgsParser(passedArgs, ctx)
+          if (parsedResponse === false) {
+            if (ctx.player) return wantedCommand.params.usage ? 'Usage: ' + wantedCommand.params.usage : 'Bad syntax'
+            else throw new UserError(wantedCommand.params.usage ? 'Usage: ' + wantedCommand.params.usage : 'Bad syntax')
           }
         } else {
-          pars = pars.match(parse)
+          parsedResponse = passedArgs.match(customArgsParser)
         }
       }
-
-      res = await com.params.action(pars, ctx)
-
-      if (res) return '' + res
+      let output
+      if (parsedResponse) output = await wantedCommand.params.action(parsedResponse, ctx)
+      else output = await wantedCommand.params.action(resultsFound[1], ctx) // just give back the passed arg
+      if (output) return '' + output
     } else {
       if (ctx.player) return 'Command not found'
       else throw new UserError('Command not found')
