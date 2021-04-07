@@ -15,8 +15,8 @@ module.exports.server = (serv, { version }) => {
     return foundID
   }
 
-  serv.on('asap', () => {
-    if (serv.supportFeature('theFlattening')) {
+  serv.on('asap', () => { // On server ready
+    if (serv.supportFeature('theFlattening')) { // >1.12 support
       for (const mob of Object.values(mobs)) {
         const spawnEgg = mcData.itemsByName[mob.name + '_spawn_egg']
         if (spawnEgg) {
@@ -27,10 +27,24 @@ module.exports.server = (serv, { version }) => {
         }
       }
     } else {
-      serv.onItemPlace('spawn_egg', ({ heldItem, player, placedPosition }) => {
-        serv.spawnMob(getEntID(heldItem.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
-        return { id: -1, data: 0 }
-      })
+      if (serv.supportFeature('entityMCPrefixed')) { // 1.12 support
+        serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
+          serv.spawnMob(getEntID(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
+          return { id: -1, data: 0 }
+        })
+      } else {
+        if (serv.supportFeature('nbtOnMetadata')) { // 1.8 support
+          serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
+            serv.spawnMob(item.metadata, player.world, placedPosition)
+            return { id: -1, data: 0 }
+          })
+        } else {
+          serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => { // 1.9, 1.10, 1.11 support
+            serv.spawnMob(getEntID('minecraft:' + item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
+            return { id: -1, data: 0 }
+          })
+        }
+      }
     }
   })
 }
