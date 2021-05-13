@@ -1,5 +1,5 @@
 const moment = require('moment')
-const needle = require('needle')
+const https = require('https')  
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, settings) {
@@ -30,15 +30,26 @@ module.exports.server = function (serv, settings) {
   }
 
   serv.getUUIDFromUsername = async username => {
-    return await new Promise((resolve, reject) => {
-      needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
-        .then((response) => {
-          if (!response.body) throw new Error('username not found')
-          const idstr = response.body.id
-          if (typeof idstr !== 'string') throw new Error('username not found')
-          resolve(uuidInParts(idstr))
-        })
-        .catch(err => { throw err })
+    return new Promise(function(resolve, reject) {
+      const req = https.request({
+        hostname: 'api.mojang.com',
+        port: 443,
+        path: '/users/profiles/minecraft/' + username,
+        method: 'GET'}, res => {
+          res.on('data', d => {
+            var body = JSON.parse(d.toString())
+            var UUID = body.id
+
+            res.on('end', function() {
+              resolve(uuidInParts(UUID))
+            });
+          })
+          res.on('close', () => {
+            if(res.statusCode === 204) throw new Error('username not found')
+          })
+      })
+
+      req.end()
     })
   }
 
