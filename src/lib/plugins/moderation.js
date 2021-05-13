@@ -38,10 +38,9 @@ module.exports.server = function (serv, settings) {
         method: 'GET'}, res => {
           res.on('data', d => {
             var body = JSON.parse(d.toString())
-            var UUID = body.id
 
             res.on('end', function() {
-              resolve(uuidInParts(UUID))
+              resolve(uuidInParts(body.id))
             });
           })
           res.on('close', () => {
