@@ -1,5 +1,5 @@
 const moment = require('moment')
-const https = require('https')  
+const https = require('https')
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, settings) {
@@ -30,22 +30,23 @@ module.exports.server = function (serv, settings) {
   }
 
   serv.getUUIDFromUsername = async username => {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const req = https.request({
         hostname: 'api.mojang.com',
         port: 443,
         path: '/users/profiles/minecraft/' + username,
-        method: 'GET'}, res => {
-          res.on('data', d => {
-            var body = JSON.parse(d.toString())
+        method: 'GET'
+      }, res => {
+        res.on('data', d => {
+          const body = JSON.parse(d.toString())
 
-            res.on('end', function() {
-              resolve(uuidInParts(body.id))
-            });
+          res.on('end', function () {
+            resolve(uuidInParts(body.id))
           })
-          res.on('close', () => {
-            if(res.statusCode === 204) throw new Error('username not found')
-          })
+        })
+        res.on('close', () => {
+          if (res.statusCode === 204) throw new Error('username not found')
+        })
       })
 
       req.end()
