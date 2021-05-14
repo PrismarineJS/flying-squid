@@ -44,7 +44,7 @@ module.exports.server = function (serv, settings) {
           })
         })
         res.on('close', () => {
-          if (res.statusCode === 204) throw new Error('username not found')
+          if (res.statusCode === 204) reject('username not found')
         })
       })
 
