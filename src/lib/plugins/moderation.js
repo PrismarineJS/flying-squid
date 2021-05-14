@@ -1,4 +1,3 @@
-const moment = require('moment')
 const https = require('https')
 const UserError = require('flying-squid').UserError
 
@@ -6,7 +5,7 @@ module.exports.server = function (serv, settings) {
   serv.ban = async (uuid, reason) => {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
-        time: +moment(),
+        time: +(Date.now() / 1000+'').replace(/\./, ''),
         reason: reason || 'Your account is banned!'
       }
       return true
@@ -15,7 +14,7 @@ module.exports.server = function (serv, settings) {
   serv.banIP = async (IP, reason) => {
     if (!serv.bannedIPs[IP]) {
       serv.bannedIPs[IP] = {
-        time: +moment(),
+        time: +(Date.now() / 1000+'').replace(/\./, ''),
         reason: reason || 'Your IP is banned!'
       }
       Object.keys(serv.players)

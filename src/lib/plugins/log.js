@@ -23,13 +23,21 @@ module.exports.server = function (serv, settings) {
   serv.on('banned', (banner, bannedUsername, reason) =>
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
 
-  serv.on('seed', (seed) => serv.log('seed: ' + seed))
+  serv.on('seed', (seed) => serv.log('Seed: ' + seed))
 
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
     readline.cursorTo(process.stdout, 0)
-    message = moment().format('MMMM Do YYYY, HH:mm:ss') + ' ' + message
+    var date = new Date()
+    var today = date.toLocaleDateString('en-GB', {
+      day : 'numeric',
+      month : 'short',
+      year : 'numeric'
+    }).split(' ').join(' ')
+    var timeString = date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")
+  
+    message = `${today}, ${timeString} ${message}`
     if (!settings.noConsoleOutput) console.log(message)
     if (!settings.logging) return
     fs.appendFile(logFile, message + '\n', (err) => {
