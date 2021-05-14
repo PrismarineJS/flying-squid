@@ -33,7 +33,7 @@ module.exports.server = function (serv, settings) {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
-    }).split(' ').join(' ')
+    })
     const timeString = date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1')
 
     message = `${today}, ${timeString} ${message}`
