@@ -54,7 +54,7 @@
       - [server.ban(uuid,reason)](#serverbanuuidreason)
       - [server.pardonUsername(username,promise)](#serverpardonusernameusernamecallback)
       - [server.pardon(uuid)](#serverpardonuuid)
-      - [server.getUUIDFromUsername(username,callback)](#servergetuuidfromusernameusernamecallback)
+      - [server.getUUIDFromUsername(username,promise)](#servergetuuidfromusernameusernamepromise)
       - [server.setTime(time)](#serversettimetime)
       - [server.setTickInterval(ticksPerSecond)](#serversettickintervaltickspersecond)
       - [server.setBlock(world, position, blockType, blockData)](#serversetblockworld-position-blocktype-blockdata)
