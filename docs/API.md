@@ -52,7 +52,7 @@
       - [serv.notifyNeighborsOfStateChangeDirectional(world, pos, dir, fromTick, tick, forceNotify = false, data = null)](#servnotifyneighborsofstatechangedirectionalworld-pos-dir-fromtick-tick-forcenotify--false-data--null)
       - [server.banUsername(username,reason,callback)](#serverbanusernameusernamereasoncallback)
       - [server.ban(uuid,reason)](#serverbanuuidreason)
-      - [server.pardonUsername(username,promise)](#serverpardonusernameusernamecallback)
+      - [server.pardonUsername(username,callback)](#serverpardonusernameusernamecallback)
       - [server.pardon(uuid)](#serverpardonuuid)
       - [server.getUUIDFromUsername(username,promise)](#servergetuuidfromusernameusernamepromise)
       - [server.setTime(time)](#serversettimetime)
