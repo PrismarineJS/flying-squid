@@ -2,7 +2,6 @@ const fs = require('fs')
 const timeStarted = Math.floor(new Date() / 1000).toString()
 const path = require('path')
 const mkdirp = require('mkdirp')
-const moment = require('moment')
 const colors = require('colors')
 
 const readline = require('readline')
@@ -29,14 +28,14 @@ module.exports.server = function (serv, settings) {
 
   serv.log = message => {
     readline.cursorTo(process.stdout, 0)
-    var date = new Date()
-    var today = date.toLocaleDateString('en-GB', {
-      day : 'numeric',
-      month : 'short',
-      year : 'numeric'
+    const date = new Date()
+    const today = date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
     }).split(' ').join(' ')
-    var timeString = date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")
-  
+    const timeString = date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1')
+
     message = `${today}, ${timeString} ${message}`
     if (!settings.noConsoleOutput) console.log(message)
     if (!settings.logging) return
