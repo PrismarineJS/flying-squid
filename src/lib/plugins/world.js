@@ -30,7 +30,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       seed = levelData.RandomSeed[0]
     } catch (err) {
       seed = newSeed
-      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
+      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: `${seed}L` })
     }
   } else { seed = newSeed }
   generation.options.seed = seed
