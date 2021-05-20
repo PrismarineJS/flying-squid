@@ -335,6 +335,63 @@ module.exports.server = function (serv, { version }) {
     return serv.selector(type, data)
   }
 
+  serv.parsePlayerTarget = (stringGiven, isConsole, ctx) => {
+    let players
+    if (isConsole) {
+      players = [serv.getPlayer(stringGiven)]
+    } else if (stringGiven !== undefined) {
+      players = Object
+        .entries(
+          serv.parseSelectorString(stringGiven, ctx.player.position, ctx.player.world)
+        )
+        .map(p => p[1])
+    } else { // no input given (so default to executor)
+      players = [ctx.player]
+    }
+    return players
+  }
+
+  serv.parseSelectorString = (str, pos, world, allowUser) => {
+    if (/^@/.test(str) && !(/^@([arpe])(?:\[([^\]]+)\])?$/.test(str))) throw new UserError('Unknown selector type')
+    if (!(/^@/.test(str))) { return { str: serv.getPlayer(str) } }
+    return serv.selectorString(str, pos, world, allowUser)
+  }
+  /**
+   * @description send users a prismarine-chat message
+   * @var {ChatMessage} message message sent to user
+   * @param {object} messageInfo info about the message
+   */
+  serv.sendChatMessage = (message, messageInfo) => {
+    const chatPositions = {
+      chat: 0,
+      system: 1,
+      game_info: 2
+    }
+    if (messageInfo.messageType === 'system') {
+      // aboutUserUUID: user the message is about
+      // isConsole: executed by console (alias for showToUser to be true)
+      // showToUser: whether to show the message to the aboutUserUUI
+      let { execByUUID, isConsole, showToUser = false } = messageInfo
+      // if console executed the command, send message to all op'd players
+      if (isConsole) showToUser = true
+      for (const player of serv.players) {
+        // we only send the message to op'd players
+        if (!player.op) continue
+        // if we specified we don't want the user to see the message, skip them
+        if (!showToUser && player.uuid === execByUUID) continue
+        player._client.write('chat', {
+          message: JSON.stringify(message.json),
+          position: chatPositions.system,
+          sender: '00000000-0000-0000-0000-000000000000'
+        })
+      }
+      // only send to console if console didn't execute the command
+      if (!isConsole) serv.log(message.toString())
+    } else {
+      throw new Error('Not implemented')
+    }
+  }
+
   serv.posFromString = (str, pos) => {
     if (str.indexOf('~') === -1) return parseFloat(str)
     if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos

@@ -188,6 +188,17 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         expect(blockActionClosed).toEqual(states.closed)
         expect(blockActionClosed2).toEqual(states.closed)
       })
+
+      test('setSlot works', async () => {
+        const player = serv.getPlayer('bot')
+        player.inventory.updateSlot(36, new Item(1, 1))
+        await once(bot, 'slotUpdate')
+        expect(bot.inventory.slots[36].type).toEqual(1)
+        expect(bot.inventory.slots[36].count).toEqual(1)
+        player.inventory.updateSlot(36, null)
+        await once(bot, 'slotUpdate')
+        expect(bot.inventory.slots[36]).toBeNull()
+      })
     })
 
     describe('commands', () => {
@@ -282,7 +293,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot, 'experience')
         expect(bot.experience.points).toEqual(100)
       })
-      test('can use /give', async () => {
+      test.skip('can use /give', async () => {
         bot.chat('/give bot2 1 1')
         await once(bot2.inventory, 'updateSlot')
         expect(bot2.inventory.slots[36].type).toEqual(1)
@@ -323,6 +334,113 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await waitMessagePromise('bot2 is unbanned')
         bot.chat('/banlist')
         await waitMessagePromise('There are 0 total banned players')
+      })
+
+      describe.only('can use /clear', () => {
+        function expectSlot (_bot, slot, id, count) {
+          expect(_bot.inventory.slots[slot].type).toEqual(id)
+          expect(_bot.inventory.slots[slot].count).toEqual(count)
+        }
+        function expectNull (_bot, slot) {
+          expect(_bot.inventory.slots[slot]).toBeNull()
+        }
+        function slot (_bot) {
+          return once(_bot.inventory, 'updateSlot')
+        }
+        async function clear (_player, _bot) {
+          // put in the inventory, that way the clear will always send an updateSlot
+          await setSlot(_player, _bot, 36, new Item(1, 64))
+          _player.inventory.clear()
+          return slot(_bot)
+        }
+        function setSlot (_player, _bot, _slot, item) {
+          _player.inventory.updateSlot(_slot, item)
+          return slot(_bot)
+        }
+
+        test('can use /clear on themselves', async () => {
+          await once(bot, 'spawn')
+          const player = serv.getPlayer('bot')
+          await clear(player, bot)
+          await setSlot(player, bot, 36, null)
+          expectNull(bot, 36)
+          await setSlot(player, bot, 36, new Item(1, 64))
+          expectSlot(bot, 36, 1, 64)
+          const p = slot(bot)
+          bot.chat('/clear')
+          await Promise.all([p, waitMessage(bot, 'Removed 64 items from player bot')])
+          expectNull(bot, 36)
+        })
+
+        test('can use /clear on selector strings', async () => {
+          await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn')])
+          // clear inventories
+          const player = serv.getPlayer('bot')
+          await clear(player, bot)
+          const player2 = serv.getPlayer('bot2')
+          await clear(player2, bot2)
+          // set their slot 36 to have 64 stone each
+          await setSlot(player, bot, 36, new Item(1, 64))
+          expectSlot(bot, 36, 1, 64)
+          await setSlot(player2, bot2, 36, new Item(1, 64))
+          expectSlot(bot2, 36, 1, 64)
+          // use /clear
+          const p = Promise.all([once(bot.inventory, 'updateSlot'), once(bot2.inventory, 'updateSlot')])
+          bot.chat('/clear @a')
+          await Promise.all([p, waitMessage(bot, 'Removed 128 items from 2 players')])
+          expectNull(bot, 36)
+          expectNull(bot, 36)
+        })
+
+        test('can use /clear on other players', async () => {
+          await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn')])
+          const player2 = serv.getPlayer('bot2')
+          await clear(player2, bot2)
+          await setSlot(player2, bot2, 36, new Item(1, 64))
+          expectSlot(bot2, 36, 1, 64)
+          const p = slot(bot2)
+          bot.chat('/clear bot2')
+          await Promise.all([p, waitMessage(bot, 'Removed 64 items from player bot2')])
+          expectNull(bot2, 36)
+        })
+
+        test('can use /clear with block specifier', async () => {
+          await once(bot, 'spawn')
+          const player = serv.getPlayer('bot')
+          await clear(player, bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
+          expectSlot(bot, 36, 1, 64)
+          const p = slot(bot)
+          bot.chat('/clear bot stone')
+          await Promise.all([p, waitMessage(bot, 'Removed 64 items from player bot')])
+          expect(bot.inventory.slots[36]).toBeNull()
+        })
+
+        test('can use /clear with block type & other blocks in inventory', async () => {
+          await once(bot, 'spawn')
+          const player = serv.getPlayer('bot')
+          await clear(player, bot)
+          await setSlot(player, bot, 36, new Item(1, 64))
+          expectSlot(bot, 36, 1, 64)
+          await setSlot(player, bot, 37, new Item(mcData.itemsByName.stick.id, 64))
+          expectSlot(bot, 37, mcData.itemsByName.stick.id, 64)
+          const p = slot(bot)
+          bot.chat('/clear bot stone 32')
+          await Promise.all([p, waitMessage(bot, 'Removed 32 items from player bot')])
+          expectSlot(bot, 37, mcData.itemsByName.stick.id, 64)
+          expectSlot(bot, 36, 1, 32)
+        })
+
+        test('can use /clear with more item quantity then exist', async () => {
+          await once(bot, 'spawn')
+          const player = serv.getPlayer('bot')
+          await setSlot(player, bot, 36, new Item(1, 64))
+          expectSlot(bot, 36, 1, 64)
+          const p = slot(bot)
+          bot.chat('/clear bot stone 128')
+          await Promise.all([p, waitMessage(bot, 'Removed 64 items from player bot')])
+          expectNull(bot, 36)
+        })
       })
     })
   })

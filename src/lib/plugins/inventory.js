@@ -6,7 +6,7 @@ module.exports.player = function (player, serv, { version }) {
 
   player.heldItemSlot = 0
   player.heldItem = new Item(256, 1)
-  player.inventory = windows.createWindow(1, 'minecraft:inventory', 'inv', 36)
+  player.inventory = windows.createWindow(0, 'minecraft:inventory', 'inv', 36)
 
   player._client.on('held_item_slot', ({ slotId } = {}) => {
     player.heldItemSlot = slotId
@@ -191,7 +191,7 @@ module.exports.player = function (player, serv, { version }) {
     }
 
     player._client.write('set_slot', {
-      windowId: 0,
+      windowId: player.inventory.id,
       slot: slot,
       item: Item.toNotch(newItem)
     })
