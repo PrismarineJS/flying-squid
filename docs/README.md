@@ -1,4 +1,4 @@
-flying-squid
+FLYING-SQUID
 ================
 
 [![NPM version](https://img.shields.io/npm/v/flying-squid.svg)](http://npmjs.com/package/flying-squid)
@@ -31,23 +31,21 @@ Before running or building it is recommended that you configure the server in `c
     npm install
     node app.js
 
-Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
-
-You can also install flying-squid globally with `sudo npm install -g flying-squid`
+You can also install flying-squid globally with `sudo npm install -g netheritejs/flying-squid`
 and then run it with `flying-squid` command.
 
 ### Docker
 
-Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
+Docker allows a higher level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
 
 ```bash
-docker run prismarinejs/flying-squid
+docker run netheritejs/flying-squid
 
 ```
 With specific flying-squid configuration, container name and the most important, opening the port to flying-squid:
 
 ```bash
-docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm prismarinejs/flying-squid
+docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm netheritejs/flying-squid
 ```
 
 [docker-compose](https://docs.docker.com/compose/) is useful to quickly launch & stop a single container with a specific configuration.
@@ -87,7 +85,6 @@ Currently used between our test server (rom1504.fr) and our gitter room (through
 * [flying-squid-schematic](https://github.com/rom1504/flying-squid-schematic) Flying-squid plugin providing /listSchemas and /loadSchema commands. 
 You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
 Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
-* [flying-squid-modpe](https://github.com/PrismarineJS/flying-squid-modpe) load modpe plugins
 * [flying-squid-essentials](https://github.com/DeudlyYT/Flying-Squid-Essentials) Plugin that in a future will be like Essentials of bukkit/spigot.
 All the basic commands that a server should have
 * [squidcord](https://github.com/dada513/SquidCord) a bridge between a discord channel and the minecraft server.
@@ -134,7 +131,7 @@ mcServer.createMCServer({
 })
 ```
 
-You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
+You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/NetheriteJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
 
 For further examples, see the [examples page.](https://PrismarineJS.github.io/flying-squid/#/examples)
 
@@ -146,4 +143,5 @@ For further examples, see the [examples page.](https://PrismarineJS.github.io/fl
  - [@demipixel](https://github.com/demipixel) 
  - The PrismarineJS team for creating prismarine-chunk and node-minecraft-protocol
  - [wiki.vg](http://wiki.vg/Protocol) for documenting minecraft protocols
+ - [@NetheriteJS](https://github.com/netheriteJS) for creating new version of flying-squid
  - All of our other awesome contributors!

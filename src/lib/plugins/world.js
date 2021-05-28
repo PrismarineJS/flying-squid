@@ -1,7 +1,7 @@
 const spiralloop = require('spiralloop')
 const Vec3 = require('vec3').Vec3
 
-const generations = require('flying-squid').generations
+const generations = require('../generations')
 const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')
@@ -49,9 +49,9 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 
   // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {}
-  serv.netherworld.blockEntityData = {}
+  // serv.netherworld.blockEntityData = {}
   serv.overworld.portals = []
-  serv.netherworld.portals = []
+  // serv.netherworld.portals = []
   /// ///////////
 
   serv.pregenWorld = (world, size = 3) => {
@@ -104,7 +104,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   }
 
   serv.chunksUsed = {}
-  serv._loadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv.loadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
     if (!serv.chunksUsed[id]) {
       serv.chunksUsed[id] = 0
@@ -114,7 +114,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     if (!loaded) player.loadedChunks[id] = 1
     return !loaded
   }
-  serv._unloadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv.unloadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
     delete player.loadedChunks[id]
     if (serv.chunksUsed[id] > 0) {
@@ -143,8 +143,8 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 }
 
 module.exports.player = function (player, serv, settings) {
-  player._unloadChunk = (chunkX, chunkZ) => {
-    serv._unloadPlayerChunk(chunkX, chunkZ, player)
+  player.unloadChunk = (chunkX, chunkZ) => {
+    serv.unloadPlayerChunk(chunkX, chunkZ, player)
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -168,6 +168,14 @@ module.exports.player = function (player, serv, settings) {
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
+      const blockEntities = chunk.blockEntities ? chunk.blockEntities.map((e) => {
+        return {
+          type: 'compound',
+          name: '',
+          value: e
+        }
+      }) : []
+
       player._client.write('map_chunk', {
         x: x,
         z: z,
@@ -183,8 +191,9 @@ module.exports.player = function (player, serv, settings) {
           }
         }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
-        blockEntities: []
+        blockEntities: serv.supportFeature('updateSignPacket') ? blockEntities.filter(blockEntity => blockEntity.value.id.value !== 'minecraft:sign') : blockEntities
       })
+
       if (serv.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
@@ -197,6 +206,25 @@ module.exports.player = function (player, serv, settings) {
           data: chunk.dumpLight()
         })
       }
+
+      if (serv.supportFeature('updateSignPacket')) {
+        for (const blockEntity of blockEntities) {
+          if (blockEntity.value.id.value === 'minecraft:sign') {
+            const packetData = {
+              location: new Vec3(blockEntity.value.x.value, blockEntity.value.y.value, blockEntity.value.z.value),
+              text1: JSON.parse(blockEntity.value.Text1.value).text,
+              text2: JSON.parse(blockEntity.value.Text2.value).text,
+              text3: JSON.parse(blockEntity.value.Text3.value).text,
+              text4: JSON.parse(blockEntity.value.Text4.value).text
+            }
+            player._client.write(
+              'update_sign',
+              packetData
+            )
+          }
+        }
+      }
+
       return Promise.resolve()
     })
   }
@@ -224,7 +252,7 @@ module.exports.player = function (player, serv, settings) {
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
-      .filter(({ chunkX, chunkZ }) => serv._loadPlayerChunk(chunkX, chunkZ, player))
+      .filter(({ chunkX, chunkZ }) => serv.loadPlayerChunk(chunkX, chunkZ, player))
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
           .then(() => player.world.getColumn(chunkX, chunkZ))
@@ -256,17 +284,17 @@ module.exports.player = function (player, serv, settings) {
     })
   }
 
-  player._unloadAllChunks = () => {
+  player.unloadAllChunks = () => {
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
-      .forEach(([x, z]) => player._unloadChunk(x, z))
+      .forEach(([x, z]) => player.unloadChunk(x, z))
   }
 
   player.changeWorld = async (world, opt) => {
     if (player.world === world) return Promise.resolve()
     opt = opt || {}
     player.world = world
-    player._unloadAllChunks()
+    player.unloadAllChunks()
     if (typeof opt.gamemode !== 'undefined') {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode
