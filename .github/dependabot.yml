@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: event-promise
+    versions:
+    - ">= 1.a, < 2"
+  - dependency-name: mkdirp
+    versions:
+    - ">= 1.a, < 2"
+  - dependency-name: mineflayer
+    versions:
+    - 3.0.0
+  - dependency-name: prismarine-windows
+    versions:
+    - 2.0.0
