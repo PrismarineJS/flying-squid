@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   flying-squid:
-    image: prismarinejs/flying-squid
+    build: .
     volumes:
        - ${PWD}/config:/config
     ports:

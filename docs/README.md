@@ -28,30 +28,34 @@ Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 ## Building / Running
 Before running or building it is recommended that you configure the server in `config/settings.json`
 
-    npm install
-    node app.js
+```bash
+npm install
+node app.js
+```
 
 Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
-You can also install flying-squid globally with `sudo npm install -g flying-squid`
-and then run it with `flying-squid` command.
+You can also install flying-squid globally with `sudo npm install -g flying-squid` and then run it with `flying-squid` command.
 
 ### Docker
 
-Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started)
+Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started).
+
+Quick start a simple server to test out flying-squid:
 
 ```bash
-docker run prismarinejs/flying-squid
-
+docker run -p 25565:25565 prismarinejs/flying-squid
 ```
-With specific flying-squid configuration, container name and the most important, opening the port to flying-squid:
+
+With specific configuration and a container name:
 
 ```bash
-docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid --rm prismarinejs/flying-squid
+docker run -p 25565:25565 -v $(pwd)/config:/config --name my-flying-squid prismarinejs/flying-squid
 ```
 
 [docker-compose](https://docs.docker.com/compose/) is useful to quickly launch & stop a single container with a specific configuration.
 
+`docker-compose.yaml`:
 ```yaml
 version: '3.8'
 
@@ -70,6 +74,17 @@ volumes:
 docker-compose -f path/to/docker-compose.yaml up
 ```
 
+Or do it all locally:
+```bash
+docker build -t local-flying-squid .
+docker run -p 25565:25565 local-flying-squid
+```
+
+or
+
+```bash
+docker-compose up
+```
 
 ## World generation
 
