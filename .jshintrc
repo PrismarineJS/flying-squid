@@ -1,0 +1,7 @@
+{
+    "asi": true,
+    "esversion": 8,
+    "unstable": {
+        "bigint": true
+    }
+}
