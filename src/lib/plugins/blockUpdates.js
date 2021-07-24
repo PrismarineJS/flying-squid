@@ -1,5 +1,6 @@
 const { performance } = require('perf_hooks')
 
+let useMultiBlockSingleLong = false
 class ChunkUpdates {
   constructor () {
     this.chunks = new Map()
@@ -29,19 +30,34 @@ class ChunkUpdates {
       const records = []
       for (const p of updates.values()) {
         const state = await world.getBlockStateId(p)
-        records.push({
-          horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
-          y: p.y,
-          blockId: state
-        })
+
+        records.push(!useMultiBlockSingleLong
+          ? {
+              horizontalPos: ((p.x % 16 & 0xF) << 4) | (p.z % 16 & 0xF),
+              y: p.y,
+              blockId: state
+            }
+          : state << 12 | (p.x % 16 << 8 | p.z % 16 << 4 | p.y % 16))
       }
-      packets.push({ chunkX, chunkZ, records })
+      packets.push(useMultiBlockSingleLong
+        ? {
+            chunkCoordinates: {
+              x: chunkX,
+              z: chunkZ,
+              y: Math.floor(p.y / 16)
+            },
+            notTrustEdges: false,
+            records
+          }
+        : { chunkX, chunkZ, records }
+      )
     }
     return packets
   }
 }
 
 module.exports.server = (serv, { version }) => {
+  useMultiBlockSingleLong = serv.supportFeature('dimensionIsACompound')
   const mcData = require('minecraft-data')(version)
 
   serv.MAX_UPDATES_PER_TICK = 10000
