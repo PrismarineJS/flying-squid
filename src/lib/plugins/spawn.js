@@ -48,6 +48,7 @@ module.exports.server = function (serv, options) {
     object.itemCount = itemCount
 
     object.updateAndSpawn()
+    return object
   }
 
   serv.spawnMob = (type, world, position, { pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = [] } = {}) => {
