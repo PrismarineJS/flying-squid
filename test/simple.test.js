@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* eslint-env mocha */
 
 const net = require('net')
 const squid = require('flying-squid')
@@ -18,7 +18,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   describe(`simple server  ${version.minecraftVersion}`, () => {
     let serv
 
-    beforeAll(done => {
+    before(done => {
       const options = settings
       options['online-mode'] = false
       options.port = 0
@@ -33,14 +33,14 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
     })
 
-    afterAll(done => {
+    after(done => {
       serv._server.close()
       serv._server.on('close', () => {
         done()
       })
     })
 
-    test('is running', done => {
+    it('is running', done => {
       const client = net.Socket()
       client.connect(serv._server.socketServer.address().port, '127.0.0.1', done)
       client.on('error', done)
