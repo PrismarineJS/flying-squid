@@ -1,7 +1,8 @@
-/* eslint-env jest */
+/* eslint-env mocha */
 
 const squid = require('flying-squid')
 const { firstVersion, lastVersion } = require('./common/parallel')
+const expect = require('expect')
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) return
@@ -22,11 +23,11 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   const { Vec3 } = require('vec3')
 
   describe('generate portal ' + version.minecraftVersion, () => {
-    test('generate a line', () => {
+    it('generate a line', () => {
       expect(generateLine(new Vec3(3, 1, 1), new Vec3(1, 0, 0), 2)).toEqual([new Vec3(3, 1, 1), new Vec3(4, 1, 1)])
     })
 
-    test('generate a portal', () => {
+    it('generate a portal', () => {
       expect(generatePortal(new Vec3(2, 1, 1), new Vec3(1, 0, 0), 4, 5)).toEqual({
         bottom: generateLine(new Vec3(3, 1, 1), new Vec3(1, 0, 0), 2),
         left: generateLine(new Vec3(2, 2, 1), new Vec3(0, 1, 0), 3),
@@ -38,7 +39,6 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   })
 
   describe('detect portal ' + version.minecraftVersion, () => {
-    jest.setTimeout(60 * 1000)
     const portalData = []
 
     portalData.push({
@@ -110,12 +110,12 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         const expectedBorder = { bottom, left, right, top }
 
         let world
-        beforeAll(async function () {
+        before(async function () {
           world = await makeWorldWithPortal(portal, additionalAir, additionalObsidian)
         })
 
         describe('detect potential first lines', () => {
-          test('detect potential first lines from bottom left', async () => {
+          it('detect potential first lines from bottom left', async () => {
             const potentialLines = await findPotentialLines(world, bottom[0], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
               direction: direction,
@@ -123,7 +123,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             })
           })
 
-          test('detect potential first lines from bottom right', async () => {
+          it('detect potential first lines from bottom right', async () => {
             const potentialLines = await findPotentialLines(world, bottom[bottom.length - 1], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
               direction: direction,
@@ -131,7 +131,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             })
           })
 
-          test('detect potential first lines from top left', async () => {
+          it('detect potential first lines from top left', async () => {
             const potentialLines = await findPotentialLines(world, top[0], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
               direction: direction,
@@ -139,7 +139,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             })
           })
 
-          test('detect potential first lines from top right', async () => {
+          it('detect potential first lines from top right', async () => {
             const potentialLines = await findPotentialLines(world, top[top.length - 1], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
               direction: direction,
@@ -147,7 +147,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             })
           })
 
-          test('detect potential first lines from left top', async () => {
+          it('detect potential first lines from left top', async () => {
             const potentialLines = await findPotentialLines(world, left[left.length - 1], direction)
             expect(potentialLines).toEqual([{
               direction: new Vec3(0, 1, 0),
@@ -155,7 +155,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             }])
           })
 
-          test('detect potential first lines from right bottom', async () => {
+          it('detect potential first lines from right bottom', async () => {
             const potentialLines = await findPotentialLines(world, right[0], direction.scaled(-1))
             expect(potentialLines).toEqual([{
               direction: new Vec3(0, 1, 0),
@@ -165,7 +165,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         })
 
         describe('find borders', () => {
-          test('find borders from bottom', async () => {
+          it('find borders from bottom', async () => {
             const border = await findBorder(world, {
               direction: direction,
               line: bottom
@@ -173,7 +173,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             expect(border).toEqual(expectedBorder)
           })
 
-          test('find borders from top', async () => {
+          it('find borders from top', async () => {
             const border = await findBorder(world, {
               direction: direction,
               line: top
@@ -181,14 +181,14 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
             expect(border).toEqual(expectedBorder)
           })
 
-          test('find borders from left', async () => {
+          it('find borders from left', async () => {
             const border = await findBorder(world, {
               direction: new Vec3(0, 1, 0),
               line: left
             }, direction)
             expect(border).toEqual(expectedBorder)
           })
-          test('find borders from right', async () => {
+          it('find borders from right', async () => {
             const border = await findBorder(world, {
               direction: new Vec3(0, 1, 0),
               line: right
@@ -198,27 +198,27 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         })
 
         describe('detect portals', () => {
-          test('detect portals from bottom left', async () => {
+          it('detect portals from bottom left', async () => {
             const portals = await detectFrame(world, bottom[0], new Vec3(0, 1, 0))
             expect(portals).toEqual([portal])
           })
-          test('detect portals from top left', async () => {
+          it('detect portals from top left', async () => {
             const portals = await detectFrame(world, top[0], new Vec3(0, -1, 0))
             expect(portals).toEqual([portal])
           })
-          test('detect portals from right top', async () => {
+          it('detect portals from right top', async () => {
             const portals = await detectFrame(world, right[right.length - 1], direction.scaled(-1))
             expect(portals).toEqual([portal])
           })
         })
 
-        test('get air', () => {
+        it('get air', () => {
           const foundAir = getAir(expectedBorder)
           expect(foundAir).toEqual(air)
         })
       })
     })
-  })
+  }).timeout(120 * 1000)
 
   describe("doesn't detect non-portal " + version.minecraftVersion, () => {
     const portalData = []
@@ -238,20 +238,20 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       const { bottom, right, top } = portal
       describe("doesn't detect detect " + name, () => {
         let world
-        beforeAll(async function () {
+        before(async function () {
           world = await makeWorldWithPortal(portal, additionalAir, additionalObsidian)
         })
 
         describe("doesn't detect portals", () => {
-          test("doesn't detect portals from bottom left", async () => {
+          it("doesn't detect portals from bottom left", async () => {
             const portals = await detectFrame(world, bottom[0], new Vec3(0, 1, 0))
             expect(portals).toEqual([])
           })
-          test("doesn't detect portals from top left", async () => {
+          it("doesn't detect portals from top left", async () => {
             const portals = await detectFrame(world, top[0], new Vec3(0, -1, 0))
             expect(portals).toEqual([])
           })
-          test("doesn't detect portals from right top", async () => {
+          it("doesn't detect portals from right top", async () => {
             const portals = await detectFrame(world, right[right.length - 1], direction.scaled(-1))
             expect(portals).toEqual([])
           })

@@ -8,3 +8,4 @@
 **/.editorconfig
 **/.aws
 **/dist
+**/node_modules
