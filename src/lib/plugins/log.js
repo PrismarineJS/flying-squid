@@ -47,7 +47,6 @@ module.exports.server = function (serv, settings) {
   serv.warn = message => {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
-
   
   console.log = (function () {
     const orig = console.log
