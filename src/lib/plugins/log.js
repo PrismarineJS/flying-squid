@@ -47,7 +47,7 @@ module.exports.server = function (serv, settings) {
   serv.warn = message => {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
-  serv.warn('Created for testing')  
+
   
   console.log = (function () {
     const orig = console.log
