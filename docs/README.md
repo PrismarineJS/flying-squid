@@ -23,7 +23,7 @@ Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 
 ## Test server
 
-* flying-squid.host (Port 25565) : hosted by @Saiv46
+* [flying-squid.host](https://flying-squid.host) : hosted by @Saiv46
 
 ## Building / Running
 Before running or building it is recommended that you configure the server in `config/settings.json`
