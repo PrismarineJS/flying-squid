@@ -47,7 +47,7 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
 
-console.log = (function () {
+  console.log = (function () {
     const orig = console.log
     return function () {
       readline.cursorTo(process.stdout, 0)
