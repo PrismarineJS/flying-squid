@@ -93,6 +93,5 @@ module.exports.player = function (player, serv) {
 
   player.on('chat', ({ message }) => serv.log('[' + colors.green('INFO') + '] ' + '<' + player.username + '>' + ' ' + message))
 
-  player.on('kicked', (kicker, reason) =>
-    serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
+  player.on('kicked', (kicker, reason) => serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
 }
