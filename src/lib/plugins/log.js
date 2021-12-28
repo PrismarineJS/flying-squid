@@ -23,7 +23,6 @@ module.exports.server = function (serv, settings) {
   serv.on('banned', (banner, bannedUsername, reason) =>
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
 
-
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
@@ -48,7 +47,7 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
   
-  console.log = (function () {
+console.log = (function () {
     const orig = console.log
     return function () {
       readline.cursorTo(process.stdout, 0)
