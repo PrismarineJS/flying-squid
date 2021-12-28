@@ -41,6 +41,8 @@
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
+      - [serv.warn(message)](#servwarnmessage)
+      - [serv.err(message)](#serverrmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.getPlayer(username)](#servgetplayerusername)
       - [serv.getNearby(loc)](#servgetnearbyloc)
@@ -379,6 +381,14 @@ creates the log file
 #### serv.log(message)
 
 logs a `message`
+
+#### serv.warn(message)
+
+logs a `message` as warning
+
+#### serv.err(message)
+
+logs a `message` as error
 
 #### serv.broadcast(message[,color])
 
