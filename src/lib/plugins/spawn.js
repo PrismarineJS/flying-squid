@@ -1,4 +1,3 @@
-const Entity = require('prismarine-entity')
 const path = require('path')
 const requireIndex = require('../requireindex')
 const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
@@ -9,6 +8,7 @@ const Vec3 = require('vec3').Vec3
 module.exports.server = function (serv, options) {
   const version = options.version
 
+  const Entity = require('prismarine-entity')(version)
   const mobsById = require('minecraft-data')(version).mobs
   const objectsById = require('minecraft-data')(version).objects
 
