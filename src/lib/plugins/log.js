@@ -24,7 +24,7 @@ module.exports.server = function (serv, settings) {
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
 
   serv.on('seed', (seed) => serv.log('Seed: ' + seed))
-  
+
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
