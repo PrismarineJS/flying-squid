@@ -23,7 +23,7 @@ module.exports.server = function (serv, settings) {
   serv.on('banned', (banner, bannedUsername, reason) =>
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
 
-  serv.on('seed', (seed) => serv.log('seed: ' + seed))
+  serv.on('seed', (seed) => serv.log('Seed: ' + seed))
 
   const logFile = path.join('logs', timeStarted + '.log')
 
@@ -42,7 +42,11 @@ module.exports.server = function (serv, settings) {
   }
 
   serv.err = message => {
-    serv.log('[' + colors.red('ERR') + ']: ' + message)
+    serv.log('[' + colors.red('ERROR') + ']: ' + message)
+  }
+
+  serv.warn = message => {
+    serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
 
   console.log = (function () {
@@ -91,6 +95,5 @@ module.exports.player = function (player, serv) {
 
   player.on('chat', ({ message }) => serv.log('[' + colors.green('INFO') + '] ' + '<' + player.username + '>' + ' ' + message))
 
-  player.on('kicked', (kicker, reason) =>
-    serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
+  player.on('kicked', (kicker, reason) => serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
 }
