@@ -46,12 +46,12 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     // 1: 'minecraft:end'
   }
 
-  //WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
+  // WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
   serv.overworld.blockEntityData = {}
   serv.netherworld.blockEntityData = {}
   serv.overworld.portals = []
   serv.netherworld.portals = []
-  //END-WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
+  // END
 
   serv.pregenWorld = (world, size = 3) => {
     const promises = []
