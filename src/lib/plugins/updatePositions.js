@@ -63,7 +63,6 @@ module.exports.player = function (player) {
     const notCancelled = await player.sendPosition(position, false, true)
     if (notCancelled) player.sendSelfPosition()
   }
-
 }
 
 module.exports.entity = function (entity, serv) {
