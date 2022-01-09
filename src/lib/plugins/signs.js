@@ -44,6 +44,4 @@ module.exports.server = (serv, { version }) => {
   })
 }
 
-module.exports.player = function (player) {
-// WIP: temporary removed
-}
+
