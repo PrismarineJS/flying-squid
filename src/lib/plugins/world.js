@@ -24,7 +24,6 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     } catch (err) {
       await fsMkdir(regionFolder, { recursive: true })
     }
-
     try {
       const levelData = await level.readLevel(worldFolder + '/level.dat')
       seed = levelData.RandomSeed[0]
@@ -52,7 +51,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.netherworld.blockEntityData = {}
   serv.overworld.portals = []
   serv.netherworld.portals = []
-  /// ///////////
+  //END- WILL BE REMOVED WHEN ACTUALLY IMPLEMENTED
 
   serv.pregenWorld = (world, size = 3) => {
     const promises = []
@@ -127,8 +126,6 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     return false
   }
 
-  // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
-  // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
   serv.commands.add({
     base: 'changeworld',
     info: 'to change world',
