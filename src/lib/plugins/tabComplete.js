@@ -1,6 +1,5 @@
 module.exports.player = function (player, serv) {
   player._client.on('tab_complete', function (data) {
-    // console.log(data)
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
       const cmds = []
