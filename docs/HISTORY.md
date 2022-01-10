@@ -1,3 +1,23 @@
+## 1.5.0
+* Downgrade compramised color package (#549)
+* Added serv.warn() & other small changes (#542)
+* Bump prismarine-entity from 1.2.0 to 2.0.0 (#546)
+* Update README.md (#543)
+* Bump long from 4.0.0 to 5.1.0 (#538)
+* Bump prismarine-nbt from 1.6.0 to 2.0.0 (#539)
+* moved dockerfiles out and updated readme (#511)
+* Create `empty` generation (#537)
+* Merge pull request #519 from para-dise/patch-1
+* Fix missing return for spawnObject
+* remove flying-squid-modpe
+* Bump yargs from 16.2.0 to 17.0.1 (#495)
+* Refactor command.js to be clearer (#474)
+* Unload unneeded chunks when players move out of that zone (#492)
+* Enable docker build back
+* Moved player health, food, and stamina updates to player.js (#486)
+* Fixed useItem (#476)
+* Bump prismarine-windows from 1.6.0 to 2.0.0 (#471)
+
 ## 1.4.0
 * Server brand (@GroobleDierne)
 * minor fixes
