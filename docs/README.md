@@ -33,7 +33,6 @@ npm install
 node app.js
 ```
 
-Or try our autoupdating flying-squid server [autonomous-squid](https://github.com/mhsjlw/autonomous-squid)
 
 You can also install flying-squid globally with `sudo npm install -g flying-squid` and then run it with `flying-squid` command.
 
