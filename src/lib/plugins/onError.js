@@ -1,5 +1,5 @@
 module.exports.player = async function (player, serv) {
-    function warn(promise){
+    function unhandledRejection(promise){
         serv.warn('-------------------------------')
         serv.warn('Please report this flying-squid! This is bug (mabye)')
         serv.warn('Unhandled rejection warning!');
@@ -9,7 +9,7 @@ module.exports.player = async function (player, serv) {
         player.chat("§cError: " + promise)
     }
    
-    function error(err){
+    function uncaughtException(err){
         serv.err('-------------------------------')
         serv.err('Please report this flying-squid! This is bug (mabye)')
         serv.err('Uncaught exception! Something went wrong!');
@@ -19,6 +19,6 @@ module.exports.player = async function (player, serv) {
         player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
         player.chat("§cError: " + err)
     }
-    process.on('unhandledRejection', (promise) => { warn(promise) })
-    process.on('uncaughtException', err => { error(err) });
+    process.on('unhandledRejection', (promise) => { unhandledRejection(promise) })
+    process.on('uncaughtException', err => { uncaughtException(err) });
 }
