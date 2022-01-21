@@ -8,9 +8,7 @@ module.exports.player = async function (player, serv, settings) {
         player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
         player.chat("§cError: " + promise)
     }
-    process.on('unhandledRejection', (promise) => {
-        warn(promise)
-    })
+   
     function error(err){
         serv.err('-------------------------------')
         serv.err('Please report this flying-squid! This is bug (mabye)')
@@ -21,7 +19,6 @@ module.exports.player = async function (player, serv, settings) {
         player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
         player.chat("§cError: " + err)
     }
-    process.on('uncaughtException', err => {
-        error(err)
-    });
+    process.on('unhandledRejection', (promise) => { warn(promise) })
+    process.on('uncaughtException', err => { error(err) });
 }
