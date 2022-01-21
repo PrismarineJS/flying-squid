@@ -24,9 +24,4 @@ module.exports.player = async function (player, serv, settings) {
     process.on('uncaughtException', err => {
         error(err)
     });
-
-    //debug:
-    player.on('attack', () => {
-        null()
-    })
 }
