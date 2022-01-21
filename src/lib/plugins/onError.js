@@ -1,4 +1,4 @@
-module.exports.player = async function (player, serv, settings) {
+module.exports.player = async function (player, serv) {
     function warn(promise){
         serv.warn('-------------------------------')
         serv.warn('Please report this flying-squid! This is bug (mabye)')
