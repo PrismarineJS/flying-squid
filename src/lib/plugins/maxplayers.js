@@ -13,5 +13,4 @@ module.exports.player = async function (player, serv, settings) {
   player.on('disconnected', () => {
     playersonline--
   })
-
 }
