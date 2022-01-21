@@ -142,6 +142,7 @@
       - ["placeBlock"](#placeblock)
       - ["attack"](#attack)
       - ["requestRespawn"](#requestrespawn)
+      - ["full"](#full)
     - [Methods](#methods-2)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
@@ -994,6 +995,12 @@ Emitted when a player tries to respawn
 Default: Let them respawn
 
 Cancelled: Nothing. You monster.
+
+#### "full"
+
+Emitted when a player tries to join but the server is full
+
+Default: Kick them 
 
 ### Methods
 
