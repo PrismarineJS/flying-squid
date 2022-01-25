@@ -43,6 +43,7 @@
       - [serv.log(message)](#servlogmessage)
       - [serv.warn(message)](#servwarnmessage)
       - [serv.err(message)](#serverrmessage)
+      - [serv.playersonline](#servplayersonline)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
       - [serv.getPlayer(username)](#servgetplayerusername)
       - [serv.getNearby(loc)](#servgetnearbyloc)
@@ -281,6 +282,10 @@ Contains the end world. **NOT YET IMPLEMENTED!**
 #### serv.entities
 
 All of the entities
+
+#### serv.playersonline
+
+Gets count of online players
 
 #### serv.bannedPlayers
 
