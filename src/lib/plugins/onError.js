@@ -4,9 +4,11 @@ module.exports.player = async function (player, serv) {
     serv.warn('Please report this flying-squid! This is bug (mabye)')
     serv.warn('Unhandled rejection warning!')
     serv.warn('Error: ' + promise)
+    serv.warn('Report this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.warn('-------------------------------')
     player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
     player.chat('§cError: ' + promise)
+    player.chat("§cReport this error here: https://github.com/PrismarineJS/flying-squid/issues")
   }
 
   function uncaughtException (err) {
@@ -15,9 +17,11 @@ module.exports.player = async function (player, serv) {
     serv.err('Something went wrong!')
     serv.err('Error (short error message): ' + err)
     serv.err('Error (full error message): ' + err.stack)
+    serv.err('Report this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.err('-------------------------------')
     player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
-    player.chat('§cError: ' + err)
+    player.chat("§cError: " + err)
+    player.chat("§cReport this error here: https://github.com/PrismarineJS/flying-squid/issues")
   }
 
   process.on('unhandledRejection', (promise) => { unhandledRejection(promise) })
