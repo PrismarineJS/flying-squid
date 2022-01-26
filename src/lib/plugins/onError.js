@@ -9,6 +9,7 @@ module.exports.player = async function (player, serv) {
     player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
     player.chat('§cError: ' + promise)
     player.chat("§cReport this error here: https://github.com/PrismarineJS/flying-squid/issues")
+    serv.emit('unhandledRejectionWarning')
   }
 
   function uncaughtException (err) {
@@ -22,6 +23,7 @@ module.exports.player = async function (player, serv) {
     player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
     player.chat("§cError: " + err)
     player.chat("§cReport this error here: https://github.com/PrismarineJS/flying-squid/issues")
+    serv.emit('crash')
   }
 
   process.on('unhandledRejection', (promise) => { unhandledRejection(promise) })
