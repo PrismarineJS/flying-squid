@@ -4,7 +4,7 @@ module.exports.player = async function (player, serv) {
     serv.warn('Please report this flying-squid! This is bug (mabye)')
     serv.warn('Unhandled rejection warning!')
     serv.warn('Error: ' + promise)
-    serv.warn('Report this error here: https://github.com/PrismarineJS/flying-squid/issues');
+    serv.warn('Report this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.warn('-------------------------------')
     player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
     player.chat('§cError: ' + promise)
