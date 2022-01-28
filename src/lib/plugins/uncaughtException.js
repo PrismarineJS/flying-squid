@@ -20,10 +20,9 @@ module.exports.player = async function (player, serv) {
     serv.err('Error (full error message): ' + err.stack)
     serv.err('Report this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.err('-------------------------------')
-    player.chat("§cAn error happend in flying-squid's code. Please report it to flying-squid")
-    player.chat('§cError: ' + err)
-    player.chat('§cReport this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.emit('crash')
+    serv.quit('Server closed due to an error.')
+    process.exit()
   }
 
   process.on('unhandledRejection', (promise) => { unhandledRejection(promise) })
