@@ -65,7 +65,7 @@ module.exports.server = function(serv) {
     },
     action(maxNumber, ctx) { // ctx - context who is using it
       const number = Math.floor(Math.random()*(maxNumber+1)); // Generate our random number
-      if(ctx.player) player.chat(number); // If context of the player send it to him
+      if(ctx.player) ctx.player.chat(number); // If context of the player send it to him
       else serv.log(number); // If not, log it.
     }
   })
