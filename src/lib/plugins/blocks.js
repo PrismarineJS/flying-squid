@@ -2,6 +2,8 @@ const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv) {
   player.changeBlock = async (position, blockType, blockData) => {
+    if (Math.round(player.gameMode) === 1 && player.heldItem?.name.endsWith("_sword")) return
+
     serv.players
       .filter(p => p.world === player.world && player !== p)
       .forEach(p => p.sendBlock(position, blockType, blockData))
