@@ -9,19 +9,23 @@ module.exports.player = function (player, serv, { version }) {
       const id = await player.world.getBlockType(block.position)
       const blockAbove = await player.world.getBlockType(block.position.plus(new Vec3(0, 1, 0)))
       const blockChest = mcData.blocksByName.chest
-      // const blockEnderChest = mcData.blocksByName.ender_chest
-      serv.playSound('block.chest.open', player.world, block.position, {})
+      // Dynamic window ID feature
+      if (player.windowId === undefined) { player.windowId = 1 } else { player.windowId = player.windowId + 1 }
+      player.windowType = id === blockChest.id ? 'chest' : 'enderchest'
+      player.windowPos = block.position
+      // Playing sound of opening chest
       if (blockAbove) { return }
+      serv.playSound('block.chest.open', player.world, block.position, {})
       // Opening chest GUI window
       const chestWindowTitle = id === blockChest.id ? { translate: 'container.chest' } : { translate: 'container.enderchest' }
       player._client.write('open_window', {
-        windowId: 1,
+        windowId: player.windowId,
         inventoryType: 2,
         windowTitle: JSON.stringify(chestWindowTitle)
       })
       // Sending chest content (NOT IMPLEMENTED)
       player._client.write('window_items', {
-        windowId: 1,
+        windowId: player.windowId,
         stateId: 1,
         items: [
           { present: false }, { present: false }, { present: false }, { present: false }, { present: false }, { present: false }, { present: false }, { present: false }, { present: false },
