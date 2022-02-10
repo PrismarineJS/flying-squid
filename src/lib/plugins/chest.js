@@ -57,6 +57,7 @@ module.exports.player = function (player, serv, { version }) {
         player.windowType = 'shulker_box'
       }
       player.windowPos = block.position
+      console.log(blockShulkerBoxes)
       // Opening chest GUI window
       player._client.write('open_window', {
         windowId: player.windowId,
@@ -80,24 +81,26 @@ module.exports.player = function (player, serv, { version }) {
   }
   // Registering block interaction handlers
   // Chests
-  serv.onBlockInteraction('chest', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('ender_chest', chestsBlockInteractionHandler)
+  serv.onBlockInteraction(mcData.blocksByName.chest.name, chestsBlockInteractionHandler)
+  serv.onBlockInteraction(mcData.blocksByName.ender_chest.name, chestsBlockInteractionHandler)
   // Shulker boxes
-  serv.onBlockInteraction('shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('red_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('orange_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('yellow_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('lime_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('green_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('light_blue_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('cyan_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('blue_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('purple_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('magenta_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('brown_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('gray_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('light_gray_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('black_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('white_shulker_box', chestsBlockInteractionHandler)
-  serv.onBlockInteraction('pink_shulker_box', chestsBlockInteractionHandler)
+  if (serv.supportFeature('theShulkerBoxes')) {
+    serv.onBlockInteraction(mcData.blocksByName.shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.red_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.orange_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.yellow_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.lime_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.green_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.light_blue_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.cyan_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.blue_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.purple_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.magenta_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.brown_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.gray_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.light_gray_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.black_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.white_shulker_box.name, chestsBlockInteractionHandler)
+    serv.onBlockInteraction(mcData.blocksByName.pink_shulker_box.name, chestsBlockInteractionHandler)
+  }
 }

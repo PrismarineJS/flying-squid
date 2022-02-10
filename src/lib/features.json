@@ -123,5 +123,10 @@
     "name": "nbtOnMetadata",
     "description": "in never versions its nbt but in 1.8 its on metadata",
     "versions": ["1.8"]
+  },
+  {
+    "name": "theShulkerBoxes",
+    "description": "added shulker boxes to the game",
+    "versions": ["1.13", "1.14", "1.15", "1.16"]
   }
 ]
