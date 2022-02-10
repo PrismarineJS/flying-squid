@@ -15,28 +15,12 @@ module.exports.player = function (player, serv, { version }) {
       const blockEnderChest = mcData.blocksByName.ender_chest
       // TODO: Large chest (NOT IMPLEMENTED)
       // Shulker boxes
-      const blockShulkerBox = mcData.blocksByName.shulker_box
-      const blockShulkerBoxRed = mcData.blocksByName.red_shulker_box
-      const blockShulkerBoxOrange = mcData.blocksByName.orange_shulker_box
-      const blockShulkerBoxYellow = mcData.blocksByName.yellow_shulker_box
-      const blockShulkerBoxLime = mcData.blocksByName.lime_shulker_box
-      const blockShulkerBoxGreen = mcData.blocksByName.green_shulker_box
-      const blockShulkerBoxLightBlue = mcData.blocksByName.light_blue_shulker_box
-      const blockShulkerBoxCyan = mcData.blocksByName.cyan_shulker_box
-      const blockShulkerBoxBlue = mcData.blocksByName.blue_shulker_box
-      const blockShulkerBoxPurple = mcData.blocksByName.purple_shulker_box
-      const blockShulkerBoxMagenta = mcData.blocksByName.magenta_shulker_box
-      const blockShulkerBoxBrown = mcData.blocksByName.brown_shulker_box
-      const blockShulkerBoxGray = mcData.blocksByName.gray_shulker_box
-      const blockShulkerBoxLightGray = mcData.blocksByName.light_gray_shulker_box
-      const blockShulkerBoxBlack = mcData.blocksByName.black_shulker_box
-      const blockShulkerBoxWhite = mcData.blocksByName.white_shulker_box
-      const blockShulkerBoxPink = mcData.blocksByName.pink_shulker_box
-      const blockShulkerBoxes = [blockShulkerBox.id, blockShulkerBoxRed.id, blockShulkerBoxOrange.id, blockShulkerBoxYellow.id,
-        blockShulkerBoxLime.id, blockShulkerBoxGreen.id, blockShulkerBoxLightBlue.id, blockShulkerBoxCyan.id,
-        blockShulkerBoxBlue.id, blockShulkerBoxPurple.id, blockShulkerBoxMagenta.id, blockShulkerBoxBrown.id,
-        blockShulkerBoxGray.id, blockShulkerBoxLightGray.id, blockShulkerBoxBlack.id, blockShulkerBoxWhite.id,
-        blockShulkerBoxPink.id]
+      const blockShulkerBox = [mcData.blocksByName.shulker_box.id, mcData.blocksByName.red_shulker_box.id,
+        mcData.blocksByName.orange_shulker_box.id, mcData.blocksByName.yellow_shulker_box.id, mcData.blocksByName.lime_shulker_box.id,
+        mcData.blocksByName.green_shulker_box.id, mcData.blocksByName.light_blue_shulker_box.id, mcData.blocksByName.cyan_shulker_box.id,
+        mcData.blocksByName.blue_shulker_box.id, mcData.blocksByName.purple_shulker_box.id, mcData.blocksByName.magenta_shulker_box.id,
+        mcData.blocksByName.brown_shulker_box.id, mcData.blocksByName.gray_shulker_box.id, mcData.blocksByName.light_gray_shulker_box.id,
+        mcData.blocksByName.black_shulker_box.id, mcData.blocksByName.white_shulker_box.id, mcData.blocksByName.pink_shulker_box.id]
       // Playing sound of opening chest
       if (blockAbove) { return }
       serv.playSound('block.chest.open', player.world, block.position, {})
@@ -52,12 +36,11 @@ module.exports.player = function (player, serv, { version }) {
         player.windowType = 'ender_chest'
       }
       // TODO: Large chest (NOT IMPLEMENTED)
-      if (blockShulkerBoxes.includes(id)) {
+      if (blockShulkerBox.includes(id)) {
         chestWindowTitle = { translate: 'container.shulkerBox' }
         player.windowType = 'shulker_box'
       }
       player.windowPos = block.position
-      console.log(blockShulkerBoxes)
       // Opening chest GUI window
       player._client.write('open_window', {
         windowId: player.windowId,
