@@ -100,7 +100,7 @@ module.exports.player = async function (player, serv, settings) {
       maxPlayers: Math.min(255, serv._server.maxPlayers),
       enableRespawnScreen: true,
       isDebug: false,
-      isFlat: false
+      isFlat: settings.generation?.name === 'superflat'
     })
     if (serv.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
