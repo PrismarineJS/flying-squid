@@ -1,6 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv, { version }) {
+  const mcData = require('minecraft-data')(version)
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }
@@ -151,7 +152,7 @@ module.exports.player = function (player, serv, { version }) {
         blockDropPosition: location.offset(0.5, 0.5, 0.5),
         blockDropWorld: player.world,
         blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-        blockDropId: currentlyDugBlock.type,
+        blockDropId: currentlyDugBlock.drops[0],
         blockDropDamage: currentlyDugBlock.metadata,
         blockDropPickup: 500,
         blockDropDeath: 60 * 5 * 1000
@@ -188,7 +189,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 
   function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropCount, blockDropPickup, blockDropDeath }) {
-    serv.spawnObject(2, blockDropWorld, blockDropPosition, {
+    serv.spawnObject(37, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
       itemDamage: blockDropDamage,
