@@ -20,17 +20,19 @@ function generation (options = {}) {
     for (let x = 0; x < 16; x++) {
       for (let z = 0; z < 16; z++) {
         for (let y = 0; y < 256; y++) {
+          const currentVec = new Vec3(x, y, z)
           if (y === 0) {
-            chunk.setBlockType(new Vec3(x, y, z), bottomId)
-            if (options.bottomData) chunk.setBlockData(new Vec3(x, y, z), options.bottomData)
+            chunk.setBlockType(currentVec, bottomId)
+            if (options.bottomData) chunk.setBlockData(currentVec, options.bottomData)
           } else if (y < middleThickness + 1) {
-            chunk.setBlockType(new Vec3(x, y, z), middleId)
-            if (options.middleData) chunk.setBlockData(new Vec3(x, y, z), options.middleData)
+            chunk.setBlockType(currentVec, middleId)
+            if (options.middleData) chunk.setBlockData(currentVec, options.middleData)
           } else if (y < middleThickness + 2) {
-            chunk.setBlockType(new Vec3(x, y, z), topId)
-            if (topData) chunk.setBlockData(new Vec3(x, y, z), topData)
+            chunk.setBlockType(currentVec, topId)
+            if (topData) chunk.setBlockData(currentVec, topData)
           }
-          chunk.setSkyLight(new Vec3(x, y, z), 15)
+          chunk.setSkyLight(currentVec, 15)
+          chunk.setBiome(currentVec, mcData.biomesByName[options.biome ?? 'plains'].id)
         }
       }
     }
