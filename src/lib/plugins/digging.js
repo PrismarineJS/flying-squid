@@ -146,29 +146,30 @@ module.exports.player = function (player, serv, { version }) {
     }
     if (!stop) {
       const drops = []
+      const dropBase = {
+        blockDropPosition: location.offset(0.5, 0.5, 0.5),
+        blockDropWorld: player.world,
+        blockDropDamage: currentlyDugBlock.metadata,
+        blockDropPickup: 500,
+        blockDropDeath: 60 * 5 * 1000
+      }
       if (typeof mcData.blockLoot === 'undefined') {
         drops.push({
-          blockDropPosition: location.offset(0.5, 0.5, 0.5),
-          blockDropWorld: player.world,
+          ...dropBase,
           blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: currentlyDugBlock.drops[0],
-          blockDropDamage: currentlyDugBlock.metadata,
-          blockDropPickup: 500,
-          blockDropDeath: 60 * 5 * 1000
+          blockDropId: currentlyDugBlock.drops[0]
         })
       } else {
-        // const blockDrops = mcData.blockLoot[currentlyDugBlock.name].drops
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-        console.log(heldItem.enchants)
-        drops.push({
-          blockDropPosition: location.offset(0.5, 0.5, 0.5),
-          blockDropWorld: player.world,
-          blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: currentlyDugBlock.drops[0],
-          blockDropDamage: currentlyDugBlock.metadata,
-          blockDropPickup: 500,
-          blockDropDeath: 60 * 5 * 1000
-        })
+        const silkTouch = heldItem.enchants.map(enchant => enchant.name).includes('silk_touch')
+        const blockDrops = mcData.blockLoot[currentlyDugBlock.name].drops.filter(drop => !(drop[`${silkTouch ? 'noS' : 's'}ilkTouch`] ?? false))
+        for (const drop of blockDrops) {
+          drops.push({
+            ...dropBase,
+            blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
+            blockDropId: mcData.itemsByName[drop.item].id
+          })
+        }
       }
       player.behavior('dug', {
         position: location,
