@@ -145,24 +145,45 @@ module.exports.player = function (player, serv, { version }) {
       }).stop
     }
     if (!stop) {
+      const drops = []
+      if (typeof mcData.blockLoot === 'undefined') {
+        drops.push({
+          blockDropPosition: location.offset(0.5, 0.5, 0.5),
+          blockDropWorld: player.world,
+          blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
+          blockDropId: currentlyDugBlock.drops[0],
+          blockDropDamage: currentlyDugBlock.metadata,
+          blockDropPickup: 500,
+          blockDropDeath: 60 * 5 * 1000
+        })
+      } else {
+        // const blockDrops = mcData.blockLoot[currentlyDugBlock.name].drops
+        const heldItem = player.inventory.slots[36 + player.heldItemSlot]
+        console.log(heldItem.enchants)
+        drops.push({
+          blockDropPosition: location.offset(0.5, 0.5, 0.5),
+          blockDropWorld: player.world,
+          blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
+          blockDropId: currentlyDugBlock.drops[0],
+          blockDropDamage: currentlyDugBlock.metadata,
+          blockDropPickup: 500,
+          blockDropDeath: 60 * 5 * 1000
+        })
+      }
       player.behavior('dug', {
         position: location,
         block: currentlyDugBlock,
         dropBlock: true,
-        blockDropPosition: location.offset(0.5, 0.5, 0.5),
-        blockDropWorld: player.world,
-        blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-        blockDropId: currentlyDugBlock.drops[0],
-        blockDropDamage: currentlyDugBlock.metadata,
-        blockDropPickup: 500,
-        blockDropDeath: 60 * 5 * 1000
+        drops
       }, async (data) => {
         player.changeBlock(data.position, 0, 0)
         const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
         if (aboveBlock.material === 'plant') {
           await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
         }
-        if (data.dropBlock) dropBlock(data)
+        if (data.dropBlock) {
+          drops.forEach(drop => dropBlock(drop))
+        }
         if (serv.supportFeature('acknowledgePlayerDigging')) {
           player._client.write('acknowledge_player_digging', {
             location: location,
@@ -189,7 +210,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 
   function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropCount, blockDropPickup, blockDropDeath }) {
-    serv.spawnObject(mcData.entitiesByName.item.id, blockDropWorld, blockDropPosition, {
+    serv.spawnObject(mcData.entitiesByName[mcData.version['<']('1.11') ? 'Item' : 'item'].id, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
       itemDamage: blockDropDamage,
