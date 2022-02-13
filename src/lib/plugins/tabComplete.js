@@ -52,7 +52,7 @@ module.exports.player = function (player, serv) {
   })
 
   serv.tabComplete.add('number', () => {
-    return ['1']
+    return ['1', '2', '3']
   })
 
   serv.tabComplete.add('command', () => {
@@ -83,5 +83,9 @@ module.exports.player = function (player, serv) {
     if (blockInfo === null) return ['']
     const z = String(blockInfo.z)
     return [z] || ['']
+  })
+
+  serv.tabComplete.add('item_enchantment', () => {
+    return ['unbreaking', 'silk_touch', 'fortune']
   })
 }

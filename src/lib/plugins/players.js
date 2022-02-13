@@ -13,6 +13,24 @@ module.exports.server = function (serv, { version }) {
     return null
   }
 
+  serv.getPlayers = (selector, ctxPlayer) => {
+    if (!selector.startsWith('@')) {
+      return serv.players.filter(player => player.username === selector)
+    }
+    switch (selector.charAt(1)) {
+      case 'a':
+      case 'e':
+        return serv.players
+      case 'p':
+        if (!ctxPlayer) throw new UserError('Console cannot act on itself')
+        return serv.players.filter(player => player.username === ctxPlayer.username)
+      case 'r':
+        return serv.players[Math.floor(Math.random() * serv.players.length)]
+      default:
+        return []
+    }
+  }
+
   serv.commands.add({
     base: 'gamemode',
     aliases: ['gm'],
@@ -118,6 +136,33 @@ module.exports.server = function (serv, { version }) {
       if (player.inventory.items().length === 0) {
         player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
       }
+    }
+  })
+
+  serv.commands.add({
+    base: 'enchant',
+    info: 'Enchants items holded by targets with the specified enchantment and level',
+    usage: '/enchant <targets> <enchantment> [level]',
+    tab: ['selector', 'item_enchantment', 'number'],
+    op: true,
+    parse (args) {
+      args = args.split(' ')
+      if (args[0] === '') return false
+      if (args[2] && !args[2].match(/^[1-5]$/)) throw new UserError('Level invalid')
+      return {
+        selector: args[0],
+        enchantment: args[1],
+        level: args[2] ? args[2] : 1
+      }
+    },
+    action ({ selector, enchantment, level }, ctx) {
+      const players = serv.getPlayers(selector, ctx.player)
+      if (!players.length) throw new UserError('No players found')
+      players.forEach(player => {
+        const heldItem = player.inventory.slots[36 + player.heldItemSlot]
+        heldItem.enchants = [...heldItem.enchants ?? [], { name: enchantment, lvl: level } ]
+        player.inventory.updateSlot(heldItem.slot, heldItem)
+      })
     }
   })
 }

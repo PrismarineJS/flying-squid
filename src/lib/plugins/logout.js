@@ -37,6 +37,6 @@ module.exports.player = function (player, serv, { worldFolder }) {
       delete serv.uuidToPlayer[player.uuid]
     }
 
-    playerDat.save(player, worldFolder, serv.supportFeature('attributeSnakeCase'))
+    playerDat.save(player, worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
   })
 }

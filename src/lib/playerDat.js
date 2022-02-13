@@ -34,7 +34,7 @@ async function read (uuid, spawnPoint, worldFolder) {
         pitch: playerData.Rotation.value.value[1],
         onGround: Boolean(playerData.OnGround.value)
       },
-      inventory: playerData.Inventory.value.value
+      inventory: playerData.Inventory.value.value.map(nbtItem => { nbtItem.tag ? nbtItem.tag.name = '' : null ; return nbtItem})
     }
   } catch (e) {
     return {
@@ -44,12 +44,12 @@ async function read (uuid, spawnPoint, worldFolder) {
   }
 }
 
-async function save (player, worldFolder, snakeCase) {
+async function save (player, worldFolder, snakeCase, theFlattening) {
   function playerInventoryToNBT (playerInventory) {
     const nbtInventory = []
     playerInventory.slots.forEach(item => {
       if (item) {
-        nbtInventory.push({
+        const nbtItem = {
           Slot: {
             type: 'byte',
             value: convertInventorySlotId.toNBT(item.slot)
@@ -61,12 +61,21 @@ async function save (player, worldFolder, snakeCase) {
           Count: {
             type: 'byte',
             value: item.count
-          },
-          Damage: {
-            type: 'short',
-            value: item.metadata
           }
-        })
+        }
+        if (!theFlattening) {
+          Object.assign(nbtItem, {
+            Damage: {
+              type: 'short',
+              value: item.metadata
+            }
+          })
+        } else if (item.nbt) {
+          Object.assign(nbtItem, {
+            tag: item.nbt
+          })
+        }
+        nbtInventory.push(nbtItem)
       }
     })
     return nbtInventory
