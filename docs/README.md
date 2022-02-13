@@ -89,8 +89,9 @@ docker-compose up
 
 There are several modules than can be used to generate the world. The default one is called diamond-square
 
-* [node-voxel-worldgen](https://github.com/mhsjlw/node-voxel-worldgen) a voxel world generator written in Rust, compatible with flying-squid and allows basic minecraft-like generation including caves.
-* [diamond-square](https://github.com/PrismarineJS/diamond-square) a diamond square minecraft generation
+* [node-voxel-worldgen](https://github.com/mhsjlw/node-voxel-worldgen): a voxel world generator written in Rust, compatible with flying-squid and allows basic minecraft-like generation including caves.
+* [diamond-square](https://github.com/PrismarineJS/diamond-square): a diamond square minecraft generation.
+* superflat: a superflat worldgen with configurable blocks and biome.
 
 To install a world generation, all you have to do is npm install it and then change the generation option in settings.json.
 
@@ -124,10 +125,10 @@ mcServer.createMCServer({
   'logging': true,
   'gameMode': 1,
   'difficulty': 1,
-  'worldFolder':'world',
+  'worldFolder': 'world',
   'generation': {
     'name': 'diamond_square',
-    'options':{
+    'options': {
       'worldHeight': 80
     }
   },
@@ -138,8 +139,8 @@ mcServer.createMCServer({
   'modpe': false,
   'view-distance': 10,
   'player-list-text': {
-    'header':'Flying squid',
-    'footer':'Test server'
+    'header': 'Flying squid',
+    'footer': 'Test server'
   },
   'everybody-op': true,
   'max-entities': 100,
@@ -149,7 +150,7 @@ mcServer.createMCServer({
 
 You can add server plugins and player plugins in your package, following [CONTRIBUTE.md](https://github.com/PrismarineJS/flying-squid/blob/master/docs/CONTRIBUTE.md).
 
-For further examples, see the [examples page.](https://PrismarineJS.github.io/flying-squid/#/examples)
+For further examples, see the [examples page](https://PrismarineJS.github.io/flying-squid/#/examples).
 
 ## Contributors
 

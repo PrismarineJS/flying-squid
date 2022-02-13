@@ -29,6 +29,13 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
+  // Dynamic window ID feature (closing window)
+  player._client.on('close_window', function (clickInfo) {
+    // When window is closed we remove data about it from player
+    player.windowType = ''
+    player.windowPos = undefined
+  })
+
   player._client.on('window_click', function (clickInfo) {
     // Do other stuff the inventory doesn't do, eg spawn the dropped item.
     // I've left in stuff that inventory handles, because the cancelling hooks
