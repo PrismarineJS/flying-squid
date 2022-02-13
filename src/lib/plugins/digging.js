@@ -189,7 +189,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 
   function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropCount, blockDropPickup, blockDropDeath }) {
-    serv.spawnObject(37, blockDropWorld, blockDropPosition, {
+    serv.spawnObject(mcData.entitiesByName.item.id, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
       itemDamage: blockDropDamage,
