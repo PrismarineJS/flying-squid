@@ -34,7 +34,10 @@ async function read (uuid, spawnPoint, worldFolder) {
         pitch: playerData.Rotation.value.value[1],
         onGround: Boolean(playerData.OnGround.value)
       },
-      inventory: playerData.Inventory.value.value.map(nbtItem => { nbtItem.tag ? nbtItem.tag.name = '' : null ; return nbtItem})
+      inventory: playerData.Inventory.value.value.map(nbtItem => {
+        if (nbtItem.tag) nbtItem.tag.name = ''
+        return nbtItem
+      })
     }
   } catch (e) {
     return {

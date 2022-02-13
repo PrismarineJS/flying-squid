@@ -160,7 +160,7 @@ module.exports.server = function (serv, { version }) {
       if (!players.length) throw new UserError('No players found')
       players.forEach(player => {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-        heldItem.enchants = [...heldItem.enchants ?? [], { name: enchantment, lvl: level } ]
+        heldItem.enchants = [...heldItem.enchants ?? [], { name: enchantment, lvl: level }]
         player.inventory.updateSlot(heldItem.slot, heldItem)
       })
     }
