@@ -59,10 +59,11 @@ module.exports.server = function (serv, options) {
         type: 6,
         value: {
           present: true,
-          itemId, itemCount
+          itemId,
+          itemCount
         }
       }
-    }]
+    ]
 
     object.updateAndSpawn()
     return object
