@@ -46,6 +46,19 @@ module.exports.server = function (serv, options) {
     object.itemId = itemId
     object.itemDamage = itemDamage
     object.itemCount = itemCount
+    object.metadata = [
+      { key: 0, type: 0, value: 0 },
+      { key: 1, type: 1, value: 300 },
+      { key: 2, type: 5 },
+      { key: 3, type: 7, value: false },
+      { key: 4, type: 7, value: false },
+      { key: 5, type: 7, value: false },
+      { key: 6, type: 18, value: 0 },
+      { key: 7, type: 6, value: {
+        present: true,
+        itemId, itemCount
+      }
+    }]
 
     object.updateAndSpawn()
     return object
