@@ -54,9 +54,13 @@ module.exports.server = function (serv, options) {
       { key: 4, type: 7, value: false },
       { key: 5, type: 7, value: false },
       { key: 6, type: 18, value: 0 },
-      { key: 7, type: 6, value: {
-        present: true,
-        itemId, itemCount
+      {
+        key: 7,
+        type: 6,
+        value: {
+          present: true,
+          itemId, itemCount
+        }
       }
     }]
 
