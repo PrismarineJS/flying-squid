@@ -157,7 +157,7 @@ module.exports.player = function (player, serv, { version }) {
         drops.push({
           ...dropBase,
           blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: currentlyDugBlock.drops[0]
+          blockDropId: serv.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
         })
       } else {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]

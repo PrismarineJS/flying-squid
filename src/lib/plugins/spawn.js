@@ -46,7 +46,7 @@ module.exports.server = function (serv, options) {
     object.itemId = itemId
     object.itemDamage = itemDamage
     object.itemCount = itemCount
-    object.metadata = [
+    object.metadata = [ // hardcoded for 1.16
       { key: 0, type: 0, value: 0 },
       { key: 1, type: 1, value: 300 },
       { key: 2, type: 5 },
