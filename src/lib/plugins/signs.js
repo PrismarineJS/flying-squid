@@ -43,4 +43,3 @@ module.exports.server = (serv, { version }) => {
     }
   })
 }
-
