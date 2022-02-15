@@ -117,7 +117,7 @@ module.exports.server = function (serv, { version }) {
         const usage = (cmd.params && cmd.params.usage) || cmd.base
         const info = (cmd.params && cmd.params.info) || 'No info'
         if (ctx.player) ctx.player.chat(usage + ': ' + info)
-        else console.log(usage + ': ' + info)
+        else serv.info(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
         const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
@@ -125,10 +125,10 @@ module.exports.server = function (serv, { version }) {
         if (found.indexOf('search') !== -1) {
           const baseCmd = hash[search]
           if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
-          else console.log(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          else serv.info(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
           if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
-          else console.log(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
+          else serv.info(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
           if (found[i] === search) continue
@@ -136,7 +136,7 @@ module.exports.server = function (serv, { version }) {
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
           if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
-          else console.log(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
+          else serv.info(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
         }
       }
     }
@@ -148,7 +148,7 @@ module.exports.server = function (serv, { version }) {
     usage: '/stop',
     op: true,
     action () {
-      serv.quit('Closed')
+      serv.quit('Server closed')
       process.exit()
     }
   })
