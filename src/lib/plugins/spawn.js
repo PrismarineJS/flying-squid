@@ -329,12 +329,10 @@ module.exports.entity = function (entity, serv) {
         z: entityPosition.z,
         pitch: entity.pitch,
         yaw: entity.yaw,
-        objectData: {
-          intField: entity.data,
-          velocityX: scaledVelocity.x,
-          velocityY: scaledVelocity.y,
-          velocityZ: scaledVelocity.z
-        }
+        objectData: entity.data,
+        velocityX: scaledVelocity.x,
+        velocityY: scaledVelocity.y,
+        velocityZ: scaledVelocity.z
       }
     } else if (entity.type === 'mob') {
       return {
