@@ -2,7 +2,7 @@
   "motd": "A Minecraft Server \nRunning flying-squid",
   "port": 25565,
   "max-players": 10,
-  "online-mode": false,
+  "online-mode": true,
   "logging": true,
   "gameMode": 1,
   "difficulty": 1,
@@ -26,8 +26,7 @@
   "everybody-op":true,
   "max-entities":100,
   "version": "1.16.1",
-  "enableRespawnScreen": "false",
-  "reducedDebugInfo": "true",
-  "isDebug": "false",
-  "enableLoginLeaveMessages": "false"
+  "enableRespawnScreen": "true",
+  "reducedDebugInfo": "false",
+  "enableLoginLeaveMessages": "true"
 }
