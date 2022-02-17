@@ -19,16 +19,16 @@ module.exports.player = function (player, serv, settings, { worldFolder }) {
 
   player._client.on('end', async () => {
     if (player && player.username) {
-        player._unloadAllChunks()
-        if (settings['enable-login-leave-message'] === 'true') {
-      	  serv.broadcast(serv.color.yellow + player.username + ' left the game.')
-        }
-        player._writeOthers('player_info', {
-          action: 4,
-          data: [{
-            UUID: player.uuid
-          }]
-        })
+      player._unloadAllChunks()
+      if (settings['enable-login-leave-message'] === 'true') {
+        serv.broadcast(serv.color.yellow + player.username + ' left the game.')
+      }
+      player._writeOthers('player_info', {
+        action: 4,
+        data: [{
+          UUID: player.uuid
+        }]
+      })
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]))
       delete serv.entities[player.id]
       player.emit('disconnected')
