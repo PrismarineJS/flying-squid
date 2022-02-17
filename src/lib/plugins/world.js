@@ -127,8 +127,8 @@ module.exports.server = async function (serv, { version, worldFolder, generation
     return false
   }
 
-  // serv.pregenWorld(serv.overworld).then(() => serv.log('Pre-Generated Overworld'));
-  // serv.pregenWorld(serv.netherworld).then(() => serv.log('Pre-Generated Nether'));
+  // serv.pregenWorld(serv.overworld).then(() => serv.info('Pre-Generated Overworld'));
+  // serv.pregenWorld(serv.netherworld).then(() => serv.info('Pre-Generated Nether'));
   serv.commands.add({
     base: 'changeworld',
     info: 'to change world',
