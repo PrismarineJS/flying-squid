@@ -95,10 +95,10 @@ module.exports.player = async function (player, serv, settings) {
       dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[0] : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
-      viewDistance: settings['view-distance'],
-      reducedDebugInfo: settings['reducedDebugInfo'],
+      viewDistance: settings["view-distance"],
+      reducedDebugInfo: settings["reducedDebugInfo"],
       maxPlayers: Math.min(255, serv._server.maxPlayers),
-      enableRespawnScreen: settings['enableRespawnScreen'],
+      enableRespawnScreen: settings["enableRespawnScreen"],
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
     })
