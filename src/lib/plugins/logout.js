@@ -12,12 +12,12 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (settings, player, serv, { worldFolder }) {
+module.exports.player = function (player, serv, { worldFolder }) {
   player.despawnEntities = entities => player._client.write('entity_destroy', {
     entityIds: entities.map(e => e.id)
   })
 
-  player._client.on('end', async () => {
+  player._client.on('end', async (settings) => {
     if (player && player.username) {
       player._unloadAllChunks()
       if (settings['enable-login-leave-message'] === 'true') {
