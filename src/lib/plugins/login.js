@@ -96,9 +96,9 @@ module.exports.player = async function (player, serv, settings) {
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
-      reducedDebugInfo: false,
+      reducedDebugInfo: settings['reducedDebugInfo'],
       maxPlayers: Math.min(255, serv._server.maxPlayers),
-      enableRespawnScreen: true,
+      enableRespawnScreen: settings['enableRespawnScreen'],
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
     })
@@ -185,7 +185,9 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
+    if(settings['enableLoginLeaveMessages'] == "true"){
+    	serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
+    }
     player.emit('connected')
   }
 
