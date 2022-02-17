@@ -185,7 +185,7 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function announceJoin () {
-    if (settings['enableLoginLeaveMessages'] === 'true'){
+    if (settings['enable-login-leave-message'] === 'true'){
       serv.broadcast(serv.color.yellow + player.username + ' joined the game.')
     }
     player.emit('connected')
