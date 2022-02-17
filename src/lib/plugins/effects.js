@@ -81,7 +81,7 @@ module.exports.server = function (serv) {
       const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
       if (params[2] === 'clear') {
         if (ctx.player) ctx.player.chat('Remove all effects from ' + chatSelect + '.')
-        else serv.log('Remove all effects from ' + chatSelect + '.')
+        else serv.info('Remove all effects from ' + chatSelect + '.')
       } else {
         if (ctx.player) {
           ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
