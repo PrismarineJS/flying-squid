@@ -20,7 +20,7 @@ module.exports.player = function (player, serv, settings, { worldFolder }) {
   player._client.on('end', async () => {
     if (player && player.username) {
         player._unloadAllChunks()
-        if(settings['enable-login-leave-messages'] == "true"){
+        if (settings['enableLoginLeaveMessages'] == 'true'){
       	  serv.broadcast(serv.color.yellow + player.username + ' left the game.')
         }
 	player._writeOthers('player_info', {
