@@ -26,7 +26,7 @@
   "everybody-op":true,
   "max-entities":100,
   "version": "1.16.1",
-  "enableRespawnScreen": "true",
-  "reducedDebugInfo": "false",
-  "enableLoginLeaveMessages": "true"
+  "enable-respawn-screen": "true",
+  "reduced-debug-info": "false",
+  "enable-login-leave-messages": "true"
 }
