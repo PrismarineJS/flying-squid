@@ -21,9 +21,6 @@ Create Minecraft servers with a powerful, stable, and high level JavaScript API.
 * Anvil loading
 * Multi-world
 
-## Test server
-
-
 ## Building / Running
 Before running or building it is recommended that you configure the server in `config/settings.json`
 
