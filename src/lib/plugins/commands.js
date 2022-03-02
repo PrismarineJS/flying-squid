@@ -168,7 +168,6 @@ module.exports.server = function (serv, { version }) {
     }
   })
 
-
   serv.commands.add({
     base: 'me',
     info: 'Displays a message about yourself',
