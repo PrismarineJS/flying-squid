@@ -164,7 +164,23 @@ module.exports.server = function (serv, { version }) {
     action (params, ctx) {
       const who = ctx.player ? ctx.player.username : 'Server'
       serv.broadcast(`[${who}] ` + params)
-      serv.log(`[CHAT]: [${who}] ` + params)
+      serv.info(`[CHAT]: [${who}] ` + params)
+    }
+  })
+
+
+  serv.commands.add({
+    base: 'me',
+    info: 'Displays a message about yourself',
+    usage: '/me <message>',
+    op: false,
+    parse (params) {
+      return params || false
+    },
+    action (params, ctx) {
+      const who = ctx.player ? ctx.player.username : 'Server'
+      serv.broadcast(`* ${who} ` + params)
+      serv.info(`* ${who} ` + params)
     }
   })
 
