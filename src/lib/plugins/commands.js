@@ -83,7 +83,7 @@ module.exports.server = function (serv, { version }) {
     action (sel, ctx) {
       const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
       if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
-      else serv.log(JSON.stringify(arr.map(a => a.id)))
+      else serv.info(JSON.stringify(arr.map(a => a.id)))
     }
   })
 
