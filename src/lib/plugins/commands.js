@@ -68,7 +68,7 @@ module.exports.server = function (serv, { version }) {
     info: 'to bug report',
     usage: '/bug',
     action () {
-      return 'Report bugs / issues here: https://github.com/PrismarineJS/flying-squid/issues'
+      return 'Report bugs or issues here: https://github.com/PrismarineJS/flying-squid/issues'
     }
   })
 
@@ -83,7 +83,7 @@ module.exports.server = function (serv, { version }) {
     action (sel, ctx) {
       const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
       if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
-      else serv.log(JSON.stringify(arr.map(a => a.id)))
+      else serv.info(JSON.stringify(arr.map(a => a.id)))
     }
   })
 
@@ -164,7 +164,22 @@ module.exports.server = function (serv, { version }) {
     action (params, ctx) {
       const who = ctx.player ? ctx.player.username : 'Server'
       serv.broadcast(`[${who}] ` + params)
-      serv.log(`[CHAT]: [${who}] ` + params)
+      serv.info(`[CHAT]: [${who}] ` + params)
+    }
+  })
+
+  serv.commands.add({
+    base: 'me',
+    info: 'Displays a message about yourself',
+    usage: '/me <message>',
+    op: false,
+    parse (params) {
+      return params || false
+    },
+    action (params, ctx) {
+      const who = ctx.player ? ctx.player.username : 'Server'
+      serv.broadcast(`* ${who} ` + params)
+      serv.info(`* ${who} ` + params)
     }
   })
 
