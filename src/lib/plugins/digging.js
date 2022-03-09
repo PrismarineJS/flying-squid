@@ -161,7 +161,7 @@ module.exports.player = function (player, serv, { version }) {
         })
       } else {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
-        const silkTouch = heldItem.enchants.map(enchant => enchant.name).includes('silk_touch')
+        const silkTouch = heldItem?.enchants.map(enchant => enchant.name).includes('silk_touch')
         const blockDrops = mcData.blockLoot[currentlyDugBlock.name].drops.filter(drop => !(drop[`${silkTouch ? 'noS' : 's'}ilkTouch`] ?? false))
         for (const drop of blockDrops) {
           drops.push({
