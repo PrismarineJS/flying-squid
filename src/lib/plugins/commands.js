@@ -205,8 +205,8 @@ module.exports.server = function (serv, { version }) {
 
   const notudf = i => typeof i !== 'undefined'
 
-  serv.selector = (type, opt) => {
-    if (['all', 'random', 'near', 'entity'].indexOf(type) === -1) { throw new UserError('serv.selector(): type must be either [all, random, near, or entity]') }
+  serv.selector = (type, opt, selfEntityId) => {
+    if (['all', 'random', 'self', 'near', 'entity'].indexOf(type) === -1) { throw new UserError('serv.selector(): type must be either [all, random, self, near, or entity]') }
 
     const count = opt.count !== undefined
       ? opt.count
@@ -215,6 +215,7 @@ module.exports.server = function (serv, { version }) {
     const pos = opt.pos
     let sample
     if (type === 'all') sample = serv.players
+    else if (type === 'self') sample = serv.players.filter(p => p.id === selfEntityId)
     else if (type === 'random' || type === 'near') sample = serv.players.filter(p => p.health !== 0)
     else if (type === 'entity') sample = Object.keys(serv.entities).map(k => serv.entities[k])
 
@@ -287,17 +288,18 @@ module.exports.server = function (serv, { version }) {
     else return sample.slice(count) // Negative, returns from end
   }
 
-  serv.selectorString = (str, pos, world, allowUser = true) => {
+  serv.selectorString = (str, pos, world, allowUser = true, ctxEntityId) => {
     if (pos) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
-    const match = str.match(/^@([arpe])(?:\[([^\]]+)\])?$/)
+    const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
     if (match[1] === 'r' && !pos) throw new UserError('Can\'t found nearest players')
     if (match === null) throw new UserError('Invalid selector format')
     const typeConversion = {
       a: 'all',
       r: 'random',
+      s: 'self',
       p: 'near',
       e: 'entity'
     }
@@ -346,7 +348,7 @@ module.exports.server = function (serv, { version }) {
       }
     })
 
-    return serv.selector(type, data)
+    return serv.selector(type, data, ctxEntityId)
   }
 
   serv.posFromString = (str, pos) => {
