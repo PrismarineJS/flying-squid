@@ -9,8 +9,9 @@ module.exports.server = function (serv, options) {
   const version = options.version
 
   const Entity = require('prismarine-entity')(version)
-  const mobsById = require('minecraft-data')(version).mobs
-  const objectsById = require('minecraft-data')(version).objects
+  const mcData = require('minecraft-data')(version)
+  const mobsById = mcData.mobs
+  const objectsById = mcData.objects
 
   serv.initEntity = (type, entityType, world, position) => {
     if (Object.keys(serv.entities).length > options['max-entities']) { throw new Error('Too many mobs !') }
@@ -51,11 +52,20 @@ module.exports.server = function (serv, options) {
       { key: 1, type: 1, value: 300 },
       { key: 2, type: 5 },
       { key: 3, type: 7, value: false },
-      { key: 4, type: 7, value: false },
-      { key: 5, type: 7, value: false },
-      { key: 6, type: 18, value: 0 },
+      { key: 4, type: 7, value: false }
+    ]
+    let key = 5
+    if (mcData.version['>=']('1.10')) {
+      object.metadata.push({ key, type: 7, value: false })
+      ++key
+      if (mcData.version['>=']('1.14')) {
+        object.metadata.push({ key, type: 18, value: 0 })
+        ++key
+      }
+    }
+    object.metadata.push(
       {
-        key: 7,
+        key,
         type: 6,
         value: {
           present: true,
@@ -63,7 +73,7 @@ module.exports.server = function (serv, options) {
           itemCount
         }
       }
-    ]
+    )
 
     object.updateAndSpawn()
     return object
