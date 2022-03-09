@@ -116,7 +116,7 @@ module.exports.server = function (serv, { version }) {
         count: args[2] ? args[2] : 1
       }
     },
-    action ({ players, item, count }, ctx) {
+    action ({ players, item, count }) {
       const newItem = new Item(item, count)
 
       players.forEach(player => {
@@ -127,12 +127,12 @@ module.exports.server = function (serv, { version }) {
             player.inventory.updateSlot(e.slot, e)
             return true
           }
-  
+
           if (player.inventory.slots.length === i) {
             player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
           }
         })
-  
+
         if (player.inventory.items().length === 0) {
           player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
         }
