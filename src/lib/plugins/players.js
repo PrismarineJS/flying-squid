@@ -37,7 +37,7 @@ module.exports.server = function (serv, { version }) {
         else throw new UserError('Console cannot set gamemode itself')
       }
 
-      return str.match(/^(survival|creative|adventure|spectator|[0-3]) (\w+)$/) || false
+      return str.match(/^(survival|creative|adventure|spectator|[0-3])( @[arspe](?:\[([^\]]+)\])?| \w+)?$/) || false
       // return params || false
     },
     action (str, ctx) {
@@ -47,36 +47,35 @@ module.exports.server = function (serv, { version }) {
         adventure: 2,
         spectator: 3
       }
+      const target = str[2]?.trim()
       const gamemodesReverse = Object.assign({}, ...Object.entries(gamemodes).map(([k, v]) => ({ [v]: k })))
       const gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
-      const mode = parseInt(str[1], 10) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
-      const plyrs = serv.getPlayers(str[2], ctx.player)
+      const mode = !isNaN(parseInt(str[1], 10)) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
+      const plyrs = serv.getPlayers(target ?? '@s', ctx.player)
       if (ctx.player) {
-        if (str[2]) {
-          if (plyrs.length > 0) {
-            plyrs.forEach(plyr => plyr.setGameMode(gamemode))
-            if (plyrs.length === 1) {
-              if (plyrs[0].username === ctx.player.username) {
-                return `Set own game mode to ${mode} Mode`
-              }
-              return `Set ${str[2]}'s game mode to ${mode} Mode`
-            } else {
-              return `Set ${plyrs.length} players' game mode to ${mode} Mode`
-            }
-          } else {
-            throw new UserError(`Player '${str[2]}' not found`)
-          }
-        } else ctx.player.setGameMode(gamemode)
-      } else {
         if (plyrs.length > 0) {
           plyrs.forEach(plyr => plyr.setGameMode(gamemode))
           if (plyrs.length === 1) {
-            return `Set ${str[2]}'s game mode to ${mode} Mode`
+            if (plyrs[0].username === ctx.player.username) {
+              return `Set own game mode to ${mode} Mode`
+            }
+            return `Set ${target}'s game mode to ${mode} Mode`
           } else {
             return `Set ${plyrs.length} players' game mode to ${mode} Mode`
           }
         } else {
-          throw new UserError(`Player '${str[2]}' not found`)
+          throw new UserError(`Player '${target}' not found`)
+        }
+      } else {
+        if (plyrs.length > 0) {
+          plyrs.forEach(plyr => plyr.setGameMode(gamemode))
+          if (plyrs.length === 1) {
+            return `Set ${target}'s game mode to ${mode} Mode`
+          } else {
+            return `Set ${plyrs.length} players' game mode to ${mode} Mode`
+          }
+        } else {
+          throw new UserError(`Player '${target}' not found`)
         }
       }
     }
