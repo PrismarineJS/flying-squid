@@ -151,13 +151,13 @@ module.exports.server = function (serv, { version }) {
       if (args[0] === '') return false
       const enchantment = mcData.enchantmentsByName[args[1]]
       if (!enchantment) throw new UserError('No such enchantment')
-      if (args[2] && (!args[2].match(/^[1-5]$/) || parseInt(args[2]) > enchantment.maxLevel)) throw new UserError('Level invalid')
+      if (args[2] && (parseInt(args[2]) > enchantment.maxLevel || parseInt(args[2]) < 0)) throw new UserError('Level invalid')
       const players = serv.getPlayers(args[0], ctx.player)
       if (!players.length) throw new UserError('No players found')
       return {
         players,
         enchantment: args[1],
-        level: args[2] ? args[2] : 1
+        level: args[2] ? parseInt(args[2]) : 1
       }
     },
     action ({ players, enchantment, level }) {
