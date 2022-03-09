@@ -155,7 +155,7 @@ module.exports.server = function (serv, { version }) {
       if (!players.length) throw new UserError('No players found')
       return {
         players,
-        enchantment: args[1],
+        enchantment,
         level: args[2] ? parseInt(args[2]) : 1
       }
     },
@@ -163,7 +163,8 @@ module.exports.server = function (serv, { version }) {
       players.forEach(player => {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
         if (!heldItem) return
-        heldItem.enchants = [...heldItem.enchants ?? [], { name: enchantment, lvl: level }]
+        if (enchantment.exclude.includes(heldItem.enchants) || heldItem.enchants?.some(e => e.name === enchantment.name)) return
+        heldItem.enchants = [...heldItem.enchants ?? [], { name: enchantment.name, lvl: level }]
         player.inventory.updateSlot(heldItem.slot, heldItem)
       })
     }
