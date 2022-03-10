@@ -17,12 +17,9 @@ rl.prompt(true)
 module.exports.server = function (serv, settings) {
   serv.on('error', error => serv.err('Server: ' + error.stack))
   serv.on('clientError', (client, error) => serv.err('Client ' + client.socket.remoteAddress + ':' + client.socket.remotePort + ' : ' + error.stack))
-
   serv.on('listening', port => serv.info('Server listening on port ' + port))
-
   serv.on('banned', (banner, bannedUsername, reason) =>
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
-
   serv.on('seed', (seed) => serv.info('World seed: ' + seed))
 
   const logFile = path.join('logs', timeStarted + '.log')
@@ -87,13 +84,13 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = function (player, serv) {
-  player.on('connected', () => serv.log('[' + colors.green('INFO') + ']: ' + player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
+  player.on('connected', () => serv.info(player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
 
-  player.on('spawned', () => serv.log('[' + colors.green('INFO') + ']: position written, player spawning...'))
+  player.on('spawned', () => serv.info('position written, player spawning...'))
 
-  player.on('disconnected', () => serv.log('[' + colors.green('INFO') + ']: ' + player.username + ' disconnected'))
+  player.on('disconnected', () => serv.info(player.username + ' disconnected'))
 
-  player.on('chat', ({ message }) => serv.log('[' + colors.green('INFO') + '] ' + '<' + player.username + '>' + ' ' + message))
+  player.on('chat', ({ message }) => serv.info('<' + player.username + '>' + ' ' + message))
 
-  player.on('kicked', (kicker, reason) => serv.log(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
+  player.on('kicked', (kicker, reason) => serv.info(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
 }
