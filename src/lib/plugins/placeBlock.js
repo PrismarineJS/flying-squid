@@ -16,7 +16,7 @@ module.exports.server = (serv, { version }) => {
   const itemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
     const handler = itemPlaceHandlers.get(data.item.type)
-    return handler ? handler(data) : false
+    return handler ? handler(data) : {}
   }
 
   /**
