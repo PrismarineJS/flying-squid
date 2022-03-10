@@ -4,7 +4,7 @@ module.exports.server = function (serv, settings) {
   serv.externalPluginsLoaded = false
 
   serv.addPlugin = (name, plugin, set) => {
-    if (!name || !plugin) throw new Error('You need a name and object for your plugin!')
+    if (!name || !plugin) serv.err('Failed to load plugin: Name and object is required')
     serv.plugins[name] = {
       id: serv.pluginCount,
       name: name,
@@ -26,7 +26,7 @@ module.exports.server = function (serv, settings) {
       try { // Throw error if cannot find plugin
         require.resolve('../../plugins/' + p)
       } catch (err) {
-        throw new Error('Cannot find plugin "' + p + '"')
+        serv.err(`Failed to load plugin: cannot find plugin ${p}`)
       }
       serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p])
       return
