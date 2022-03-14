@@ -24,7 +24,11 @@ module.exports.server = (serv) => {
         let x = serv.posFromString(args[0], ctx.player.position.x)
         let y = serv.posFromString(args[1], ctx.player.position.y)
         let z = serv.posFromString(args[2], ctx.player.position.z)
-
+        
+        if (x > 29999999 || y > 1024 || y < 0 || z > 29999999) {
+          throw new UserError('Invalid position')
+        }
+        
         // Vanilla behavior: teleport to center of block if decimal not specified
 
         if (args[0].indexOf('.') === -1) x += 0.5
