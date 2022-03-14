@@ -25,7 +25,8 @@ module.exports.server = (serv) => {
         let y = serv.posFromString(args[1], ctx.player.position.y)
         let z = serv.posFromString(args[2], ctx.player.position.z)
         
-        if (x > 29999999 || y > 1024 || y < 0 || z > 29999999) {
+        if (x > 29999999 || y > 4096 || y < -4096 || z > 29999999) {
+          // Vanilla Minecraft limits
           throw new UserError('Invalid position')
         }
         
