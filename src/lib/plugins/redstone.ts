@@ -145,7 +145,7 @@ export const server = function (serv, { version }) {
 
     const torchDataToOffset = [null, new Vec3(-1, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(0, -1, 0)]
 
-    const updateRedstoneTorch = async (world, block, fromTick, tick, data) => {
+    const updateRedstoneTorch = async (world, block, _fromTick, tick) => {
       const offset = torchDataToOffset[block.metadata]
       const pos = block.position
 
@@ -255,7 +255,7 @@ export const server = function (serv, { version }) {
       serv.onBlockUpdate('unpowered_repeater', updateRepeater)
     }
 
-    serv.onBlockUpdate('redstone_wire', async (world, block, fromTick, tick, data) => {
+    serv.onBlockUpdate('redstone_wire', async (world, block, _fromTick, tick) => {
       const pos = block.position
 
       // Redstone wire should be on a solid block

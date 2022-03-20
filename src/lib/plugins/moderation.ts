@@ -38,7 +38,7 @@ export const server = function (serv, settings) {
           if (typeof idstr !== 'string') throw new Error('username not found')
           resolve(uuidInParts(idstr))
         })
-        .catch(err => { throw err })
+        .catch(err => reject(err))
     })
   }
 

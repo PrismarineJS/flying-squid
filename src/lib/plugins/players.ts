@@ -99,7 +99,7 @@ export const server = function (serv, { version }) {
         count: args[2] ? args[2] : 1
       }
     },
-    action ({ player, item, count }, ctx) {
+    action ({ player, item, count }) {
       const newItem = new Item(item, count)
 
       player.inventory.slots.forEach((e, i) => {

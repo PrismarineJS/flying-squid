@@ -1,4 +1,4 @@
-export const player = function (player, serv) {
+export const player = function (player) {
   function sendHealthPacket () {
     player._client.write('update_health', {
       food: player.food,

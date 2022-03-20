@@ -31,7 +31,7 @@ export const player = function (player, serv, { version }) {
   })
 
   // Dynamic window ID feature (closing window)
-  player._client.on('close_window', function (clickInfo) {
+  player._client.on('close_window', () => {
     // When window is closed we remove data about it from player
     player.windowType = ''
     player.windowPos = undefined
