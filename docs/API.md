@@ -41,6 +41,7 @@
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
+      - [serv.info(message)](#servinfomessage)
       - [serv.warn(message)](#servwarnmessage)
       - [serv.err(message)](#serverrmessage)
       - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
@@ -273,10 +274,6 @@ Contains the overworld world. This is where the default spawn point is
 
 Contains the nether world. This **WILL** be used when a player travels through a portal if they are in the overworld!
 
-#### serv.endworld
-
-Contains the end world. **NOT YET IMPLEMENTED!**
-
 #### serv.entities
 
 All of the entities
@@ -319,18 +316,19 @@ Here is an example to create a new command :
 ```js
 serv.commands.add({
     base: 'hello',
-    info: 'print hello in the console',
+    info: 'Print hello in the console',
     usage: 'hello <pseudo>',
     parse(str)  {
-      const args=str.split(' ');
-      if(args.length!=1)
+      const args = str.split(' ');
+      if(args.length != 1){
         return false;
-       
+      }
+      
       return {pseudo:args[0]};
     },
     action({pseudo}, ctx) {
-      if (ctx.player) player.chat("Hello "+pseudo);
-      else serv.log("Hello "+pseudo);
+      if (ctx.player) player.chat(`Hello ${pseudo}`);
+      else serv.info(`Hello ${pseudo}`);
     }
 });
 ```
@@ -381,6 +379,10 @@ creates the log file
 #### serv.log(message)
 
 logs a `message`
+
+#### serv.info(message)
+
+logs a `message` as info
 
 #### serv.warn(message)
 
