@@ -22,7 +22,7 @@ export default class Command implements Cmd {
   parentBase: Cmd['parentBase'];
   base: Cmd['base'];
   path: Cmd['path'];
-  constructor (params: Cmd['params'], parent?: Cmd['parent'], hash?: Cmd['hash']) {
+  constructor (params: Cmd['params'], parent?: Cmd['parent']) {
     this.params = params
     this.parent = parent
     this.hash = parent ? parent.hash : {}
