@@ -20,7 +20,7 @@
     "build": "tsc",
     "lint": "eslint test/*.test.js src/**/*.ts src/**/**/*.ts src/*.ts examples/*.ts *.js",
     "fix": "eslint --fix test/*.test.js src/**/*.ts src/**/**/*.ts src/*.ts examples/*.ts *.js",
-    "test": "mocha --reporter spec --exit",
+    "test": "mocha --timeout 3000 --reporter spec --exit",
     "clean": "rimraf dist"
   },
   "keywords": [],
