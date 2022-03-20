@@ -80,8 +80,8 @@ export default (version) => {
 
   async function asyncEvery (array, pred) {
     return Promise.all(array.map(x => pred(x).then(y => y ? true : Promise.reject(false)))) // eslint-disable-line prefer-promise-reject-errors
-      .then(results => true)
-      .catch(x => false)
+      .then(() => true)
+      .catch(() => false)
   }
 
   function asyncFilter (array, pred) {
