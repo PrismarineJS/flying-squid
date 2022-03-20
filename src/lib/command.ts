@@ -1,6 +1,7 @@
 const UserError = require('./user_error')
 
 interface Cmd {
+  // TODO: define these (idfk what to define these types as so :shrug:)
   params: Params;
   parent: any;
   hash: any;
@@ -12,9 +13,13 @@ interface Cmd {
 
 type Params = Record<any,any> & {
   base?: Cmd['base'];
+  /** Command Aliases */
+  aliases?: string[];
+  merged?: any;
+  /** Does the command require operator permissions? */
+  op?: boolean; // I think it's a boolean, could be wrong
 }
 export default class Command implements Cmd {
-  // TODO: define these (idfk what to define these types as so :shrug:)
   params: Cmd['params'];
   parent: Cmd['parent'];
   hash: Cmd['hash'];
