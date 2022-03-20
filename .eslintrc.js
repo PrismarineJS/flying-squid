@@ -14,7 +14,8 @@ module.exports = {
     'no-var-requires': 0,
     '@typescript-eslint/no-var-requires': 0,
     // this just straight up shouldn't be enabled by default
-    '@typescript-eslint/ban-ts-comment': 0
+    '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/no-explicit-any': 0
   },
   env: {node: true}
 }
