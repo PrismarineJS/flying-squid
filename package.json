@@ -20,9 +20,7 @@
     "build": "tsc",
     "lint": "eslint test/*.test.js src/**/*.ts src/**/**/*.ts src/*.ts examples/*.ts *.js",
     "fix": "eslint --fix test/*.test.js src/**/*.ts src/**/**/*.ts src/*.ts examples/*.ts *.js",
-    "test": "npm run test:pre && npm run test:mocha",
-    "test:mocha": "mocha --reporter spec --exit",
-    "test:pre": "npm run lint",
+    "test": "mocha --reporter spec --exit",
     "clean": "rimraf dist"
   },
   "keywords": [],
