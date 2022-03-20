@@ -89,10 +89,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       bot2.entity.onGround = false
     })
 
-    afterEach(async () => {
-      console.log(serv);
-      await serv.quit()
-    })
+    afterEach(async () => await serv.quit())
 
     function waitSpawnZone (bot, view) {
       const nbChunksExpected = (view * 2) * (view * 2)
