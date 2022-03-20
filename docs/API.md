@@ -320,9 +320,7 @@ serv.commands.add({
     usage: 'hello <pseudo>',
     parse(str)  {
       const args = str.split(' ');
-      if(args.length != 1){
-        return false;
-      }
+      if(args.length != 1) return false;
       
       return {pseudo:args[0]};
     },
