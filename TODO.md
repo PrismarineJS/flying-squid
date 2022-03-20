@@ -34,6 +34,7 @@ This is a list that will keep the developers and the community organized!
  - [ ] Block physics (water and lava)
  - [ ] More advanced PvP (armor, weapons, damage types, potions)
  - [ ] Random ticks
+ - [ ] Remove the `// @ts-ignore`s
 
 ### Ridiculous aspirations (not going to get done anytime soon)
  - [ ] Vanilla-like world generation (overworld, nether, and end)

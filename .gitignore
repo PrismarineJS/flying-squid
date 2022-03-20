@@ -10,3 +10,5 @@ world/*
 !world/.gitkeep
 package-lock.json
 /README.md
+.parcel-cache
+*.log

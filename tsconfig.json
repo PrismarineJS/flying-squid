@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "exclude": ["examples/*"],
+  "include": ["src/*", "src/**/*"]
+}

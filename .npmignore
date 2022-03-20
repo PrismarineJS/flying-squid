@@ -7,3 +7,6 @@ src/plugins/*
 distTest
 world/*
 !world/.gitkeep
+.eslintrc.json
+.parcel-cache
+*.log

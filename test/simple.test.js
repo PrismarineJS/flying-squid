@@ -3,6 +3,8 @@
 const net = require('net')
 const squid = require('flying-squid')
 
+console.log(squid);
+
 const settings = require('../config/default-settings')
 
 const { firstVersion, lastVersion } = require('./common/parallel')

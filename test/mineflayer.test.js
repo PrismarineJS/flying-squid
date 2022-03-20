@@ -35,7 +35,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         const l = () => {
           if (bot.entity.onGround) {
             bot.removeListener('move', l)
-            resolve()
+            resolve(undefined)
           }
         }
         bot.on('move', l)
@@ -90,6 +90,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     afterEach(async () => {
+      console.log(serv);
       await serv.quit()
     })
 
@@ -101,7 +102,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           c++
           if (c === nbChunksExpected) {
             bot.removeListener('chunkColumnLoad', listener)
-            resolve()
+            resolve(undefined)
           }
         }
         bot.on('chunkColumnLoad', listener)
@@ -134,7 +135,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
 
         const invPromise = new Promise((resolve) => {
           bot.inventory.on('updateSlot', (slot, oldItem, newItem) => {
-            if (slot === 36 && newItem && newItem.type === 1) { resolve() }
+            if (slot === 36 && newItem && newItem.type === 1) resolve(undefined)
           })
         })
         bot.creative.setInventorySlot(36, new Item(1, 1))
@@ -210,7 +211,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           const listener = (entity) => {
             if (entity.name === entityName) {
               bot.removeListener('entitySpawn', listener)
-              resolve()
+              resolve(undefined)
             }
           }
           bot.on('entitySpawn', listener)
@@ -293,7 +294,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
               return reject(err)
             }
             expect(data[0]).toEqual('bot')
-            return resolve()
+            return resolve(undefined)
           })
         })
       })
@@ -303,7 +304,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           const listener = (msg) => {
             if (msg.extra[0].text === message) {
               bot.removeListener('message', listener)
-              resolve()
+              resolve(undefined)
             }
           }
           bot.on('message', listener)

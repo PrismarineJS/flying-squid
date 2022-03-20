@@ -1,4 +1,5 @@
-const mcServer = require('..') // for commonjs
+// @ts-nocheck
+import * as mcServer from 'flying-squid'
 
 mcServer.createMCServer({
   motd: 'A Minecraft Server \nRunning flying-squid',

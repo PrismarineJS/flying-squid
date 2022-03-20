@@ -2,13 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master, "1.13" ]
+    branches: [master, '1.13']
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -18,13 +17,18 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - env:
-        CIRCLE_NODE_INDEX: ${{ matrix.mcVersionIndex }}
-        CIRCLE_NODE_TOTAL: 9
-      run: npm test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - env:
+          CIRCLE_NODE_INDEX: ${{ matrix.mcVersionIndex }}
+          CIRCLE_NODE_TOTAL: 9
+        run: npm test
