@@ -1,7 +1,7 @@
 const UserError = require('flying-squid').UserError
 const colors = require('colors')
 
-export const player = function (player, serv, { version }) {
+export const player = function (player, serv) {
   player.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str, { player: player }, player.op)

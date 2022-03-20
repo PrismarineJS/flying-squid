@@ -1,6 +1,6 @@
 const Vec3 = require('vec3').Vec3
 
-export const player = function (player, serv, { version }) {
+export const player = function (player, serv) {
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }
