@@ -71,7 +71,7 @@
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.11.0",
     "expect": "^27.5.1",
-    "flying-squid": "link:",
+    "flying-squid": ".",
     "longjohn": "^0.2.12",
     "minecraft-wrap": "^1.4.0",
     "mineflayer": "^4.1.0",
