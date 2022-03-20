@@ -2,7 +2,7 @@ const UserError = require('flying-squid').UserError
 
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
 
-export const player = function (player, serv) {
+export const player = (player) => {
   player.xp = 0
   player.displayXp = 0
   player.xpLevel = 0
