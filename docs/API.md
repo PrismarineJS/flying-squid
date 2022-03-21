@@ -372,27 +372,27 @@ Fires when one tick has passed (default is 50ms). count is the total world ticks
 
 #### serv.createLog()
 
-creates the log file
+Creates the log file
 
 #### serv.log(message)
 
-logs a `message`
+Logs a `message`
 
 #### serv.info(message)
 
-logs a `message` as info
+Logs a `message` as info
 
 #### serv.warn(message)
 
-logs a `message` as warning
+Logs a `message` as warning
 
 #### serv.err(message)
 
-logs a `message` as error
+Logs a `message` as error
 
 #### serv.broadcast(message[,color])
 
-broadcasts `message` to all the players with the optional `color`.
+Broadcasts `message` to all the players with the optional `color`.
 
 #### serv.getPlayer(username)
 
