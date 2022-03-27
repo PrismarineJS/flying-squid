@@ -25,6 +25,11 @@ module.exports.server = (serv) => {
         let y = serv.posFromString(args[1], ctx.player.position.y)
         let z = serv.posFromString(args[2], ctx.player.position.z)
 
+        if (Math.abs(x) > 29999999 || Math.abs(y) > 4096 || Math.abs(z) > 29999999) {
+          // Vanilla Minecraft limits
+          throw new UserError('Invalid position')
+        }
+
         // Vanilla behavior: teleport to center of block if decimal not specified
 
         if (args[0].indexOf('.') === -1) x += 0.5
