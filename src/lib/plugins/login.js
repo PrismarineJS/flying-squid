@@ -73,7 +73,12 @@ module.exports.player = async function (player, serv, settings) {
       } else {
         theItem = mcData.blocksByName[itemName]
       }
-      const newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
+
+      let newItem
+      if (mcData.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
+      else if (item.tag) newItem = new Item(theItem.id, item.Count.value, item.tag)
+      else newItem = new Item(theItem.id, item.Count.value)
+
       const slot = convertInventorySlotId.fromNBT(item.Slot.value)
       player.inventory.updateSlot(slot, newItem)
     })
