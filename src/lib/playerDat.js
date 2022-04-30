@@ -35,7 +35,7 @@ async function read (uuid, spawnPoint, worldFolder) {
         onGround: Boolean(playerData.OnGround.value)
       },
       inventory: playerData.Inventory.value.value.map(nbtItem => {
-        if (nbtItem.tag && nbtItem.tag === undefined) nbtItem.tag.name = ''
+        if (!nbtItem.tag?.name) nbtItem.tag.name = ''
         return nbtItem
       })
     }
