@@ -257,7 +257,7 @@ module.exports.player = function (player, serv, options) {
       entity.equipment.forEach((equipment, slot) => {
         if (equipment !== undefined) {
           equipments.push({
-            slot: slot,
+            slot,
             item: Item.toNotch(equipment)
           })
         }
@@ -265,7 +265,7 @@ module.exports.player = function (player, serv, options) {
       if (equipments.length > 0) {
         player._client.write('entity_equipment', {
           entityId: entity.id,
-          equipments: equipments
+          equipments
         })
       }
     } else {
@@ -273,7 +273,7 @@ module.exports.player = function (player, serv, options) {
         if (equipment !== undefined) {
           player._client.write('entity_equipment', {
             entityId: entity.id,
-            slot: slot,
+            slot,
             item: Item.toNotch(equipment)
           })
         }
@@ -397,7 +397,7 @@ module.exports.entity = function (entity, serv) {
       const p = {
         entityId: attachedEntity.id,
         vehicleId: entity.id,
-        leash: leash
+        leash
       }
       if (entity.type === 'player') { entity._client.write('attach_entity', p) }
       entity._writeOthersNearby('attach_entity', p)

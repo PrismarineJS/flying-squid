@@ -73,13 +73,13 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       const port = serv._server.socketServer.address().port
       bot = mineflayer.createBot({
         host: 'localhost',
-        port: port,
+        port,
         username: 'bot',
         version: version.minecraftVersion
       })
       bot2 = mineflayer.createBot({
         host: 'localhost',
-        port: port,
+        port,
         username: 'bot2',
         version: version.minecraftVersion
       })

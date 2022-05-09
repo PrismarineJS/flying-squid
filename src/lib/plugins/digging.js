@@ -100,7 +100,7 @@ module.exports.player = function (player, serv, { version }) {
           lastDestroyState = state
           player._writeOthersNearby('block_break_animation', {
             entityId: currentAnimationId,
-            location: location,
+            location,
             destroyStage: state
           })
         })
@@ -108,7 +108,7 @@ module.exports.player = function (player, serv, { version }) {
     }
     if (serv.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
-        location: location,
+        location,
         block: currentlyDugBlock.stateId,
         status: 0,
         successful: true
@@ -120,12 +120,12 @@ module.exports.player = function (player, serv, { version }) {
     clearInterval(animationInterval)
     player._writeOthersNearby('block_break_animation', {
       entityId: currentAnimationId,
-      location: location,
+      location,
       destroyStage: -1
     })
     if (serv.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
-        location: location,
+        location,
         block: currentlyDugBlock.stateId,
         status: 1,
         successful: true
@@ -187,7 +187,7 @@ module.exports.player = function (player, serv, { version }) {
         }
         if (serv.supportFeature('acknowledgePlayerDigging')) {
           player._client.write('acknowledge_player_digging', {
-            location: location,
+            location,
             block: 0,
             status: 2,
             successful: true
@@ -196,12 +196,12 @@ module.exports.player = function (player, serv, { version }) {
       }, cancelDig)
     } else {
       player._client.write('block_change', {
-        location: location,
+        location,
         type: currentlyDugBlock.type << 4
       })
       if (serv.supportFeature('acknowledgePlayerDigging')) {
         player._client.write('acknowledge_player_digging', {
-          location: location,
+          location,
           block: currentlyDugBlock.stateId,
           status: 2,
           successful: false
