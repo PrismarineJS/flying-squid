@@ -2,7 +2,7 @@
 
 const squid = require('flying-squid')
 const { firstVersion, lastVersion } = require('./common/parallel')
-const expect = require('expect')
+const expect = require('expect').default
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) return
