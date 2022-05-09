@@ -4,7 +4,7 @@ const colors = require('colors')
 module.exports.player = function (player, serv, { version }) {
   player.handleCommand = async (str) => {
     try {
-      const res = await serv.commands.use(str, { player: player }, player.op)
+      const res = await serv.commands.use(str, { player }, player.op)
       if (res) player.chat(serv.color.red + res)
     } catch (err) {
       if (err.userError) player.chat(serv.color.red + 'Error: ' + err.message)
@@ -100,7 +100,7 @@ module.exports.server = function (serv, { version }) {
         params.pop()
       }
       const search = params.join(' ')
-      return { search: search, page: (page && page - 1) || 0 }
+      return { search, page: (page && page - 1) || 0 }
     },
     action ({ search, page }, ctx) {
       if (page < 0) return 'Page # must be >= 1'
@@ -244,7 +244,7 @@ module.exports.server = function (serv, { version }) {
         })
       } else {
         scores.max.push({
-          score: score,
+          score,
           val: opt[o]
         })
       }
@@ -333,7 +333,7 @@ module.exports.server = function (serv, { version }) {
 
     const data = {
       pos: pos || '',
-      world: world,
+      world,
       scores: [],
       minScores: []
     }

@@ -11,7 +11,7 @@ module.exports.server = function (serv) {
       const condition = args[0]
       if (['clear', 'rain'].indexOf(condition) === -1) { return false }
 
-      return { condition: condition }
+      return { condition }
     },
     action ({ condition }) {
       if (condition === 'rain') {

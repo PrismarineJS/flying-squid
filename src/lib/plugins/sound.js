@@ -5,9 +5,9 @@ module.exports.server = function (serv) {
     const players = (typeof whitelist !== 'undefined'
       ? (typeof whitelist instanceof Array ? whitelist : [whitelist])
       : serv.getNearby({
-        world: world,
-        position: position,
-        radius: radius
+        world,
+        position,
+        radius
       }))
     players.filter(player => blacklist.indexOf(player) === -1)
       .forEach(player => {
@@ -20,7 +20,7 @@ module.exports.server = function (serv) {
           x: pos.x,
           y: pos.y,
           z: pos.z,
-          volume: volume,
+          volume,
           pitch: Math.round(pitch * 63)
         })
       })

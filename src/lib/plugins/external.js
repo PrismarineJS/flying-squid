@@ -7,7 +7,7 @@ module.exports.server = function (serv, settings) {
     if (!name || !plugin) serv.err('Failed to load plugin: Name and object is required')
     serv.plugins[name] = {
       id: serv.pluginCount,
-      name: name,
+      name,
       player: plugin.player,
       entity: plugin.entity,
       server: plugin.server,

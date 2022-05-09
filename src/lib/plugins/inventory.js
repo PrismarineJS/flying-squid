@@ -199,7 +199,7 @@ module.exports.player = function (player, serv, { version }) {
 
     player._client.write('set_slot', {
       windowId: 0,
-      slot: slot,
+      slot,
       item: Item.toNotch(newItem)
     })
   })

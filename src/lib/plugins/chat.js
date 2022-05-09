@@ -62,12 +62,12 @@ module.exports.server = function (serv) {
     function createJSON () {
       if (!text.trim()) return
       messageList.push({
-        text: text,
-        color: color,
-        bold: bold,
-        italic: italic,
-        underlined: underlined,
-        strikethrough: strikethrough,
+        text,
+        color,
+        bold,
+        italic,
+        underlined,
+        strikethrough,
         obfuscated: random
       })
       text = ''
@@ -126,7 +126,7 @@ module.exports.player = function (player, serv) {
       serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
     } else {
       player.behavior('chat', {
-        message: message,
+        message,
         prefix: '<' + player.username + '> ',
         text: message,
         whitelist: serv.players,
@@ -136,8 +136,8 @@ module.exports.player = function (player, serv) {
         if (!obj.extra) obj.extra = []
         obj.extra.push(serv.parseClassic(text))
         serv.broadcast(obj, {
-          whitelist: whitelist,
-          blacklist: blacklist
+          whitelist,
+          blacklist
         })
       })
     }
