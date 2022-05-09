@@ -97,7 +97,6 @@ To install a world generation, all you have to do is npm install it and then cha
 Currently used between our test server (rom1504.fr) and our gitter room (through the official gitter irc bridge)
 * [flying-squid-schematic](https://github.com/rom1504/flying-squid-schematic) Flying-squid plugin providing /listSchemas and /loadSchema commands. 
 You can add schema through a simple http api and then add them in your world by just calling /loadSchema in game.
-Http api available in the test instance at [flying-squid.rom1504.fr](http://flying-squid.rom1504.fr)
 * [flying-squid-essentials](https://github.com/DeudlyYT/Flying-Squid-Essentials) Plugin that in a future will be like Essentials of bukkit/spigot.
 All the basic commands that a server should have
 * [squidcord](https://github.com/dada513/SquidCord) a bridge between a discord channel and the minecraft server.
