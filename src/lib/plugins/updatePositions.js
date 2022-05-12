@@ -12,9 +12,9 @@ module.exports.player = function (player) {
   }
   function sendLook (yaw, pitch, onGround) {
     player.behavior('look', {
-      yaw: yaw,
-      pitch: pitch,
-      onGround: onGround
+      yaw,
+      pitch,
+      onGround
     }, () => {
       const convYaw = conv(yaw)
       const convPitch = conv(pitch)
@@ -23,7 +23,7 @@ module.exports.player = function (player) {
         entityId: player.id,
         yaw: convYaw,
         pitch: convPitch,
-        onGround: onGround
+        onGround
       })
       player.yaw = convYaw
       player.pitch = convPitch
@@ -86,9 +86,9 @@ module.exports.entity = function (entity, serv) {
     if (typeof position === 'undefined') throw new Error('undef')
     if (entity.position.equals(position) && entity.onGround === onGround) return Promise.resolve()
     return entity.behavior('move', {
-      position: position,
-      onGround: onGround,
-      teleport: teleport
+      position,
+      onGround,
+      teleport
     }, ({ position, onGround }) => {
       // known position is very important because the diff (/delta) send to players is floored hence is not precise enough
       // storing the known position allows to compensate next time a diff is sent
@@ -120,7 +120,7 @@ module.exports.entity = function (entity, serv) {
           z: entityPosition.z,
           yaw: entity.yaw,
           pitch: entity.pitch,
-          onGround: onGround
+          onGround
         })
         entity.knownPosition = position
       } else if (diff.distanceTo(new Vec3(0, 0, 0)) !== 0) {
@@ -137,7 +137,7 @@ module.exports.entity = function (entity, serv) {
           dX: delta.x,
           dY: delta.y,
           dZ: delta.z,
-          onGround: onGround
+          onGround
         })
       }
 

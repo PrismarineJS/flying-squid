@@ -169,8 +169,8 @@ module.exports.player = function (player, serv, settings) {
       chunk: column
     }, ({ x, z, chunk }) => {
       player._client.write('map_chunk', {
-        x: x,
-        z: z,
+        x,
+        z,
         groundUp: true,
         bitMap: chunk.getMask(),
         biomes: chunk.dumpBiomes(),

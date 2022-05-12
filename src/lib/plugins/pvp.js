@@ -8,7 +8,7 @@ module.exports.player = function (player, serv) {
     if (!attackedEntity || (attackedEntity.gameMode !== 0 && attackedEntity.type === 'player')) return
 
     player.behavior('attack', {
-      attackedEntity: attackedEntity,
+      attackedEntity,
       velocity: attackedEntity.position.minus(player.position).plus(new Vec3(0, 0.5, 0)).scaled(5)
     }, (o) => o.attackedEntity.takeDamage(o))
   }
