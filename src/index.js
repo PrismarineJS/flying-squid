@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'dev') {
 const supportFeature = require('./lib/supportFeature')
 
 module.exports = {
-  createMCServer: createMCServer,
+  createMCServer,
   Behavior: require('./lib/behavior'),
   Command: require('./lib/command'),
   generations: require('./lib/generations'),

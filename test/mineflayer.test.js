@@ -4,7 +4,7 @@ const squid = require('flying-squid')
 const settings = require('../config/default-settings.json')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
-const expect = require('expect')
+const expect = require('expect').default
 
 function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
@@ -73,13 +73,13 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       const port = serv._server.socketServer.address().port
       bot = mineflayer.createBot({
         host: 'localhost',
-        port: port,
+        port,
         username: 'bot',
         version: version.minecraftVersion
       })
       bot2 = mineflayer.createBot({
         host: 'localhost',
-        port: port,
+        port,
         username: 'bot2',
         version: version.minecraftVersion
       })

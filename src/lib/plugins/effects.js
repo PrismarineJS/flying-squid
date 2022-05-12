@@ -11,9 +11,9 @@ module.exports.entity = function (entity, serv) {
     const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
     const data = {
       entityId: entity.id,
-      effectId: effectId,
-      amplifier: amplifier,
-      duration: duration,
+      effectId,
+      amplifier,
+      duration,
       hideParticles: !particles
     }
     serv._writeArray('entity_effect', data, sendTo)
@@ -24,7 +24,7 @@ module.exports.entity = function (entity, serv) {
     const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
     serv._writeArray('remove_entity_effect', {
       entityId: entity.id,
-      effectId: effectId
+      effectId
     }, sendTo)
   }
 

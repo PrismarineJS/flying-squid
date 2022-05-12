@@ -5,14 +5,14 @@ module.exports.server = function (serv) {
     const players = (typeof whitelist !== 'undefined'
       ? (whitelist instanceof Array ? whitelist : [whitelist])
       : serv.getNearby({
-        world: world,
-        position: position,
-        radius: radius
+        world,
+        position,
+        radius
       }))
 
     serv._writeArray('world_particles', {
       particleId: particle,
-      longDistance: longDistance,
+      longDistance,
       x: position.x,
       y: position.y,
       z: position.z,
@@ -46,7 +46,7 @@ module.exports.server = function (serv) {
         return
       }
       ctx.player.chat('Emitting "' + particle + '" (count: ' + amount + ', size: ' + size.toString() + ')')
-      serv.emitParticle(particle, ctx.player.world, ctx.player.position, { count: amount, size: size })
+      serv.emitParticle(particle, ctx.player.world, ctx.player.position, { count: amount, size })
     }
   })
 }

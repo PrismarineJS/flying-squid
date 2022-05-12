@@ -2,7 +2,7 @@
 
 const squid = require('flying-squid')
 const { firstVersion, lastVersion } = require('./common/parallel')
-const expect = require('expect')
+const expect = require('expect').default
 
 squid.supportedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) return
@@ -118,7 +118,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           it('detect potential first lines from bottom left', async () => {
             const potentialLines = await findPotentialLines(world, bottom[0], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
-              direction: direction,
+              direction,
               line: bottom
             })
           })
@@ -126,7 +126,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           it('detect potential first lines from bottom right', async () => {
             const potentialLines = await findPotentialLines(world, bottom[bottom.length - 1], new Vec3(0, 1, 0))
             expect(potentialLines).toContainEqual({
-              direction: direction,
+              direction,
               line: bottom
             })
           })
@@ -134,7 +134,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           it('detect potential first lines from top left', async () => {
             const potentialLines = await findPotentialLines(world, top[0], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
-              direction: direction,
+              direction,
               line: top
             })
           })
@@ -142,7 +142,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
           it('detect potential first lines from top right', async () => {
             const potentialLines = await findPotentialLines(world, top[top.length - 1], new Vec3(0, -1, 0))
             expect(potentialLines).toContainEqual({
-              direction: direction,
+              direction,
               line: top
             })
           })
@@ -167,7 +167,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         describe('find borders', () => {
           it('find borders from bottom', async () => {
             const border = await findBorder(world, {
-              direction: direction,
+              direction,
               line: bottom
             }, new Vec3(0, 1, 0))
             expect(border).toEqual(expectedBorder)
@@ -175,7 +175,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
 
           it('find borders from top', async () => {
             const border = await findBorder(world, {
-              direction: direction,
+              direction,
               line: top
             }, new Vec3(0, -1, 0))
             expect(border).toEqual(expectedBorder)

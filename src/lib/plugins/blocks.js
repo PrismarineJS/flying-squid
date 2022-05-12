@@ -15,7 +15,7 @@ module.exports.player = function (player, serv) {
 
   player.sendBlock = (position, blockStateId) => // Call from player.setBlock unless you want "local" fake blocks
     player.behavior('sendBlock', {
-      position: position
+      position
     }, ({ position }) => {
       player._client.write('block_change', {
         location: position,
@@ -32,10 +32,10 @@ module.exports.player = function (player, serv) {
     }
 
     player.behavior('sendBlockAction', {
-      position: position,
-      blockType: blockType,
-      actionId: actionId,
-      actionParam: actionParam
+      position,
+      blockType,
+      actionId,
+      actionParam
     }, ({ position, blockType, actionId, actionParam }) => {
       player._client.write('block_action', {
         location: position,
