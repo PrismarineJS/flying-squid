@@ -508,6 +508,13 @@ Opt:
 - size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense)
 - count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)
 
+#### serv.selectorString(str, pos, world, allowUser = true, ctxEntityId)
+
+Returns an array of entities that satisfies the given command selector string `str`, execution position `pos`, execution world `world`, and the ID of the entity that initiated the execution `ctxEntityId`.
+
+Valid selector string values are names of online players and [valid target selector variables](https://minecraft.fandom.com/wiki/Target_selectors#Target_selector_variables).
+
+Setting `allowUser` to `true` (default value) enables players to be included in the returned array, disables otherwise.
 
 ### Low level methods
 
