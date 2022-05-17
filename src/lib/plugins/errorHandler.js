@@ -17,7 +17,7 @@ module.exports.player = async function (player, serv) {
     serv.err('Report this error here: https://github.com/PrismarineJS/flying-squid/issues')
     serv.err('-------------------------------')
     serv.emit('crash')
-    serv.quit('Server closed due to an error.')
+    serv.quit(`Internal server error. ${err}`)
     process.exit()
   }
 
