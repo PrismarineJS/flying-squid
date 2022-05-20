@@ -55,7 +55,7 @@ module.exports.player = function (player, serv, { version }) {
       if (status === 0) {
         if (player.gameMode === 1) {
           creativeDigging(pos)
-        } else {
+        } else if (player.gameMode === 0) {
           startDigging(pos)
         }
       } else if (status === 1) {
