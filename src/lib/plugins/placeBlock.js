@@ -109,6 +109,7 @@ module.exports.player = function (player, serv, { version }) {
     const block = await player.world.getBlock(referencePosition)
     block.position = referencePosition
     if (await serv.interactWithBlock({ block, player })) return
+    if (player.gameMode >= 2) return
 
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (!heldItem || direction === -1 || heldItem.type === -1) return
