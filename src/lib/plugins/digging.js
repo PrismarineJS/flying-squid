@@ -55,10 +55,10 @@ module.exports.player = function (player, serv, { version }) {
       if (status === 0) {
         if (player.gameMode === 1) {
           creativeDigging(pos)
-        } else if (player.gameMode === 0) {
+        } else {
           startDigging(pos)
         }
-      } else if (status === 1) {
+      } else if (status === 1 || player.gameMode >= 2) {
         cancelDigging(pos)
       } else if (status === 2) {
         completeDigging(pos)
