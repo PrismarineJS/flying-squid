@@ -99,7 +99,7 @@ module.exports.server = function (serv, settings) {
         if (!player.op) {
           player.op = true
 
-          player.chat(`§7§o[Server: Opped ${player.username}]`)
+          player.chat(`§7§o[${player.username ?? 'Server'}: Opped ${player.username}]`)
           return `Opped ${player.username}`
         } else {
           return `${player.username} is opped already`
