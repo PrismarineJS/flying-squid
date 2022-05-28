@@ -13,15 +13,20 @@ module.exports.server = function (serv) {
           const players = serv.getNearby({
             world: entity.world,
             position: entity.position,
-            radius: 1.5 // Seems good for now
+            radius: 1.75 // Seems good for now
           })
           if (players.length) {
             players[0].collect(entity)
           }
         }
         if (!entity.velocity || !entity.size) return
-        const posAndOnGround = await entity.calculatePhysics(delta)
-        if (entity.type === 'mob') entity.sendPosition(posAndOnGround.position, posAndOnGround.onGround)
+        const { position, onGround } = await entity.calculatePhysics(delta)
+        if (entity.type === 'mob' ||
+          (entity.type === 'object' &&
+            entity.velocity.x !== 0 ||
+            entity.velocity.y !== 0 ||
+            entity.velocity.z !== 0
+          )) entity.sendPosition(position, onGround)
       })
     )
       .then(() => { ticking = false })
