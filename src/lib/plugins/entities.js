@@ -23,9 +23,11 @@ module.exports.server = function (serv) {
         const { position, onGround } = await entity.calculatePhysics(delta)
         if (entity.type === 'mob' ||
           (entity.type === 'object' &&
-            entity.velocity.x !== 0 ||
-            entity.velocity.y !== 0 ||
-            entity.velocity.z !== 0
+            (
+              entity.velocity.x !== 0 ||
+              entity.velocity.y !== 0 ||
+              entity.velocity.z !== 0
+            )
           )) entity.sendPosition(position, onGround)
       })
     )
