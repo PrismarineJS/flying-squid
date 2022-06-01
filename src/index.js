@@ -1,6 +1,7 @@
 if (typeof process !== 'undefined' && parseInt(process.versions.node.split('.')[0]) < 14) {
-  console.error('Your node version is currently', process.versions.node)
-  console.error('Please update it to a version >= 14.x.x from https://nodejs.org/')
+  console.error('[\x1b[31mCRITICAL\x1b[0m] Node.JS 14 or newer is required')
+  console.error('[\x1b[31mCRITICAL\x1b[0m] You can download the new version from https://nodejs.org/')
+  console.error(`[\x1b[31mCRITICAL\x1b[0m] Your current Node.JS version is: ${process.versions.node}`)
   process.exit(1)
 }
 
