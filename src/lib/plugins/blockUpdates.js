@@ -148,7 +148,7 @@ module.exports.server = (serv, { version }) => {
       while (updatesCount < serv.MAX_UPDATES_PER_TICK && updateQueue.length > 0) {
         if (updateQueue[0].tick > curTick) break // We are done for this tick
 
-        const { pos, fromTick, tick, forceNotify } = updateQueue.shift()
+        const { pos, fromTick, tick, data, forceNotify } = updateQueue.shift()
         const hash = pos + ',' + fromTick + ',' + tick + ',' + forceNotify
         updateSet.delete(hash)
 
