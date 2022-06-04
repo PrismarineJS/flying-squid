@@ -1,4 +1,4 @@
-const mcServer = require('flying-squid')
+const mcServer = require('../index')
 
 mcServer.createMCServer({
   motd: 'A Minecraft Server \nRunning flying-squid',
@@ -27,5 +27,5 @@ mcServer.createMCServer({
   },
   'everybody-op': true,
   'max-entities': 100,
-  version: '1.16.1'
+  version: '1.16.5'
 })

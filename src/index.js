@@ -47,7 +47,7 @@ class MCServer extends EventEmitter {
     if (!supportedVersions.some(v => v.includes(version.majorVersion))) {
       throw new Error(`Version ${version.minecraftVersion} is not supported.`)
     }
-    this.supportFeature = feature => supportFeature(feature, version.majorVersion)
+    this.supportFeature = feature => supportFeature(feature, version.minecraftVersion)
 
     const plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
     this.commands = new Command({})

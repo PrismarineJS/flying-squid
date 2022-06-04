@@ -2,131 +2,136 @@
   {
     "name": "unloadChunkByEmptyChunk",
     "description": "Chunk unloading is done by sending an empty chunk",
-    "versions": ["1.8"]
+    "versions": ["1.8.x"]
   },
   {
     "name": "unloadChunkDirect",
     "description": "Chunk unloading is done by sending directly an unload chunk packet",
-    "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.9.x", "1.10.x", "1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "fixedPointPosition",
     "description": "Entity positions are represented with fixed point numbers",
-    "versions": ["1.8"]
+    "versions": ["1.8.x"]
   },
   {
     "name": "doublePosition",
     "description": "Entity positions are represented with double",
-    "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.9.x", "1.10.x", "1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "fixedPointDelta",
     "description": "Delta of position are represented with fixed point numbers",
-    "versions": ["1.8"]
+    "versions": ["1.8.x"]
   },
   {
     "name": "fixedPointDelta128",
     "description": "Delta of position are represented with fixed point numbers times 128",
-    "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.9.x", "1.10.x", "1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "entityCamelCase",
     "description": "entity names are in camel case",
-    "versions": ["1.8", "1.9", "1.10"]
+    "versions": ["1.8.x", "1.9.x", "1.10.x"]
   },
   {
     "name": "entitySnakeCase",
     "description": "entity name are in snake case",
-    "versions": ["1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "respawnIsPayload",
     "description": "respawn field is payload",
-    "versions": ["1.8"]
+    "versions": ["1.8.x"]
   },
   {
     "name": "respawnIsActionId",
     "description": "respawn field is action id",
-    "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.9.x", "1.10.x", "1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "attachStackEntity",
     "description": "attach is used to stack entities",
-    "versions": ["1.8"]
+    "versions": ["1.8.x"]
   },
   {
     "name": "setPassengerStackEntity",
     "description": "set passengers is used to stack entities",
-    "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.9.x", "1.10.x", "1.11.x", "1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "theFlattening",
     "description": "many items got merged, separated or renamed",
-    "versions": ["1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "blockPlaceHasIntCursor",
     "description": "block_place packet has int cursor",
-    "versions": ["1.8", "1.9", "1.10"]
+    "versions": ["1.8.x", "1.9.x", "1.10.x"]
   },
   {
     "name": "updateViewPosition",
     "description": "the client's chunk position must be updated to render chunks correctly",
-    "versions": ["1.14", "1.15", "1.16"]
+    "versions": ["1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "lightSentSeparately",
     "description": "chunk light data is sent in a separate packet",
-    "versions": ["1.14", "1.15", "1.16"]
+    "versions": ["1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "difficultySentSeparately",
     "description": "game difficulty is sent separately from the login packet",
-    "versions": ["1.14", "1.15", "1.16"]
+    "versions": ["1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "acknowledgePlayerDigging",
     "description": "player digging packets should be responded to",
-    "versions": ["1.14", "1.15", "1.16"]
+    "versions": ["1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "multiTypeSigns",
     "description": "there are 6 types of signs based on the different trees",
-    "versions": ["1.14", "1.15", "1.16"]
+    "versions": ["1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "entityMetadataSentSeparately",
     "description": "entity metadata is sent separately from the spawn packets",
-    "versions": ["1.15", "1.16"]
+    "versions": ["1.15.x", "1.16.x"]
   },
   {
     "name": "attributeSnakeCase",
     "description": "entity attributes are in snake case",
-    "versions": ["1.16"]
+    "versions": ["1.16.x"]
   },
   {
     "name": "allEntityEquipmentInOne",
     "description": "entity equipment packet contains all equipment slots instead of just one",
-    "versions": ["1.16"]
+    "versions": ["1.16.x"]
   },
   {
     "name": "dimensionIsAString",
     "description": "dimension identifier is a string instead of an id",
-    "versions": ["1.16"]
+    "versions": ["1.16.x"]
+  },
+  {
+    "name": "multiBlockChangeHasTrustEdges",
+    "description": "multi block changes has trust edges field",
+    "versions": ["1.16.2", "1.16.3", "1.16.4", "1.16.5"]
   },
   {
     "name": "entityMCPrefixed",
     "description": "entity prefixed with minecraft: on this versions",
-    "versions": ["1.12", "1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.12.x", "1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   },
   {
     "name": "nbtOnMetadata",
-    "description": "in never versions its nbt but in 1.8 its on metadata",
-    "versions": ["1.8"]
+    "description": "in never versions its nbt but in 1.8.x its on metadata",
+    "versions": ["1.8.x"]
   },
   {
     "name": "theShulkerBoxes",
     "description": "added shulker boxes to the game",
-    "versions": ["1.13", "1.14", "1.15", "1.16"]
+    "versions": ["1.13.x", "1.14.x", "1.15.x", "1.16.x"]
   }
 ]
