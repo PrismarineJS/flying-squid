@@ -95,7 +95,7 @@ module.exports.player = async function (player, serv, settings) {
       gameMode: player.gameMode,
       previousGameMode: player.prevGameMode,
       worldNames: Object.values(serv.dimensionNames),
-      dimensionCodec: mcData.loginPacket.dimensionCodec,
+      dimensionCodec: mcData.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
       dimension: serv.supportFeature('dimensionIsAString') ? mcData.loginPacket.dimension : 0,
       hashedSeed: serv.hashedSeed,
