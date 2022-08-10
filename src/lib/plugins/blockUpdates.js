@@ -27,7 +27,7 @@ class ChunkUpdates {
 
   async getMultiBlockPackets (world) {
     const packets = []
-    console.log(this.chunks.values())
+
     for (const { chunkX, chunkZ, chunkY, updates } of this.chunks.values()) {
       const records = []
       for (const p of updates.values()) {
