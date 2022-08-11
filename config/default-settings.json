@@ -17,11 +17,10 @@
   "plugins": {
   
   },
-  "modpe": false,
   "view-distance": 10,
   "player-list-text": {
-    "header":{"text": "Flying Squid"},
-    "footer":{"text": "User-created server"}
+    "header": {"text": "Flying Squid"},
+    "footer": {"text": "User-created server"}
   },
   "everybody-op": true,
   "max-entities": 100,
