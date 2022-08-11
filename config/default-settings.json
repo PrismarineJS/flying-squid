@@ -4,8 +4,8 @@
   "max-players": 25,
   "online-mode": true,
   "logging": true,
-  "gameMode": 1,
-  "difficulty": 1,
+  "gameMode": 0,
+  "difficulty": 2,
   "worldFolder": "world",
   "generation": {
     "name": "diamond_square",
