@@ -7,7 +7,7 @@ module.exports.server = function (serv, settings) {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
         time: +moment(),
-        reason: reason || 'Your account is banned!'
+        reason: reason || 'You has been banned from this server. Bye!'
       }
       return true
     } else return false
@@ -16,7 +16,7 @@ module.exports.server = function (serv, settings) {
     if (!serv.bannedIPs[IP]) {
       serv.bannedIPs[IP] = {
         time: +moment(),
-        reason: reason || 'Your IP is banned!'
+        reason: reason || 'You has been IP banned from this server. Bye!'
       }
       Object.keys(serv.players)
         .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
@@ -33,9 +33,9 @@ module.exports.server = function (serv, settings) {
     return await new Promise((resolve, reject) => {
       needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
         .then((response) => {
-          if (!response.body) throw new Error('username not found')
+          if (!response.body) throw new Error('Invalid player!')
           const idstr = response.body.id
-          if (typeof idstr !== 'string') throw new Error('username not found')
+          if (typeof idstr !== 'string') throw new Error('Invalid player!')
           resolve(uuidInParts(idstr))
         })
         .catch(err => { throw err })
@@ -102,7 +102,7 @@ module.exports.server = function (serv, settings) {
           player.chat(`§7§o[${player.username ?? 'Server'}: Opped ${player.username}]`)
           return `Opped ${player.username}`
         } else {
-          return `${player.username} is opped already`
+          return `${player.username} is already opped`
         }
       }
     }
@@ -132,7 +132,7 @@ module.exports.server = function (serv, settings) {
         if (player.op) {
           player.op = false
 
-          player.chat(`§7§o[Server: Deopped ${params[0]}]`)
+          player.chat(`§7§o[${player.username ?? 'Server'}: Deopped ${params[0]}]`)
           return `Deopped ${params[0]}`
         } else {
           return `${params[0]} isn't opped`
