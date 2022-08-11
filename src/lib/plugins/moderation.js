@@ -119,7 +119,9 @@ module.exports.server = function (serv, settings) {
     },
     action (params) {
       params = params.split(' ')
-      const player = serv.getPlayer(params[0])
+      const [inputUsername] = params.split(' ')
+      // get player, by non-case-sensitive username
+      const player = serv.players.find(player => player.username.toLowerCase() === inputUsername.toLowerCase())
       if (player === undefined || player === null) {
         const arr = serv.selectorString(params)
         if (arr.length === 0) throw new UserError('Could not find player')
