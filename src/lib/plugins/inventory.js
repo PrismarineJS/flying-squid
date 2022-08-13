@@ -208,7 +208,7 @@ module.exports.player = function (player, serv, { version }) {
     // Add it to a stack already in the player's inventory if possible
     for (let slot = 0; slot < player.inventory.slots.length; slot++) {
       const item = player.inventory.slots[slot]
-      if (item && item.type === collectEntity.itemId) {
+      if (item && (item.type === collectEntity.itemId) && (item.count < item.stackSize)) {
         item.count += 1
         player.inventory.updateSlot(slot, item)
         collectEntity._writeOthersNearby('collect', {
