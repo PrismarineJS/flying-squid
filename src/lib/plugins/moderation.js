@@ -134,7 +134,7 @@ module.exports.server = function (serv, settings) {
         if (player.op) {
           player.op = false
 
-          player.chat(`§7§o[${player.username ?? 'Server'}: Deopped ${params[0]}]`)
+          player.chat(`§8You has been deopped`)
           return `Deopped ${params[0]}`
         } else {
           return `${params[0]} isn't opped`
