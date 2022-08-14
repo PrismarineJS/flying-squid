@@ -4,7 +4,7 @@
   "max-players": 25,
   "online-mode": true,
   "logging": true,
-  "gameMode": 0,
+  "gameMode": 1,
   "difficulty": 2,
   "worldFolder": "world",
   "generation": {
