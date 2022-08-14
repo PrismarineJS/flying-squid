@@ -7,7 +7,7 @@ module.exports.server = function (serv, settings) {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
         time: +moment(),
-        reason: reason || 'You has been banned from this server. Bye!'
+        reason: reason || 'You has been banned from this server'
       }
       return true
     } else return false
@@ -16,7 +16,7 @@ module.exports.server = function (serv, settings) {
     if (!serv.bannedIPs[IP]) {
       serv.bannedIPs[IP] = {
         time: +moment(),
-        reason: reason || 'You has been IP banned from this server. Bye!'
+        reason: reason || 'You has been IP banned from this server'
       }
       Object.keys(serv.players)
         .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
