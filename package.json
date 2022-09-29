@@ -62,7 +62,7 @@
     "url": "http://github.com/PrismarineJS/flying-squid/issues"
   },
   "devDependencies": {
-    "expect": "^28.1.0",
+    "expect": "^29.1.0",
     "flying-squid": "file:.",
     "longjohn": "^0.2.12",
     "minecraft-wrap": "^1.2.3",
