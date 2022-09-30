@@ -33,9 +33,9 @@ module.exports.server = function (serv, settings) {
     return await new Promise((resolve, reject) => {
       needle('get', 'https://api.mojang.com/users/profiles/minecraft/' + username, { json: true })
         .then((response) => {
-          if (!response.body) throw new Error('Invalid player!')
+          if (!response.body) throw new Error('Failed to find player by this username!')
           const idstr = response.body.id
-          if (typeof idstr !== 'string') throw new Error('Invalid player!')
+          if (typeof idstr !== 'string') throw new Error('Failed to find player by this username (response is not a string)!')
           resolve(uuidInParts(idstr))
         })
         .catch(err => { throw err })
