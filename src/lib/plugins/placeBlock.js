@@ -153,7 +153,9 @@ module.exports.player = function (player, serv, { version }) {
     if (player.gameMode === 0) {
       heldItem.count--
       if (heldItem.count === 0) {
-        player.inventory.slots[36 + player.heldItemSlot] = null
+        player.inventory.updateSlot(36 + player.heldItemSlot, null)
+      } else {
+        player.inventory.updateSlot(36 + player.heldItemSlot, heldItem)
       }
     }
 
