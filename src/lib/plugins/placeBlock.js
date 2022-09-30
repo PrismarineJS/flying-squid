@@ -108,14 +108,16 @@ module.exports.player = function (player, serv, { version }) {
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const block = await player.world.getBlock(referencePosition)
     block.position = referencePosition
+    block.direction = direction
     if (await serv.interactWithBlock({ block, player })) return
     if (player.gameMode >= 2) return
 
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (!heldItem || direction === -1 || heldItem.type === -1) return
 
-    const directionVector = directionToVector[direction]
+    const directionVector = block.name === 'grass' ? new Vec3(0, 0, 0) : directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
+    if (placedPosition.equals(player.position.floored())) return
     const dx = player.position.x - (placedPosition.x + 0.5)
     const dz = player.position.z - (placedPosition.z + 0.5)
     const angle = Math.atan2(dx, -dz) * 180 / Math.PI + 180 // Convert to [0,360[
@@ -153,7 +155,9 @@ module.exports.player = function (player, serv, { version }) {
     if (player.gameMode === 0) {
       heldItem.count--
       if (heldItem.count === 0) {
-        player.inventory.slots[36 + player.heldItemSlot] = null
+        player.inventory.updateSlot(36 + player.heldItemSlot, null)
+      } else {
+        player.inventory.updateSlot(36 + player.heldItemSlot, heldItem)
       }
     }
 
