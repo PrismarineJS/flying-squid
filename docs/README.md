@@ -34,7 +34,7 @@ You can also install flying-squid globally with `sudo npm install -g flying-squi
 
 ### Docker
 
-Docker allows a higer level of isolation, compatibily and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started).
+Docker allows for a higher level of isolation, compatibility and consistency. You can learn how to install Docker [here](https://www.docker.com/get-started).
 
 Quick start a simple server to test out flying-squid:
 
