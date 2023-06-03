@@ -1,4 +1,3 @@
-
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
   for (let i = 1; i <= 23; i++) { // 23 in 1.8, 27 in 1.9
