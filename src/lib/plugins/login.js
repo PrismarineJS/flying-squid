@@ -16,7 +16,8 @@ module.exports.server = function (serv, options) {
     try {
       const player = serv.initEntity('player', null, serv.overworld, new Vec3(0, 0, 0))
       player._client = client
-      player._client.socket ??= { remoteAddress: '' }
+      // make sure plugin's don't crash if there is no socket connection (for example if we use custom communication)
+      player._client.socket ??= { }
 
       player.profileProperties = player._client.profile ? player._client.profile.properties : []
 
