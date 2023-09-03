@@ -101,7 +101,7 @@ module.exports.server = function (serv, { version }) {
     base: 'give',
     info: 'Gives an item to a player.',
     usage: '/give <player> <item> [count]',
-    tab: ['player', 'number', 'number'],
+    tab: ['player', 'number or string', 'number'],
     op: true,
     parse (args, ctx) {
       args = args.split(' ')
@@ -116,26 +116,27 @@ module.exports.server = function (serv, { version }) {
       }
     },
     action ({ players, item, count }) {
-      const newItem = new Item(item, count)
+      const itemData = isNaN(+item) ? mcData.itemsByName[item.replace(/minecraft:/, '')] : mcData.items[+item]
 
-      players.forEach(player => {
-        player.inventory.slots.forEach((e, i) => {
-          if (!e) return
-          if (e.type === parseInt(newItem.type)) {
-            e.count += parseInt(count)
-            player.inventory.updateSlot(e.slot, e)
-            return true
+      if (!itemData) throw new UserError(`Unknown item '${item}'`)
+      const newItem = new Item(itemData.id, count)
+
+      for (const player of players) {
+        let slotToUpdateFound = false
+        for (const slot of player.inventory.slots) {
+          if (!slot) continue
+          if (slot.type === parseInt(newItem.type)) {
+            slot.count += parseInt(count)
+            player.inventory.updateSlot(slot.slot, slot)
+            slotToUpdateFound = true
+            break
           }
+        }
 
-          if (player.inventory.slots.length === i) {
-            player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
-          }
-        })
-
-        if (player.inventory.items().length === 0) {
+        if (!slotToUpdateFound) {
           player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
         }
-      })
+      }
     }
   })
 
