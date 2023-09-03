@@ -6,6 +6,8 @@ const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')
 
+const playerDat = require('../playerDat')
+
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
@@ -36,10 +38,15 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   generation.options.seed = seed
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
-  const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
+  // ignore
+  const generationModule = generations[generation.name] ? generations[generation.name] : global['require'](generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
   serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
+
+  // todo as i understand this is only thing that should block connection
+  serv.emit('worldsReady')
+  serv.worldsReady = true
 
   serv.dimensionNames = {
     '-1': 'minecraft:nether',
@@ -143,6 +150,10 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 }
 
 module.exports.player = function (player, serv, settings) {
+  player.save = () => {
+    playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
+  }
+
   player._unloadChunk = (chunkX, chunkZ) => {
     serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
@@ -231,7 +242,7 @@ module.exports.player = function (player, serv, settings) {
           .then((column) => player.sendChunk(chunkX, chunkZ, column))
         return group ? p.then(() => sleep(5)) : p
       }
-      , Promise.resolve())
+        , Promise.resolve())
   }
 
   function sleep (ms = 0) {
@@ -243,6 +254,12 @@ module.exports.player = function (player, serv, settings) {
       .catch((err) => setTimeout(() => { throw err }), 0)
   }
 
+  // todo expose main player instead so it doesn't get overridden when new joins
+  globalThis.onPlayerChangeRenderDistance = (newDistance = player.view, forced = false) => {
+    player.view = newDistance
+    player.sendRestMap()
+    if (forced) player._unloadAllChunks()
+  }
   player.sendRestMap = () => {
     player.sendingChunks = true
     player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)

@@ -1,20 +1,39 @@
 const fs = require('fs')
-const timeStarted = Math.floor(new Date() / 1000).toString()
+const timeStarted = Math.floor(Date.now() / 1000).toString()
 const path = require('path')
-const mkdirp = require('mkdirp')
 const moment = require('moment')
 const colors = require('colors')
 
-const readline = require('readline')
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
+const isInNode = typeof process !== 'undefined' && !process.browser && process.platform !== 'browser'
 
-rl.setPrompt('> ')
-rl.prompt(true)
+const _servers = []
+
+/** @type {typeof import("readline") | undefined} */
+let readline
+/** @type {import("readline").Interface | undefined} */
+let rl
+if (isInNode) {
+  import(/* webpackIgnore: true */ 'exit-hook').then((hook) => {
+    hook.default(() => {
+      for (const serv of _servers) {
+        serv.log('Server shutting down...')
+        serv.quit()
+      }
+    })
+  })
+  readline = require('readline')
+  rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+
+  rl.setPrompt('> ')
+  rl.prompt(true)
+}
 
 module.exports.server = function (serv, settings) {
+  _servers.push(serv)
+
   serv.on('error', error => serv.err('Server: ' + error.stack))
   serv.on('clientError', (client, error) => serv.err('Client ' + client.socket.remoteAddress + ':' + client.socket.remotePort + ' : ' + error.stack))
   serv.on('listening', port => serv.info('Server listening on port ' + port))
@@ -25,8 +44,9 @@ module.exports.server = function (serv, settings) {
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
-    readline.cursorTo(process.stdout, 0)
+    readline?.cursorTo(process.stdout, 0)
     message = moment().format('MMMM Do YYYY, HH:mm:ss') + ' ' + message
+    if (!isInNode) message = '[server] ' + message
     if (!settings.noConsoleOutput) console.log(message)
     if (!settings.logging) return
     fs.appendFile(logFile, message + '\n', (err) => {
@@ -46,25 +66,30 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
 
-  console.log = (function () {
-    const orig = console.log
-    return function () {
-      readline.cursorTo(process.stdout, 0)
-      let tmp
-      try {
-        tmp = process.stdout
-        process.stdout = process.stderr
-        orig.apply(console, arguments)
-      } finally {
-        process.stdout = tmp
+  if (isInNode) {
+    console.log = (function () {
+      const orig = console.log
+      return function () {
+        readline.cursorTo(process.stdout, 0)
+        let tmp
+        try {
+          tmp = process.stdout
+          //@ts-ignore
+          process.stdout = process.stderr
+          orig.apply(console, arguments)
+        } finally {
+          process.stdout = tmp
+        }
+        rl.prompt(true)
       }
-      rl.prompt(true)
-    }
-  })()
+    })()
+  }
 
   serv.createLog = () => {
     if (!settings.logging) return
-    mkdirp('logs', (err) => {
+    fs.mkdir('logs', {
+      recursive: true
+    }, (err) => {
       if (err) {
         console.log(err)
         return
@@ -77,7 +102,7 @@ module.exports.server = function (serv, settings) {
     })
   }
 
-  rl.on('line', (data) => {
+  rl?.on('line', (data) => {
     serv.handleCommand(data)
     rl.prompt(true)
   })

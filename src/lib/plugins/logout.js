@@ -1,5 +1,4 @@
 const once = require('event-promise')
-const playerDat = require('../playerDat')
 
 module.exports.server = function (serv) {
   serv.quit = async (reason = 'Server closed') => {
@@ -37,6 +36,6 @@ module.exports.player = function (player, serv, { worldFolder }) {
       delete serv.uuidToPlayer[player.uuid]
     }
 
-    playerDat.save(player, worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
+    player.save()
   })
 }
