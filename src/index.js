@@ -1,5 +1,3 @@
-//@ts-check
-//@ts-ignore
 if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
   console.error('[\x1b[31mCRITICAL\x1b[0m] Node.JS 18 or newer is required')
   console.error('[\x1b[31mCRITICAL\x1b[0m] You can download the new version from https://nodejs.org/')
@@ -48,7 +46,6 @@ class MCServer extends EventEmitter {
   connect (options) {
     this.options = options
     const version = require('minecraft-data')(options.version).version
-    //@ts-ignore
     if (!supportedVersions.some(v => v.includes(version.majorVersion))) {
       throw new Error(`Version ${version.minecraftVersion} is not supported.`)
     }
@@ -58,10 +55,8 @@ class MCServer extends EventEmitter {
 
     for (const plugin of plugins.builtinPlugins) plugin.server?.(this, options)
 
-    // @ts-ignore
     if (options.logging === true) this.createLog()
     this._server.on('error', error => this.emit('error', error))
-    //@ts-ignore
     this._server.on('listening', () => this.emit('listening', this._server.socketServer.address().port))
     this.emit('asap')
   }

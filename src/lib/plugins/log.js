@@ -74,7 +74,7 @@ module.exports.server = function (serv, settings) {
         let tmp
         try {
           tmp = process.stdout
-          //@ts-ignore
+          // @ts-ignore
           process.stdout = process.stderr
           orig.apply(console, arguments)
         } finally {

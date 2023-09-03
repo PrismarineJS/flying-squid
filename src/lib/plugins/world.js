@@ -242,7 +242,7 @@ module.exports.player = function (player, serv, settings) {
           .then((column) => player.sendChunk(chunkX, chunkZ, column))
         return group ? p.then(() => sleep(5)) : p
       }
-        , Promise.resolve())
+      , Promise.resolve())
   }
 
   function sleep (ms = 0) {
