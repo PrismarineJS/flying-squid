@@ -16,7 +16,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
   .option('log', {
     description: 'Enable logging: When true create log file in logs folder',
     type: 'boolean',
-    default: 'false'
+    default: 'true'
   })
   .option('op', {
     description: 'Useful for testing. When true gives everybody op (administrative permissions)',
