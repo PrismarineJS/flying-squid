@@ -39,7 +39,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
   // ignore
-  const generationModule = generations[generation.name] ? generations[generation.name] : global['require'](generation.name)
+  const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
   serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
   serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
