@@ -149,6 +149,7 @@
       - ["attack"](#attack)
       - ["requestRespawn"](#requestrespawn)
     - [Methods](#methods-2)
+      - [player.save()](#playersave)
       - [player.login()](#playerlogin)
       - [player.ban(reason)](#playerbanreason)
       - [player.kick(reason)](#playerkickreason)
@@ -1025,6 +1026,17 @@ Default: Let them respawn
 Cancelled: Nothing. You monster.
 
 ### Methods
+
+#### player.save()
+
+If `worldFolder` option is set, save player's data into `<worldFolder>/playerdata/<UUID>.dat`. Returns promise.
+Example: save all players data to disk:
+
+```js
+for (const player of serv.players) {
+  player.save()
+}
+```
 
 #### player.login()
 
