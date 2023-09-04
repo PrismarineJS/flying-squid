@@ -23,13 +23,13 @@
       - [serv.uuidToPlayer](#servuuidtoplayer)
       - [serv.overworld](#servoverworld)
       - [serv.netherworld](#servnetherworld)
-      - [serv.endworld](#servendworld)
       - [serv.entities](#serventities)
       - [serv.bannedPlayers](#servbannedplayers)
       - [serv.time](#servtime)
       - [serv.tickCount](#servtickcount)
       - [serv.doDaylightCycle](#servdodaylightcycle)
       - [serv.plugins](#servplugins)
+      - [serv.commands](#servcommands)
       - [serv.tabComplete](#servtabcomplete)
     - [Events](#events)
       - ["error" (error)](#error-error)
@@ -44,7 +44,7 @@
       - [serv.info(message)](#servinfomessage)
       - [serv.warn(message)](#servwarnmessage)
       - [serv.err(message)](#serverrmessage)
-      - [serv.broadcast(message[,color])](#servbroadcastmessagecolor)
+      - [serv.broadcast(message\[,color\])](#servbroadcastmessagecolor)
       - [serv.getPlayer(username)](#servgetplayerusername)
       - [serv.getNearby(loc)](#servgetnearbyloc)
       - [serv.onItemPlace(name, handler)](#servonitemplacename-handler)
@@ -66,12 +66,13 @@
       - [server.playNoteBlock(world, position, pitch)](#serverplaynoteblockworld-position-pitch)
       - [server.getNote(note)](#servergetnotenote)
       - [server.emitParticle(particle, world, position, opt)](#serveremitparticleparticle-world-position-opt)
+      - [serv.selectorString(str, pos, world, allowUser = true, ctxEntityId)](#servselectorstringstr-pos-world-allowuser--true-ctxentityid)
     - [Low level methods](#low-level-methods)
-      - [server._writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
-      - [server._writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
-      - [server._writeNearby(packetName, packetFields, loc)](#server_writenearbypacketname-packetfields-loc)
-      - [serv._loadPlayerChunk(chunkX, chunkZ, player)](#serv_loadplayerchunk)
-      - [serv._unloadPlayerChunk(chunkX, chunkZ, player)](#serv_unloadplayerchunk)
+      - [server.\_writeAll(packetName, packetFields)](#server_writeallpacketname-packetfields)
+      - [server.\_writeArray(packetName, packetFields, playerArray)](#server_writearraypacketname-packetfields-playerarray)
+      - [server.\_writeNearby(packetName, packetFields, loc)](#server_writenearbypacketname-packetfields-loc)
+      - [serv.\_loadPlayerChunk(chunkX, chunkZ, player)](#serv_loadplayerchunkchunkx-chunkz-player)
+      - [serv.\_unloadPlayerChunk(chunkX, chunkZ, player)](#serv_unloadplayerchunkchunkx-chunkz-player)
   - [Entity](#entity-1)
     - [Properties](#properties-1)
       - [entity.id](#entityid)
@@ -109,9 +110,9 @@
       - [entity.getNearbyPlayers()](#entitygetnearbyplayers)
       - [entity.nearbyPlayers()](#entitynearbyplayers)
       - [entity.takeDamage({sound='game.player.hurt', damage=1, velocity=new Vec3(0,0,0), maxVelocity=new Vec3(4, 4, 4), animation=true})](#entitytakedamagesoundgameplayerhurt-damage1-velocitynew-vec3000-maxvelocitynew-vec34-4-4-animationtrue)
-    - [Low level Methods](#low-level-methods)
-      - [entity._writeOthers(packetName, packetFields)](#entity_writeotherspacketname-packetfields)
-      - [entity._writeOthersNearby(packetName, packetFields)](#entity_writeothersnearbypacketname-packetfields)
+    - [Low level Methods](#low-level-methods-1)
+      - [entity.\_writeOthers(packetName, packetFields)](#entity_writeotherspacketname-packetfields)
+      - [entity.\_writeOthersNearby(packetName, packetFields)](#entity_writeothersnearbypacketname-packetfields)
   - [Player](#player)
     - [Properties](#properties-2)
       - [player.username](#playerusername)
@@ -125,6 +126,8 @@
       - ["disconnected"](#disconnected)
       - ["chat" (message)](#chat-message)
       - ["kicked" (kicker,reason)](#kicked-kickerreason)
+      - ["change\_world"](#change_world)
+      - ["playerChangeRenderDistance" (newDistance=player.view, unloadFirst=false)](#playerchangerenderdistance-newdistanceplayerview-unloadfirstfalse)
       - ["positionChanged"](#positionchanged)
     - [Behaviors](#behaviors-1)
       - ["move"](#move-1)
@@ -152,14 +155,15 @@
       - [player.changeBlock(position,blockType,blockData)](#playerchangeblockpositionblocktypeblockdata)
       - [player.sendBlock(position,blockType,blockData)](#playersendblockpositionblocktypeblockdata)
       - [player.sendBlockAction(position,actionId,actionParam,blockType)](#playersendblockactionpositionactionidactionparamblocktype)
+      - [player.sendBrand(brand = 'flying-squid')](#playersendbrandbrand--flying-squid)
       - [player.sendInitialPosition()](#playersendinitialposition)
       - [player.setGameMode(gameMode)](#playersetgamemodegamemode)
       - [player.handleCommand(command)](#playerhandlecommandcommand)
       - [player.setBlock(position,blockType,blockData)](#playersetblockpositionblocktypeblockdata)
       - [player.setBlockAction(position,actionId,actionParam)](#playersetblockactionpositionactionidactionparam)
       - [player.updateHealth(health)](#playerupdatehealthhealth)
-      - [player.updateFood(health)](#playerupdatefoodfood)
-      - [player.updateFoodSaturation(health)](#playerupdatefoodsaturationfoodsaturation)
+      - [player.updateFood(food)](#playerupdatefoodfood)
+      - [player.updateFoodSaturation(foodSaturation)](#playerupdatefoodsaturationfoodsaturation)
       - [player.changeWorld(world, opt)](#playerchangeworldworld-opt)
       - [player.spawnAPlayer(spawnedPlayer)](#playerspawnaplayerspawnedplayer)
       - [player.updateAndSpawnNearbyPlayers()](#playerupdateandspawnnearbyplayers)
@@ -169,10 +173,10 @@
       - [player.setXpLevel(level)](#playersetxplevellevel)
       - [player.setDisplayXp(num)](#playersetdisplayxpnum)
     - [Low level properties](#low-level-properties)
-      - [player._client](#player_client)
-    - [Low level methods](#low-level-methods-1)
-      - [player._unloadChunk(chunkX, chunkZ)](#player_unloadchunk)
-      - [player._unloadAllChunks](#player_unloadallchunks)
+      - [player.\_client](#player_client)
+    - [Low level methods](#low-level-methods-2)
+      - [player.\_unloadChunk(chunkX, chunkZ)](#player_unloadchunkchunkx-chunkz)
+      - [player.\_unloadAllChunks()](#player_unloadallchunks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -321,7 +325,7 @@ serv.commands.add({
     parse(str)  {
       const args = str.split(' ');
       if(args.length != 1) return false;
-      
+
       return {pseudo:args[0]};
     },
     action({pseudo}, ctx) {
@@ -478,7 +482,7 @@ Sends a block action to all players of the same world.
 
 #### server.playSound(sound, world, position, opt)
 
-Plays `sound` (string, google "minecraft sound list") to all players in `opt.radius`. 
+Plays `sound` (string, google "minecraft sound list") to all players in `opt.radius`.
 If position is null, will play at the location of every player (taking into account whitelist and blacklist).
 
 Opt:
@@ -644,8 +648,8 @@ List of entities that the entity believes is nearby.
 
 Behaviors are very interesting. Let me explain to you how they work:
 
-Behaviors are a special type of event. They are editable and allow defaults to be cancellable making the powerful 
-for plugins to take control of and interact with each other. Three different events get called 
+Behaviors are a special type of event. They are editable and allow defaults to be cancellable making the powerful
+for plugins to take control of and interact with each other. Three different events get called
 for a behavior:
 - EVENTNAME_cancel
 - EVENTNAME
@@ -653,7 +657,7 @@ for a behavior:
 
 EVENTNAME_cancel passses the paramaters `data` (object of all info about behavior. Changing the data could have effects on outcome) and `cancel`, a function. This event is run before the default action. If `cancel()` is called, it will cancel the default action. More on this later.
 
-EVENTNAME passes `data` as well as `cancelled` so plugins can check if the default behavior has been cancelled. This is event is run 
+EVENTNAME passes `data` as well as `cancelled` so plugins can check if the default behavior has been cancelled. This is event is run
 before the default action.
 
 EVENTNAME_done passes `data` and `cancelled`. This event is run before the default action.
@@ -674,9 +678,9 @@ player.on('move', ({position}, cancelled) => {
 })
 ```
 
-When a player normally moves, the server saves their position and sends it to all clients. Therefore, if a "move" behavior was truly cancelled, 
-the player would be able to move freely while the server and other players would see the player stationary. This doesn't happen because 
-behaviors can have "default cancel functions". In the case of a player's "move", the default cancel function sends them back where they 
+When a player normally moves, the server saves their position and sends it to all clients. Therefore, if a "move" behavior was truly cancelled,
+the player would be able to move freely while the server and other players would see the player stationary. This doesn't happen because
+behaviors can have "default cancel functions". In the case of a player's "move", the default cancel function sends them back where they
 came from. To prevent this from happening, use the "preventDefaultCancel" paramater: cancel(false);
 
 Plugin C
@@ -686,10 +690,10 @@ player.on('move_cancel', ({position}, cancel) => {
 });
 ```
 
-If we keep Plugin B and replace Plugin A with Plugin C, we'll see that the player can move freely but will not receive the 
+If we keep Plugin B and replace Plugin A with Plugin C, we'll see that the player can move freely but will not receive the
 word "HI" and other players will be unable to see their movements.
 
-Finally, there is hidden cancel. This is the second parameter in cancel, and allows plugins to hide the fact that they cancelled 
+Finally, there is hidden cancel. This is the second parameter in cancel, and allows plugins to hide the fact that they cancelled
 the default action from other plugins. It's best not to use this, but I know somebody will someday need this.
 
 Plugin D
@@ -699,7 +703,7 @@ player.on('move_cancel', ({position}, cancel) => {
 })
 ```
 
-Using Plugin B and D together, the player will be able to move freely and will be spammed with "HI", however the server will not store 
+Using Plugin B and D together, the player will be able to move freely and will be spammed with "HI", however the server will not store
 their position and other players will not see the player move.
 
 #### FORMAT
@@ -794,7 +798,7 @@ Level of xp the player has. Set this with player.setXpLevel()
 
 ### Events
 
-#### "connected" 
+#### "connected"
 
 Fires when the player is connected
 
@@ -813,6 +817,14 @@ Fires when the player says `message`.
 #### "kicked" (kicker,reason)
 
 `kicker` kick the player with `reason`
+
+#### "change_world"
+
+World of the player has been changed.
+
+#### "playerChangeRenderDistance" (newDistance=player.view, unloadFirst=false)
+
+Emit this event to change player render distance.
 
 #### "positionChanged"
 
@@ -1028,7 +1040,7 @@ sends `message` to the player
 
 change the block at position `position` to `blockType` and `blockData`
 
-this will not change the block for the user himself. It is mainly useful when a user places a block 
+this will not change the block for the user himself. It is mainly useful when a user places a block
 and only needs to send it to other players on the server
 
 #### player.sendBlock(position,blockType,blockData)
@@ -1041,7 +1053,7 @@ this will not make any changes on the server's world and only sends it to the us
 
 Set the block action at position `position` to `actionId` and `actionParam`.
 
-``blockType`` is only required when the block at the location is a fake block. 
+``blockType`` is only required when the block at the location is a fake block.
 This will only be caused by using ``player.sendBlock``.
 
 This will not make any changes to the server's world and only sends it to the user as a local action.

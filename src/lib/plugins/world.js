@@ -254,11 +254,11 @@ module.exports.player = function (player, serv, settings) {
   }
 
   // todo as I understand need to handle difficulty packet instead?
-  player.onPlayerChangeRenderDistance = (newDistance = player.view, forced = false) => {
+  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
     player.view = newDistance
-    if (forced) player._unloadAllChunks()
+    if (unloadFirst) player._unloadAllChunks()
     player.sendRestMap()
-  }
+  })
   player.sendRestMap = () => {
     player.sendingChunks = true
     player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)
