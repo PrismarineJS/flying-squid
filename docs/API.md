@@ -18,6 +18,7 @@
   - [MCServer](#mcserver)
     - [Flying-squid.createMCServer(options)](#flying-squidcreatemcserveroptions)
     - [Properties](#properties)
+      - [serv.pluginsReady](#servpluginsready)
       - [serv.entityMaxId](#serventitymaxid)
       - [serv.players](#servplayers)
       - [serv.uuidToPlayer](#servuuidtoplayer)
@@ -38,6 +39,7 @@
       - ["newPlayer" (player)](#newplayer-player)
       - ["banned" (banner,bannedUsername,reason)](#banned-bannerbannedusernamereason)
       - ["tick" (count)](#tick-count)
+      - ["pluginsReady"](#pluginsready)
     - [Methods](#methods)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
@@ -258,6 +260,10 @@ Options is an object containing the following properties:
 
 ### Properties
 
+#### serv.pluginsReady
+
+`true` if all async plugins are ready and the server is ready to accept connections.
+
 #### serv.entityMaxId
 
 The current maximum ID (i.e. the last entity that was spawned has that id)
@@ -371,6 +377,10 @@ Fires when `player` login, allow external player plugins.
 #### "tick" (count)
 
 Fires when one tick has passed (default is 50ms). count is the total world ticks (same as serv.tickCount)
+
+#### "pluginsReady"
+
+Emitted when `serv.pluginsReady` is set to `true`.
 
 ### Methods
 

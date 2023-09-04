@@ -12,7 +12,9 @@ module.exports.server = function (serv, options) {
 
   serv._server.on('login', async (client) => {
     if (client.socket?.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
-    if (!serv.worldsReady) throw new Error('World is still preparing.')
+    if (!serv.pluginsReady) {
+      client.end('Server is still starting! Please wait before reconnecting.')
+    }
     try {
       const player = serv.initEntity('player', null, serv.overworld, new Vec3(0, 0, 0))
       player._client = client

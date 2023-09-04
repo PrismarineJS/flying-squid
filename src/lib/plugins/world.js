@@ -43,10 +43,6 @@ module.exports.server = async function (serv, { version, worldFolder, generation
   serv.netherworld = new World(generations.nether(generation.options))
   // serv.endworld = new World(generations["end"]({}));
 
-  // todo as i understand this is only thing that should block connection
-  serv.emit('worldsReady')
-  serv.worldsReady = true
-
   serv.dimensionNames = {
     '-1': 'minecraft:nether',
     0: 'minecraft:overworld'

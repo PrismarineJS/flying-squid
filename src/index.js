@@ -41,6 +41,7 @@ class MCServer extends EventEmitter {
     plugins.initPlugins()
     super()
     this._server = null
+    this.pluginsReady = false
   }
 
   connect (options) {
@@ -53,7 +54,14 @@ class MCServer extends EventEmitter {
     this.commands = new Command({})
     this._server = createServer(options)
 
-    for (const plugin of plugins.builtinPlugins) plugin.server?.(this, options)
+    const promises = []
+    for (const plugin of plugins.builtinPlugins) {
+      promises.push(plugin.server?.(this, options))
+    }
+    Promise.all(promises).then(() => {
+      this.emit('pluginsReady')
+      this.pluginsReady = true
+    })
 
     if (options.logging === true) this.createLog()
     this._server.on('error', error => this.emit('error', error))
