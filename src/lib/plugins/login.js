@@ -14,6 +14,7 @@ module.exports.server = function (serv, options) {
     if (client.socket?.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
     if (!serv.pluginsReady) {
       client.end('Server is still starting! Please wait before reconnecting.')
+      return
     }
     try {
       const player = serv.initEntity('player', null, serv.overworld, new Vec3(0, 0, 0))
