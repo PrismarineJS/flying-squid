@@ -50,6 +50,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
     beforeEach(async () => {
       const options = settings
       options['online-mode'] = false
+      options['everybody-op'] = true
       options.port = 0
       options['view-distance'] = 2
       options.worldFolder = undefined
