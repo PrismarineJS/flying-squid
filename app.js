@@ -14,12 +14,12 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
     default: 'false'
   })
   .option('log', {
-    description: 'Enable logging: When true create log file in logs folder',
+    description: 'Enable logging: When true create a log file in the logs folder',
     type: 'boolean',
     default: 'true'
   })
   .option('op', {
-    description: 'Useful for testing. When true gives everybody op (administrative permissions)',
+    description: 'Useful for testing. When specified, op every player (give administrative permissions)',
     type: 'boolean',
     default: 'false'
   })
