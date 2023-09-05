@@ -35,7 +35,7 @@ module.exports.server = function (serv, settings) {
   _servers.push(serv)
 
   serv.on('error', error => serv.err('Server: ' + error.stack))
-  serv.on('clientError', (client, error) => serv.err('Client ' + client.socket.remoteAddress + ':' + client.socket.remotePort + ' : ' + error.stack))
+  serv.on('clientError', (client, error) => serv.err('Client ' + client.socket?.remoteAddress + ':' + client.socket.remotePort + ' : ' + error.stack))
   serv.on('listening', port => serv.info('Server listening on port ' + port))
   serv.on('banned', (banner, bannedUsername, reason) =>
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
@@ -109,7 +109,7 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = function (player, serv) {
-  player.on('connected', () => serv.info(player.username + ' (' + player._client.socket.remoteAddress + ') connected'))
+  player.on('connected', () => serv.info(player.username + ' (' + player._client.socket?.remoteAddress + ') connected'))
   player.on('spawned', () => serv.info('Position written, spawning player...'))
   player.on('disconnected', () => serv.info(player.username + ' disconnected'))
   player.on('chat', ({ message }) => serv.info('<' + player.username + '>' + ' ' + message))
