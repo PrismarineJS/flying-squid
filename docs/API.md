@@ -41,6 +41,7 @@
       - ["tick" (count)](#tick-count)
       - ["pluginsReady"](#pluginsready)
     - [Methods](#methods)
+      - [serv.formatMessage(message)](#servformatmessagemessage)
       - [serv.createLog()](#servcreatelog)
       - [serv.log(message)](#servlogmessage)
       - [serv.info(message)](#servinfomessage)
@@ -384,6 +385,10 @@ Fires when one tick has passed (default is 50ms). count is the total world ticks
 Emitted when `serv.pluginsReady` is set to `true`.
 
 ### Methods
+
+#### serv.formatMessage(message)
+
+You can override this function so you can process the message before sending it to the console.
 
 #### serv.createLog()
 
