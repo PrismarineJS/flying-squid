@@ -1,4 +1,10 @@
 module.exports.player = function (player, serv) {
+  const sendTabComplete = (matches, existingContent) => {
+    player._client.write('tab_complete', {
+      matches: matches.filter((match) => match.startsWith(existingContent))
+    })
+  }
+
   player._client.on('tab_complete', function (data) {
     // console.log(data)
     const textSplit = data.text.split(' ')
@@ -6,31 +12,32 @@ module.exports.player = function (player, serv) {
       const cmds = []
       for (const cmd in serv.commands.uniqueHash) {
         const cmdFull = serv.commands.uniqueHash[cmd]
-        if (!player.op && cmdFull.params.op) continue
-        cmds.push(`/${cmd}`)
+        const cmdSlash = `/${cmd}`
+        if (!cmdSlash.startsWith(data.text) || (!player.op && cmdFull.params.op)) continue
+        cmds.push(cmdSlash)
       }
 
       if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
-        if (data.lookedAtBlock) serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2), data.lookedAtBlock)
-        else serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2))
+        serv.tabComplete.use(
+          serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2),
+          data.lookedAtBlock,
+          textSplit[textSplit.length - 1]
+        )
       } else {
-        player._client.write('tab_complete', {
-          matches: cmds
-        })
+        sendTabComplete(cmds, textSplit[textSplit.length - 1])
       }
     } else {
-      serv.tabComplete.use('player')
+      serv.tabComplete.use('player', null, textSplit[textSplit.length - 1])
     }
   })
 
   serv.tabComplete = {
     types: [],
 
-    use: function (id, otherData = null) {
+    use: function (id, otherData = null, existingContent = '') {
       if (id === undefined) return
-      player._client.write('tab_complete', {
-        matches: this.types[id](otherData) || this.types.player()
-      })
+      const matches = this.types[id](otherData) || this.types.player();
+      sendTabComplete(matches, existingContent)
     },
     add: function (id, cb) {
       this.types[id] = cb
