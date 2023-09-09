@@ -1,3 +1,5 @@
+const { snakeCase } = require('change-case')
+
 module.exports.player = function (player, serv, options) {
   const sendTabComplete = (matches, existingContent) => {
     player._client.write('tab_complete', {
@@ -66,7 +68,7 @@ module.exports.player = function (player, serv, options) {
 
   serv.tabComplete.add('effect', () => {
     const mcData = require('minecraft-data')(options.version)
-    return mcData.effectsArray.map(item => item.name)
+    return mcData.effectsArray.map(item => snakeCase(item.name))
   })
 
   serv.tabComplete.add('selector', () => {
