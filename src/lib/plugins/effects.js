@@ -54,6 +54,7 @@ module.exports.server = function (serv) {
     base: 'effect',
     info: 'Give player an effect',
     usage: '/effect <player> <effect> [seconds] [amplifier] [hideParticles]',
+    tab: ['player', 'effect', 'number', 'number', 'boolean'],
     onlyPlayer: true,
     parse (str) {
       return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false

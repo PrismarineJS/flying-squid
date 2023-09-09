@@ -101,7 +101,7 @@ module.exports.server = function (serv, { version }) {
     base: 'give',
     info: 'Gives an item to a player.',
     usage: '/give <player> <item> [count]',
-    tab: ['player', 'number or string', 'number'],
+    tab: ['player', 'item', 'number'],
     op: true,
     parse (args, ctx) {
       args = args.split(' ')
@@ -142,7 +142,7 @@ module.exports.server = function (serv, { version }) {
 
   serv.commands.add({
     base: 'enchant',
-    info: 'Enchants items holded by targets with the specified enchantment and level',
+    info: 'Enchants items held by targets with the specified enchantment and level',
     usage: '/enchant <targets> <enchantment> [level]',
     tab: ['selector', 'item_enchantment', 'number'],
     op: true,

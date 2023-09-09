@@ -58,7 +58,7 @@ module.exports.server = function (serv, { version }) {
     info: 'set a block at a position',
     usage: '/setblock <x> <y> <z> <id> [data]',
     op: true,
-    tab: ['blockX', 'blockY', 'blockZ', 'number'],
+    tab: ['blockX', 'blockY', 'blockZ', 'block', 'number'],
     parse (str) {
       const results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([0-9]{1,3})(?: ([0-9]{1,3}))?/)
       if (!results) return false

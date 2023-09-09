@@ -1,4 +1,4 @@
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, options) {
   const sendTabComplete = (matches, existingContent) => {
     player._client.write('tab_complete', {
       matches: matches.filter((match) => match.startsWith(existingContent))
@@ -6,7 +6,6 @@ module.exports.player = function (player, serv) {
   }
 
   player._client.on('tab_complete', function (data) {
-    // console.log(data)
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
       const cmds = []
@@ -20,7 +19,7 @@ module.exports.player = function (player, serv) {
       if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
         serv.tabComplete.use(
           serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2),
-          data.lookedAtBlock,
+          data.lookedAtBlock || data.block,
           textSplit[textSplit.length - 1]
         )
       } else {
@@ -35,7 +34,7 @@ module.exports.player = function (player, serv) {
     types: [],
 
     use: function (id, otherData = null, existingContent = '') {
-      if (id === undefined) return
+      if (id === undefined || !this.types[id]) return
       const matches = this.types[id](otherData) || this.types.player();
       sendTabComplete(matches, existingContent)
     },
@@ -50,6 +49,26 @@ module.exports.player = function (player, serv) {
     return playerNames
   })
 
+  serv.tabComplete.add('item', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.itemsArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('block', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.blocksArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('entity', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.entitiesArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('effect', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.effectsArray.map(item => item.name)
+  })
+
   serv.tabComplete.add('selector', () => {
     const playerNames = []
     const selectors = ['@p', '@a', '@e', '@r']
@@ -59,7 +78,7 @@ module.exports.player = function (player, serv) {
   })
 
   serv.tabComplete.add('number', () => {
-    return ['1', '2', '3']
+    return ['1']
   })
 
   serv.tabComplete.add('command', () => {
