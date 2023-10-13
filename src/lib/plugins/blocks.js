@@ -71,8 +71,8 @@ module.exports.server = function (serv, { version }) {
       if (ctx.player) res = res.map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
       else res = res.map((val, i) => serv.posFromString(val, new Vec3(0, 128, 0)[['x', 'y', 'z'][i]]))
 
-      res[1] = isNaN(+res[1]) ? mcData.blocksByName[skipMcPrefix(res[1])]?.id : +res[1]
-      const id = parseInt(params[4], 10)
+      const blockParam = params[4]
+      const id = isNaN(+blockParam) ? mcData.blocksByName[skipMcPrefix(blockParam)]?.id : +blockParam
       const data = parseInt(params[5] || 0, 10)
       const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
 
