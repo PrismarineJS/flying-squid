@@ -37,7 +37,7 @@ module.exports.player = function (player, serv, options) {
 
     use: function (id, otherData = null, existingContent = '') {
       if (id === undefined || !this.types[id]) return
-      const matches = this.types[id](otherData) || this.types.player();
+      const matches = this.types[id](otherData) || this.types.player()
       sendTabComplete(matches, existingContent)
     },
     add: function (id, cb) {

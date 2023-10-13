@@ -1,3 +1,5 @@
+const { skipMcPrefix } = require('../utils')
+
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv) {
@@ -48,7 +50,7 @@ module.exports.server = function (serv) {
       const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
       if (!results) return false
       return {
-        sound_name: results[1],
+        sound_name: skipMcPrefix(results[1]),
         volume: results[2] ? parseFloat(results[2]) : 1.0,
         pitch: results[3] ? parseFloat(results[3]) : 1.0
       }
@@ -69,7 +71,7 @@ module.exports.server = function (serv) {
       const results = str.match(/([^ ]+)(?: ([^ ]+))?(?: ([^ ]+))?/)
       if (!results) return false
       return {
-        sound_name: results[1],
+        sound_name: skipMcPrefix(results[1]),
         volume: results[2] ? parseFloat(results[2]) : 1.0,
         pitch: results[3] ? parseFloat(results[3]) : 1.0
       }

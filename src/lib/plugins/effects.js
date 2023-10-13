@@ -1,5 +1,6 @@
 const { pascalCase } = require('change-case')
 const UserError = require('../user_error')
+const { skipMcPrefix } = require('../utils')
 
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
@@ -73,8 +74,8 @@ module.exports.server = function (serv, options) {
           let effId = parseInt(params[2])
           if (isNaN(effId)) {
             const mcData = require('minecraft-data')(options.version)
-            const effectNamePascal = pascalCase(params[2])
-            const effect = mcData.effectsByName[effectNamePascal];
+            const effectNamePascal = pascalCase(skipMcPrefix(params[2]))
+            const effect = mcData.effectsByName[effectNamePascal]
             if (!effect) throw new UserError(`Unknown effect ${params[2]}}`)
             effId = effect.id
           }

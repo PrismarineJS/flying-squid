@@ -1,3 +1,5 @@
+const { skipMcPrefix } = require('../utils')
+
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
@@ -111,12 +113,12 @@ module.exports.server = function (serv, { version }) {
       if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
       return {
         players,
-        item: args[1],
+        item: skipMcPrefix(args[1]),
         count: args[2] ? args[2] : 1
       }
     },
     action ({ players, item, count }) {
-      const itemData = isNaN(+item) ? mcData.itemsByName[item.replace(/minecraft:/, '')] : mcData.items[+item]
+      const itemData = isNaN(+item) ? mcData.itemsByName[skipMcPrefix(item)] : mcData.items[+item]
 
       if (!itemData) throw new UserError(`Unknown item '${item}'`)
       const newItem = new Item(itemData.id, count)
@@ -149,7 +151,7 @@ module.exports.server = function (serv, { version }) {
     parse (args, ctx) {
       args = args.split(' ')
       if (args[0] === '') return false
-      const enchantment = mcData.enchantmentsByName[args[1]]
+      const enchantment = mcData.enchantmentsByName[skipMcPrefix(args[1])]
       if (!enchantment) throw new UserError('No such enchantment')
       if (args[2] && (parseInt(args[2]) > enchantment.maxLevel || parseInt(args[2]) < 1)) throw new UserError(`Level ${args[2]} is not supported by that enchantment`)
       const players = serv.getPlayers(args[0], ctx.player)
