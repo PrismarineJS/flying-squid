@@ -1,5 +1,5 @@
-module.exports.server = function (serv) {
-  serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false } = {}) => {
+export const server = function (serv: Server) {
+  serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false }: any = {}) => {
     if (whitelist.type === 'player') whitelist = [whitelist]
 
     if (typeof message === 'string') message = serv.parseClassic(message)
@@ -45,7 +45,15 @@ module.exports.server = function (serv) {
 
   serv.parseClassic = (message) => {
     if (typeof message === 'object') return message
-    const messageList = []
+    const messageList: {
+      text,
+      color,
+      bold,
+      italic,
+      underlined,
+      strikethrough,
+      obfuscated
+    }[] = []
     let text = ''
     let nextChanged = false
     let color = 'white'
@@ -119,7 +127,7 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
@@ -157,5 +165,17 @@ module.exports.player = function (player, serv) {
   player.system = message => {
     if (typeof message === 'string') message = serv.parseClassic(message)
     player._client.write('chat', { message: JSON.stringify(message), position: 2, sender: '0' })
+  }
+}
+declare global {
+  interface Server {
+    "broadcast": (message: any, { whitelist, blacklist, system }?: { whitelist?: any; blacklist?: any[] | undefined; system?: boolean | undefined }) => void
+    "color": { black: string; dark_blue: string; dark_green: string; dark_cyan: string; dark_red: string; purple: string; dark_purple: string; gold: string; gray: string; grey: string; dark_gray: string; dark_grey: string; blue: string; green: string; aqua: string; cyan: string; red: string; pink: string; light_purple: string; yellow: string; white: string; random: string; obfuscated: string; bold: string; strikethrough: string; underlined: string; underline: string; italic: string; italics: string; reset: string }
+    "parseClassic": (message: any) => any
+  }
+  interface Player {
+    "chat": (message: any) => void
+    "emptyChat": (count?: number) => void
+    "system": (message: any) => void
   }
 }

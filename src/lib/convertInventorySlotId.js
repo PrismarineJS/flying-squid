@@ -1,5 +1,3 @@
-module.exports = { fromNBT, toNBT }
-
 const replace = {
   100: 8, 101: 7, 102: 6, 103: 5, '-106': 45
 }
@@ -28,3 +26,5 @@ function toNBT (slotId) {
   }
   return invertReplace[returnSlotId] || slot
 }
+
+export { fromNBT, toNBT }

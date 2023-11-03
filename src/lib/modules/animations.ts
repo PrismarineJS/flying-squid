@@ -1,4 +1,4 @@
-module.exports.player = function (player) {
+export const player = function (player: Player) {
   player._client.on('arm_animation', () =>
     player.behavior('punch', {}, () => {
       player._writeOthersNearby('animation', {
@@ -21,4 +21,6 @@ module.exports.player = function (player) {
       player.crouching = false
     }
   })
+}
+declare global {
 }

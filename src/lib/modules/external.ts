@@ -1,4 +1,4 @@
-module.exports.server = function (serv, settings) {
+export const server = function (serv: Server, settings: Options) {
   serv.plugins = {}
   serv.pluginCount = 0
   serv.externalPluginsLoaded = false
@@ -46,7 +46,7 @@ module.exports.server = function (serv, settings) {
   serv.externalPluginsLoaded = true
 }
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   Object.keys(serv.plugins).forEach(p => {
     const plugin = serv.plugins[p]
     const f = plugin.player
@@ -54,7 +54,7 @@ module.exports.player = function (player, serv) {
   })
 }
 
-module.exports.entity = function (entity, serv) {
+export const entity = function (entity: Entity, serv: Server) {
   entity.pluginData = {}
 
   Object.keys(serv.plugins).forEach(p => {
@@ -71,4 +71,16 @@ module.exports.entity = function (entity, serv) {
     const f = plugin.entity
     if (plugin.entity) f.call(plugin, entity, serv)
   })
+}
+declare global {
+  interface Server {
+    "plugins": {}
+    "pluginCount": number
+    "externalPluginsLoaded": boolean
+    "addPlugin": (name: any, plugin: any, set: any) => void
+  }
+  interface Entity {
+    "pluginData": {}
+    "getData": (pluginName: any) => any
+  }
 }

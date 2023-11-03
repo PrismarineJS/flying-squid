@@ -1,6 +1,6 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.entity = function (entity, serv, { version }) {
+export const entity = function (entity: Entity, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
   const { blocks } = registry
 
@@ -97,7 +97,7 @@ module.exports.entity = function (entity, serv, { version }) {
   }
 }
 
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.commands.add({
     base: 'velocity',
     info: 'Push velocity on player(s)',
@@ -116,4 +116,12 @@ module.exports.server = function (serv) {
       selector.forEach(e => e.sendVelocity(vec, vec.scaled(5)))
     }
   })
+}
+declare global {
+  interface Entity {
+    gravity
+    friction: any
+    "calculatePhysics": (delta: any) => Promise<{ position: any; onGround: boolean }>
+    "sendVelocity": (vel: any, maxVel: any) => void
+  }
 }

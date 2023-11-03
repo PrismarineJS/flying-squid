@@ -1,11 +1,13 @@
-const Vec3 = require('vec3').Vec3
-const UserError = require('flying-squid').UserError
-const colors = require('colors')
+import { Vec3 } from 'vec3'
 
-module.exports.player = function (player, serv) {
+const UserError = require('flying-squid').UserError
+import colors from 'colors'
+
+export const player = function (player: Player, serv: Server) {
   function attackEntity (entityId) {
     const attackedEntity = serv.entities[entityId]
-    if (!attackedEntity || (attackedEntity.gameMode !== 0 && attackedEntity.type === 'player')) return
+    const attackedPlayer = attackedEntity.type === 'player' ? attackedEntity as Player : undefined
+    if (!attackedEntity || (attackedPlayer && attackedPlayer.gameMode !== 0)) return
 
     player.behavior('attack', {
       attackedEntity,
@@ -25,7 +27,7 @@ module.exports.player = function (player, serv) {
   })
 }
 
-module.exports.entity = function (entity, serv) {
+export const entity = function (entity: Entity, serv: Server) {
   entity.takeDamage = ({ sound = 'game.player.hurt', damage = 1, velocity = new Vec3(0, 0, 0), maxVelocity = new Vec3(4, 4, 4), animation = true }) => {
     entity.updateHealth(entity.health - damage)
     serv.playSound(sound, entity.world, entity.position)
@@ -55,7 +57,7 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.commands.add({
     base: 'kill',
     info: 'Kill entities',
@@ -83,4 +85,12 @@ module.exports.server = function (serv) {
       }
     }
   })
+}
+declare global {
+  interface Entity {
+    health: number
+    updateHealth: (health: number) => void
+    "takeDamage": ({ sound, damage, velocity, maxVelocity, animation }: { sound?: string | undefined; damage?: number | undefined; velocity?: any; maxVelocity?: any; animation?: boolean | undefined }) => void
+    "kill": (options?: {}) => void
+  }
 }

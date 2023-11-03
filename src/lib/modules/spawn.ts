@@ -1,11 +1,12 @@
 const UserError = require('flying-squid').UserError
-const UUID = require('uuid-1345')
-const { skipMcPrefix } = require('../utils')
-const Vec3 = require('vec3').Vec3
+import UUID from 'uuid-1345'
+import { skipMcPrefix } from '../utils'
+import { Vec3 } from 'vec3'
 
-const plugins = require('./index')
+import * as plugins from './index'
+import { CustomWorld } from './world'
 
-module.exports.server = function (serv, options) {
+export const server = function (serv: Server, options: Options) {
   const { version } = options
 
   const Entity = require('prismarine-entity')(version)
@@ -220,7 +221,8 @@ module.exports.server = function (serv, options) {
   })
 }
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, options: Options) {
+  const version = options.version
   const Item = require('prismarine-item')(version)
   const registry = require('prismarine-registry')(version)
 
@@ -253,7 +255,7 @@ module.exports.player = function (player, serv, { version }) {
       }
     }
     if (registry.supportFeature('allEntityEquipmentInOne')) {
-      const equipments = []
+      const equipments = [] as any[]
       entity.equipment.forEach((equipment, slot) => {
         if (equipment !== undefined) {
           equipments.push({
@@ -283,7 +285,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 }
 
-module.exports.entity = function (entity, serv, { version }) {
+export const entity = function (entity: Entity, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
   entity.initEntity = (type, entityType, world, position) => {
@@ -412,5 +414,41 @@ module.exports.entity = function (entity, serv, { version }) {
       if (entity.type === 'player') { entity._client.write('set_passengers', p) }
       entity._writeOthersNearby('set_passengers', p)
     }
+  }
+}
+declare global {
+  interface Server {
+    "initEntity": <T extends string>(type: T, entityType: any, world: CustomWorld, position: Vec3) => T extends 'player' ? Player : Entity
+    "spawnObject": (type: any, world: any, position: any, { pitch, yaw, velocity, data, itemId, itemDamage, itemCount, pickupTime, deathTime }: { pitch?: number | undefined; yaw?: number | undefined; velocity?: any; data?: number | undefined; itemId?: any; itemDamage?: number | undefined; itemCount?: number | undefined; pickupTime?: number; deathTime?: number }) => any
+    "spawnMob": (type: any, world: any, position: any, { pitch, yaw, headPitch, velocity, metadata }?: { pitch?: number | undefined; yaw?: number | undefined; headPitch?: number | undefined; velocity?: any; metadata?: any[] | undefined }) => any
+    "destroyEntity": (entity: any) => void
+  }
+  interface Player {
+    "spawnEntity": (entity: any) => void
+  }
+  interface Entity {
+    terminalvelocity: Vec3
+    // todo should use nbt instead
+    itemId?: number
+    itemDamage?: number
+    itemCount?: number
+    world: CustomWorld
+    spawnPacketName: string
+    entityType: any // cleanup!
+    lastPositionPlayersUpdated: Vec3
+    nearbyEntities: any[]
+    viewDistance: number
+    score: Record<string, any>
+    bornTime: number
+    metadata: any
+    data: any
+    headPitch: any
+    despawnEntities: (arg0: any[]) => void
+    spawnEntity: any
+    "initEntity": (type: any, entityType: any, world: any, position: any) => void
+    "getSpawnPacket": () => { entityId: any; playerUUID: any; x: any; y: any; z: any; yaw: any; pitch: any; currentItem: number; metadata: any; objectUUID?: any; type?: any; objectData?: any; velocityX?: any; velocityY?: any; velocityZ?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; objectUUID: any; type: any; x: any; y: any; z: any; pitch: any; yaw: any; objectData: any; velocityX: any; velocityY: any; velocityZ: any; playerUUID?: any; currentItem?: any; metadata?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; entityUUID: any; type: any; x: any; y: any; z: any; yaw: any; pitch: any; headPitch: any; velocityX: any; velocityY: any; velocityZ: any; metadata: any; playerUUID?: any; currentItem?: any; objectUUID?: any; objectData?: undefined } | undefined
+    "updateAndSpawn": () => void
+    "destroy": () => void
+    "attach": (attachedEntity: any, leash?: boolean) => void
   }
 }

@@ -1,10 +1,10 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
 function randomInt (low, high) {
   return Math.floor(Math.random() * (high - low) + low)
 }
 
-module.exports.server = function (serv, settings) {
+export const server = function (serv: Server, settings: Options) {
   serv.gameMode = settings.gameMode
   serv.difficulty = settings.difficulty
   const registry = require('prismarine-registry')(settings.version)
@@ -32,7 +32,7 @@ module.exports.server = function (serv, settings) {
   }
 }
 
-module.exports.player = async function (player, serv) {
+export const player = async function (player: Player, serv: Server) {
   player.prevGameMode = 255
   player.gameMode = serv.gameMode
   player.findSpawnPoint = async () => {
@@ -41,4 +41,18 @@ module.exports.player = async function (player, serv) {
   player._client.on('settings', ({ viewDistance }) => {
     player.view = viewDistance
   })
+}
+declare global {
+  interface Server {
+    "gameMode": any
+    "difficulty": any
+    "getSpawnPoint": (world: any) => Promise<any>
+  }
+  interface Player {
+    spawnPoint: Vec3
+    view: number
+    "prevGameMode": number
+    "gameMode": any
+    "findSpawnPoint": () => Promise<void>
+  }
 }

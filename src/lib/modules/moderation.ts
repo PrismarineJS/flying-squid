@@ -1,8 +1,9 @@
-const moment = require('moment')
-const needle = require('needle')
+import moment from 'moment'
+import needle from 'needle'
+
 const UserError = require('flying-squid').UserError
 
-module.exports.server = function (serv, settings) {
+export const server = function (serv: Server, settings: Options) {
   serv.ban = async (uuid, reason) => {
     if (!serv.bannedPlayers[uuid]) {
       serv.bannedPlayers[uuid] = {
@@ -371,7 +372,7 @@ module.exports.server = function (serv, settings) {
   })
 }
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   player.kick = (reason = 'You were kicked!') =>
     player._client.end(reason)
 
@@ -396,4 +397,26 @@ module.exports.player = function (player, serv) {
   // I think it doesn't do anything but ok well...
   player.pardonUUID = () => serv.pardonUsername(player.uuid)
   player.pardonUsername = () => serv.pardonUsername(player.username)
+}
+declare global {
+  interface Server {
+    "ban": (uuid: any, reason?: string) => Promise<boolean>
+    "banIP": (IP: any, reason?: string) => Promise<boolean>
+    "getUUIDFromUsername": (username: any) => Promise<unknown>
+    "banUsername": (username: any, reason: any) => Promise<any>
+    "banUUID": (username: any, reason: any) => Promise<any>
+    "pardonUsername": (username: any) => Promise<boolean>
+    "pardonUUID": (username: any) => Promise<any>
+    "pardonIP": (IP: any) => Promise<boolean>
+    "bannedPlayers": {}
+    "bannedIPs": {}
+  }
+  interface Player {
+    "kick": (reason?: string) => void
+    "banUUID": (reason: any) => any
+    "banUsername": (reason: any) => any
+    "banIP": (reason: any) => any
+    "pardonUUID": () => any
+    "pardonUsername": () => any
+  }
 }

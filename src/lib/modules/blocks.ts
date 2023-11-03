@@ -1,12 +1,12 @@
-const { skipMcPrefix } = require('../utils')
+import { skipMcPrefix } from '../utils'
 
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server) {
   player.changeBlock = async (position, blockType, blockData) => {
     serv.players
       .filter(p => p.world === player.world && player !== p)
-      .forEach(p => p.sendBlock(position, blockType, blockData))
+      .forEach(p => p.sendBlock(position, blockType/* , blockData */)) // todo
 
     await player.world.setBlockType(position, blockType)
     await player.world.setBlockData(position, blockData)
@@ -51,9 +51,9 @@ module.exports.player = function (player, serv, { version }) {
   player.setBlockAction = (position, actionId, actionParam) => serv.setBlockAction(player.world, position, actionId, actionParam)
 }
 
-module.exports.server = function (serv, { version }) {
-  const registry = require('prismarine-registry')(version)
-  const blocks = registry.blocks
+export const server = function (serv: Server, { version }: Options) {
+  const mcData = require('minecraft-data')(version)
+  const blocks = mcData.blocks
 
   serv.commands.add({
     base: 'setblock',
@@ -96,4 +96,13 @@ module.exports.server = function (serv, { version }) {
       else serv.setBlockAction(serv.overworld, new Vec3(params[1], params[2], params[3]).floored(), params[4], params[5])
     }
   })
+}
+declare global {
+  interface Player {
+    "changeBlock": (position: any, blockType: any, blockData: any) => Promise<void>
+    "sendBlock": (position: any, blockStateId: any) => any
+    "setBlock": (position: any, stateId: any) => any
+    "sendBlockAction": (position: any, actionId: any, actionParam: any, blockType: any) => Promise<void>
+    "setBlockAction": (position: any, actionId: any, actionParam: any) => any
+  }
 }

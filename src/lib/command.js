@@ -1,4 +1,5 @@
-const UserError = require('./user_error')
+//@ts-check
+import UserError from './user_error'
 
 class Command {
   constructor (params, parent, hash) {
@@ -83,9 +84,10 @@ class Command {
   }
 
   tab (command, i) {
+    //@ts-ignore
     if (this.find(command)[0].params.tab) return this.find(command)[0].params.tab[i]
     return 'player'
   }
 }
 
-module.exports = Command
+export default Command

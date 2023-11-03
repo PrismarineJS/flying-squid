@@ -1,11 +1,11 @@
-const { skipMcPrefix } = require('../utils')
+import { skipMcPrefix } from '../utils'
 
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.server = function (serv) {
-  serv.playSound = (sound, world, position, { whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0 } = {}) => {
+export const server = function (serv: Server) {
+  serv.playSound = (sound, world, position, { whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0 }: any = {}) => {
     const players = (typeof whitelist !== 'undefined'
-      ? (typeof whitelist instanceof Array ? whitelist : [whitelist])
+      ? (whitelist instanceof Array ? whitelist : [whitelist])
       : serv.getNearby({
         world,
         position,
@@ -83,10 +83,9 @@ module.exports.server = function (serv) {
   })
 }
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   player.playSound = (sound, opt = {}) => {
-    opt.whitelist = player
-    serv.playSound(sound, player.world, null, opt)
+    serv.playSound(sound, player.world, null, { ...opt, whitelist: player })
   }
 
   player.on('placeBlock_cancel', async ({ reference }, cancel) => {
@@ -113,8 +112,21 @@ module.exports.player = function (player, serv) {
   })
 }
 
-module.exports.entity = function (entity, serv) {
+export const entity = function (entity: Entity, serv: Server) {
   entity.playSoundAtSelf = (sound, opt = {}) => {
     serv.playSound(sound, entity.world, entity.position, opt)
+  }
+}
+declare global {
+  interface Server {
+    "playSound": (sound: any, world: any, position: any, { whitelist, blacklist, radius, volume, pitch, soundCategory }?: { whitelist?: any; blacklist?: any[] | undefined; radius?: number | undefined; volume?: number | undefined; pitch?: number | undefined; soundCategory?: number | undefined }) => void
+    "playNoteBlock": (pitch: any, world: any, position: any, { instrument, particle }?: { instrument?: string | undefined; particle?: boolean | undefined }) => void
+    "getNote": (note: any) => number
+  }
+  interface Player {
+    "playSound": (sound: any, opt?: {}) => void
+  }
+  interface Entity {
+    "playSoundAtSelf": (sound: any, opt?: {}) => void
   }
 }

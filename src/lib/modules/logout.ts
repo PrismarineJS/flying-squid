@@ -1,6 +1,6 @@
-const once = require('event-promise')
+import once from 'event-promise'
 
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.quit = async (reason = 'Server closed') => {
     await Promise.all(serv.players.map((player) => {
       player.kick(reason)
@@ -11,7 +11,7 @@ module.exports.server = function (serv) {
   }
 }
 
-module.exports.player = function (player, serv, { worldFolder }) {
+export const player = function (player: Player, serv: Server, { worldFolder }: Options) {
   player.despawnEntities = entities => player._client.write('entity_destroy', {
     entityIds: entities.map(e => e.id)
   })
@@ -39,4 +39,12 @@ module.exports.player = function (player, serv, { worldFolder }) {
     player.save()
     player._client.socket?.destroy()
   })
+}
+declare global {
+  interface Server {
+    "quit": (reason?: string) => Promise<void>
+  }
+  interface Player {
+    "despawnEntities": (entities: any) => void
+  }
 }

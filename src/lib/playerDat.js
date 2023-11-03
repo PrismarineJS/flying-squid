@@ -1,14 +1,14 @@
-/* global BigInt */
+//@ts-check
 
-const fs = require('fs')
-const Vec3 = require('vec3').Vec3
-const nbt = require('prismarine-nbt')
-const long = require('long')
-const { gzip } = require('node-gzip')
-const { promisify } = require('util')
-const convertInventorySlotId = require('./convertInventorySlotId')
+import { promises } from 'fs'
+import { Vec3 } from 'vec3'
+import { parse, writeUncompressed } from 'prismarine-nbt'
+import long from 'long'
+import { gzip } from 'node-gzip'
+import { promisify } from 'util'
+import { toNBT } from './convertInventorySlotId'
 
-const nbtParse = promisify(nbt.parse)
+const nbtParse = promisify(parse)
 
 const playerDefaults = {
   health: 20,
@@ -20,7 +20,8 @@ module.exports = { read, save, playerDefaults }
 
 async function read (uuid, spawnPoint, worldFolder) {
   try {
-    const playerDataFile = await fs.promises.readFile(`${worldFolder}/playerdata/${uuid}.dat`)
+    const playerDataFile = await promises.readFile(`${worldFolder}/playerdata/${uuid}.dat`)
+    /** @type {any} */
     const playerData = (await nbtParse(playerDataFile)).value
     return {
       player: {
@@ -47,49 +48,51 @@ async function read (uuid, spawnPoint, worldFolder) {
   }
 }
 
+function playerInventoryToNBT (playerInventory, theFlattening) {
+  const nbtInventory = []
+  playerInventory.slots.forEach(item => {
+    if (item) {
+      const nbtItem = {
+        Slot: {
+          type: 'byte',
+          value: toNBT(item.slot)
+        },
+        id: {
+          type: 'string',
+          value: `minecraft:${item.name}`
+        },
+        Count: {
+          type: 'byte',
+          value: item.count
+        }
+      }
+      if (!theFlattening) {
+        Object.assign(nbtItem, {
+          Damage: {
+            type: 'short',
+            value: item.metadata
+          }
+        })
+      } else if (item.nbt) {
+        Object.assign(nbtItem, {
+          tag: item.nbt
+        })
+      }
+      nbtInventory.push(nbtItem)
+    }
+  })
+
+  return nbtInventory
+}
+
 async function save (player, worldFolder, snakeCase, theFlattening) {
   if (worldFolder === undefined) {
     return
   }
 
-  function playerInventoryToNBT (playerInventory) {
-    const nbtInventory = []
-    playerInventory.slots.forEach(item => {
-      if (item) {
-        const nbtItem = {
-          Slot: {
-            type: 'byte',
-            value: convertInventorySlotId.toNBT(item.slot)
-          },
-          id: {
-            type: 'string',
-            value: `minecraft:${item.name}`
-          },
-          Count: {
-            type: 'byte',
-            value: item.count
-          }
-        }
-        if (!theFlattening) {
-          Object.assign(nbtItem, {
-            Damage: {
-              type: 'short',
-              value: item.metadata
-            }
-          })
-        } else if (item.nbt) {
-          Object.assign(nbtItem, {
-            tag: item.nbt
-          })
-        }
-        nbtInventory.push(nbtItem)
-      }
-    })
-    return nbtInventory
-  }
-
   try {
-    const playerDataFile = await fs.promises.readFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
+    const playerDataFile = await promises.readFile(`${worldFolder}/playerdata/${player.uuid}.dat`)
+    /** @type {any} */
     const newUncompressedData = await nbtParse(playerDataFile)
 
     newUncompressedData.value.Health.value = player.health
@@ -102,12 +105,30 @@ async function save (player, worldFolder, snakeCase, theFlattening) {
     newUncompressedData.value.OnGround.value = Number(player.onGround)
     newUncompressedData.value.Inventory.value.value = playerInventoryToNBT(player.inventory)
 
-    const newDataCompressed = await gzip(nbt.writeUncompressed(newUncompressedData))
-    await fs.promises.writeFile(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
+    const newDataCompressed = await gzip(writeUncompressed(newUncompressedData))
+    await promises.writeFile(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
+
+    return newUncompressedData
   } catch (e) {
-    // Get UUIDMost & UUIDLeast. mc-uuid-converter Copyright (c) 2020 Sol Toder https://github.com/AjaxGb/mc-uuid-converter under MIT License.
-    const uuidBytes = new Uint8Array(16)
-    const uuid = new DataView(uuidBytes.buffer)
+    /** @type {any} */
+    const newUncompressedData = getNewPlayerData(player, snakeCase, theFlattening)
+
+    const newDataCompressed = await gzip(writeUncompressed(newUncompressedData))
+    try {
+      await promises.mkdir(`${worldFolder}/playerdata/`, { recursive: true })
+    } catch (err) {
+      // todo fix browserfs behavior instead
+    }
+    await promises.writeFile(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
+
+    return newUncompressedData
+  }
+}
+
+const getNewPlayerData = (player, snakeCase, theFlattening) => {
+  // Get UUIDMost & UUIDLeast. mc-uuid-converter Copyright (c) 2020 Sol Toder https://github.com/AjaxGb/mc-uuid-converter under MIT License.
+  const uuidBytes = new Uint8Array(16)
+  const uuid = new DataView(uuidBytes.buffer)
 
     const hexText = player.uuid.includes('-')
       ? player.uuid.trim()

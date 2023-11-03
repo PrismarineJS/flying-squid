@@ -1,4 +1,4 @@
-module.exports.player = function (player, serv, settings) {
+export const player = function (player: Player, serv: Server, settings: Options) {
   player.playerlistUpdateText = (header, footer) =>
     player._client.write('playerlist_header', {
       header: JSON.stringify(header),
@@ -7,5 +7,10 @@ module.exports.player = function (player, serv, settings) {
 
   if (settings['player-list-text']) {
     player.playerlistUpdateText(settings['player-list-text'].header || { text: '' }, settings['player-list-text'].footer || { text: '' })
+  }
+}
+declare global {
+  interface Player {
+    "playerlistUpdateText": (header: any, footer: any) => void
   }
 }

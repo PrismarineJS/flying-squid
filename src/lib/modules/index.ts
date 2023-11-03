@@ -1,4 +1,4 @@
-module.exports.builtinPlugins = null
+export let builtinPlugins = null as any // todo
 
 const filterKeys = (keys) => {
   if (process.platform === 'browser') keys = keys.filter(k => k !== './external.js')
@@ -6,7 +6,7 @@ const filterKeys = (keys) => {
   return keys
 }
 
-module.exports.initPlugins = () => {
+export const initPlugins = () => {
   if (process.platform === 'browser') {
     const isWebpack = !!require.context
     if (isWebpack) {

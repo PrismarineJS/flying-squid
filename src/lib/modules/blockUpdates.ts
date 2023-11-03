@@ -1,8 +1,9 @@
-const { performance } = require('perf_hooks')
+import { performance } from 'perf_hooks'
 
 let multiBlockChangeHasTrustEdges
 class ChunkUpdates {
-  constructor () {
+  chunks: Map<string, { chunkX, chunkZ, updates }>
+  constructor() {
     this.chunks = new Map()
   }
 
@@ -14,7 +15,7 @@ class ChunkUpdates {
     if (!this.chunks.has(key)) {
       this.chunks.set(key, { chunkX, chunkZ, chunkY, updates: new Set() })
     }
-    this.chunks.get(key).updates.add(pos)
+    this.chunks.get(key)!.updates.add(pos)
   }
 
   updateCount () {
@@ -26,10 +27,10 @@ class ChunkUpdates {
   }
 
   async getMultiBlockPackets (world) {
-    const packets = []
+    const packets = [] as any[]
 
     for (const { chunkX, chunkZ, chunkY, updates } of this.chunks.values()) {
-      const records = []
+      const records = [] as any[]
       for (const p of updates.values()) {
         const state = await world.getBlockStateId(p)
 
@@ -62,7 +63,7 @@ class ChunkUpdates {
   }
 }
 
-module.exports.server = (serv, { version }) => {
+export const server = (serv: Server, { version }: Options) => {
   const registry = require('prismarine-registry')(version)
 
   multiBlockChangeHasTrustEdges = registry.supportFeature('multiBlockChangeHasTrustEdges')
@@ -186,4 +187,13 @@ module.exports.server = (serv, { version }) => {
       }
     }
   })
+}
+declare global {
+  interface Server {
+    "MAX_UPDATES_PER_TICK": number
+    "updateBlock": (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
+    "notifyNeighborsOfStateChange": (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
+    "notifyNeighborsOfStateChangeDirectional": (world: any, pos: any, dir: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
+    "onBlockUpdate": (name: any, handler: any) => void
+  }
 }

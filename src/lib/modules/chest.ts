@@ -1,6 +1,7 @@
-const Vec3 = require('vec3').Vec3
+import MinecraftData from 'minecraft-data'
+import { Vec3 } from 'vec3'
 
-module.exports.server = function (serv, { version }) {
+export const server = (serv: Server, { version }: Options) => {
   serv.once('asap', () => {
     // Importing necessary libraries
     const registry = require('prismarine-registry')(version)
@@ -105,4 +106,6 @@ module.exports.server = function (serv, { version }) {
       }
     }
   })
+}
+declare global {
 }

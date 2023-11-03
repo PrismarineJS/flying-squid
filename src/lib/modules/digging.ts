@@ -1,6 +1,6 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
@@ -66,7 +66,7 @@ module.exports.player = function (player, serv, { version }) {
     }
   })
 
-  function diggingTime () {
+  function diggingTime (pos) {
     // assume holding nothing and usual conditions
     return currentlyDugBlock.digTime(null, false, false, false)
   }
@@ -86,7 +86,7 @@ module.exports.player = function (player, serv, { version }) {
     updateAnimation()
     animationInterval = setInterval(updateAnimation, 100)
     function updateAnimation () {
-      const currentDiggingTime = new Date() - startDiggingTime
+      const currentDiggingTime = Date.now() - startDiggingTime
       let newDestroyState = Math.floor(9 * currentDiggingTime / expectedDiggingTime)
       newDestroyState = newDestroyState > 9 ? 9 : newDestroyState
       if (newDestroyState !== lastDestroyState) {
@@ -135,17 +135,18 @@ module.exports.player = function (player, serv, { version }) {
 
   async function completeDigging (location) {
     clearInterval(animationInterval)
-    const diggingTime = new Date() - startDiggingTime
+    const diggingTime = Date.now() - startDiggingTime
     let stop = false
     if (expectedDiggingTime - diggingTime < 100) {
       stop = player.behavior('forceCancelDig', {
         stop: true,
         start: startDiggingTime,
         time: diggingTime
+        //@ts-ignore todo
       }).stop
     }
     if (!stop) {
-      const drops = []
+      const drops = [] as any[]
       const dropBase = {
         blockDropPosition: location.offset(0.5, 0.5, 0.5),
         blockDropWorld: player.world,
@@ -180,7 +181,7 @@ module.exports.player = function (player, serv, { version }) {
         player.changeBlock(data.position, 0, 0)
         const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
         if (aboveBlock.material === 'plant') {
-          await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
+          await player.setBlock(data.position.offset(0, 1, 0), 0)
         }
         if (data.dropBlock) {
           drops.forEach(drop => dropBlock(drop))
@@ -237,7 +238,7 @@ module.exports.player = function (player, serv, { version }) {
       player.changeBlock(data.position, 0, 0)
       const aboveBlock = await player.world.getBlock(data.position.offset(0, 1, 0))
       if (aboveBlock.material === 'plant') {
-        await player.setBlock(data.position.offset(0, 1, 0), 0, 0)
+        await player.setBlock(data.position.offset(0, 1, 0), 0)
       }
       if (data.dropBlock) dropBlock(data)
     }, cancelDig)
@@ -245,3 +246,5 @@ module.exports.player = function (player, serv, { version }) {
 }
 
 const directionToVector = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)]
+declare global {
+}

@@ -1,4 +1,4 @@
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.tickCount = 0
   serv.lastTickTime = 0
 
@@ -21,4 +21,13 @@ module.exports.server = function (serv) {
   }
 
   serv.setTickInterval(20)
+}
+declare global {
+  interface Server {
+    tickInterval: any
+    "tickCount": number
+    "lastTickTime": number
+    "setTickInterval": (ticksPerSecond: any) => void
+    "stopTickInterval": () => void
+  }
 }

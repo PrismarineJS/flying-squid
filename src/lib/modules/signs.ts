@@ -1,4 +1,4 @@
-module.exports.server = (serv, { version }) => {
+export const server = (serv: Server, { version }: Options) => {
   const registry = require('prismarine-registry')(version)
 
   const oakSign = registry.supportFeature('theFlattening') ? registry.blocksByName.oak_sign : registry.blocksByName.standing_sign
@@ -42,4 +42,6 @@ module.exports.server = (serv, { version }) => {
       })
     }
   })
+}
+declare global {
 }

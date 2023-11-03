@@ -1,4 +1,4 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
 const materialToSound = {
   undefined: 'stone',
@@ -10,7 +10,7 @@ const materialToSound = {
   wood: 'wood'
 }
 
-module.exports.server = (serv, { version }) => {
+export const server = (serv: Server, { version }: Options) => {
   const registry = require('prismarine-registry')(version)
 
   const itemPlaceHandlers = new Map()
@@ -88,7 +88,7 @@ module.exports.server = (serv, { version }) => {
   }
 }
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
   const blocks = registry.blocks
 
@@ -96,6 +96,7 @@ module.exports.player = function (player, serv, { version }) {
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const block = await player.world.getBlock(referencePosition)
     block.position = referencePosition
+    //@ts-ignore TODO
     block.direction = direction
     if (await serv.interactWithBlock({ block, player })) return
     if (player.gameMode >= 2) return
@@ -157,3 +158,13 @@ module.exports.player = function (player, serv, { version }) {
 const directionToVector = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)]
 const directionToAxis = ['y', 'y', 'z', 'z', 'x', 'x']
 const directionToFacing = ['north', 'east', 'south', 'west']
+
+declare global {
+  interface Server {
+    setBlockDataProperties: (baseData: any, states: any, properties: any) => number
+    "placeItem": (data: any) => any
+    "onItemPlace": (name: any, handler: any, warn?: boolean) => void
+    "interactWithBlock": (data: any) => Promise<any>
+    "onBlockInteraction": (name: any, handler: any) => void
+  }
+}

@@ -1,1 +1,3 @@
-module.exports.skipMcPrefix = (name) => typeof name === 'string' ? name.replace(/^minecraft:/, '') : name
+export function skipMcPrefix (name) {
+    return typeof name === 'string' ? name.replace(/^minecraft:/, '') : name
+}

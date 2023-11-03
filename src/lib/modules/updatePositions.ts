@@ -1,6 +1,6 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.player = function (player) {
+export const player = function (player: Player) {
   player._client.on('look', ({ yaw, pitch, onGround } = {}) => sendLook(yaw, pitch, onGround))
 
   // float (degrees) --> byte (1/256 "degrees")
@@ -81,7 +81,7 @@ module.exports.player = function (player) {
   }
 }
 
-module.exports.entity = function (entity, serv, { version }) {
+export const entity = function (entity: Entity, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
   entity.sendPosition = (position, onGround, teleport = false) => {
@@ -152,5 +152,25 @@ module.exports.entity = function (entity, serv, { version }) {
 
   entity.teleport = (pos) => { // Overwritten in players inject above
     entity.sendPosition(pos, false, true)
+  }
+}
+declare global {
+  interface Player {
+    "teleport": (position: any) => Promise<void>
+    "sendAbilities": () => void
+  }
+  interface Entity {
+    id: string // do we need 2 ids?
+    uuid: string
+    position: Vec3
+    velocity: Vec3
+    size: Vec3
+    knownPosition: Vec3
+    yaw: number
+    pitch: number
+    onGround: boolean
+    "sendSelfPosition": () => void
+    "sendPosition": (position: Vec3, onGround: any, teleport?: boolean) => any
+    "teleport": (pos: any) => void
   }
 }

@@ -1,4 +1,4 @@
-module.exports.player = async function (player, serv) {
+export const player = async function (player: Player, serv: Server) {
   function unhandledRejection (promise) {
     serv.warn('-------------------------------')
     serv.warn('Please report this flying-squid! This is bug (mabye)')
@@ -23,4 +23,6 @@ module.exports.player = async function (player, serv) {
 
   process.on('unhandledRejection', (promise) => { unhandledRejection(promise) })
   process.on('uncaughtException', err => { uncaughtException(err) })
+}
+declare global {
 }

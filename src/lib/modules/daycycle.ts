@@ -1,4 +1,4 @@
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.setTime = (time) => {
     serv.time = time
     serv._writeAll('update_time', {
@@ -82,4 +82,11 @@ module.exports.server = function (serv) {
       return serv.handleCommand('time set day')
     }
   })
+}
+declare global {
+  interface Server {
+    "setTime": (time: any) => void
+    "doDaylightCycle": boolean
+    "time": number
+  }
 }

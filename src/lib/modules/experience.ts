@@ -2,7 +2,7 @@ const UserError = require('flying-squid').UserError
 
 const { distanceToXpLevel, getXpLevel, getBaseXpFromLevel } = require('flying-squid').experience
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   player.xp = 0
   player.displayXp = 0
   player.xpLevel = 0
@@ -33,7 +33,7 @@ module.exports.player = function (player, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.commands.add({
     base: 'xp',
     info: 'Give yourself experience',
@@ -63,4 +63,16 @@ module.exports.server = function (serv) {
       }
     }
   })
+}
+declare global {
+  interface Player {
+    level: number
+    "xp": number
+    "displayXp": number
+    "xpLevel": number
+    "sendXp": () => void
+    "setXpLevel": (level: any) => void
+    "setDisplayXp": () => void
+    "setXp": (xp: any, { setLevel, setDisplay, send }?: { setLevel?: boolean | undefined; setDisplay?: boolean | undefined; send?: boolean | undefined }) => void
+  }
 }

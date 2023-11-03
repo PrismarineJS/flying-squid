@@ -1,6 +1,6 @@
-module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
-  const mobs = registry.mobs
+export const server = (serv: Server, { version }: Options) => {
+  const mcData = require('minecraft-data')(version)
+  const mobs = mcData.mobs
 
   function getEntID (entName) {
     let foundID = ''
@@ -47,4 +47,6 @@ module.exports.server = (serv, { version }) => {
       }
     }
   })
+}
+declare global {
 }

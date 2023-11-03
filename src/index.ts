@@ -1,3 +1,11 @@
+import { createServer } from 'minecraft-protocol'
+
+import { testedVersions, latestSupportedVersion, oldestSupportedVersion } from './lib/version'
+import Command from './lib/command'
+import * as plugins from './lib/modules'
+import { EventEmitter } from 'events'
+import { Server as ProtocolServer } from 'minecraft-protocol'
+
 if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
   console.error('[\x1b[31mCRITICAL\x1b[0m] Node.JS 18 or newer is required')
   console.error('[\x1b[31mCRITICAL\x1b[0m] You can download the new version from https://nodejs.org/')
@@ -5,30 +13,12 @@ if (typeof process !== 'undefined' && !process.browser && process.platform !== '
   process.exit(1)
 }
 
-const { createServer } = require('minecraft-protocol')
-
-const EventEmitter = require('events').EventEmitter
-const { testedVersions, latestSupportedVersion, oldestSupportedVersion } = require('./lib/version')
-const Command = require('./lib/command')
-const plugins = require('./lib/plugins')
 require('emit-then').register()
 if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
 }
 
-module.exports = {
-  createMCServer,
-  Behavior: require('./lib/behavior'),
-  Command: require('./lib/command'),
-  generations: require('./lib/generations'),
-  experience: require('./lib/experience'),
-  UserError: require('./lib/user_error'),
-  portal_detector: require('./lib/portal_detector'),
-  testedVersions
-}
-
-function createMCServer (options) {
-  options = options || {}
+function createMCServer (options = {}) {
   const mcServer = new MCServer()
   mcServer.connect(options)
   return mcServer
@@ -43,6 +33,7 @@ class MCServer extends EventEmitter {
   }
 
   connect (options) {
+    const server = this as unknown as Server
     const registry = require('prismarine-registry')(options.version)
     if (!registry?.version) throw new Error(`Server version '${registry?.version}' is not supported, no data for version`)
 
@@ -53,21 +44,46 @@ class MCServer extends EventEmitter {
       throw new Error(`Server version '${registry?.version}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
     }
 
-    this.commands = new Command({})
-    this._server = createServer(options)
+    server.commands = new Command({})
+    server._server = createServer(options)
 
-    const promises = []
+    const promises: Promise<any>[] = []
     for (const plugin of plugins.builtinPlugins) {
-      promises.push(plugin.server?.(this, options))
+      promises.push(plugin.server?.(server, options))
     }
     Promise.all(promises).then(() => {
-      this.emit('pluginsReady')
-      this.pluginsReady = true
+      server.emit('pluginsReady')
+      server.pluginsReady = true
     })
 
-    if (options.logging === true) this.createLog()
-    this._server.on('error', error => this.emit('error', error))
-    this._server.on('listening', () => this.emit('listening', this._server.socketServer.address().port))
-    this.emit('asap')
+    if (options.logging === true) server.createLog()
+    server._server.on('error', error => {
+      server.emit('error', error);
+    })
+    server._server.on('listening', () => {
+      server.emit('listening', server._server.socketServer.address().port);
+    })
+    server.emit('asap')
   }
 }
+
+declare global {
+  interface Server {
+    commands: Command
+    pluginsReady: boolean
+    _server: ProtocolServer
+    supportFeature: (feature: string) => boolean
+  }
+}
+
+export {
+  createMCServer,
+  testedVersions
+}
+
+export * as Behavior from './lib/behavior';
+export * as Command from './lib/command';
+export * as generations from './lib/generations';
+export * as experience from './lib/experience';
+export * as UserError from './lib/user_error';
+export * as portal_detector from './lib/portal_detector';

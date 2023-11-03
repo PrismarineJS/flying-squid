@@ -1,7 +1,7 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.server = function (serv) {
-  serv.emitParticle = (particle, world, position, { whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1 } = {}) => {
+export const server = function (serv: Server) {
+  serv.emitParticle = (particle, world, position, { whitelist, blacklist = [], radius = 32, longDistance = true, size = new Vec3(1, 1, 1), count = 1 }: any = {}) => {
     const players = (typeof whitelist !== 'undefined'
       ? (whitelist instanceof Array ? whitelist : [whitelist])
       : serv.getNearby({
@@ -49,4 +49,9 @@ module.exports.server = function (serv) {
       serv.emitParticle(particle, ctx.player.world, ctx.player.position, { count: amount, size })
     }
   })
+}
+declare global {
+  interface Server {
+    "emitParticle": (particle: any, world: any, position: any, { whitelist, blacklist, radius, longDistance, size, count }?: { whitelist?: any; blacklist?: any[] | undefined; radius?: number | undefined; longDistance?: boolean | undefined; size?: any; count?: number | undefined }) => void
+  }
 }

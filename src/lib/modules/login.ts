@@ -1,14 +1,18 @@
 /* global BigInt */
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-const crypto = require('crypto')
-const playerDat = require('../playerDat')
-const convertInventorySlotId = require('../convertInventorySlotId')
-const plugins = require('./index')
+import crypto from 'crypto'
+import playerDat from '../playerDat'
+import convertInventorySlotId from '../convertInventorySlotId'
+import * as plugins from './index'
+import { skipMcPrefix } from '../utils'
 
-module.exports.server = function (serv, options) {
-  serv._server.on('connection', client =>
-    client.on('error', error => serv.emit('clientError', client, error)))
+export const server = function (serv: Server, options: Options) {
+  serv._server.on('connection', client => {
+    client.on('error', error => {
+      serv.emit('clientError', client, error)
+    })
+  })
 
   serv._server.on('login', async (client) => {
     if (client.socket?.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
@@ -41,7 +45,7 @@ module.exports.server = function (serv, options) {
   })
 }
 
-module.exports.player = async function (player, serv, settings) {
+export const player = async function (player: Player, serv: Server, settings: Options) {
   const Item = require('prismarine-item')(settings.version)
   const registry = require('prismarine-registry')(settings.version)
 
@@ -191,7 +195,7 @@ module.exports.player = async function (player, serv, settings) {
 
   player.waitPlayerLogin = () => {
     const events = ['flying', 'look']
-    return new Promise(function (resolve) {
+    return new Promise<void>(function (resolve) {
       const listener = () => {
         events.map(event => player._client.removeListener(event, listener))
         resolve()
@@ -209,8 +213,8 @@ module.exports.player = async function (player, serv, settings) {
       player.kick(serv.bannedPlayers[player.uuid].reason)
       return
     }
-    if (serv.bannedIPs[player._client.socket?.remoteAddress]) {
-      player.kick(serv.bannedIPs[player._client.socket?.remoteAddress].reason)
+    if (serv.bannedIPs[player._client.socket?.remoteAddress as string]) {
+      player.kick(serv.bannedIPs[player._client.socket?.remoteAddress as string].reason)
       return
     }
 
@@ -237,5 +241,21 @@ module.exports.player = async function (player, serv, settings) {
     sendChunkWhenMove()
 
     player.save()
+  }
+}
+declare global {
+  interface Server {
+    "hashedSeed": number[]
+  }
+  interface Player {
+    profileProperties: any
+    loadedChunks: Record<string, number>
+    crouching: boolean
+    op: boolean
+    username: string
+    "setLoadingStatus": (text: any) => void
+    "setGameMode": (gameMode: any) => void
+    "waitPlayerLogin": () => Promise<unknown>
+    "login": () => Promise<void>
   }
 }

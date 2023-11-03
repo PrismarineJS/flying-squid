@@ -1,12 +1,13 @@
-const fs = require('fs')
+import fs from 'fs'
+
 const timeStarted = Math.floor(Date.now() / 1000).toString()
-const path = require('path')
-const moment = require('moment')
-const colors = require('colors')
+import path from 'path'
+import moment from 'moment'
+import colors from 'colors'
 
 const isInNode = typeof process !== 'undefined' && !process.browser && process.platform !== 'browser'
 
-const _servers = []
+const _servers: Server[] = []
 
 /** @type {typeof import("readline") | undefined} */
 let readline
@@ -31,7 +32,7 @@ if (isInNode) {
   rl.prompt(true)
 }
 
-module.exports.server = function (serv, settings) {
+export const server = function (serv: Server, settings: Options) {
   _servers.push(serv)
 
   serv.on('error', error => serv.err('Server: ' + error.stack))
@@ -109,10 +110,20 @@ module.exports.server = function (serv, settings) {
   })
 }
 
-module.exports.player = function (player, serv) {
+export const player = function (player: Player, serv: Server) {
   player.on('connected', () => serv.info(player.username + ' (' + player._client.socket?.remoteAddress + ') connected'))
   player.on('spawned', () => serv.info('Position written, spawning player...'))
-  player.on('disconnected', () => serv.info(player.username + ' disconnected'))
+  player.on('disconnected', (reason) => serv.info(player.username + ' disconnected. Reason: ' + reason))
   player.on('chat', ({ message }) => serv.info('<' + player.username + '>' + ' ' + message))
   player.on('kicked', (kicker, reason) => serv.info(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
+}
+declare global {
+  interface Server {
+    formatMessage (message: any): any
+    "log": (message: any) => void
+    "info": (message: any) => void
+    "err": (message: any) => void
+    "warn": (message: any) => void
+    "createLog": () => void
+  }
 }

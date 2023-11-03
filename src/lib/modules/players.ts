@@ -1,8 +1,8 @@
-const { skipMcPrefix } = require('../utils')
+import { skipMcPrefix } from '../utils'
 
 const UserError = require('flying-squid').UserError
 
-module.exports.server = function (serv, { version }) {
+export const server = function (serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
   const Item = require('prismarine-item')(version)
   serv.entityMaxId = 0
@@ -172,4 +172,14 @@ module.exports.server = function (serv, { version }) {
       })
     }
   })
+}
+declare global {
+  interface Server {
+    "entityMaxId": number
+    "players": Player[]
+    "uuidToPlayer": {}
+    "entities": Record<string, Entity>
+    "getPlayer": (username: any) => any
+    "getPlayers": (selector: any, ctxPlayer: any) => any
+  }
 }

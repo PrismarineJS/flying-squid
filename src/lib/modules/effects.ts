@@ -1,8 +1,8 @@
-const { pascalCase } = require('change-case')
-const UserError = require('../user_error')
-const { skipMcPrefix } = require('../utils')
+import { pascalCase } from 'change-case'
+import UserError from '../user_error'
+import { skipMcPrefix } from '../utils'
 
-module.exports.entity = function (entity, serv) {
+export const entity = function (entity: Entity, serv: Server) {
   entity.effects = {}
   for (let i = 1; i <= 23; i++) { // 23 in 1.8, 27 in 1.9
     entity.effects[i] = null // Just so we know it's a real potion and not undefined/not existant
@@ -10,7 +10,7 @@ module.exports.entity = function (entity, serv) {
 
   entity.sendEffect = (effectId, { amplifier = 0, duration = 30 * 20, particles = true, whitelist, blacklist = [] } = {}) => {
     if (!whitelist) whitelist = serv.getNearby(entity)
-    if (entity.type === 'player' && [1].indexOf(effectId) !== -1) entity.sendAbilities()
+    if (entity.type === 'player' && [1].indexOf(effectId) !== -1) (entity as Player).sendAbilities()
     const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
     const data = {
       entityId: entity.id,
@@ -31,7 +31,7 @@ module.exports.entity = function (entity, serv) {
     }, sendTo)
   }
 
-  entity.addEffect = (effectId, opt = {}) => {
+  entity.addEffect = (effectId, opt: any = {}) => {
     const amp = typeof opt.amplifier === 'undefined' ? 0 : opt.amplifier
     if (!entity.effects[effectId] || opt.override || amp < entity.effects[effectId].amplifier) {
       entity.effects[effectId] = {
@@ -39,7 +39,7 @@ module.exports.entity = function (entity, serv) {
         duration: opt.duration || 30 * 20,
         particles: opt.particles || true,
         end: Date.now() + (opt.duration || 30 * 20) * 1000 / 20, // 1000/20 === convert from ticks to milliseconds,
-        timeout: setTimeout(() => entity.removeEffect(effectId), (opt.duration || 30 * 20) * 1000 / 20)
+        timeout: setTimeout(() => entity.removeEffect(effectId, {}), (opt.duration || 30 * 20) * 1000 / 20)
       }
       entity.sendEffect(effectId, opt)
       return true
@@ -53,7 +53,7 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.server = function (serv, options) {
+export const server = function (serv: Server, options: Options) {
   serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',
@@ -96,12 +96,21 @@ module.exports.server = function (serv, options) {
       } else {
         if (ctx.player) {
           ctx.player.chat('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
-                        (parseInt(params[3]) || 30) + ' seconds')
+            (parseInt(params[3]) || 30) + ' seconds')
         } else {
           serv.info('Gave ' + chatSelect + ' effect ' + params[2] + '(' + (params[4] || 0) + ') for ' +
-                        (parseInt(params[3]) || 30) + ' seconds')
+            (parseInt(params[3]) || 30) + ' seconds')
         }
       }
     }
   })
+}
+declare global {
+  interface Entity {
+    "effects": {}
+    "sendEffect": (effectId: any, { amplifier, duration, particles, whitelist, blacklist }?: { amplifier?: number | undefined; duration?: number | undefined; particles?: boolean | undefined; whitelist?: any; blacklist?: any[] | undefined }) => void
+    "sendRemoveEffect": (effectId: any, { whitelist, blacklist }?: { whitelist?: any; blacklist?: any[] | undefined }) => void
+    "addEffect": (effectId: any, opt?: {}) => boolean
+    "removeEffect": (effectId: any, opt: any) => void
+  }
 }

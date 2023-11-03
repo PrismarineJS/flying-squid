@@ -1,6 +1,6 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 
-module.exports.server = function (serv, { version }) {
+export const server = function (serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
   const redstoneWireType = registry.blocksByName.redstone_wire.id
@@ -70,8 +70,8 @@ module.exports.server = function (serv, { version }) {
 
   const isRedstone = (block) => {
     return block.type === redstoneWireType ||
-           block.type === redstoneTorchType ||
-           block.type === unlitRedstoneTorchType
+      block.type === redstoneTorchType ||
+      block.type === unlitRedstoneTorchType
   }
 
   const isDirectedRepeater = (block, dir, powered = false) => {
@@ -215,7 +215,7 @@ module.exports.server = function (serv, { version }) {
       const sideA = await world.getBlock(pos.offset(dir.z, 0, dir.x))
       const sideB = await world.getBlock(pos.offset(-dir.z, 0, -dir.x))
       const isLocked = isDirectedRepeater(sideA, new Vec3(dir.z, 0, dir.x), true) ||
-                       isDirectedRepeater(sideB, new Vec3(-dir.z, 0, -dir.x), true)
+        isDirectedRepeater(sideB, new Vec3(-dir.z, 0, -dir.x), true)
 
       // Source power didn't change or locked, do nothing
       if ((p === 0) === (curPower === 0) || isLocked) return false
@@ -308,4 +308,6 @@ module.exports.server = function (serv, { version }) {
       return changed
     })
   })
+}
+declare global {
 }

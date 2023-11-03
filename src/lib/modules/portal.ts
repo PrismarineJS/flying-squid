@@ -1,7 +1,7 @@
-const Vec3 = require('vec3').Vec3
-const UserError = require('flying-squid').UserError
+import { Vec3 } from 'vec3'
+import UserError from '../user_error'
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
   const obsidianType = registry.blocksByName.obsidian.id
@@ -18,7 +18,7 @@ module.exports.player = function (player, serv, { version }) {
 
     if (block.type === obsidianType) {
       const p = player.world.portals.filter(({ bottom, top, left, right }) =>
-        [].concat(bottom, left, right, top)
+        [...bottom, ...left, ...right, ...top]
           .reduce((acc, pos) => acc || pos.equals(position), false))
       p.forEach(portal => destroyPortal(portal, position))
     }
@@ -30,15 +30,15 @@ module.exports.player = function (player, serv, { version }) {
   })
 }
 
-module.exports.server = function (serv, { version }) {
+export const server = function (serv: Server, { version }: Options) {
   const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
   const registry = require('prismarine-registry')(version)
 
   const obsidianType = registry.blocksByName.obsidian.id
   const fireType = registry.blocksByName.fire.id
 
-  let portalX
-  let portalZ
+  let portalX: number
+  let portalZ: number
   if (registry.supportFeature('theFlattening')) {
     const portalBlock = registry.blocksByName.nether_portal
     portalX = portalBlock.minStateId
@@ -92,4 +92,6 @@ module.exports.server = function (serv, { version }) {
       })
     }
   })
+}
+declare global {
 }

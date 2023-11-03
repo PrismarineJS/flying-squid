@@ -1,5 +1,5 @@
-module.exports = (obj) => {
-  return async (eventName, data, func, cancelFunc) => {
+export default (obj) => {
+  return async (eventName: string, data?: any, func?: Function, cancelFunc?: Function) => {
     let hiddenCancelled = false
     let cancelled = false
     let cancelCount = 0
@@ -15,7 +15,7 @@ module.exports = (obj) => {
 
     let resp
 
-    func = func || (() => {})
+    func = func || (() => { })
 
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err) => setTimeout(() => { throw err }, 0))
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err) => setTimeout(() => { throw err }, 0))

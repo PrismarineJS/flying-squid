@@ -1,4 +1,4 @@
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   let ticking = false
   serv.on('tick', function (delta) {
     if (ticking || delta > 1) { return }
@@ -36,7 +36,7 @@ module.exports.server = function (serv) {
   })
 }
 
-module.exports.entity = function (entity) {
+export const entity = function (entity) {
   entity.sendMetadata = (data) => {
     entity._writeOthersNearby('entity_metadata', {
       entityId: entity.id,
@@ -47,5 +47,15 @@ module.exports.entity = function (entity) {
   entity.setAndUpdateMetadata = (data) => {
     entity.metadata = data
     entity.sendMetadata(data)
+  }
+}
+declare global {
+  interface Entity {
+    deathTime?: number
+    pickupTime?: number
+    name?: string
+    type: string
+    "sendMetadata": (data: any) => void
+    "setAndUpdateMetadata": (data: any) => void
   }
 }

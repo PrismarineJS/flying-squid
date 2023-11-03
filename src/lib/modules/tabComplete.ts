@@ -1,6 +1,6 @@
-const { snakeCase } = require('change-case')
+import { snakeCase } from 'change-case'
 
-module.exports.player = function (player, serv, options) {
+export const player = function (player: Player, serv: Server, options: Options) {
   const sendTabComplete = (matches, existingContent) => {
     player._client.write('tab_complete', {
       matches: matches.filter((match) => match.startsWith(existingContent))
@@ -10,7 +10,7 @@ module.exports.player = function (player, serv, options) {
   player._client.on('tab_complete', function (data) {
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
-      const cmds = []
+      const cmds = [] as string[]
       for (const cmd in serv.commands.uniqueHash) {
         const cmdFull = serv.commands.uniqueHash[cmd]
         const cmdSlash = `/${cmd}`
@@ -46,7 +46,7 @@ module.exports.player = function (player, serv, options) {
   }
 
   serv.tabComplete.add('player', () => {
-    const playerNames = []
+    const playerNames = [] as string[]
     for (const player of serv.players) playerNames.push(player.username)
     return playerNames
   })
@@ -72,7 +72,7 @@ module.exports.player = function (player, serv, options) {
   })
 
   serv.tabComplete.add('selector', () => {
-    const playerNames = []
+    const playerNames = [] as string[]
     const selectors = ['@p', '@a', '@e', '@r']
     for (const player of serv.players) playerNames.push(player.username)
     for (const sel in selectors) playerNames.push(selectors[sel])
@@ -84,7 +84,7 @@ module.exports.player = function (player, serv, options) {
   })
 
   serv.tabComplete.add('command', () => {
-    const cmds = []
+    const cmds = [] as string[]
     for (const cmd in serv.commands.uniqueHash) {
       const cmdFull = serv.commands.uniqueHash[cmd]
       if (!player.op && cmdFull.params.op) continue
@@ -116,4 +116,9 @@ module.exports.player = function (player, serv, options) {
   serv.tabComplete.add('item_enchantment', () => {
     return ['unbreaking', 'silk_touch', 'fortune']
   })
+}
+declare global {
+  interface Server {
+    "tabComplete": { types: any[]; use: (id: any, otherData?: null, existingContent?: string) => void; add: (id: any, cb: any) => void }
+  }
 }

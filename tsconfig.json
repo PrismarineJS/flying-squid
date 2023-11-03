@@ -1,7 +1,13 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "outDir": "dist",
+        "sourceMap": true,
+        "target": "ESNext",
+        "module": "CommonJS",
+        "esModuleInterop": true,
+        "skipLibCheck": true
     },
     "include": [
         "src"

@@ -1,4 +1,4 @@
-module.exports.server = function (serv) {
+export const server = function (serv: Server) {
   serv.commands.add({
     base: 'weather',
     info: 'Sets the weather.',
@@ -21,4 +21,6 @@ module.exports.server = function (serv) {
       }
     }
   })
+}
+declare global {
 }

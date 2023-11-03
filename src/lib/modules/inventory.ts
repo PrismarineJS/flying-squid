@@ -1,6 +1,6 @@
-const Vec3 = require('vec3')
+import {Vec3} from 'vec3'
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
   const Item = require('prismarine-item')(version)
   const windows = require('prismarine-windows')(version)
@@ -235,5 +235,17 @@ module.exports.player = function (player, serv, { version }) {
       player.inventory.updateSlot(emptySlot, newItem)
       collectEntity.destroy()
     }
+  }
+}
+declare global {
+  interface Player {
+    windowType: string
+    windowPos: any
+    // where it comes from?
+    setEquipment: (slot: number, item: any) => void
+    "heldItemSlot": number
+    "heldItem": any
+    "inventory": any
+    "collect": (collectEntity: any) => void
   }
 }

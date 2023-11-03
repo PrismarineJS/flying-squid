@@ -14,4 +14,4 @@ class UserError extends ExtendableError {
   }
 }
 
-module.exports = UserError
+export default UserError

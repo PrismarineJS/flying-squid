@@ -1,7 +1,7 @@
 const UserError = require('flying-squid').UserError
-const colors = require('colors')
+import colors from 'colors'
 
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   player.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str, { player }, player.op)
@@ -13,11 +13,11 @@ module.exports.player = function (player, serv, { version }) {
   }
 }
 
-module.exports.entity = function (entity, serv) {
+export const entity = function (entity: Entity, serv: Server) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
 }
 
-module.exports.server = function (serv, { version }) {
+export const server = function (serv: Server, { version }: Options) {
   serv.handleCommand = async (str) => {
     try {
       const res = await serv.commands.use(str)
@@ -119,7 +119,7 @@ module.exports.server = function (serv, { version }) {
         if (ctx.player) ctx.player.chat(usage + ': ' + info)
         else serv.info(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
-        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
+        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH).toString()
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
         found = found.sort()
         if (found.indexOf('search') !== -1) {
@@ -210,7 +210,7 @@ module.exports.server = function (serv, { version }) {
 
     const count = opt.count !== undefined
       ? opt.count
-      : (type === 'all' || type === 'entity' ? serv.entities.length : 1)
+      : (type === 'all' || type === 'entity' ? Object.keys(serv.entities).length : 1)
 
     const pos = opt.pos
     let sample
@@ -229,7 +229,7 @@ module.exports.server = function (serv, { version }) {
       return true
     }
 
-    const scores = {
+    const scores: any = {
       max: [],
       min: []
     }
@@ -288,7 +288,7 @@ module.exports.server = function (serv, { version }) {
     else return sample.slice(count) // Negative, returns from end
   }
 
-  serv.selectorString = (str, pos, world, allowUser = true, ctxEntityId) => {
+  serv.selectorString = (str, pos, world, allowUser = true, ctxEntityId?) => {
     if (pos) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
@@ -305,7 +305,7 @@ module.exports.server = function (serv, { version }) {
     }
     const type = typeConversion[match[1]]
     const opt = match[2] ? match[2].split(',') : []
-    const optPair = []
+    const optPair = [] as any[]
     let err
     opt.forEach(o => {
       const match = o.match(/^([^=]+)=([^=]+)$/)
@@ -356,5 +356,19 @@ module.exports.server = function (serv, { version }) {
     if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos
     else if (str === '~') return pos
     else throw new UserError('Invalid position')
+  }
+}
+declare global {
+  interface Player {
+    "handleCommand": (str: any) => Promise<void>
+  }
+  interface Entity {
+    "selectorString": (str: any) => any
+  }
+  interface Server {
+    "handleCommand": (str: any) => Promise<void>
+    "selector": (type: any, opt: any, selfEntityId: any) => any
+    "selectorString": (str: any, pos?: any, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => any
+    "posFromString": (str: any, pos: any) => any
   }
 }

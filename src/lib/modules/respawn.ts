@@ -1,4 +1,4 @@
-module.exports.player = function (player, serv, { version }) {
+export const player = function (player: Player, serv, { version }: Server) {
   const registry = require('prismarine-registry')(version)
 
   player._client.on('client_command', (data) => {
@@ -31,4 +31,6 @@ module.exports.player = function (player, serv, { version }) {
       })
     }
   })
+}
+declare global {
 }

@@ -1,7 +1,7 @@
-const Vec3 = require('vec3').Vec3
+import { Vec3 } from 'vec3'
 const UserError = require('flying-squid').UserError
 
-module.exports.server = (serv) => {
+export const server = (serv) => {
   serv.commands.add({
     base: 'teleport',
     aliases: ['tp'],
@@ -48,4 +48,6 @@ module.exports.server = (serv) => {
       }
     }
   })
+}
+declare global {
 }
