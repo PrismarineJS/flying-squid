@@ -1,9 +1,9 @@
 /* global BigInt */
 import { Vec3 } from 'vec3'
 
-import crypto from 'crypto'
-import playerDat from '../playerDat'
-import convertInventorySlotId from '../convertInventorySlotId'
+import * as crypto from 'crypto'
+import * as playerDat from '../playerDat'
+import * as convertInventorySlotId from '../convertInventorySlotId'
 import * as plugins from './index'
 import { skipMcPrefix } from '../utils'
 
@@ -54,7 +54,7 @@ export const player = async function (player: Player, serv: Server, settings: Op
   async function addPlayer () {
     player.type = 'player'
     player.crouching = false // Needs added in prismarine-entity later
-    player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
+    player.op = settings['everybody-op'] ?? false
     player.username = player._client.username
     player.uuid = player._client.uuid
 

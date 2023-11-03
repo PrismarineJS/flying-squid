@@ -32,7 +32,7 @@ export const server = function (serv: Server, settings: Options) {
   }
 }
 
-export const player = async function (player: Player, serv: Server) {
+export const player = function (player: Player, serv: Server) {
   player.prevGameMode = 255
   player.gameMode = serv.gameMode
   player.findSpawnPoint = async () => {

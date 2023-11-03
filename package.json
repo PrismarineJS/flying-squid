@@ -2,7 +2,8 @@
   "name": "flying-squid",
   "description": "A minecraft server written in node.js",
   "version": "1.8.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": "dist/app.js",
   "author": "mhsjlw <mhsjlw@users.noreply.github.com>",
   "contributors": [
     {
@@ -10,7 +11,6 @@
       "email": "romain.rom1@gmail.com"
     }
   ],
-  "bin": "app.js",
   "scripts": {
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",

@@ -469,12 +469,7 @@ const getNewPlayerData = (player, snakeCase, theFlattening) => {
       }
     }
 
-    const newDataCompressed = await gzip(nbt.writeUncompressed(newUncompressedData))
-    try {
-      await fs.promises.mkdir(`${worldFolder}/playerdata/`, { recursive: true })
-    } catch (err) {
-      // todo fix browserfs behavior instead
-    }
-    await fs.promises.writeFile(`${worldFolder}/playerdata/${player.uuid}.dat`, newDataCompressed)
-  }
+  return newUncompressedData
 }
+
+export { read, save, playerDefaults, getNewPlayerData }

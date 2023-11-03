@@ -1,4 +1,6 @@
 export const server = function (serv: Server, settings: Options) {
+  const { plugins: externalPlugins = {} } = settings
+
   serv.plugins = {}
   serv.pluginCount = 0
   serv.externalPluginsLoaded = false
@@ -18,8 +20,8 @@ export const server = function (serv: Server, settings: Options) {
     if (serv.externalPluginsLoaded && plugin.server) serv.plugins[name].server.call(plugin, serv, settings)
   }
 
-  Object.keys(settings.plugins).forEach((p) => {
-    if (settings.plugins[p].disabled) return
+  Object.keys(externalPlugins).forEach((p) => {
+    if (externalPlugins[p].disabled) return
     try {
       require.resolve(p) // Check if it exists, if not do catch, otherwise jump to bottom
     } catch (err) {
@@ -28,10 +30,10 @@ export const server = function (serv: Server, settings: Options) {
       } catch (err) {
         serv.err(`Failed to load plugin: cannot find plugin ${p}`)
       }
-      serv.addPlugin(p, require('../../plugins/' + p), settings.plugins[p])
+      serv.addPlugin(p, require('../../plugins/' + p), externalPlugins[p])
       return
     }
-    serv.addPlugin(p, require(p), settings.plugins[p])
+    serv.addPlugin(p, require(p), externalPlugins[p])
   })
 
   Object.keys(serv.plugins).forEach((p) => {

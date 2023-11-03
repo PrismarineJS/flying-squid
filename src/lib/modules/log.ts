@@ -1,9 +1,10 @@
 import fs from 'fs'
 
-const timeStarted = Math.floor(Date.now() / 1000).toString()
 import path from 'path'
 import moment from 'moment'
 import colors from 'colors'
+
+const timeStarted = Math.floor(Date.now() / 1000).toString()
 
 const isInNode = typeof process !== 'undefined' && !process.browser && process.platform !== 'browser'
 
@@ -73,15 +74,16 @@ export const server = function (serv: Server, settings: Options) {
       const orig = console.log
       return function () {
         readline.cursorTo(process.stdout, 0)
-        let tmp
-        try {
-          tmp = process.stdout
-          // @ts-ignore
-          process.stdout = process.stderr
-          orig.apply(console, arguments)
-        } finally {
-          process.stdout = tmp
-        }
+        // let tmp
+        // try {
+        //   tmp = process.stdout
+        //   // @ts-ignore
+        //   process.stdout = process.stderr
+        //   orig.apply(console, arguments)
+        // } finally {
+        //   process.stdout = tmp
+        // }
+        orig.apply(console, arguments)
         rl.prompt(true)
       }
     })()

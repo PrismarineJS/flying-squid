@@ -6,7 +6,7 @@ import { promisify } from 'util'
 import fs from 'fs'
 import { level, Anvil as AnvilLoader } from 'prismarine-provider-anvil'
 
-import playerDat from '../playerDat'
+import * as playerDat from '../playerDat'
 import { generateSpiralMatrix } from '../../utils'
 import { Chunk, World } from 'prismarine-world/types/world'
 import WorldLoader from 'prismarine-world'
@@ -18,7 +18,7 @@ import { Vec3 } from 'vec3'
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
-export const server = async function (serv: Server, options: Options = {}) {
+export const server = async function (serv: Server, options: Options) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const World = require('prismarine-world')(version)
   const mcData = require('minecraft-data')(version)
@@ -45,7 +45,7 @@ export const server = async function (serv: Server, options: Options = {}) {
         Version: { Name: options.version },
         generatorName: generation.name === 'superflat' ? 'flat' : generation.name === 'diamond_square' ? 'default' : 'customized',
         LevelName: options.levelName,
-        allowCommands: true
+        allowCommands: true,
       })
     }
   } else { seed = newSeed }
@@ -53,8 +53,8 @@ export const server = async function (serv: Server, options: Options = {}) {
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
-  serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder), options.savingInterval)
-  serv.netherworld = new World(generations.nether(generation.options))
+  serv.overworld = new World(generationModule(generation.options, regionFolder === undefined ? null : new Anvil(regionFolder), options.savingInterval)) as CustomWorld
+  serv.netherworld = new World(generations.nether((generation.options as any))) as CustomWorld
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {

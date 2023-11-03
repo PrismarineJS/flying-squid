@@ -1,5 +1,7 @@
 import { Vec3 } from 'vec3'
 import UserError from '../user_error'
+import MinecraftData from 'minecraft-data'
+import portalDetector from '../portal_detector'
 
 export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
@@ -31,7 +33,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
 }
 
 export const server = function (serv: Server, { version }: Options) {
-  const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
+  const { generatePortal, addPortalToWorld, detectFrame } = portalDetector(version)
   const registry = require('prismarine-registry')(version)
 
   const obsidianType = registry.blocksByName.obsidian.id
@@ -39,7 +41,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   let portalX: number
   let portalZ: number
-  if (registry.supportFeature('theFlattening')) {
+  if (serv.supportFeature('theFlattening')) {
     const portalBlock = registry.blocksByName.nether_portal
     portalX = portalBlock.minStateId
     portalZ = portalBlock.minStateId + 1

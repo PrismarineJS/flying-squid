@@ -1,7 +1,6 @@
 import moment from 'moment'
 import needle from 'needle'
-
-const UserError = require('flying-squid').UserError
+import UserError from '../user_error'
 
 export const server = function (serv: Server, settings: Options) {
   serv.ban = async (uuid, reason) => {

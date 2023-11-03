@@ -1,6 +1,6 @@
 const PLAY = require('minecraft-protocol').states.PLAY
 
-export const player = (player) => {
+export const player = (player: Player) => {
   player.sendBrand = async (brand = 'flying-squid') => {
     if (player._client.state !== PLAY) throw new Error(`The state of the player must be PLAY (actual state: ${player._client.state})`)
     player._client.writeChannel((

@@ -112,7 +112,7 @@ module.exports = (version) => {
     }
   }
 
-  function addPortalToWorld (world, portal, additionalAir, additionalObsidian, setBlockType = null) {
+  function addPortalToWorld (world, portal, additionalAir, additionalObsidian, /** @type {any} */setBlockType = null) {
     if (setBlockType === null) { setBlockType = world.setBlockType.bind(world) }
     const { bottom, left, right, top, air } = portal
 

@@ -1,7 +1,7 @@
 import { Vec3 } from 'vec3'
 
-const UserError = require('flying-squid').UserError
 import colors from 'colors'
+import UserError from '../user_error'
 
 export const player = function (player: Player, serv: Server) {
   function attackEntity (entityId) {

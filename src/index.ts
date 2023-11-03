@@ -18,10 +18,16 @@ if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
 }
 
-function createMCServer (options = {}) {
+type InputOptions = Partial<Options> & Pick<Options, 'version'>
+
+export function createMCServer (options: InputOptions) {
   const mcServer = new MCServer()
-  mcServer.connect(options)
-  return mcServer
+  mcServer.connect({
+    // defaults
+    "max-entities": 100,
+    ...options
+  })
+  return mcServer as unknown as Server
 }
 
 class MCServer extends EventEmitter {
