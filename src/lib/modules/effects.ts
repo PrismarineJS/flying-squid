@@ -46,7 +46,7 @@ export const entity = function (entity: Entity, serv: Server) {
     } else return false
   }
 
-  entity.removeEffect = (effectId, opt) => {
+  entity.removeEffect = (effectId, opt?) => {
     clearTimeout(entity.effects[effectId].timeout)
     entity.effects[effectId] = null
     entity.sendRemoveEffect(effectId, opt)
@@ -89,7 +89,7 @@ export const server = function (serv: Server, options: Options) {
           })
         })
       }
-      const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? targets[0].username : 'entity') : 'entities')
+      const chatSelect = (targets.length === 1 ? (targets[0].type === 'player' ? (targets[0] as Player).username : 'entity') : 'entities')
       if (params[2] === 'clear') {
         if (ctx.player) ctx.player.chat('Remove all effects from ' + chatSelect + '.')
         else serv.info('Remove all effects from ' + chatSelect + '.')
@@ -111,6 +111,6 @@ declare global {
     "sendEffect": (effectId: any, { amplifier, duration, particles, whitelist, blacklist }?: { amplifier?: number | undefined; duration?: number | undefined; particles?: boolean | undefined; whitelist?: any; blacklist?: any[] | undefined }) => void
     "sendRemoveEffect": (effectId: any, { whitelist, blacklist }?: { whitelist?: any; blacklist?: any[] | undefined }) => void
     "addEffect": (effectId: any, opt?: {}) => boolean
-    "removeEffect": (effectId: any, opt: any) => void
+    removeEffect: (effectId: any, opt?: any) => void
   }
 }
