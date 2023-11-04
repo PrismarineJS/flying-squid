@@ -1,10 +1,10 @@
-const UserError = require('flying-squid').UserError
 import UUID from 'uuid-1345'
 import { skipMcPrefix } from '../utils'
 import { Vec3 } from 'vec3'
 
 import * as plugins from './index'
 import { CustomWorld } from './world'
+import UserError from '../user_error'
 
 export const server = function (serv: Server, options: Options) {
   const { version } = options

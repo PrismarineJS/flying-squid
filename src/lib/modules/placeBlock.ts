@@ -33,6 +33,10 @@ export const server = (serv: Server, { version }: Options) => {
   serv.onItemPlace = (name, handler, warn = true) => {
     let item = registry.itemsByName[name]
     if (!item) item = registry.blocksByName[name]
+    if (!item && warn) {
+      serv.warn(`Unknown item or block ${name}`)
+      return
+    }
     if (itemPlaceHandlers.has(item.id) && warn) {
       serv.warn(`onItemPlace handler was registered twice for ${name}`)
     }
@@ -65,6 +69,23 @@ export const server = (serv: Server, { version }: Options) => {
       }
       return data
     }
+
+    // Register default handlers for item -> block conversion
+    for (const name of Object.keys(registry.itemsByName)) {
+      const block = registry.blocksByName[name]
+      if (block) {
+        if (block.states && block.states.length > 0) {
+          serv.onItemPlace(name, ({ properties }) => {
+            const data = block.defaultState! - block.minStateId!
+            return { id: block.id, data: serv.setBlockDataProperties(data, block.states, properties) }
+          })
+        } else {
+          serv.onItemPlace(name, () => {
+            return { id: block.id, data: 0 }
+          })
+        }
+      }
+    }
   }
 
   const blockInteractHandler = new Map()
@@ -85,6 +106,50 @@ export const server = (serv: Server, { version }: Options) => {
       serv.warn(`onBlockInteraction handler was registered twice for ${name}`)
     }
     blockInteractHandler.set(block.id, handler)
+  }
+
+  const PrismarineBlock = require('prismarine-block')(version)
+  const { blocksArray: blocks } = registry
+  // todo use map for speed
+  // doors/gates opening/closing
+  const blocksWithOpenState = blocks.filter(b => ['_door', '_gate', '_trapdoor'].some(predicate => b.name.endsWith(predicate))).map((b) => b.name)
+  for (const block of blocksWithOpenState) {
+    serv.onBlockInteraction(block, ({ block, player }) => {
+      const thisBlock = block
+      const toggleDoorState = async (pos) => {
+        const block = await player.world.getBlock(pos)
+        if (block?.type !== thisBlock.type) return
+        const props = {
+          ...block.getProperties(),
+        }
+        props.open = !props.open
+        const newBlock = PrismarineBlock.fromProperties(block.type, props, block.biome.id)
+        player.setBlock(block.position, newBlock.stateId)
+      }
+      toggleDoorState(block.position)
+      if (block.getProperties().half) {
+        toggleDoorState(block.position.offset(0, block.getProperties().half === 'upper' ? -1 : 1, 0))
+      }
+      return true
+    })
+  }
+
+  const commandBlocks = blocks.filter(b => b.name.endsWith('command_block')).map((b) => b.name)
+  for (const block of commandBlocks) {
+    serv.onBlockInteraction(block, ({ block, player }) => {
+      const pos = block.position
+      const key = `${pos.x},${pos.y},${pos.z}`
+      const entity = serv.overworld.blockEntityData[key]
+      // todo use block.entity
+      if (entity) {
+        // todo simplify
+        const command = entity.value.Command.value
+        player.chat(command)
+      } else {
+        player.chat('No entity data')
+      }
+      return true
+    })
   }
 }
 
@@ -136,7 +201,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
 
     if (!blocks[id]) return
 
-    const sound = 'dig.' + (materialToSound[blocks[id].material] || 'stone')
+    const sound = 'dig.' + (materialToSound[blocks[id].material ?? ''] || 'stone')
     serv.playSound(sound, player.world, placedPosition.offset(0.5, 0.5, 0.5), {
       pitch: 0.8
     })

@@ -10,10 +10,8 @@ const isInNode = typeof process !== 'undefined' && !process.browser && process.p
 
 const _servers: Server[] = []
 
-/** @type {typeof import("readline") | undefined} */
-let readline
-/** @type {import("readline").Interface | undefined} */
-let rl
+let readline: typeof import("readline")
+let rl: import("readline").Interface
 if (isInNode) {
   import(/* webpackIgnore: true */ 'exit-hook').then((hook) => {
     hook.default(() => {

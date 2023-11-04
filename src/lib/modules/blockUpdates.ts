@@ -2,7 +2,7 @@ import { performance } from 'perf_hooks'
 
 let multiBlockChangeHasTrustEdges
 class ChunkUpdates {
-  chunks: Map<string, { chunkX, chunkZ, updates }>
+  chunks: Map<string, { chunkX, chunkZ, chunkY, updates }>
   constructor() {
     this.chunks = new Map()
   }

@@ -1,10 +1,6 @@
 import { EventEmitter } from 'events'
 import { Client } from 'minecraft-protocol'
 
-type OptionsType = Partial<{
-
-}>
-
 declare global {
   interface Server extends EventEmitter { }
   interface Player extends EventEmitter, Entity {

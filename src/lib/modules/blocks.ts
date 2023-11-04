@@ -52,17 +52,21 @@ export const player = function (player: Player, serv: Server) {
 }
 
 export const server = function (serv: Server, { version }: Options) {
-  const mcData = require('minecraft-data')(version)
-  const blocks = mcData.blocks
+  const registry = require('prismarine-registry')(version)
+  const blocks = registry.blocks
 
+  const postFlatenning = registry.supportFeature('theFlattening');
+  // todo implement!
+  const usage = postFlatenning ? '/setblock <x> <y> <z> <id> [data]' : '/setblock <x> <y> <z> <block> |replace|keep|destroy|'
   serv.commands.add({
     base: 'setblock',
     info: 'set a block at a position',
-    usage: '/setblock <x> <y> <z> <id> [data]',
+    usage: usage,
     op: true,
     tab: ['blockX', 'blockY', 'blockZ', 'block', 'number'],
     parse (str) {
       const results = str.match(/^(~|~?-?[0-9]+) (~|~?-?[0-9]+) (~|~?-?[0-9]+) ([\w_:0-9]+)(?: ([0-9]{1,3}))?/)
+      // todo parse properties & nbt!
       if (!results) return false
       return results
     },
@@ -74,7 +78,9 @@ export const server = function (serv: Server, { version }: Options) {
       const blockParam = params[4]
       const id = isNaN(+blockParam) ? registry.blocksByName[skipMcPrefix(blockParam)]?.id : +blockParam
       const data = parseInt(params[5] || 0, 10)
-      const stateId = registry.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+      const stateId = postFlatenning
+        ? data ? (blocks[id].minStateId! + data) : blocks[id].defaultState!
+        : (id << 4 | data)
 
       if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), stateId)
       else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), stateId)

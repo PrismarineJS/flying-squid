@@ -1,10 +1,10 @@
+import UserError from '../user_error'
 import { skipMcPrefix } from '../utils'
-
-const UserError = require('flying-squid').UserError
+import PrismarineItem from 'prismarine-item'
 
 export const server = function (serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
-  const Item = require('prismarine-item')(version)
+  const Item = PrismarineItem(version)
   serv.entityMaxId = 0
   serv.players = []
   serv.uuidToPlayer = {}
@@ -127,7 +127,7 @@ export const server = function (serv: Server, { version }: Options) {
         let slotToUpdateFound = false
         for (const slot of player.inventory.slots) {
           if (!slot) continue
-          if (slot.type === parseInt(newItem.type)) {
+          if (slot.type === newItem.type) {
             slot.count += parseInt(count)
             player.inventory.updateSlot(slot.slot, slot)
             slotToUpdateFound = true

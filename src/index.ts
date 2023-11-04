@@ -5,6 +5,9 @@ import Command from './lib/command'
 import * as plugins from './lib/modules'
 import { EventEmitter } from 'events'
 import { Server as ProtocolServer } from 'minecraft-protocol'
+import { IndexedData } from 'minecraft-data'
+import './types' // include Server declarations from all modules
+import './modules'
 
 if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
   console.error('[\x1b[31mCRITICAL\x1b[0m] Node.JS 18 or newer is required')
@@ -52,6 +55,7 @@ class MCServer extends EventEmitter {
 
     server.commands = new Command({})
     server._server = createServer(options)
+    server.mcData = mcData
 
     const promises: Promise<any>[] = []
     for (const plugin of plugins.builtinPlugins) {
@@ -75,6 +79,7 @@ class MCServer extends EventEmitter {
 
 declare global {
   interface Server {
+    mcData: IndexedData
     commands: Command
     pluginsReady: boolean
     _server: ProtocolServer

@@ -1,9 +1,11 @@
 import {Vec3} from 'vec3'
+import PrismarineItem from 'prismarine-item'
+import PrismarineWindows from 'prismarine-windows'
 
 export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
-  const Item = require('prismarine-item')(version)
-  const windows = require('prismarine-windows')(version)
+  const Item = PrismarineItem(version)
+  const windows = PrismarineWindows(version)
 
   player.heldItemSlot = 0
   player.heldItem = new Item(256, 1)

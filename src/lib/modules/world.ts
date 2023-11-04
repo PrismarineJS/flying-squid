@@ -273,7 +273,7 @@ module.exports.player = function (player, serv, settings) {
       .catch((err) => setTimeout(() => { throw err }), 0)
   }
 
-  // todo as I understand need to handle difficulty packet instead?
+  // todo remove
   player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
     player.view = newDistance
     if (unloadFirst) player._unloadAllChunks()

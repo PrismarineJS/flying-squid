@@ -1,5 +1,5 @@
 import { Vec3 } from 'vec3'
-const UserError = require('flying-squid').UserError
+import UserError from '../user_error'
 
 export const server = (serv) => {
   serv.commands.add({

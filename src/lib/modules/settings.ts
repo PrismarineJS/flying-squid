@@ -40,6 +40,7 @@ export const player = function (player: Player, serv: Server) {
   }
   player._client.on('settings', ({ viewDistance }) => {
     player.view = viewDistance
+    player.sendRestMap()
   })
 }
 declare global {

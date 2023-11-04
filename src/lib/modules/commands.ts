@@ -1,5 +1,5 @@
-const UserError = require('flying-squid').UserError
 import colors from 'colors'
+import UserError from '../user_error'
 
 export const player = function (player: Player, serv: Server, { version }: Options) {
   player.handleCommand = async (str) => {

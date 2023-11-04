@@ -18,7 +18,7 @@ export const server = (serv: Server, { version }: Options) => {
           location: placedPosition
         })
 
-        const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
+        const data = serv.setBlockDataProperties(block.defaultState! - block.minStateId!, block.states, properties)
         return { id: block.id, data }
       }
       if (registry.supportFeature('multiTypeSigns')) {
