@@ -170,7 +170,7 @@ declare global {
     pitch: number
     onGround: boolean
     "sendSelfPosition": () => void
-    "sendPosition": (position: Vec3, onGround: any, teleport?: boolean) => any
-    "teleport": (pos: any) => void
+    "sendPosition": (position: Vec3, onGround: boolean, teleport?: boolean) => any
+    "teleport": (pos: Vec3) => void
   }
 }

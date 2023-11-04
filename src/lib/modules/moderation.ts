@@ -20,7 +20,7 @@ export const server = function (serv: Server, settings: Options) {
       }
       Object.keys(serv.players)
         .filter(uuid => serv.players[uuid]._client.socket?.remoteAddress === IP)
-        .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket?.remoteAddress].reason))
+        .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket?.remoteAddress!].reason))
       return true
     } else return false
   }
@@ -88,7 +88,7 @@ export const server = function (serv: Server, settings: Options) {
       // get player, by non-case-sensitive username
       const player = serv.players.find(player => player.username.toLowerCase() === inputUsername.toLowerCase())
       if (player === undefined || player === null) {
-        const arr = serv.selectorString(params)
+        const arr = serv.selectorString(params) as Player[]
         if (arr.length === 0) throw new UserError('Could not find player')
 
         arr.map(entity => {
@@ -115,13 +115,12 @@ export const server = function (serv: Server, settings: Options) {
     op: true,
     parse (params) {
       if (!params.match(/([a-zA-Z0-9_]+)/)) return false
-      return params
+      return params.split(' ')
     },
     action (params) {
-      params = params.split(' ')
       const player = serv.getPlayer(params[0])
       if (player === undefined || player === null) {
-        const arr = serv.selectorString(params)
+        const arr = serv.selectorString(params[0]) as Player[]
         if (arr.length === 0) throw new UserError('Could not find player')
 
         arr.map(entity => {
@@ -291,7 +290,7 @@ export const server = function (serv: Server, settings: Options) {
         if (ctx.player) {
           ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
           pllist.forEach(e => {
-            ctx.player.chat(e)
+            ctx.player!.chat(e)
           })
         } else {
           serv.info(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
@@ -303,7 +302,7 @@ export const server = function (serv: Server, settings: Options) {
         if (ctx.player) {
           ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
           iplist.forEach(e => {
-            ctx.player.chat(e)
+            ctx.player!.chat(e)
           })
         } else {
           serv.info(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)

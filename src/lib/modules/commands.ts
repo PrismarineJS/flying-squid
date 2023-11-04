@@ -1,5 +1,6 @@
 import colors from 'colors'
 import UserError from '../user_error'
+import { Vec3 } from 'vec3'
 
 export const player = function (player: Player, serv: Server, { version }: Options) {
   player.handleCommand = async (str) => {
@@ -12,6 +13,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
     }
   }
 }
+function changeType<T>(arg): asserts arg is T { }
 
 export const entity = function (entity: Entity, serv: Server) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
@@ -32,7 +34,7 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'ping',
     info: 'to pong!',
     usage: '/ping [number]',
-    action (params, ctx) {
+    action(params, ctx) {
       const num = params[0] * 1 + 1
 
       let str = 'pong'
@@ -48,9 +50,9 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'for modpe commands',
     usage: '/modpe <params>',
     onlyPlayer: true,
-    parse (str) { return str || false },
-    action (str, ctx) {
-      ctx.player.emit('modpe', str)
+    parse(str) { return str || false },
+    action(str, ctx) {
+      ctx.player!.emit('modpe', str)
     }
   })
 
@@ -58,7 +60,7 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'version',
     info: 'to get version of the server',
     usage: '/version',
-    action () {
+    action() {
       return 'This server is running flying-squid version ' + version
     }
   })
@@ -67,7 +69,7 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'bug',
     info: 'to bug report',
     usage: '/bug',
-    action () {
+    action() {
       return 'Report bugs or issues here: https://github.com/PrismarineJS/flying-squid/issues'
     }
   })
@@ -77,10 +79,10 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Get entities id from selector like @a',
     usage: '/selector <selector>',
     op: true,
-    parse (str) {
+    parse(str) {
       return str || false
     },
-    action (sel, ctx) {
+    action(sel, ctx) {
       const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
       if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
       else serv.info(JSON.stringify(arr.map(a => a.id)))
@@ -93,7 +95,7 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'to show all commands',
     usage: '/help [command]',
     tab: ['command'],
-    parse (str) {
+    parse(str) {
       const params = str.split(' ')
       const page = parseInt(params[params.length - 1])
       if (page) {
@@ -102,7 +104,7 @@ export const server = function (serv: Server, { version }: Options) {
       const search = params.join(' ')
       return { search, page: (page && page - 1) || 0 }
     },
-    action ({ search, page }, ctx) {
+    action({ search, page }, ctx) {
       if (page < 0) return 'Page # must be >= 1'
       const hash = serv.commands.uniqueHash
 
@@ -119,7 +121,7 @@ export const server = function (serv: Server, { version }: Options) {
         if (ctx.player) ctx.player.chat(usage + ': ' + info)
         else serv.info(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
-        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH).toString()
+        const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
         found = found.sort()
         if (found.indexOf('search') !== -1) {
@@ -128,7 +130,7 @@ export const server = function (serv: Server, { version }: Options) {
           else serv.info(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
           if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
-          else serv.info(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(page + 1) + colors.green(' of ') + colors.white(totalPages) + colors.green(' ]=--'))
+          else serv.info(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(String(page + 1)) + colors.green(' of ') + colors.white(String(totalPages)) + colors.green(' ]=--'))
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
           if (found[i] === search) continue
@@ -147,7 +149,7 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Stop the server',
     usage: '/stop',
     op: true,
-    action () {
+    action() {
       serv.quit('Server closed')
       process.exit()
     }
@@ -158,10 +160,10 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Broadcast a message',
     usage: '/say <message>',
     op: true,
-    parse (params) {
+    parse(params) {
       return params || false
     },
-    action (params, ctx) {
+    action(params, ctx) {
       const who = ctx.player ? ctx.player.username : 'Server'
       serv.broadcast(`[${who}] ` + params)
       serv.info(`[CHAT]: [${who}] ` + params)
@@ -173,17 +175,17 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Displays a message about yourself',
     usage: '/me <message>',
     op: false,
-    parse (params) {
+    parse(params) {
       return params || false
     },
-    action (params, ctx) {
+    action(params, ctx) {
       const who = ctx.player ? ctx.player.username : 'Server'
       serv.broadcast(`* ${who} ` + params)
       serv.info(`* ${who} ` + params)
     }
   })
 
-  function shuffleArray (array) {
+  function shuffleArray(array) {
     let currentIndex = array.length
     let temporaryValue
     let randomIndex
@@ -213,7 +215,7 @@ export const server = function (serv: Server, { version }: Options) {
       : (type === 'all' || type === 'entity' ? Object.keys(serv.entities).length : 1)
 
     const pos = opt.pos
-    let sample
+    let sample!: Entity[]
     if (type === 'all') sample = serv.players
     else if (type === 'self') sample = serv.players.filter(p => p.id === selfEntityId)
     else if (type === 'random' || type === 'near') sample = serv.players.filter(p => p.health !== 0)
@@ -251,6 +253,7 @@ export const server = function (serv: Server, { version }: Options) {
     })
 
     sample = sample.filter(s => {
+      changeType<Player & Entity & { team, scores }>(s) // TODO implement team & scores
       if ((notudf(opt.radius) && s.position.distanceTo(pos) > opt.radius) ||
         (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
         (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
@@ -280,7 +283,7 @@ export const server = function (serv: Server, { version }: Options) {
       return !fail
     })
 
-    if (type === 'near') sample.sort((a, b) => a.position.distanceTo(opt.pos) > b.position.distanceTo(opt.pos))
+    if (type === 'near') sample.sort((a, b) => a.position.distanceTo(opt.pos) - b.position.distanceTo(opt.pos))
     else if (type === 'random') sample = shuffleArray(sample)
     else sample = sample.reverse() // Front = newest
 
@@ -294,8 +297,8 @@ export const server = function (serv: Server, { version }: Options) {
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
-    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
     if (match === null) throw new UserError('Invalid selector format')
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
     const typeConversion = {
       a: 'all',
       r: 'random',
@@ -339,7 +342,8 @@ export const server = function (serv: Server, { version }: Options) {
     }
 
     optPair.forEach(({ key, val }) => {
-      if (['x', 'y', 'z'].indexOf(key) !== -1) pos[key] = val
+      // todo
+      if (['x', 'y', 'z'].indexOf(key) !== -1 && pos) pos[key] = val
       else if (!optConversion[key]) {
         data[key] = val
       } else {
@@ -360,15 +364,15 @@ export const server = function (serv: Server, { version }: Options) {
 }
 declare global {
   interface Player {
-    "handleCommand": (str: any) => Promise<void>
+    "handleCommand": (str: string) => Promise<void>
   }
   interface Entity {
-    "selectorString": (str: any) => any
+    "selectorString": (str: string) => Entity[]
   }
   interface Server {
-    "handleCommand": (str: any) => Promise<void>
-    "selector": (type: any, opt: any, selfEntityId: any) => any
-    "selectorString": (str: any, pos?: any, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => any
-    "posFromString": (str: any, pos: any) => any
+    "handleCommand": (str: string) => Promise<void>
+    "selector": (type: any, opt: any, selfEntityId: any) => Entity[]
+    "selectorString": (str: string, pos?: Vec3, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => Entity[]
+    "posFromString": (str: string, pos: number) => any
   }
 }

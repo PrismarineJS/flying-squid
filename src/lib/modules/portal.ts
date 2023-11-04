@@ -79,12 +79,12 @@ export const server = function (serv: Server, { version }: Options) {
     parse (str, ctx) {
       const pars = str.split(' ')
       if (pars.length !== 6) { return false }
-      let [x, y, z, direction, width, height] = pars;
+      let [x, y, z, directionStr, width, height] = pars;
       [x, y, z] = [x, y, z].map((val, i) => serv.posFromString(val, ctx.player.position[['x', 'y', 'z'][i]]))
-      const bottomLeft = new Vec3(x, y, z)
-      if (direction !== 'x' && direction !== 'z') { throw new UserError('Wrong Direction') }
-      direction = direction === 'x' ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)
-      return { bottomLeft, direction, width, height }
+      const bottomLeft = new Vec3(+x, +y, +z)
+      if (directionStr !== 'x' && directionStr !== 'z') { throw new UserError('Wrong Direction') }
+      const direction = directionStr === 'x' ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)
+      return { bottomLeft, direction, width: +width, height: +height }
     },
     async action ({ bottomLeft, direction, width, height }, ctx) {
       if (width > 21 || height > 21) { throw new UserError('Portals can only be 21x21!') }

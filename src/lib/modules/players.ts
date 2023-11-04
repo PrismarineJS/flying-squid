@@ -105,8 +105,8 @@ export const server = function (serv: Server, { version }: Options) {
     usage: '/give <player> <item> [count]',
     tab: ['player', 'item', 'number'],
     op: true,
-    parse (args, ctx) {
-      args = args.split(' ')
+    parse (_args, ctx) {
+      const args = _args.split(' ')
       if (args[0] === '') return false
       const players = serv.getPlayers(args[0], ctx.player)
       if (players.length < 1) throw new UserError('Player not found')
@@ -114,7 +114,7 @@ export const server = function (serv: Server, { version }: Options) {
       return {
         players,
         item: skipMcPrefix(args[1]),
-        count: args[2] ? args[2] : 1
+        count: args[2] ? +args[2] : 1
       }
     },
     action ({ players, item, count }) {
@@ -128,7 +128,7 @@ export const server = function (serv: Server, { version }: Options) {
         for (const slot of player.inventory.slots) {
           if (!slot) continue
           if (slot.type === newItem.type) {
-            slot.count += parseInt(count)
+            slot.count += count
             player.inventory.updateSlot(slot.slot, slot)
             slotToUpdateFound = true
             break
@@ -148,8 +148,8 @@ export const server = function (serv: Server, { version }: Options) {
     usage: '/enchant <targets> <enchantment> [level]',
     tab: ['selector', 'item_enchantment', 'number'],
     op: true,
-    parse (args, ctx) {
-      args = args.split(' ')
+    parse (_args, ctx) {
+      const args = _args.split(' ')
       if (args[0] === '') return false
       const enchantment = registry.enchantmentsByName[skipMcPrefix(args[1])]
       if (!enchantment) throw new UserError('No such enchantment')

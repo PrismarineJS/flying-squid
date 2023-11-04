@@ -1,10 +1,33 @@
-//@ts-check
 import UserError from './user_error'
 
+type Ctx<P extends boolean> = P extends true ? {
+  player: Player
+} : {
+  player?: Player
+}
+
+type NonFalsey<T> = T extends false ? never : NonNullable<T>
+
+type AddParams<T, P extends boolean = false> = {
+  base: string,
+  aliases?: string[],
+  info: string,
+  usage: string,
+  onlyPlayer?: P
+  op?: boolean
+  parse?: (string: string, ctx: Ctx<P>) => T
+  action: (data: NonFalsey<T>, ctx: Ctx<P>) => any
+  tab?: string[]
+}
+
 class Command {
-  constructor (params, parent, hash) {
-    this.params = params
-    this.parent = parent
+  hash: any
+  uniqueHash: any
+  parentBase: any
+  base: any
+  path: string
+
+  constructor (public params, public parent?, hash?) {
     this.hash = parent ? parent.hash : {}
     this.uniqueHash = parent ? parent.uniqueHash : {}
     this.parentBase = (this.parent && this.parent.base && this.parent.base + ' ') || ''
@@ -21,7 +44,7 @@ class Command {
     return undefined
   }
 
-  async use (command, ctx = {}, op = true) {
+  async use (command, ctx: Ctx<false> = {}, op = true) {
     const resultsFound = this.find(command)
     let parsedResponse
     if (resultsFound) {
@@ -70,11 +93,11 @@ class Command {
     this.uniqueHash[this.base] = this
   }
 
-  add (params) {
+  add <T, P extends boolean>(params: AddParams<T, P>) {
     return new Command(params, this)
   }
 
-  space (end) {
+  space (end = false) {
     const first = !(this.parent && this.parent.parent)
     return this.params.merged || (!end && first) ? '' : ' '
   }

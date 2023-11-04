@@ -141,7 +141,7 @@ export const server = function (serv: Server, options: Options) {
     parse (str) {
       const args = str.split(' ')
       if (args.length !== 2) { return false }
-      return { number: args[0], name: args[1] }
+      return { number: +args[0], name: args[1] }
     },
     action ({ number, name }, ctx) {
       if (Object.keys(serv.entities).length > options['max-entities'] - number) { throw new UserError('Too many mobs !') }
