@@ -49,12 +49,15 @@ export const server = async function (serv: Server, options: Options) {
       })
     }
   } else { seed = newSeed }
-  generation.options.seed = seed
-  generation.options.version = version
-  serv.emit('seed', generation.options.seed)
-  const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
-  serv.overworld = new World(generationModule(generation.options, regionFolder === undefined ? null : new Anvil(regionFolder), options.savingInterval)) as CustomWorld
-  serv.netherworld = new World(generations.nether((generation.options as any))) as CustomWorld
+  const generationOptions = {
+    ...generation.options,
+    seed,
+    version,
+  }
+  serv.emit('seed', generationOptions.seed)
+  const generationModule: (options) => any = generations[generation.name] ? generations[generation.name] : require(generation.name)
+  serv.overworld = new World(generationModule(generationOptions), regionFolder === undefined ? null : new Anvil(regionFolder), options.savingInterval as any) as CustomWorld
+  serv.netherworld = new World(generations.nether(generationOptions)) as CustomWorld
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {
