@@ -105,10 +105,15 @@ export const server = function (serv: Server, { version }: Options) {
 }
 declare global {
   interface Player {
+    /** change the block at position `position` to `blockType` and `blockData`,    * ,    * this will not change the block for the user himself. It is mainly useful when a user places a block,    * and only needs to send it to other players on the server    */
     "changeBlock": (position: any, blockType: any, blockData: any) => Promise<void>
+    /** change the block at position `position` to `blockType` and `blockData`,    * ,    * this will not make any changes on the server's world and only sends it to the user as a "fake" or "local" block    */
     "sendBlock": (position: any, blockStateId: any) => any
+    /** Saves block in world and sends block update to all players of the same world. */
     "setBlock": (position: any, stateId: any) => any
+    /** Set the block action at position `position` to `actionId` and `actionParam`.,    * ,    * ``blockType`` is only required when the block at the location is a fake block.,    * This will only be caused by using ``player.sendBlock``.,    * ,    * This will not make any changes to the server's world and only sends it to the user as a local action.    */
     "sendBlockAction": (position: any, actionId: any, actionParam: any, blockType: any) => Promise<void>
+    /** Sets a block action and sends the block action to all players in the same world.,    * ,    * This will not make any changes to the server's world    */
     "setBlockAction": (position: any, actionId: any, actionParam: any) => any
   }
 }

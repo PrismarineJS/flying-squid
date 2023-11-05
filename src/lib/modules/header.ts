@@ -11,6 +11,7 @@ export const player = function (player: Player, serv: Server, settings: Options)
 }
 declare global {
   interface Player {
+    /** @internal */
     "playerlistUpdateText": (header: any, footer: any) => void
   }
 }

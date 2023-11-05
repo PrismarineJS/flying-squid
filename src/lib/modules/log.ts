@@ -119,11 +119,17 @@ export const player = function (player: Player, serv: Server) {
 }
 declare global {
   interface Server {
+    /** You can override this function so you can process the message before sending it to the console. */
     formatMessage (message: any): any
+    /** Logs a `message` */
     "log": (message: any) => void
+    /** Logs a `message` as info */
     "info": (message: any) => void
+    /** Logs a `message` as error */
     "err": (message: any) => void
+    /** Logs a `message` as warning */
     "warn": (message: any) => void
+    /** Creates the log file */
     "createLog": () => void
   }
 }

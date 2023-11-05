@@ -175,11 +175,17 @@ export const server = function (serv: Server, { version }: Options) {
 }
 declare global {
   interface Server {
+    /** The current maximum ID (i.e. the last entity that was spawned has that id) */
     "entityMaxId": number
+    /** An array of players currently logged in */
     "players": Player[]
+    /** Object for converting UUIDs to players */
     "uuidToPlayer": {}
+    /** All of the entities */
     "entities": Record<string, Entity>
+    /** Returns player object with that username or, if no such player is on the server, null. */
     "getPlayer": (username: any) => any
+    /** @internal */
     "getPlayers": (selector: any, ctxPlayer: any) => any
   }
 }

@@ -119,14 +119,19 @@ export const entity = function (entity: Entity, serv: Server) {
 }
 declare global {
   interface Server {
+    /** Plays `sound` (string, google "minecraft sound list") to all players in `opt.radius`.,    * If position is null, will play at the location of every player (taking into account whitelist and blacklist).,    * ,    * Opt:,    * - whitelist: Array of players that can hear the sound (can be a player object),    * - blacklist: Array of players who cannot hear the sound,    * - radius: Radius that sound can be heard (in fixed position so remember to multiply by 32, default 32*32),    * - volume: float from 0-1 (default 1.0),    * - pitch: float from 0.5 to 2 (default 1.0)    */
     "playSound": (sound: any, world: any, position: any, { whitelist, blacklist, radius, volume, pitch, soundCategory }?: { whitelist?: any; blacklist?: any[] | undefined; radius?: number | undefined; volume?: number | undefined; pitch?: number | undefined; soundCategory?: number | undefined }) => void
+    /** Plays noteblock in world at position. `pitch` is from 0-24 */
     "playNoteBlock": (pitch: any, world: any, position: any, { instrument, particle }?: { instrument?: string | undefined; particle?: boolean | undefined }) => void
+    /** Get pitch. `note` should be between 0-24 and your output is from 0.5 to 2.0 */
     "getNote": (note: any) => number
   }
   interface Player {
+    /** Easy way to only play a sound for one player. Same opt as serv.playSound except no `whitelist`. */
     "playSound": (sound: any, opt?: {}) => void
   }
   interface Entity {
+    /** @internal */
     "playSoundAtSelf": (sound: any, opt?: {}) => void
   }
 }

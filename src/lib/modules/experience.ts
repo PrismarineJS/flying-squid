@@ -65,13 +65,21 @@ export const server = function (serv: Server) {
 }
 declare global {
   interface Player {
+    /** @internal */
     level: number
+    /** Total experience the player has (int). Set this using player.setXp() */
     "xp": number
+    /** Number from 0 to 1.0 representing the progress bar at the bottom of the player's screen. Set this with player.setDisplayXp() */
     "displayXp": number
+    /** Level of xp the player has. Set this with player.setXpLevel() */
     "xpLevel": number
+    /** Updates the player's xp based on player.xp, player.displayXp, and player.xpLevel */
     "sendXp": () => void
+    /** Sets and sends the player's new level */
     "setXpLevel": (level: any) => void
+    /** Sets and sends the player's new display amount. num should be from 0 to 1.0 */
     "setDisplayXp": () => void
+    /** Sets the player's XP level. Options:,    * - setLevel: Calculate and set player.level (default: true),    * - setDisplay: Calculate and set player.displayXp (default: true),    * - send: Send xp packet (default: true)    */
     "setXp": (xp: any, { setLevel, setDisplay, send }?: { setLevel?: boolean | undefined; setDisplay?: boolean | undefined; send?: boolean | undefined }) => void
   }
 }

@@ -45,15 +45,23 @@ export const player = function (player: Player, serv: Server) {
 }
 declare global {
   interface Server {
+    /** @internal */
     "gameMode": any
+    /** @internal */
     "difficulty": any
+    /** @internal */
     "getSpawnPoint": (world: any) => Promise<any>
   }
   interface Player {
+    /** @internal */
     spawnPoint: Vec3
+    /** The view size of the player, for example 8 for 16x16 */
     view: number
+    /** @internal */
     "prevGameMode": number
+    /** @internal */
     "gameMode": any
+    /** @internal */
     "findSpawnPoint": () => Promise<void>
   }
 }

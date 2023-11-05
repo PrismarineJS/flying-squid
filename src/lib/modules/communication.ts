@@ -52,20 +52,33 @@ export const entity = function (entity: Entity, serv: Server) {
 }
 declare global {
   interface Server {
+    /** @internal */
     "_writeAll": (packetName: any, packetFields: any) => any
+    /** @internal */
     "_writeArray": (packetName: any, packetFields: any, players: any) => any
+    /** @internal */
     "_writeNearby": (packetName: any, packetFields: any, loc: any) => any
+    /** Returns array of players within loc. loc is a required paramater. The object contains:,    * ,    * * world: World position is in,    * * position: Center position,    * * radius: Distance from position    */
     "getNearby": ({ world, position, radius }: { world: any; position: any; radius?: number | undefined }) => any
+    /** @internal */
     "getNearbyEntities": ({ world, position, radius }: { world: any; position: any; radius?: number | undefined }) => any[]
   }
   interface Entity {
+    /** Gets all entities nearby (within entity.viewDistance) */
     "getNearby": () => any
+    /** Gets every player other than self (all players if entity is not a player) */
     "getOtherPlayers": () => any
+    /** Get every other entity other than self */
     "getOthers": () => any
+    /** Gets all nearby players regardless of what client thinks */
     "getNearbyPlayers": (radius?: any) => any
+    /** Gets all nearby players that client can see */
     "nearbyPlayers": (radius?: any) => any
+    /** @internal */
     "_writeOthers": (packetName: any, packetFields: any) => any
+    /** @internal */
     "_writeOthersNearby": (packetName: any, packetFields: any) => any
+    /** @internal */
     "_writeNearby": (packetName: any, packetFields: any) => any
   }
 }

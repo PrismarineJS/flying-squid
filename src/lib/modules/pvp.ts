@@ -88,9 +88,13 @@ export const server = function (serv: Server) {
 }
 declare global {
   interface Entity {
+    /** How many half-hearts an entity has of health (e.g. Player has 20). Not really used for objects, only players and mobs. */
     health: number
+    /** @internal */
     updateHealth: (health: number) => void
+    /** * sound: Sound to play (default is game.player.hurt),    * * damage: Damage to deal (default is based off player's weapon, player's potions, attackEntity's potions, and attackedEntity armor),    * * velocity: Which way should attackedEntity move when hit,    * * maxVelocity: maxVelocity from consecutive hits,    * * animation: Play death/hit animation    */
     "takeDamage": ({ sound, damage, velocity, maxVelocity, animation }: { sound?: string | undefined; damage?: number | undefined; velocity?: any; maxVelocity?: any; animation?: boolean | undefined }) => void
+    /** @internal */
     "kill": (options?: {}) => void
   }
 }

@@ -52,6 +52,7 @@ export const server = function (serv: Server) {
 }
 declare global {
   interface Server {
+    /** Emits particle (see [id list](http://wiki.vg/Protocol#Particle)) at `position` in `world`.,    * ,    * Opt:,    * - whitelist: Array of players that can see the particle (can be a player object),    * - blacklist: Array of players who cannot see the particle,    * - radius: Radius that the particle can be seen from,    * - longDistance: I don't know what this is. I think this is pointless with our implenetation of radius, not sure though...,    * - size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense),    * - count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)    */
     "emitParticle": (particle: any, world: any, position: any, { whitelist, blacklist, radius, longDistance, size, count }?: { whitelist?: any; blacklist?: any[] | undefined; radius?: number | undefined; longDistance?: boolean | undefined; size?: any; count?: number | undefined }) => void
   }
 }

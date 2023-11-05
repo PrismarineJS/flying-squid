@@ -156,21 +156,35 @@ export const entity = function (entity: Entity, serv: Server, { version }: Optio
 }
 declare global {
   interface Player {
+    /** @internal */
     "teleport": (position: any) => Promise<void>
+    /** @internal */
     "sendAbilities": () => void
   }
   interface Entity {
+    /** ID of entity on server */
     id: string // do we need 2 ids?
+    /** @internal */
     uuid: string
+    /** Current position (currently in fixed position (x32 what you'd expect) so do entity.position.scaled(1/32) to get normal position) */
     position: Vec3
+    /** @internal */
     velocity: Vec3
+    /** Used to calculate collisions for server-side entities */
     size: Vec3
+    /** @internal */
     knownPosition: Vec3
+    /** Yaw of entity (rotation looking up and down) */
     yaw: number
+    /** Pitch of entity (rotation sideways) */
     pitch: number
+    /** @internal */
     onGround: boolean
+    /** @internal */
     "sendSelfPosition": () => void
+    /** @internal */
     "sendPosition": (position: Vec3, onGround: boolean, teleport?: boolean) => any
+    /** @internal */
     "teleport": (pos: Vec3) => void
   }
 }

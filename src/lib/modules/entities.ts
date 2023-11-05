@@ -51,11 +51,17 @@ export const entity = function (entity) {
 }
 declare global {
   interface Entity {
+    /** How much time before an entity despawns (in ms) */
     deathTime?: number
+    /** How long before an entity can be picked up (in ms) */
     pickupTime?: number
+    /** Sub-category of entity. For mobs, this is which mob (Zombie/Skeleton, etc). For objects, this is which object (Arrow/Dropped item, etc) */
     name?: string
+    /** Either "player", "mob", or "object" (currently) */
     type: string
+    /** @internal */
     "sendMetadata": (data: any) => void
+    /** @internal */
     "setAndUpdateMetadata": (data: any) => void
   }
 }

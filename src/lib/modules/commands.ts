@@ -364,15 +364,21 @@ export const server = function (serv: Server, { version }: Options) {
 }
 declare global {
   interface Player {
+    /** handle `command` */
     "handleCommand": (str: string) => Promise<void>
   }
   interface Entity {
+    /** @internal */
     "selectorString": (str: string) => Entity[]
   }
   interface Server {
+    /** @internal */
     "handleCommand": (str: string) => Promise<void>
+    /** @internal */
     "selector": (type: any, opt: any, selfEntityId: any) => Entity[]
+    /** Returns an array of entities that satisfies the given command selector string `str`, execution position `pos`, execution world `world`, and the ID of the entity that initiated the execution `ctxEntityId`.,    * ,    * Valid selector string values are names of online players and [valid target selector variables](https://minecraft.fandom.com/wiki/Target_selectors#Target_selector_variables).,    * ,    * Setting `allowUser` to `true` (default value) enables players to be included in the returned array, disables otherwise.    */
     "selectorString": (str: string, pos?: Vec3, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => Entity[]
+    /** @internal */
     "posFromString": (str: string, pos: number) => any
   }
 }

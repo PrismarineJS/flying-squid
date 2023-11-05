@@ -253,17 +253,27 @@ export const player = async function (player: Player, serv: Server, settings: Op
 }
 declare global {
   interface Server {
+    /** @internal */
     "hashedSeed": number[]
   }
   interface Player {
+    /** @internal */
     profileProperties: any
+    /** @internal */
     loadedChunks: Record<string, number>
+    /** @internal */
     crouching: boolean
+    /** @internal */
     op: boolean
+    /** The username of the player */
     username: string
+    /** @internal */
     "setLoadingStatus": (text: any) => void
+    /** set player gameMode to `gameMode` */
     "setGameMode": (gameMode: any) => void
+    /** @internal */
     "waitPlayerLogin": () => Promise<unknown>
+    /** login */
     "login": () => Promise<void>
   }
 }

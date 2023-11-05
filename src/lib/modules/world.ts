@@ -342,36 +342,65 @@ export interface CustomWorld extends World {
 
 declare global {
   interface Server {
+    /** @internal */
     looseProtocolMode: any
+    /** @internal */
     lastPositionChunkUpdated: Vec3
+    /** @internal */
     spawnPoint: Vec3
+    /** @internal */
     levelData: LevelDatFull
+    /** Contains the overworld world. This is where the default spawn point is */
     "overworld": CustomWorld
+    /** Contains the nether world. This **WILL** be used when a player travels through a portal if they are in the overworld! */
     "netherworld": CustomWorld
+    /** @internal */
     "dimensionNames": { '-1': string; 0: string }
+    /** @internal */
     "pregenWorld": (world: CustomWorld, size?: number) => Promise<Chunk[]>
+    /** Saves block in world and sends block update to all players of the same world. */
     "setBlock": (world: CustomWorld, position: Vec3, stateId: number) => Promise<void>
+    /** @internal */
     "setBlockType": (world: CustomWorld, position: Vec3, id: number) => Promise<void>
+    /** Sends a block action to all players of the same world. */
     "setBlockAction": (world: CustomWorld, position: Vec3, actionId: number, actionParam: any) => Promise<void>
+    /** @internal */
     "reloadChunks": (world: CustomWorld, chunks: any) => void
+    /** @internal */
     "chunksUsed": {}
+    /** @internal */
     "_loadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
+    /** @internal */
     "_unloadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
+    /** @internal */
     "savePlayersSingleplayer": () => Promise<void>
   }
   interface Player {
+    /** @internal */
     lastPositionChunkUpdated: Vec3
+    /** @internal */
     sendingChunks: boolean
+    /** @internal */
     world: CustomWorld
+    /** @internal */
     "flying": number
+    /** If `worldFolder` option is set, save player's data into `<worldFolder>/playerdata/<UUID>.dat`. Returns promise.,    * Example: save all players data to disk:,    * ,    * ```js,    * for (const player of serv.players) {,    *   player.save(),    * },    * ```    */
     "save": () => Promise<any>
+    /** @internal */
     "_unloadChunk": (chunkX: any, chunkZ: any) => void
+    /** @internal */
     "sendChunk": (chunkX: any, chunkZ: any, column: any) => Promise<void>
+    /** @internal */
     "sendNearbyChunks": (viewDistance: any, group?) => Promise<any>
+    /** @internal */
     "sendMap": () => any
+    /** @internal */
     "sendRestMap": () => void
+    /** @internal */
     "sendSpawnPosition": () => void
+    /** @internal */
     "_unloadAllChunks": () => void
+    /** The world object which the player is in (use serv.overworld, serv.netherworld, serv.endworld, or a custom world). Options:,    * ,    * - gamemode: Gamemode of the world (Default is player gamemode),    * - difficulty: Difficulty of world. Default is 0 (easiest),    * - dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)    */
     "changeWorld": (world: any, opt: any) => Promise<void>
   }
 }

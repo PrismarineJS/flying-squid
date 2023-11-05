@@ -85,8 +85,11 @@ export const server = function (serv: Server) {
 }
 declare global {
   interface Server {
+    /** Set daylight cycle time in ticks. See `serv.time` for more info. */
     "setTime": (time: any) => void
+    /** Default `true`. If false, time will not automatically pass. */
     "doDaylightCycle": boolean
+    /** Current daylight cycle time in ticks. Morning is 0, noon is 6000, evening is 12000, and night is 18000.,    * Resets to 0 at 24000. Use `serv.setTime(time)` to set the time.    */
     "time": number
   }
 }

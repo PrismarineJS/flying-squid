@@ -107,10 +107,15 @@ export const server = function (serv: Server, options: Options) {
 }
 declare global {
   interface Entity {
+    /** @internal */
     "effects": {}
+    /** @internal */
     "sendEffect": (effectId: any, { amplifier, duration, particles, whitelist, blacklist }?: { amplifier?: number | undefined; duration?: number | undefined; particles?: boolean | undefined; whitelist?: any; blacklist?: any[] | undefined }) => void
+    /** @internal */
     "sendRemoveEffect": (effectId: any, { whitelist, blacklist }?: { whitelist?: any; blacklist?: any[] | undefined }) => void
+    /** @internal */
     "addEffect": (effectId: any, opt?: {}) => boolean
+    /** @internal */
     removeEffect: (effectId: any, opt?: any) => void
   }
 }

@@ -418,37 +418,64 @@ export const entity = function (entity: Entity, serv: Server, { version }: Optio
 }
 declare global {
   interface Server {
+    /** @internal */
     "initEntity": <T extends string>(type: T, entityType: any, world: CustomWorld, position: Vec3) => T extends 'player' ? Player : Entity
+    /** @internal */
     "spawnObject": (type: any, world: any, position: any, { pitch, yaw, velocity, data, itemId, itemDamage, itemCount, pickupTime, deathTime }: { pitch?: number | undefined; yaw?: number | undefined; velocity?: any; data?: number | undefined; itemId?: any; itemDamage?: number | undefined; itemCount?: number | undefined; pickupTime?: number; deathTime?: number }) => any
+    /** @internal */
     "spawnMob": (type: any, world: any, position: any, { pitch, yaw, headPitch, velocity, metadata }?: { pitch?: number | undefined; yaw?: number | undefined; headPitch?: number | undefined; velocity?: any; metadata?: any[] | undefined }) => any
+    /** @internal */
     "destroyEntity": (entity: any) => void
   }
   interface Player {
+    /** @internal */
     "spawnEntity": (entity: any) => void
   }
   interface Entity {
+    /** Only applies to gravity, really. You can still apply a velocity larger than terminal velocity. */
     terminalvelocity: Vec3
     // todo should use nbt instead
+    /** If a block drop, what item id */
     itemId?: number
+    /** If a block drop, what item damage */
     itemDamage?: number
+    /** @internal */
     itemCount?: number
+    /** World object entity is in */
     world: CustomWorld
+    /** @internal */
     spawnPacketName: string
+    /** Numerical type of the entity. */
     entityType: any // cleanup!
+    /** @internal */
     lastPositionPlayersUpdated: Vec3
+    /** List of entities that the entity believes is nearby. */
     nearbyEntities: any[]
+    /** How far away entities are loaded/unloaded (used for players ATM) */
     viewDistance: number
+    /** @internal */
     score: Record<string, any>
+    /** When an entity was born. Used with pickupTime and deathTime (time in epoch) */
     bornTime: number
+    /** Metadata for the entity (not like block metadata/damage). Contains stuff like NBT. */
     metadata: any
+    /** @internal */
     data: any
+    /** Pitch of entity's head */
     headPitch: any
+    /** @internal */
     despawnEntities: (arg0: any[]) => void
+    /** @internal */
     spawnEntity: any
+    /** @internal */
     "initEntity": (type: any, entityType: any, world: any, position: any) => void
+    /** @internal */
     "getSpawnPacket": () => { entityId: any; playerUUID: any; x: any; y: any; z: any; yaw: any; pitch: any; currentItem: number; metadata: any; objectUUID?: any; type?: any; objectData?: any; velocityX?: any; velocityY?: any; velocityZ?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; objectUUID: any; type: any; x: any; y: any; z: any; pitch: any; yaw: any; objectData: any; velocityX: any; velocityY: any; velocityZ: any; playerUUID?: any; currentItem?: any; metadata?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; entityUUID: any; type: any; x: any; y: any; z: any; yaw: any; pitch: any; headPitch: any; velocityX: any; velocityY: any; velocityZ: any; metadata: any; playerUUID?: any; currentItem?: any; objectUUID?: any; objectData?: undefined } | undefined
+    /** @internal */
     "updateAndSpawn": () => void
+    /** @internal */
     "destroy": () => void
+    /** @internal */
     "attach": (attachedEntity: any, leash?: boolean) => void
   }
 }

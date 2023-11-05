@@ -24,12 +24,18 @@ export const player = function (player: Player, serv: Server) {
 }
 declare global {
   interface Player {
+    /** @internal */
     health: number
+    /** @internal */
     food: number
+    /** @internal */
     foodSaturation: number
 
+    /** Updates the player's health and sends the relevant packet. */
     "updateHealth": (health: number) => void
+    /** Updates the player's food and sends the relevant packet. */
     "updateFood": (food: number) => void
+    /** Updates the player's food saturation and sends the relevant packet. */
     "updateFoodSaturation": (foodSaturation: number) => void
   }
 }

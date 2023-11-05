@@ -241,13 +241,20 @@ export const player = function (player: Player, serv: Server, { version }: Optio
 }
 declare global {
   interface Player {
+    /** @internal */
     windowType: string
+    /** @internal */
     windowPos: any
     // where it comes from?
+    /** @internal */
     setEquipment: (slot: number, item: any) => void
+    /** @internal */
     "heldItemSlot": number
+    /** @internal */
     "heldItem": any
+    /** @internal */
     "inventory": any
+    /** @internal */
     "collect": (collectEntity: any) => void
   }
 }
