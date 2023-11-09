@@ -4,7 +4,7 @@ import UserError from '../user_error'
 export const server = (serv: Server) => {
   serv.commands.add({
     base: 'teleport',
-    aliases: ['tp'],
+    aliases: ['/tp'],
     info: 'to teleport a player',
     usage: '/teleport [target player] <destination player or x> [y] [z]',
     op: true,

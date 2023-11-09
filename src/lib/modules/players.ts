@@ -22,7 +22,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   serv.commands.add({
     base: 'gamemode',
-    aliases: ['gm'],
+    aliases: ['/gm'],
     info: 'to change game mode',
     usage: '/gamemode <mode> [player]',
     op: true,
@@ -85,7 +85,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   serv.commands.add({
     base: 'difficulty',
-    aliases: ['diff'],
+    aliases: ['/diff'],
     info: 'Sets the difficulty level',
     usage: '/difficulty <difficulty>',
     op: true,

@@ -80,7 +80,7 @@ class Command {
 
     const list = [this.base]
     if (this.params.aliases && this.params.aliases.length) {
-      this.params.aliases.forEach(al => list.unshift(this.parentBase + al))
+      this.params.aliases.forEach(al => list.unshift(this.parentBase + al.replace(/^\//, '')))
     }
 
     list.forEach((command) => {

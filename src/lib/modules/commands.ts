@@ -91,7 +91,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   serv.commands.add({
     base: 'help',
-    aliases: ['?'],
+    aliases: ['/?'],
     info: 'to show all commands',
     usage: '/help [command]',
     tab: ['command'],
