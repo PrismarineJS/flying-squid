@@ -1,9 +1,15 @@
 import { snakeCase } from 'change-case'
 
 export const player = function (player: Player, serv: Server, options: Options) {
-  const sendTabComplete = (matches, existingContent) => {
+  const sendTabComplete = (allMatches, existingContent) => {
+    const matches = allMatches.filter((match) => match.startsWith(existingContent))
     player._client.write('tab_complete', {
-      matches: matches.filter((match) => match.startsWith(existingContent))
+      matches: !serv.supportFeature("tabCompleteHasAToolTip") ? matches : matches.map((match) => {
+        return {
+          match,
+          tooltip: ""
+        }
+      })
     })
   }
 
