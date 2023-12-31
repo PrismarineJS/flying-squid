@@ -1,3 +1,6 @@
+## 1.7.0
+* [Refactor: allow usage in browser (#633)](https://github.com/PrismarineJS/flying-squid/commit/768b69b5cdd3569d31a6ab1b1c00f5d41f69b897) (thanks @zardoy)
+
 ## 1.6.0
 * [tab complete & `/give`, `/effect` improvements (#635)](https://github.com/PrismarineJS/flying-squid/commit/2c1bc4628eebe04eab6f1636d4e90f199fb5fb19) (thanks @zardoy)
 * [Add a few flags to cli & disable `everybody-op` by default? (#634)](https://github.com/PrismarineJS/flying-squid/commit/9e3fafd5aba90e6d4eaf0dcef8e6ed9b529c7073) (thanks @zardoy)
