@@ -115,7 +115,7 @@ module.exports.player = function (player, serv, { version }) {
     const heldItem = player.inventory.slots[36 + player.heldItemSlot]
     if (!heldItem || direction === -1 || heldItem.type === -1) return
 
-    const directionVector = block.name === 'grass' ? new Vec3(0, 0, 0) : directionToVector[direction]
+    const directionVector = block.boundingBox === 'empty' ? new Vec3(0, 0, 0) : directionToVector[direction]
     const placedPosition = referencePosition.plus(directionVector)
     if (placedPosition.equals(player.position.floored())) return
     const dx = player.position.x - (placedPosition.x + 0.5)

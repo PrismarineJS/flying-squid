@@ -60,6 +60,7 @@ module.exports.server = function (serv) {
     base: 'kill',
     info: 'Kill entities',
     usage: '/kill <selector>|<player>',
+    tab: ['player'],
     parse (str) {
       return str || false
     },
