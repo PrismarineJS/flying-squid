@@ -37,7 +37,7 @@ function getXpRequired (level, toLevel) {
 
 function getBaseXpFromLevel (level) {
   // The equations in this function are stupid and directly from the MC Wiki
-  // http://minecraft.gamepedia.com/Experience#Leveling_up
+  // http://minecraft.wiki/w/Experience#Leveling_up
   if (level <= 16) {
     return level * level + 6 * level
   } else if (level <= 31) {
