@@ -532,7 +532,7 @@ Opt:
 
 Returns an array of entities that satisfies the given command selector string `str`, execution position `pos`, execution world `world`, and the ID of the entity that initiated the execution `ctxEntityId`.
 
-Valid selector string values are names of online players and [valid target selector variables](https://minecraft.fandom.com/wiki/Target_selectors#Target_selector_variables).
+Valid selector string values are names of online players and [valid target selector variables](https://minecraft.wiki/w/Target_selectors#Target_selector_variables).
 
 Setting `allowUser` to `true` (default value) enables players to be included in the returned array, disables otherwise.
 

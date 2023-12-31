@@ -25,7 +25,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   const Item = require('prismarine-item')(supportedVersion)
 
   describe('server with mineflayer connection ' + version.minecraftVersion, () => {
+    /** @type {import('mineflayer').Bot} */
     let bot
+    /** @type {import('mineflayer').Bot} */
     let bot2
     let serv
     let entityName
@@ -287,16 +289,9 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
         await once(bot2.inventory, 'updateSlot')
         expect(bot2.inventory.slots[36].type).toEqual(1)
       })
-      it.skip('can use tabComplete', () => { // TODO to fix
-        return new Promise((resolve, reject) => {
-          bot.tabComplete('/give', (err, data) => {
-            if (err) {
-              return reject(err)
-            }
-            expect(data[0]).toEqual('bot')
-            return resolve()
-          })
-        })
+      it.skip('can use tabComplete', async () => {
+        const data = await bot.tabComplete('/give ')
+        expect(data).toEqual(['bot', 'bot2', '@p', '@a', '@e', '@r'])
       })
 
       function waitMessagePromise (message) {

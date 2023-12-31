@@ -1,3 +1,7 @@
+const { pascalCase } = require('change-case')
+const UserError = require('../user_error')
+const { skipMcPrefix } = require('../utils')
+
 module.exports.entity = function (entity, serv) {
   entity.effects = {}
   for (let i = 1; i <= 23; i++) { // 23 in 1.8, 27 in 1.9
@@ -49,14 +53,15 @@ module.exports.entity = function (entity, serv) {
   }
 }
 
-module.exports.server = function (serv) {
+module.exports.server = function (serv, options) {
   serv.commands.add({
     base: 'effect',
     info: 'Give player an effect',
     usage: '/effect <player> <effect> [seconds] [amplifier] [hideParticles]',
+    tab: ['player', 'effect', 'number', 'number', 'boolean'],
     onlyPlayer: true,
     parse (str) {
-      return str.match(/(.+?) (\d+)(?: (\d+))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
+      return str.match(/(.+?) ([\d\w_]+)(?: (\d+|))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
     action (params, ctx) {
       const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
@@ -66,7 +71,14 @@ module.exports.server = function (serv) {
         }))
       } else {
         targets.forEach(e => {
-          const effId = parseInt(params[2])
+          let effId = parseInt(params[2])
+          if (isNaN(effId)) {
+            const mcData = require('minecraft-data')(options.version)
+            const effectNamePascal = pascalCase(skipMcPrefix(params[2]))
+            const effect = mcData.effectsByName[effectNamePascal]
+            if (!effect) throw new UserError(`Unknown effect ${params[2]}}`)
+            effId = effect.id
+          }
           if (e.effects[effId]) {
             e.removeEffect(effId)
           }

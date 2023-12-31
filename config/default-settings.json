@@ -23,7 +23,7 @@
     "header":{"text": "Flying squid"},
     "footer":{"text": "Test server"}
   },
-  "everybody-op":true,
+  "everybody-op": false,
   "max-entities":100,
   "version": "1.16.1"
 }

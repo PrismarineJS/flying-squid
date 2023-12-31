@@ -1,5 +1,6 @@
 const UserError = require('flying-squid').UserError
 const UUID = require('uuid-1345')
+const { skipMcPrefix } = require('../utils')
 const Vec3 = require('vec3').Vec3
 
 const plugins = require('./index')
@@ -109,10 +110,11 @@ module.exports.server = function (serv, options) {
     info: 'Summon an entity',
     usage: '/summon <entity_name>',
     onlyPlayer: true,
+    tab: ['entity'],
     op: true,
     action (name, ctx) {
       if (Object.keys(serv.entities).length > options['max-entities']) { throw new UserError('Too many mobs !') }
-      const entity = entitiesByName[name]
+      const entity = entitiesByName[skipMcPrefix(name)]
       if (!entity) {
         return 'No entity named ' + name
       }
@@ -132,6 +134,7 @@ module.exports.server = function (serv, options) {
     base: 'summonMany',
     info: 'Summon many entities',
     usage: '/summonMany <number> <entity_name>',
+    tab: ['number', 'entity'],
     onlyPlayer: true,
     op: true,
     parse (str) {
@@ -141,7 +144,7 @@ module.exports.server = function (serv, options) {
     },
     action ({ number, name }, ctx) {
       if (Object.keys(serv.entities).length > options['max-entities'] - number) { throw new UserError('Too many mobs !') }
-      const entity = entitiesByName[name]
+      const entity = entitiesByName[skipMcPrefix(name)]
       if (!entity) {
         return 'No entity named ' + name
       }

@@ -1,3 +1,5 @@
+const { skipMcPrefix } = require('../utils')
+
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
@@ -101,7 +103,7 @@ module.exports.server = function (serv, { version }) {
     base: 'give',
     info: 'Gives an item to a player.',
     usage: '/give <player> <item> [count]',
-    tab: ['player', 'number', 'number'],
+    tab: ['player', 'item', 'number'],
     op: true,
     parse (args, ctx) {
       args = args.split(' ')
@@ -111,44 +113,45 @@ module.exports.server = function (serv, { version }) {
       if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
       return {
         players,
-        item: args[1],
+        item: skipMcPrefix(args[1]),
         count: args[2] ? args[2] : 1
       }
     },
     action ({ players, item, count }) {
-      const newItem = new Item(item, count)
+      const itemData = isNaN(+item) ? mcData.itemsByName[skipMcPrefix(item)] : mcData.items[+item]
 
-      players.forEach(player => {
-        player.inventory.slots.forEach((e, i) => {
-          if (!e) return
-          if (e.type === parseInt(newItem.type)) {
-            e.count += parseInt(count)
-            player.inventory.updateSlot(e.slot, e)
-            return true
+      if (!itemData) throw new UserError(`Unknown item '${item}'`)
+      const newItem = new Item(itemData.id, count)
+
+      for (const player of players) {
+        let slotToUpdateFound = false
+        for (const slot of player.inventory.slots) {
+          if (!slot) continue
+          if (slot.type === parseInt(newItem.type)) {
+            slot.count += parseInt(count)
+            player.inventory.updateSlot(slot.slot, slot)
+            slotToUpdateFound = true
+            break
           }
+        }
 
-          if (player.inventory.slots.length === i) {
-            player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
-          }
-        })
-
-        if (player.inventory.items().length === 0) {
+        if (!slotToUpdateFound) {
           player.inventory.updateSlot(player.inventory.firstEmptyInventorySlot(), newItem)
         }
-      })
+      }
     }
   })
 
   serv.commands.add({
     base: 'enchant',
-    info: 'Enchants items holded by targets with the specified enchantment and level',
+    info: 'Enchants items held by targets with the specified enchantment and level',
     usage: '/enchant <targets> <enchantment> [level]',
     tab: ['selector', 'item_enchantment', 'number'],
     op: true,
     parse (args, ctx) {
       args = args.split(' ')
       if (args[0] === '') return false
-      const enchantment = mcData.enchantmentsByName[args[1]]
+      const enchantment = mcData.enchantmentsByName[skipMcPrefix(args[1])]
       if (!enchantment) throw new UserError('No such enchantment')
       if (args[2] && (parseInt(args[2]) > enchantment.maxLevel || parseInt(args[2]) < 1)) throw new UserError(`Level ${args[2]} is not supported by that enchantment`)
       const players = serv.getPlayers(args[0], ctx.player)

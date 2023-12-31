@@ -11,7 +11,8 @@ const playerDat = require('../playerDat')
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
-module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
+module.exports.server = async function (serv, options = {}) {
+  const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const World = require('prismarine-world')(version)
   const mcData = require('minecraft-data')(version)
   const Anvil = require('prismarine-provider-anvil').Anvil(version)
@@ -32,7 +33,11 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       seed = levelData.RandomSeed[0]
     } catch (err) {
       seed = newSeed
-      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
+      await level.writeLevel(worldFolder + '/level.dat', {
+        RandomSeed: [seed, 0],
+        Version: { Name: options.version },
+        generatorName: generation.name === 'superflat' ? 'flat' : generation.name === 'diamond_square' ? 'default' : 'customized'
+      })
     }
   } else { seed = newSeed }
   generation.options.seed = seed

@@ -74,7 +74,7 @@ module.exports.server = function (serv, { version }) {
 
   serv.commands.add({
     base: 'selector',
-    info: 'Get array from selector',
+    info: 'Get entities id from selector like @a',
     usage: '/selector <selector>',
     op: true,
     parse (str) {
@@ -294,7 +294,7 @@ module.exports.server = function (serv, { version }) {
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
-    if (match[1] === 'r' && !pos) throw new UserError('Can\'t found nearest players')
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
     if (match === null) throw new UserError('Invalid selector format')
     const typeConversion = {
       a: 'all',

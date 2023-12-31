@@ -1,36 +1,44 @@
-module.exports.player = function (player, serv) {
+const { snakeCase } = require('change-case')
+
+module.exports.player = function (player, serv, options) {
+  const sendTabComplete = (matches, existingContent) => {
+    player._client.write('tab_complete', {
+      matches: matches.filter((match) => match.startsWith(existingContent))
+    })
+  }
+
   player._client.on('tab_complete', function (data) {
-    // console.log(data)
     const textSplit = data.text.split(' ')
     if (textSplit[0].startsWith('/')) {
       const cmds = []
       for (const cmd in serv.commands.uniqueHash) {
         const cmdFull = serv.commands.uniqueHash[cmd]
-        if (!player.op && cmdFull.params.op) continue
-        cmds.push(`/${cmd}`)
+        const cmdSlash = `/${cmd}`
+        if (!cmdSlash.startsWith(data.text) || (!player.op && cmdFull.params.op)) continue
+        cmds.push(cmdSlash)
       }
 
       if (serv.commands.uniqueHash[textSplit[0].slice(1)]) {
-        if (data.lookedAtBlock) serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2), data.lookedAtBlock)
-        else serv.tabComplete.use(serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2))
+        serv.tabComplete.use(
+          serv.commands.tab(textSplit[0].slice(1), textSplit.length - 2),
+          data.lookedAtBlock || data.block,
+          textSplit[textSplit.length - 1]
+        )
       } else {
-        player._client.write('tab_complete', {
-          matches: cmds
-        })
+        sendTabComplete(cmds, textSplit[textSplit.length - 1])
       }
     } else {
-      serv.tabComplete.use('player')
+      serv.tabComplete.use('player', null, textSplit[textSplit.length - 1])
     }
   })
 
   serv.tabComplete = {
     types: [],
 
-    use: function (id, otherData = null) {
-      if (id === undefined) return
-      player._client.write('tab_complete', {
-        matches: this.types[id](otherData) || this.types.player()
-      })
+    use: function (id, otherData = null, existingContent = '') {
+      if (id === undefined || !this.types[id]) return
+      const matches = this.types[id](otherData) || this.types.player()
+      sendTabComplete(matches, existingContent)
     },
     add: function (id, cb) {
       this.types[id] = cb
@@ -43,6 +51,26 @@ module.exports.player = function (player, serv) {
     return playerNames
   })
 
+  serv.tabComplete.add('item', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.itemsArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('block', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.blocksArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('entity', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.entitiesArray.map(item => item.name)
+  })
+
+  serv.tabComplete.add('effect', () => {
+    const mcData = require('minecraft-data')(options.version)
+    return mcData.effectsArray.map(item => snakeCase(item.name))
+  })
+
   serv.tabComplete.add('selector', () => {
     const playerNames = []
     const selectors = ['@p', '@a', '@e', '@r']
@@ -52,7 +80,7 @@ module.exports.player = function (player, serv) {
   })
 
   serv.tabComplete.add('number', () => {
-    return ['1', '2', '3']
+    return ['1']
   })
 
   serv.tabComplete.add('command', () => {
