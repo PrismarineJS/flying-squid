@@ -1,10 +1,9 @@
-const path = require('path')
-const requireIndex = require('../requireindex')
-const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const UserError = require('flying-squid').UserError
 const UUID = require('uuid-1345')
 const { skipMcPrefix } = require('../utils')
 const Vec3 = require('vec3').Vec3
+
+const plugins = require('./index')
 
 module.exports.server = function (serv, options) {
   const version = options.version
@@ -19,9 +18,7 @@ module.exports.server = function (serv, options) {
     serv.entityMaxId++
     const entity = new Entity(serv.entityMaxId)
 
-    Object.keys(plugins)
-      .filter(pluginName => plugins[pluginName].entity !== undefined)
-      .forEach(pluginName => plugins[pluginName].entity(entity, serv, options))
+    for (const plugin of plugins.builtinPlugins) plugin.entity?.(entity, serv, options)
 
     entity.initEntity(type, entityType, world, position)
 

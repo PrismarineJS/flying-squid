@@ -252,14 +252,14 @@ module.exports.server = function (serv, { version }) {
 
     sample = sample.filter(s => {
       if ((notudf(opt.radius) && s.position.distanceTo(pos) > opt.radius) ||
-          (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
-          (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
-          (notudf(opt.level) && s.level > opt.level) ||
-          (notudf(opt.minLevel) && s.level < opt.minLevel) ||
-          (notudf(opt.yaw) && s.yaw > opt.yaw) ||
-          (notudf(opt.minYaw) && s.yaw < opt.minYaw) ||
-          (notudf(opt.pitch) && s.pitch > opt.pitch) ||
-          (notudf(opt.minPitch) && s.pitch < opt.minPitch)) { return false }
+        (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
+        (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
+        (notudf(opt.level) && s.level > opt.level) ||
+        (notudf(opt.minLevel) && s.level < opt.minLevel) ||
+        (notudf(opt.yaw) && s.yaw > opt.yaw) ||
+        (notudf(opt.minYaw) && s.yaw < opt.minYaw) ||
+        (notudf(opt.pitch) && s.pitch > opt.pitch) ||
+        (notudf(opt.minPitch) && s.pitch < opt.minPitch)) { return false }
 
       if (!checkOption(opt.team, s.team)) return false
       if (!checkOption(opt.name, s.username)) return false

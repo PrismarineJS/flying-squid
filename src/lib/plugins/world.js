@@ -6,6 +6,8 @@ const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')
 
+const playerDat = require('../playerDat')
+
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
@@ -148,6 +150,10 @@ module.exports.server = async function (serv, options = {}) {
 }
 
 module.exports.player = function (player, serv, settings) {
+  player.save = async () => {
+    await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
+  }
+
   player._unloadChunk = (chunkX, chunkZ) => {
     serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
@@ -248,6 +254,12 @@ module.exports.player = function (player, serv, settings) {
       .catch((err) => setTimeout(() => { throw err }), 0)
   }
 
+  // todo as I understand need to handle difficulty packet instead?
+  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
+    player.view = newDistance
+    if (unloadFirst) player._unloadAllChunks()
+    player.sendRestMap()
+  })
   player.sendRestMap = () => {
     player.sendingChunks = true
     player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)
