@@ -5,17 +5,11 @@ const squid = require('flying-squid')
 
 const settings = require('../config/default-settings')
 
-const { firstVersion, lastVersion } = require('./common/parallel')
-
 squid.supportedVersions.forEach((supportedVersion, i) => {
-  if (!(i >= firstVersion && i <= lastVersion)) {
-    return
-  }
-
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
 
-  describe(`simple server  ${version.minecraftVersion}`, () => {
+  describe(`simple server  ${version.minecraftVersion}v`, () => {
     let serv
 
     before(done => {

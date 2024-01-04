@@ -2,29 +2,54 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master, "1.13" ]
 
 jobs:
-  build:
-
+  Lint:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-        mcVersionIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8]
-      fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v1.4.4
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - env:
-        CIRCLE_NODE_INDEX: ${{ matrix.mcVersionIndex }}
-        CIRCLE_NODE_TOTAL: 9
-      run: npm test
+        node-version: 18.x
+    - run: npm i && npm run lint
+  
+  PrepareSupportedVersions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v1.4.4
+      with:
+        node-version: 18.x
+    - id: set-matrix
+      run: |
+        node -e "
+          const supportedVersions = require('./src/lib/version').supportedVersions;
+          console.log('matrix='+JSON.stringify({'include': supportedVersions.map(mcVersion => ({mcVersion}))}))
+        " >> $GITHUB_OUTPUT
+
+  MinecraftServer:
+    needs: PrepareSupportedVersions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.PrepareSupportedVersions.outputs.matrix)}}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1.4.4
+        with:
+          node-version: 18.x
+      - name: Install Dependencies
+        run: npm install
+      - name: Start Tests
+        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
