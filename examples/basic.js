@@ -1,4 +1,4 @@
-const mcServer = require('../index')
+const mcServer = require('flying-squid')
 
 mcServer.createMCServer({
   motd: 'A Minecraft Server \nRunning flying-squid',
