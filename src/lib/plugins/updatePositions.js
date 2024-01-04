@@ -82,7 +82,7 @@ module.exports.player = function (player) {
 }
 
 module.exports.entity = function (entity, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
   entity.sendPosition = (position, onGround, teleport = false) => {
     if (typeof position === 'undefined') throw new Error('undef')
@@ -101,18 +101,18 @@ module.exports.entity = function (entity, serv, { version }) {
       const diff = position.minus(entity.knownPosition)
 
       let maxDelta
-      if (mcData.supportFeature('fixedPointDelta')) {
+      if (registry.supportFeature('fixedPointDelta')) {
         maxDelta = 3
-      } else if (mcData.supportFeature('fixedPointDelta128')) {
+      } else if (registry.supportFeature('fixedPointDelta128')) {
         maxDelta = 7
       }
 
       if (diff.abs().x > maxDelta || diff.abs().y > maxDelta || diff.abs().z > maxDelta) {
         let entityPosition
 
-        if (mcData.supportFeature('fixedPointPosition')) {
+        if (registry.supportFeature('fixedPointPosition')) {
           entityPosition = position.scaled(32).floored()
-        } else if (mcData.supportFeature('doublePosition')) {
+        } else if (registry.supportFeature('doublePosition')) {
           entityPosition = position
         }
         entity._writeOthersNearby('entity_teleport', {
@@ -127,10 +127,10 @@ module.exports.entity = function (entity, serv, { version }) {
         entity.knownPosition = position
       } else if (diff.distanceTo(new Vec3(0, 0, 0)) !== 0) {
         let delta
-        if (mcData.supportFeature('fixedPointDelta')) {
+        if (registry.supportFeature('fixedPointDelta')) {
           delta = diff.scaled(32).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32))
-        } else if (mcData.supportFeature('fixedPointDelta128')) {
+        } else if (registry.supportFeature('fixedPointDelta128')) {
           delta = diff.scaled(32).scaled(128).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32 / 128))
         }

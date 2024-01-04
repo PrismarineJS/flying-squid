@@ -3,21 +3,21 @@ const Vec3 = require('vec3').Vec3
 module.exports.server = function (serv, { version }) {
   serv.once('asap', () => {
     // Importing necessary libraries
-    const mcData = require('minecraft-data')(version)
+    const registry = require('prismarine-registry')(version)
     // Getting ALL supported blocks
     // Chests
-    const blockChest = mcData.blocksByName.chest
-    const blockEnderChest = mcData.blocksByName.ender_chest
+    const blockChest = registry.blocksByName.chest
+    const blockEnderChest = registry.blocksByName.ender_chest
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
     let blockShulkerBox = []
-    if (mcData.supportFeature('theShulkerBoxes')) {
-      blockShulkerBox = [mcData.blocksByName.shulker_box.id, mcData.blocksByName.red_shulker_box.id,
-        mcData.blocksByName.orange_shulker_box.id, mcData.blocksByName.yellow_shulker_box.id, mcData.blocksByName.lime_shulker_box.id,
-        mcData.blocksByName.green_shulker_box.id, mcData.blocksByName.light_blue_shulker_box.id, mcData.blocksByName.cyan_shulker_box.id,
-        mcData.blocksByName.blue_shulker_box.id, mcData.blocksByName.purple_shulker_box.id, mcData.blocksByName.magenta_shulker_box.id,
-        mcData.blocksByName.brown_shulker_box.id, mcData.blocksByName.gray_shulker_box.id, mcData.blocksByName.light_gray_shulker_box.id,
-        mcData.blocksByName.black_shulker_box.id, mcData.blocksByName.white_shulker_box.id, mcData.blocksByName.pink_shulker_box.id]
+    if (registry.supportFeature('theShulkerBoxes')) {
+      blockShulkerBox = [registry.blocksByName.shulker_box.id, registry.blocksByName.red_shulker_box.id,
+        registry.blocksByName.orange_shulker_box.id, registry.blocksByName.yellow_shulker_box.id, registry.blocksByName.lime_shulker_box.id,
+        registry.blocksByName.green_shulker_box.id, registry.blocksByName.light_blue_shulker_box.id, registry.blocksByName.cyan_shulker_box.id,
+        registry.blocksByName.blue_shulker_box.id, registry.blocksByName.purple_shulker_box.id, registry.blocksByName.magenta_shulker_box.id,
+        registry.blocksByName.brown_shulker_box.id, registry.blocksByName.gray_shulker_box.id, registry.blocksByName.light_gray_shulker_box.id,
+        registry.blocksByName.black_shulker_box.id, registry.blocksByName.white_shulker_box.id, registry.blocksByName.pink_shulker_box.id]
     }
     // Showing container GUI
     const openContainerGUI = (block, player, guiType, title, sound) => {
@@ -95,13 +95,13 @@ module.exports.server = function (serv, { version }) {
     }
     // Registering block interaction handlers
     // Chests
-    serv.onBlockInteraction(mcData.blocksByName.chest.name, containerBlockInteractionHandler)
-    serv.onBlockInteraction(mcData.blocksByName.ender_chest.name, containerBlockInteractionHandler)
+    serv.onBlockInteraction(registry.blocksByName.chest.name, containerBlockInteractionHandler)
+    serv.onBlockInteraction(registry.blocksByName.ender_chest.name, containerBlockInteractionHandler)
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
-    if (mcData.supportFeature('theShulkerBoxes')) {
+    if (registry.supportFeature('theShulkerBoxes')) {
       for (const currentShulkerBoxID of blockShulkerBox) {
-        serv.onBlockInteraction(mcData.blocks[currentShulkerBoxID].name, containerBlockInteractionHandler)
+        serv.onBlockInteraction(registry.blocks[currentShulkerBoxID].name, containerBlockInteractionHandler)
       }
     }
   })

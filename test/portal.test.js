@@ -4,8 +4,8 @@ const squid = require('flying-squid')
 const expect = require('expect').default
 
 squid.testedVersions.forEach((testedVersion, i) => {
-  const mcData = require('minecraft-data')(testedVersion)
-  const version = mcData.version
+  const registry = require('prismarine-registry')(testedVersion)
+  const version = registry.version
 
   const {
     detectFrame,

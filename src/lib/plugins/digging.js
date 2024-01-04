@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }
@@ -106,7 +106,7 @@ module.exports.player = function (player, serv, { version }) {
         })
       }
     }
-    if (mcData.supportFeature('acknowledgePlayerDigging')) {
+    if (registry.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -123,7 +123,7 @@ module.exports.player = function (player, serv, { version }) {
       location,
       destroyStage: -1
     })
-    if (mcData.supportFeature('acknowledgePlayerDigging')) {
+    if (registry.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -153,21 +153,21 @@ module.exports.player = function (player, serv, { version }) {
         blockDropPickup: 500,
         blockDropDeath: 60 * 5 * 1000
       }
-      if (typeof mcData.blockLoot === 'undefined') {
+      if (typeof registry.blockLoot === 'undefined') {
         drops.push({
           ...dropBase,
           blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: mcData.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
+          blockDropId: registry.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
         })
       } else {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
         const silkTouch = heldItem?.enchants.map(enchant => enchant.name).includes('silk_touch')
-        const blockDrops = mcData.blockLoot[currentlyDugBlock.name].drops.filter(drop => !(drop[`${silkTouch ? 'noS' : 's'}ilkTouch`] ?? false))
+        const blockDrops = registry.blockLoot[currentlyDugBlock.name].drops.filter(drop => !(drop[`${silkTouch ? 'noS' : 's'}ilkTouch`] ?? false))
         for (const drop of blockDrops) {
           drops.push({
             ...dropBase,
             blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-            blockDropId: mcData.itemsByName[drop.item].id
+            blockDropId: registry.itemsByName[drop.item].id
           })
         }
       }
@@ -185,7 +185,7 @@ module.exports.player = function (player, serv, { version }) {
         if (data.dropBlock) {
           drops.forEach(drop => dropBlock(drop))
         }
-        if (mcData.supportFeature('acknowledgePlayerDigging')) {
+        if (registry.supportFeature('acknowledgePlayerDigging')) {
           player._client.write('acknowledge_player_digging', {
             location,
             block: 0,
@@ -199,7 +199,7 @@ module.exports.player = function (player, serv, { version }) {
         location,
         type: currentlyDugBlock.type << 4
       })
-      if (mcData.supportFeature('acknowledgePlayerDigging')) {
+      if (registry.supportFeature('acknowledgePlayerDigging')) {
         player._client.write('acknowledge_player_digging', {
           location,
           block: currentlyDugBlock.stateId,
@@ -211,7 +211,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 
   function dropBlock ({ blockDropPosition, blockDropWorld, blockDropVelocity, blockDropId, blockDropDamage, blockDropCount, blockDropPickup, blockDropDeath }) {
-    serv.spawnObject(mcData.entitiesByName[mcData.version['<']('1.11') ? 'Item' : 'item'].id, blockDropWorld, blockDropPosition, {
+    serv.spawnObject(registry.entitiesByName[registry.version['<']('1.11') ? 'Item' : 'item'].id, blockDropWorld, blockDropPosition, {
       velocity: blockDropVelocity,
       itemId: blockDropId,
       itemDamage: blockDropDamage,

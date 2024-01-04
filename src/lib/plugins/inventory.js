@@ -1,7 +1,7 @@
 const Vec3 = require('vec3')
 
 module.exports.player = function (player, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
   const Item = require('prismarine-item')(version)
   const windows = require('prismarine-windows')(version)
 
@@ -13,7 +13,7 @@ module.exports.player = function (player, serv, { version }) {
     player.heldItemSlot = slotId
     player.setEquipment(0, player.inventory.slots[36 + player.heldItemSlot])
 
-    if (mcData.supportFeature('allEntityEquipmentInOne')) {
+    if (registry.supportFeature('allEntityEquipmentInOne')) {
       player._writeOthersNearby('entity_equipment', {
         entityId: player.id,
         equipments: [{
@@ -181,7 +181,7 @@ module.exports.player = function (player, serv, { version }) {
     equipments[player.heldItemSlot] = 0
     if (equipments[slot] !== undefined) {
       player.setEquipment(equipments[slot], newItem)
-      if (mcData.supportFeature('allEntityEquipmentInOne')) {
+      if (registry.supportFeature('allEntityEquipmentInOne')) {
         player._writeOthersNearby('entity_equipment', {
           entityId: player.id,
           equipments: [{

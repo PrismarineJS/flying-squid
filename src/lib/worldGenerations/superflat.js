@@ -2,13 +2,13 @@ const Vec3 = require('vec3').Vec3
 
 function generation (options = {}) {
   const Chunk = require('prismarine-chunk')(options.version)
-  const mcData = require('minecraft-data')(options.version)
-  const version = mcData.version
-  const theFlattening = mcData.supportFeature('theFlattening')
+  const registry = require('prismarine-registry')(options.version)
+  const version = registry.version
+  const theFlattening = registry.supportFeature('theFlattening')
 
-  const bottomId = options.bottomId || mcData.blocksByName.bedrock.id
-  const middleId = options.middleId || mcData.blocksByName.dirt.id
-  const topId = options.topId || (theFlattening ? mcData.blocksByName.grass_block.id : mcData.blocksByName.grass.id) // before the flattening the name of grass block is grass
+  const bottomId = options.bottomId || registry.blocksByName.bedrock.id
+  const middleId = options.middleId || registry.blocksByName.dirt.id
+  const topId = options.topId || (theFlattening ? registry.blocksByName.grass_block.id : registry.blocksByName.grass.id) // before the flattening the name of grass block is grass
   const topData = options.topData || (theFlattening ? 1 : undefined) // by default the data of grass block is 0 which is snowy, before the flattening there is no data
   const middleThickness = options.middleThickness || 3
   const debug = options.debug || false
@@ -32,7 +32,7 @@ function generation (options = {}) {
             if (topData) chunk.setBlockData(currentVec, topData)
           }
           chunk.setSkyLight(currentVec, 15)
-          chunk.setBiome(currentVec, mcData.biomesByName[options.biome ?? 'plains'].id)
+          chunk.setBiome(currentVec, registry.biomesByName[options.biome ?? 'plains'].id)
         }
       }
     }

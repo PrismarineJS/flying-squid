@@ -1,11 +1,11 @@
 module.exports.server = (serv, { version }) => {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
-  const oakSign = mcData.supportFeature('theFlattening') ? mcData.blocksByName.oak_sign : mcData.blocksByName.standing_sign
-  const oakWallSign = mcData.blocksByName.wall_sign
+  const oakSign = registry.supportFeature('theFlattening') ? registry.blocksByName.oak_sign : registry.blocksByName.standing_sign
+  const oakWallSign = registry.blocksByName.wall_sign
 
   serv.on('asap', () => {
-    if (mcData.supportFeature('theFlattening')) {
+    if (registry.supportFeature('theFlattening')) {
       const placeHandler = ({ player, placedPosition, direction, properties }) => {
         if (direction === 0) return { id: -1, data: 0 }
         let block = oakSign
@@ -21,7 +21,7 @@ module.exports.server = (serv, { version }) => {
         const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
         return { id: block.id, data }
       }
-      if (mcData.supportFeature('multiTypeSigns')) {
+      if (registry.supportFeature('multiTypeSigns')) {
         const signTypes = ['oak_sign', 'spruce_sign', 'birch_sign', 'acacia_sign', 'jungle_sign', 'dark_oak_sign']
         signTypes.forEach(type => serv.onItemPlace(type, placeHandler))
       } else {

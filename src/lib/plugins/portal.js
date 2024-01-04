@@ -2,10 +2,10 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = function (player, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
-  const obsidianType = mcData.blocksByName.obsidian.id
-  const portalType = mcData.supportFeature('theFlattening') ? mcData.blocksByName.nether_portal.id : mcData.blocksByName.portal.id
+  const obsidianType = registry.blocksByName.obsidian.id
+  const portalType = registry.supportFeature('theFlattening') ? registry.blocksByName.nether_portal.id : registry.blocksByName.portal.id
 
   player.on('dug', ({ position, block }) => {
     function destroyPortal (portal, positionAlreadyDone = null) {
@@ -32,19 +32,19 @@ module.exports.player = function (player, serv, { version }) {
 
 module.exports.server = function (serv, { version }) {
   const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
-  const obsidianType = mcData.blocksByName.obsidian.id
-  const fireType = mcData.blocksByName.fire.id
+  const obsidianType = registry.blocksByName.obsidian.id
+  const fireType = registry.blocksByName.fire.id
 
   let portalX
   let portalZ
-  if (mcData.supportFeature('theFlattening')) {
-    const portalBlock = mcData.blocksByName.nether_portal
+  if (registry.supportFeature('theFlattening')) {
+    const portalBlock = registry.blocksByName.nether_portal
     portalX = portalBlock.minStateId
     portalZ = portalBlock.minStateId + 1
   } else {
-    const portalBlock = mcData.blocksByName.portal
+    const portalBlock = registry.blocksByName.portal
     portalX = portalBlock.id << 4 + 1
     portalZ = portalBlock.id << 4 + 2
   }

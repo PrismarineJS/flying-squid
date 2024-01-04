@@ -2,7 +2,7 @@ const Vec3 = require('vec3').Vec3
 
 function generation ({ version }) {
   const Chunk = require('prismarine-chunk')(version)
-  const blocks = require('minecraft-data')(version).blocks
+  const { blocks } = require('prismarine-registry')(version)
 
   function generateSimpleChunk () {
     const chunk = new Chunk()

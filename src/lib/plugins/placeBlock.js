@@ -11,14 +11,14 @@ const materialToSound = {
 }
 
 module.exports.server = (serv, { version }) => {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
   const itemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
     const item = data.item
     const handler = itemPlaceHandlers.get(item.type)
     if (handler) return handler(data)
-    const block = mcData.blocksByName[item.name]
+    const block = registry.blocksByName[item.name]
     if (!block) return {}
     if (block.states?.length > 0) return { id: block.id, data: serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, data.properties) }
     return { id: block.id, data: item.metadata ?? 0 }
@@ -31,15 +31,15 @@ module.exports.server = (serv, { version }) => {
    * It should return the id and data of the block to place
    */
   serv.onItemPlace = (name, handler, warn = true) => {
-    let item = mcData.itemsByName[name]
-    if (!item) item = mcData.blocksByName[name]
+    let item = registry.itemsByName[name]
+    if (!item) item = registry.blocksByName[name]
     if (itemPlaceHandlers.has(item.id) && warn) {
       serv.warn(`onItemPlace handler was registered twice for ${name}`)
     }
     itemPlaceHandlers.set(item.id, handler)
   }
 
-  if (mcData.supportFeature('theFlattening')) {
+  if (registry.supportFeature('theFlattening')) {
     const parseValue = (value, state) => {
       if (state.type === 'enum') {
         return state.values.indexOf(value)
@@ -80,7 +80,7 @@ module.exports.server = (serv, { version }) => {
    * cancelled.
    */
   serv.onBlockInteraction = (name, handler) => {
-    const block = mcData.blocksByName[name]
+    const block = registry.blocksByName[name]
     if (blockInteractHandler.has(block.id)) {
       serv.warn(`onBlockInteraction handler was registered twice for ${name}`)
     }
@@ -89,8 +89,8 @@ module.exports.server = (serv, { version }) => {
 }
 
 module.exports.player = function (player, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
-  const blocks = mcData.blocks
+  const registry = require('prismarine-registry')(version)
+  const blocks = registry.blocks
 
   player._client.on('block_place', async ({ direction, location, cursorY } = {}) => {
     const referencePosition = new Vec3(location.x, location.y, location.z)
@@ -110,7 +110,7 @@ module.exports.player = function (player, serv, { version }) {
     const dz = player.position.z - (placedPosition.z + 0.5)
     const angle = Math.atan2(dx, -dz) * 180 / Math.PI + 180 // Convert to [0,360[
 
-    if (mcData.supportFeature('blockPlaceHasIntCursor')) cursorY /= 16
+    if (registry.supportFeature('blockPlaceHasIntCursor')) cursorY /= 16
 
     let half = cursorY > 0.5 ? 'top' : 'bottom'
     if (direction === 0) half = 'top'
@@ -129,7 +129,7 @@ module.exports.player = function (player, serv, { version }) {
         axis: directionToAxis[direction],
         facing: directionToFacing[Math.floor(angle / 90 + 0.5) & 0x3],
         half,
-        waterlogged: (await player.world.getBlock(placedPosition)).type === mcData.blocksByName.water.id
+        waterlogged: (await player.world.getBlock(placedPosition)).type === registry.blocksByName.water.id
       }
     })
 
@@ -149,7 +149,7 @@ module.exports.player = function (player, serv, { version }) {
       }
     }
 
-    const stateId = mcData.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+    const stateId = registry.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
     player.setBlock(placedPosition, stateId)
   })
 }

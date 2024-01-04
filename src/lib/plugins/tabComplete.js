@@ -52,23 +52,23 @@ module.exports.player = function (player, serv, options) {
   })
 
   serv.tabComplete.add('item', () => {
-    const mcData = require('minecraft-data')(options.version)
-    return mcData.itemsArray.map(item => item.name)
+    const registry = require('prismarine-registry')(options.version)
+    return registry.itemsArray.map(item => item.name)
   })
 
   serv.tabComplete.add('block', () => {
-    const mcData = require('minecraft-data')(options.version)
-    return mcData.blocksArray.map(item => item.name)
+    const registry = require('prismarine-registry')(options.version)
+    return registry.blocksArray.map(item => item.name)
   })
 
   serv.tabComplete.add('entity', () => {
-    const mcData = require('minecraft-data')(options.version)
-    return mcData.entitiesArray.map(item => item.name)
+    const registry = require('prismarine-registry')(options.version)
+    return registry.entitiesArray.map(item => item.name)
   })
 
   serv.tabComplete.add('effect', () => {
-    const mcData = require('minecraft-data')(options.version)
-    return mcData.effectsArray.map(item => snakeCase(item.name))
+    const registry = require('prismarine-registry')(options.version)
+    return registry.effectsArray.map(item => snakeCase(item.name))
   })
 
   serv.tabComplete.add('selector', () => {

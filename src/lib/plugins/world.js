@@ -14,7 +14,7 @@ const fsMkdir = promisify(fs.mkdir)
 module.exports.server = async function (serv, options = {}) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const World = require('prismarine-world')(version)
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
   const Anvil = require('prismarine-provider-anvil').Anvil(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
@@ -80,9 +80,9 @@ module.exports.server = async function (serv, options = {}) {
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
-  if (mcData.supportFeature('theFlattening')) {
+  if (registry.supportFeature('theFlattening')) {
     serv.setBlockType = async (world, position, id) => {
-      serv.setBlock(world, position, mcData.blocks[id].minStateId)
+      serv.setBlock(world, position, registry.blocks[id].minStateId)
     }
   } else {
     serv.setBlockType = async (world, position, id) => {
@@ -150,16 +150,16 @@ module.exports.server = async function (serv, options = {}) {
 }
 
 module.exports.player = function (player, serv, settings) {
-  const mcData = require('minecraft-data')(settings.version)
+  const registry = require('prismarine-registry')(settings.version)
 
   player.save = async () => {
-    await playerDat.save(player, settings.worldFolder, mcData.supportFeature('attributeSnakeCase'), mcData.supportFeature('theFlattening'))
+    await playerDat.save(player, settings.worldFolder, registry.supportFeature('attributeSnakeCase'), registry.supportFeature('theFlattening'))
   }
 
   player._unloadChunk = (chunkX, chunkZ) => {
     serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
-    if (mcData.supportFeature('unloadChunkByEmptyChunk')) {
+    if (registry.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
         x: chunkX,
         z: chunkZ,
@@ -167,7 +167,7 @@ module.exports.player = function (player, serv, settings) {
         bitMap: 0x0000,
         chunkData: Buffer.alloc(0)
       })
-    } else if (mcData.supportFeature('unloadChunkDirect')) {
+    } else if (registry.supportFeature('unloadChunkDirect')) {
       player._client.write('unload_chunk', {
         chunkX,
         chunkZ
@@ -198,7 +198,7 @@ module.exports.player = function (player, serv, settings) {
         chunkData: chunk.dump(),
         blockEntities: []
       })
-      if (mcData.supportFeature('lightSentSeparately')) {
+      if (registry.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
           chunkZ: z,
@@ -293,7 +293,7 @@ module.exports.player = function (player, serv, settings) {
     }
     player._client.write('respawn', {
       previousGameMode: player.prevGameMode,
-      dimension: (mcData.supportFeature('dimensionIsAString') || mcData.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
       hashedSeed: serv.hashedSeed,

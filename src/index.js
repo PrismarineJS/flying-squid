@@ -43,9 +43,7 @@ class MCServer extends EventEmitter {
   }
 
   connect (options) {
-    const mcData = require('minecraft-data')(options.version)
-    const serverPingVersion = mcData.version
-    const registry = require('prismarine-registry')(serverPingVersion)
+    const registry = require('prismarine-registry')(options.version)
     if (!registry?.version) throw new Error(`Server version '${serverPingVersion}' is not supported, no data for version`)
 
     const versionData = registry.version

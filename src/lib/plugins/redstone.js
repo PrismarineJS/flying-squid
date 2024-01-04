@@ -1,21 +1,21 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
-  const redstoneWireType = mcData.blocksByName.redstone_wire.id
-  const redstoneTorchType = mcData.blocksByName.redstone_torch.id
+  const redstoneWireType = registry.blocksByName.redstone_wire.id
+  const redstoneTorchType = registry.blocksByName.redstone_torch.id
 
   let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType, repeaterType
-  if (!mcData.supportFeature('theFlattening')) {
-    unlitRedstoneTorchType = mcData.blocksByName.unlit_redstone_torch.id
-    poweredRepeaterType = mcData.blocksByName.powered_repeater.id
-    unpoweredRepeaterType = mcData.blocksByName.unpowered_repeater.id
-  } else { repeaterType = mcData.blocksByName.repeater.id }
+  if (!registry.supportFeature('theFlattening')) {
+    unlitRedstoneTorchType = registry.blocksByName.unlit_redstone_torch.id
+    poweredRepeaterType = registry.blocksByName.powered_repeater.id
+    unpoweredRepeaterType = registry.blocksByName.unpowered_repeater.id
+  } else { repeaterType = registry.blocksByName.repeater.id }
   const powerLevel = (block, dir) => {
     if (block.type === redstoneWireType) return block.metadata
     if (block.type === redstoneTorchType) return 15
-    if (mcData.supportFeature('theFlattening')) {
+    if (registry.supportFeature('theFlattening')) {
       // to do
     } else {
       // the if below is missing a check whether repeater is powered or not
@@ -37,7 +37,7 @@ module.exports.server = function (serv, { version }) {
     if (block.type === redstoneWireType) {
       if (dir.y === 1 || await isWireDirectedIn(world, pos, dir.scaled(-1))) { return block.metadata }
     }
-    if (mcData.supportFeature('theFlattening')) {
+    if (registry.supportFeature('theFlattening')) {
       // to-do
     } else {
       if (block.type === poweredRepeaterType) {
@@ -75,7 +75,7 @@ module.exports.server = function (serv, { version }) {
   }
 
   const isDirectedRepeater = (block, dir, powered = false) => {
-    if (mcData.supportFeature('theFlattening')) {
+    if (registry.supportFeature('theFlattening')) {
       // TO-DO
       return false
     } else {
@@ -138,7 +138,7 @@ module.exports.server = function (serv, { version }) {
       player.setBlock(block.position, block.type, data)
       return true
     }
-    if (!mcData.supportFeature('theFlattening')) {
+    if (!registry.supportFeature('theFlattening')) {
       serv.onBlockInteraction('powered_repeater', repeaterInteraction)
       serv.onBlockInteraction('unpowered_repeater', repeaterInteraction)
     }
@@ -188,7 +188,7 @@ module.exports.server = function (serv, { version }) {
 
       return changed
     }
-    if (!mcData.supportFeature('theFlattening')) {
+    if (!registry.supportFeature('theFlattening')) {
       serv.onBlockUpdate('unlit_redstone_torch', updateRedstoneTorch)
     }
     serv.onBlockUpdate('redstone_torch', updateRedstoneTorch)
@@ -235,10 +235,10 @@ module.exports.server = function (serv, { version }) {
 
       let changed = false
       if ((block.type === poweredRepeaterType || block.type === repeaterType) && p === 0) {
-        if (mcData.supportFeature('theFlattening')) { block.metadata.powered = false } else { await world.setBlockType(pos, unpoweredRepeaterType) }
+        if (registry.supportFeature('theFlattening')) { block.metadata.powered = false } else { await world.setBlockType(pos, unpoweredRepeaterType) }
         changed = true
       } else if ((block.type === unpoweredRepeaterType || block.type === repeaterType) && p !== 0) {
-        if (mcData.supportFeature('theFlattening')) { block.metadata.powered = true } else { await world.setBlockType(pos, poweredRepeaterType) }
+        if (registry.supportFeature('theFlattening')) { block.metadata.powered = true } else { await world.setBlockType(pos, poweredRepeaterType) }
         changed = true
       }
 
@@ -250,7 +250,7 @@ module.exports.server = function (serv, { version }) {
 
       return changed
     }
-    if (!mcData.supportFeature('theFlattening')) {
+    if (!registry.supportFeature('theFlattening')) {
       serv.onBlockUpdate('powered_repeater', updateRepeater)
       serv.onBlockUpdate('unpowered_repeater', updateRepeater)
     }

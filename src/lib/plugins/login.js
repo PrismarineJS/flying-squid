@@ -43,7 +43,7 @@ module.exports.server = function (serv, options) {
 
 module.exports.player = async function (player, serv, settings) {
   const Item = require('prismarine-item')(settings.version)
-  const mcData = require('minecraft-data')(settings.version)
+  const registry = require('prismarine-registry')(settings.version)
 
   let playerData
 
@@ -67,10 +67,10 @@ module.exports.player = async function (player, serv, settings) {
   function updateInventory () {
     playerData.inventory.forEach((item) => {
       const itemName = item.id.value.slice(10) // skip game brand prefix
-      const theItem = mcData.itemsByName[itemName] || mcData.blocksByName[itemName]
+      const theItem = registry.itemsByName[itemName] || registry.blocksByName[itemName]
 
       let newItem
-      if (mcData.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
+      if (registry.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
       else if (item.tag) newItem = new Item(theItem.id, item.Count.value, item.tag)
       else newItem = new Item(theItem.id, item.Count.value)
 
@@ -90,9 +90,9 @@ module.exports.player = async function (player, serv, settings) {
       gameMode: player.gameMode,
       previousGameMode: player.prevGameMode,
       worldNames: Object.values(serv.dimensionNames),
-      dimensionCodec: mcData.loginPacket?.dimensionCodec,
+      dimensionCodec: registry.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
-      dimension: (mcData.supportFeature('dimensionIsAString') || mcData.supportFeature('dimensionIaAWorld')) ? mcData.loginPacket.dimension : 0,
+      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIaAWorld')) ? registry.loginPacket.dimension : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
@@ -102,7 +102,7 @@ module.exports.player = async function (player, serv, settings) {
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
     })
-    if (mcData.supportFeature('difficultySentSeparately')) {
+    if (registry.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
         difficulty: serv.difficulty,
         difficultyLocked: false
@@ -113,7 +113,7 @@ module.exports.player = async function (player, serv, settings) {
   function sendChunkWhenMove () {
     player.on('move', () => {
       if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
-      if (!mcData.supportFeature('updateViewPosition')) {
+      if (!registry.supportFeature('updateViewPosition')) {
         return
       }
       const chunkX = Math.floor(player.position.x / 16)

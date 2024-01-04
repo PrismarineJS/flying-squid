@@ -63,9 +63,9 @@ class ChunkUpdates {
 }
 
 module.exports.server = (serv, { version }) => {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
-  multiBlockChangeHasTrustEdges = mcData.supportFeature('multiBlockChangeHasTrustEdges')
+  multiBlockChangeHasTrustEdges = registry.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
 
@@ -132,7 +132,7 @@ module.exports.server = (serv, { version }) => {
    * It should return true if the block changed its state
    */
   serv.onBlockUpdate = (name, handler) => {
-    const block = mcData.blocksByName[name]
+    const block = registry.blocksByName[name]
     if (updateHandlers.has(block.id)) {
       serv.warn(`onBlockUpdate handler was registered twice for ${name}`)
     }

@@ -73,9 +73,9 @@ module.exports.server = function (serv, options) {
         targets.forEach(e => {
           let effId = parseInt(params[2])
           if (isNaN(effId)) {
-            const mcData = require('minecraft-data')(options.version)
+            const registry = require('prismarine-registry')(options.version)
             const effectNamePascal = pascalCase(skipMcPrefix(params[2]))
-            const effect = mcData.effectsByName[effectNamePascal]
+            const effect = registry.effectsByName[effectNamePascal]
             if (!effect) throw new UserError(`Unknown effect ${params[2]}}`)
             effId = effect.id
           }

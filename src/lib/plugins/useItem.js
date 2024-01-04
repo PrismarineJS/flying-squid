@@ -1,6 +1,6 @@
 module.exports.server = (serv, { version }) => {
-  const mcData = require('minecraft-data')(version)
-  const mobs = mcData.mobs
+  const registry = require('prismarine-registry')(version)
+  const mobs = registry.mobs
 
   function getEntID (entName) {
     let foundID = ''
@@ -16,9 +16,9 @@ module.exports.server = (serv, { version }) => {
   }
 
   serv.on('asap', () => { // On server ready
-    if (mcData.supportFeature('theFlattening')) { // >1.12 support
+    if (registry.supportFeature('theFlattening')) { // >1.12 support
       for (const mob of Object.values(mobs)) {
-        const spawnEgg = mcData.itemsByName[mob.name + '_spawn_egg']
+        const spawnEgg = registry.itemsByName[mob.name + '_spawn_egg']
         if (spawnEgg) {
           serv.onItemPlace(spawnEgg.name, ({ player, placedPosition }) => {
             serv.spawnMob(mob.id, player.world, placedPosition)
@@ -27,13 +27,13 @@ module.exports.server = (serv, { version }) => {
         }
       }
     } else {
-      if (mcData.supportFeature('entityMCPrefixed')) { // 1.12 support
+      if (registry.supportFeature('entityMCPrefixed')) { // 1.12 support
         serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
           serv.spawnMob(getEntID(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
           return { id: -1, data: 0 }
         })
       } else {
-        if (mcData.supportFeature('nbtOnMetadata')) { // 1.8 support
+        if (registry.supportFeature('nbtOnMetadata')) { // 1.8 support
           serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
             serv.spawnMob(item.metadata, player.world, placedPosition)
             return { id: -1, data: 0 }

@@ -1,8 +1,8 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.entity = function (entity, serv, { version }) {
-  const mcData = require('minecraft-data')(version)
-  const { blocks } = mcData
+  const registry = require('prismarine-registry')(version)
+  const { blocks } = registry
 
   entity.calculatePhysics = async (delta) => {
     if (entity.gravity) {
@@ -42,7 +42,7 @@ module.exports.entity = function (entity, serv, { version }) {
     const velocity = vel
     const maxVelocity = maxVel
     let scaledVelocity = velocity.scaled(8000 / 20) // from fixed-position/second to unit => 1/8000 blocks per tick
-    if (mcData.supportFeature('fixedPointPosition')) {
+    if (registry.supportFeature('fixedPointPosition')) {
       scaledVelocity = scaledVelocity.scaled(1 / 32)
     }
     scaledVelocity = scaledVelocity.floored()
