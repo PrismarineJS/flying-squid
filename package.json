@@ -47,6 +47,7 @@
     "prismarine-item": "^1.14.0",
     "prismarine-nbt": "^2.2.1",
     "prismarine-provider-anvil": "^2.7.0",
+    "prismarine-registry": "^1.7.0",
     "prismarine-windows": "^2.8.0",
     "prismarine-world": "^3.6.2",
     "random-seed": "^0.3.0",
