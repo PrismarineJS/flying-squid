@@ -1,28 +1,28 @@
 /* global BigInt */
 const Vec3 = require('vec3').Vec3
 
-const path = require('path')
 const crypto = require('crypto')
-const requireIndex = require('../requireindex')
-const plugins = requireIndex(path.join(__dirname, '..', 'plugins'))
 const playerDat = require('../playerDat')
 const convertInventorySlotId = require('../convertInventorySlotId')
+const plugins = require('./index')
 
 module.exports.server = function (serv, options) {
   serv._server.on('connection', client =>
     client.on('error', error => serv.emit('clientError', client, error)))
 
   serv._server.on('login', async (client) => {
-    if (client.socket.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
+    if (client.socket?.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
+    if (!serv.pluginsReady) {
+      client.end('Server is still starting! Please wait before reconnecting.')
+      return
+    }
     try {
       const player = serv.initEntity('player', null, serv.overworld, new Vec3(0, 0, 0))
       player._client = client
 
       player.profileProperties = player._client.profile ? player._client.profile.properties : []
 
-      Object.keys(plugins)
-        .filter(pluginName => plugins[pluginName].player !== undefined)
-        .forEach(pluginName => plugins[pluginName].player(player, serv, options))
+      for (const plugin of plugins.builtinPlugins) plugin.player?.(player, serv, options)
 
       serv.emit('newPlayer', player)
       player.emit('asap')
@@ -66,13 +66,8 @@ module.exports.player = async function (player, serv, settings) {
 
   function updateInventory () {
     playerData.inventory.forEach((item) => {
-      let theItem
-      const itemName = item.id.value.slice(10)
-      if (mcData.itemsByName[itemName]) {
-        theItem = mcData.itemsByName[itemName]
-      } else {
-        theItem = mcData.blocksByName[itemName]
-      }
+      const itemName = item.id.value.slice(10) // skip game brand prefix
+      const theItem = mcData.itemsByName[itemName] || mcData.blocksByName[itemName]
 
       let newItem
       if (mcData.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
@@ -214,8 +209,8 @@ module.exports.player = async function (player, serv, settings) {
       player.kick(serv.bannedPlayers[player.uuid].reason)
       return
     }
-    if (serv.bannedIPs[player._client.socket.remoteAddress]) {
-      player.kick(serv.bannedIPs[player._client.socket.remoteAddress].reason)
+    if (serv.bannedIPs[player._client.socket?.remoteAddress]) {
+      player.kick(serv.bannedIPs[player._client.socket?.remoteAddress].reason)
       return
     }
 
@@ -225,7 +220,6 @@ module.exports.player = async function (player, serv, settings) {
     player.sendSelfPosition()
     player.sendAbilities()
     await player.sendMap()
-    player.updateHealth(player.health)
     player.setXp(player.xp)
     updateInventory()
 
@@ -234,10 +228,14 @@ module.exports.player = async function (player, serv, settings) {
     player.updateAndSpawn()
 
     announceJoin()
+    // mineflayer emits spawn event on health update so it needs to be done as last step
+    player.updateHealth(player.health)
     player.emit('spawned')
 
     await player.waitPlayerLogin()
     player.sendRestMap()
     sendChunkWhenMove()
+
+    player.save()
   }
 }

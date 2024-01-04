@@ -1,3 +1,24 @@
+## 1.7.0
+* [Refactor: allow usage in browser (#633)](https://github.com/PrismarineJS/flying-squid/commit/768b69b5cdd3569d31a6ab1b1c00f5d41f69b897) (thanks @zardoy)
+
+## 1.6.0
+* [tab complete & `/give`, `/effect` improvements (#635)](https://github.com/PrismarineJS/flying-squid/commit/2c1bc4628eebe04eab6f1636d4e90f199fb5fb19) (thanks @zardoy)
+* [Add a few flags to cli & disable `everybody-op` by default? (#634)](https://github.com/PrismarineJS/flying-squid/commit/9e3fafd5aba90e6d4eaf0dcef8e6ed9b529c7073) (thanks @zardoy)
+* [Update Minecraft Wiki link to new domain after fork (#639)](https://github.com/PrismarineJS/flying-squid/commit/cb3cfd071b8d66a03d7db0d365dfca112be22305) (thanks @misode)
+* [Make created world loadable in singleplayer (#638)](https://github.com/PrismarineJS/flying-squid/commit/37bb939fbabf4d81bca39a9a6a4ce2a67fddfd15) (thanks @zardoy)
+* [Add command gh workflow allowing to use release command in comments (#629)](https://github.com/PrismarineJS/flying-squid/commit/2113acf3129bee44e68e0ad3b0014a8fb4325745) (thanks @rom1504)
+* [Update to node 18 (#627)](https://github.com/PrismarineJS/flying-squid/commit/1112ec7bce2ea9091c10248ff53dfbbc260c7040) (thanks @rom1504)
+* [Delete CNAME](https://github.com/PrismarineJS/flying-squid/commit/1158513f782b41a25a9ff5859495b6d2be4d31f0) (thanks @rom1504)
+* [fixed typos (#621)](https://github.com/PrismarineJS/flying-squid/commit/3336120afb83a3f52ade447b5adaa162f3fb40c1) (thanks @xkcdstickfigure)
+* [Bump mkdirp from 0.5.6 to 2.1.3 (#620)](https://github.com/PrismarineJS/flying-squid/commit/0f9687f973767789fcb996f36eca7a0e5746723b) (thanks @dependabot[bot])
+* [Kf106/upload chunk (#614)](https://github.com/PrismarineJS/flying-squid/commit/353a6fc5aa1fd8c970bb259fc7ff9344b25ee433) (thanks @kf106)
+* [Bump expect from 28.1.3 to 29.1.2 (#611)](https://github.com/PrismarineJS/flying-squid/commit/f35481145e3dde3ce0ba3b956e915bd25e626454) (thanks @dependabot[bot])
+* [chore: patch placement (#604)](https://github.com/PrismarineJS/flying-squid/commit/2eea573728f0b1e8e8fee06c71ffb41e1b765054) (thanks @TheoPierne)
+* [Slot update notification (#602)](https://github.com/PrismarineJS/flying-squid/commit/16d712d5e45a4fc33851bc239dc6c1b034002dae) (thanks @kf106)
+* [Fix breaking/placing blocks in adventure mode (#595)](https://github.com/PrismarineJS/flying-squid/commit/a4ea2bec9db6f97cf5dd5f992c7b78f9845b3ad9) (thanks @Saiv46)
+* [Commands(OP): Make player non-case-sensitive (#596)](https://github.com/PrismarineJS/flying-squid/commit/e271ee25ee0be1fd4fa7a4c16278554495ffb32d) (thanks @u9g)
+* [Fix item drop collection issue (#598)](https://github.com/PrismarineJS/flying-squid/commit/349f3940e6740becb53a556b1b54a3a1358f31cf) (thanks @darksunlight)
+
 ## 1.5.0
 * Downgrade compramised color package (#549)
 * Added serv.warn() & other small changes (#542)

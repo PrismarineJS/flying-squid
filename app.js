@@ -9,25 +9,38 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
     default: './config',
     description: 'Configuration directory'
   })
+  .option('offline', {
+    type: 'boolean',
+    default: 'false'
+  })
+  .option('log', {
+    description: 'Enable logging: When true create a log file in the logs folder',
+    type: 'boolean',
+    default: 'true'
+  })
+  .option('op', {
+    description: 'Useful for testing. When specified, op every player (give administrative permissions)',
+    type: 'boolean',
+    default: 'false'
+  })
   .argv
 
 const mcServer = require('./')
 
-const defaultSettings = require('./config/default-settings')
+const defaultSettings = require('./config/default-settings.json')
 
 let settings
 
 try {
-  settings = require(`${argv.config}/settings`)
-
-  Object.keys(defaultSettings).forEach(settingKey => {
-    if (settings[settingKey] === undefined) {
-      settings[settingKey] = defaultSettings[settingKey]
-    }
-  })
+  settings = require(`${argv.config}/settings.json`)
 } catch (err) {
-  settings = defaultSettings
+  settings = {}
 }
+
+settings = Object.assign(settings, defaultSettings, settings)
+if (argv.offline) settings['online-mode'] = false
+if (argv.log) settings.logging = true
+if (argv.op) settings['everybody-op'] = true
 
 module.exports = mcServer.createMCServer(settings)
 

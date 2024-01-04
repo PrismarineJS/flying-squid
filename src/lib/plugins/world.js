@@ -6,10 +6,13 @@ const { promisify } = require('util')
 const fs = require('fs')
 const { level } = require('prismarine-provider-anvil')
 
+const playerDat = require('../playerDat')
+
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
 
-module.exports.server = async function (serv, { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = {}) {
+module.exports.server = async function (serv, options = {}) {
+  const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const World = require('prismarine-world')(version)
   const mcData = require('minecraft-data')(version)
   const Anvil = require('prismarine-provider-anvil').Anvil(version)
@@ -30,7 +33,11 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       seed = levelData.RandomSeed[0]
     } catch (err) {
       seed = newSeed
-      await level.writeLevel(worldFolder + '/level.dat', { RandomSeed: [seed, 0] })
+      await level.writeLevel(worldFolder + '/level.dat', {
+        RandomSeed: [seed, 0],
+        Version: { Name: options.version },
+        generatorName: generation.name === 'superflat' ? 'flat' : generation.name === 'diamond_square' ? 'default' : 'customized'
+      })
     }
   } else { seed = newSeed }
   generation.options.seed = seed
@@ -98,7 +105,7 @@ module.exports.server = async function (serv, { version, worldFolder, generation
       .forEach(oPlayer => {
         chunks
           .filter(({ chunkX, chunkZ }) => oPlayer.loadedChunks[chunkX + ',' + chunkZ] !== undefined)
-          .forEach(({ chunkX, chunkZ }) => oPlayer.unloadChunk(chunkX, chunkZ))
+          .forEach(({ chunkX, chunkZ }) => oPlayer._unloadChunk(chunkX, chunkZ))
         oPlayer.sendRestMap()
       })
   }
@@ -143,6 +150,10 @@ module.exports.server = async function (serv, { version, worldFolder, generation
 }
 
 module.exports.player = function (player, serv, settings) {
+  player.save = async () => {
+    await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
+  }
+
   player._unloadChunk = (chunkX, chunkZ) => {
     serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
@@ -243,6 +254,12 @@ module.exports.player = function (player, serv, settings) {
       .catch((err) => setTimeout(() => { throw err }), 0)
   }
 
+  // todo as I understand need to handle difficulty packet instead?
+  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
+    player.view = newDistance
+    if (unloadFirst) player._unloadAllChunks()
+    player.sendRestMap()
+  })
   player.sendRestMap = () => {
     player.sendingChunks = true
     player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)

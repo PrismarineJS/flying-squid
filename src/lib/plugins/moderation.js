@@ -19,8 +19,8 @@ module.exports.server = function (serv, settings) {
         reason: reason || 'Your IP is banned!'
       }
       Object.keys(serv.players)
-        .filter(uuid => serv.players[uuid]._client.socket.remoteAddress === IP)
-        .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket.remoteAddress].reason))
+        .filter(uuid => serv.players[uuid]._client.socket?.remoteAddress === IP)
+        .forEach(uuid => serv.players[uuid].kick(serv.bannedIPs[serv.players[uuid]._client.socket?.remoteAddress].reason))
       return true
     } else return false
   }
@@ -390,7 +390,7 @@ module.exports.player = function (player, serv) {
   player.banIP = reason => {
     reason = reason || 'You were IP banned!'
     player.kick(reason)
-    return serv.banIP(player._client.socket.remoteAddress)
+    return serv.banIP(player._client.socket?.remoteAddress)
   }
 
   // I think it doesn't do anything but ok well...

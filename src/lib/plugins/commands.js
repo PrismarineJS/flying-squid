@@ -74,7 +74,7 @@ module.exports.server = function (serv, { version }) {
 
   serv.commands.add({
     base: 'selector',
-    info: 'Get array from selector',
+    info: 'Get entities id from selector like @a',
     usage: '/selector <selector>',
     op: true,
     parse (str) {
@@ -252,14 +252,14 @@ module.exports.server = function (serv, { version }) {
 
     sample = sample.filter(s => {
       if ((notudf(opt.radius) && s.position.distanceTo(pos) > opt.radius) ||
-          (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
-          (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
-          (notudf(opt.level) && s.level > opt.level) ||
-          (notudf(opt.minLevel) && s.level < opt.minLevel) ||
-          (notudf(opt.yaw) && s.yaw > opt.yaw) ||
-          (notudf(opt.minYaw) && s.yaw < opt.minYaw) ||
-          (notudf(opt.pitch) && s.pitch > opt.pitch) ||
-          (notudf(opt.minPitch) && s.pitch < opt.minPitch)) { return false }
+        (notudf(opt.minRadius) && s.position.distanceTo(pos) < opt.minRadius) ||
+        (notudf(opt.gameMode) && s.gameMode !== opt.gameMode) ||
+        (notudf(opt.level) && s.level > opt.level) ||
+        (notudf(opt.minLevel) && s.level < opt.minLevel) ||
+        (notudf(opt.yaw) && s.yaw > opt.yaw) ||
+        (notudf(opt.minYaw) && s.yaw < opt.minYaw) ||
+        (notudf(opt.pitch) && s.pitch > opt.pitch) ||
+        (notudf(opt.minPitch) && s.pitch < opt.minPitch)) { return false }
 
       if (!checkOption(opt.team, s.team)) return false
       if (!checkOption(opt.name, s.username)) return false
@@ -294,7 +294,7 @@ module.exports.server = function (serv, { version }) {
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
-    if (match[1] === 'r' && !pos) throw new UserError('Can\'t found nearest players')
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
     if (match === null) throw new UserError('Invalid selector format')
     const typeConversion = {
       a: 'all',

@@ -4,7 +4,7 @@ function generation ({ version }) {
   const Chunk = require('prismarine-chunk')(version)
   const mcData = require('minecraft-data')(version)
   const versionObject = mcData.version
-  const theFlattening = require('./lib/supportFeature')('theFlattening', versionObject.majorVersion)
+  const theFlattening = require('../supportFeature')('theFlattening', versionObject.majorVersion)
 
   function generateSimpleChunk () {
     const chunk = new Chunk()
