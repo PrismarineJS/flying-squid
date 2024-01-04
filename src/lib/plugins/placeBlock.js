@@ -19,9 +19,8 @@ module.exports.server = (serv, { version }) => {
     if (handler) return handler(data)
     const block = mcData.blocksByName[data.item.name]
     if (!block) return {}
-    if (block.states.length > 0) return { id: block.id, data: serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, data.properties) }
-    if (!serv.supportFeature('theFlattening')) return { id: data.item.type, data: data.item.metadata }
-    return { id: block.id, data: 0 }
+    if (block.states?.length > 0) return { id: block.id, data: serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, data.properties) }
+    return { id: data.item.type, data: data.item.metadata ?? 0 }
   }
 
   /**
