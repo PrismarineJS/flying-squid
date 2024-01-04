@@ -9,7 +9,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
 
-  describe(`simple server  ${version.minecraftVersion}v`, () => {
+  describe(`simple server  ${supportedVersion}v`, () => {
     let serv
 
     before(done => {
