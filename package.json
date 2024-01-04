@@ -69,7 +69,7 @@
     "flying-squid": "file:.",
     "longjohn": "^0.2.12",
     "minecraft-wrap": "^1.2.3",
-    "mineflayer": "^4.0.0",
+    "mineflayer": "^4.17.0",
     "mocha": "^10.0.0",
     "standard": "^17.0.0"
   }
