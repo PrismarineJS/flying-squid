@@ -14,16 +14,9 @@ module.exports.server = (serv, { version }) => {
   const mcData = require('minecraft-data')(version)
 
   const itemPlaceHandlers = new Map()
+  const defaultItemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
-    const handler = itemPlaceHandlers.get(data.item.type)
-    return handler
-      ? handler(data)
-      : {
-          id: data.item.type,
-          data: serv.supportFeature('theFlattening')
-            ? (mcData.blocks[data.item.type].states.length > 0 ? serv.setBlockDataProperties(mcData.blocks[data.item.type].defaultState - mcData.blocks[data.item.type].minStateId, mcData.blocks[data.item.type].states, data) : 0)
-            : data.item.metadata
-        }
+    return itemPlaceHandlers.get(data.item.type) ?? defaultItemPlaceHandlers.get(data.item.type) ?? (serv.supportFeature('theFlattening') ? {} : { id: data.item.type, data: data.item.metadata })
   }
 
   /**
@@ -66,6 +59,25 @@ module.exports.server = (serv, { version }) => {
         offset *= prop.num_values
       }
       return data
+    }
+  }
+
+  // Register default handlers for item -> block conversion
+  for (const name of Object.keys(mcData.itemsByName)) {
+    const block = mcData.blocksByName[name]
+    if (block) {
+      let item = mcData.itemsByName[name]
+      if (!item) item = mcData.blocksByName[name]
+      if (block.states.length > 0) {
+        defaultItemPlaceHandlers.set(item.id, ({ properties }) => {
+          const data = block.defaultState - block.minStateId
+          return { id: block.id, data: serv.setBlockDataProperties(data, block.states, properties) }
+        })
+      } else {
+        defaultItemPlaceHandlers.set(item.id, () => {
+          return { id: block.id, data: 0 }
+        })
+      }
     }
   }
 
