@@ -3,7 +3,6 @@ const Vec3 = require('vec3').Vec3
 function generation ({ version }) {
   const Chunk = require('prismarine-chunk')(version)
   const registry = require('prismarine-registry')(version)
-  const versionObject = registry.version
   const theFlattening = registry.supportFeature('theFlattening')
 
   function generateSimpleChunk () {

@@ -285,7 +285,7 @@ module.exports.player = function (player, serv, { version }) {
 
 module.exports.entity = function (entity, serv, { version }) {
   const registry = require('prismarine-registry')(version)
-  
+
   entity.initEntity = (type, entityType, world, position) => {
     entity.type = type
     entity.spawnPacketName = ''
