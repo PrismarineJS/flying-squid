@@ -15,12 +15,13 @@ module.exports.server = (serv, { version }) => {
 
   const itemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
-    const handler = itemPlaceHandlers.get(data.item.type)
+    const item = data.item
+    const handler = itemPlaceHandlers.get(item.type)
     if (handler) return handler(data)
-    const block = mcData.blocksByName[data.item.name]
+    const block = mcData.blocksByName[item.name]
     if (!block) return {}
     if (block.states?.length > 0) return { id: block.id, data: serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, data.properties) }
-    return { id: data.item.type, data: data.item.metadata ?? 0 }
+    return { id: item.type, data: item.metadata ?? 0 }
   }
 
   /**
