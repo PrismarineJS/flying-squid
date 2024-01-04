@@ -12,13 +12,13 @@ function assertPosEqual (actual, expected, precision = 1) {
 
 const once = require('event-promise')
 
-squid.supportedVersions.forEach((supportedVersion, i) => {
-  const mcData = require('minecraft-data')(supportedVersion)
+squid.testedVersions.forEach((testedVersion, i) => {
+  const mcData = require('minecraft-data')(testedVersion)
   const version = mcData.version
 
-  const Item = require('prismarine-item')(supportedVersion)
+  const Item = require('prismarine-item')(testedVersion)
 
-  describe('server with mineflayer connection ' + supportedVersion + 'v', () => {
+  describe('server with mineflayer connection ' + testedVersion + 'v', () => {
     /** @type {import('mineflayer').Bot} */
     let bot
     /** @type {import('mineflayer').Bot} */

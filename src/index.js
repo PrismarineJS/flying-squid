@@ -8,7 +8,7 @@ if (typeof process !== 'undefined' && !process.browser && process.platform !== '
 const { createServer } = require('minecraft-protocol')
 
 const EventEmitter = require('events').EventEmitter
-const supportedVersions = require('./lib/version').supportedVersions
+const { testedVersions, latestSupportedVersion, oldestSupportedVersion } = require('./lib/version')
 const Command = require('./lib/command')
 const plugins = require('./lib/plugins')
 require('emit-then').register()
@@ -24,7 +24,7 @@ module.exports = {
   experience: require('./lib/experience'),
   UserError: require('./lib/user_error'),
   portal_detector: require('./lib/portal_detector'),
-  supportedVersions
+  testedVersions
 }
 
 function createMCServer (options) {
@@ -45,8 +45,22 @@ class MCServer extends EventEmitter {
   connect (options) {
     const mcData = require('minecraft-data')(options.version)
     const version = mcData.version
-    if (!supportedVersions.some(v => v.includes(version.minecraftVersion))) {
-      throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+    let { 0: maxMajor, 1: maxMinor, 2: maxPatch = 0 } = latestSupportedVersion.split('.')
+    let { 0: minMajor, 1: minMinor, 2: minPatch = 0 } = oldestSupportedVersion.split('.')
+    let { 0: major, 1: minor, 2: patch = 0 } = version.minecraftVersion.split('.')
+    if (major > maxMajor || (major === maxMajor && minor > maxMinor) || (major === maxMajor && minor === maxMinor && patch > maxPatch)) {
+      console.warn(`[WARNING] Version ${version.minecraftVersion} is newer than the latest supported version, ${latestSupportedVersion}`)
+      console.warn(`[WARNING] The latest supported version is ${latestSupportedVersion}`)
+      console.warn(`[WARNING] It is unlikely that flying-squid will work correctly with this version`)
+    } else if (major < minMajor || (major === minMajor && minor < minMinor) || (major === minMajor && minor === minMinor && patch < minPatch)) {
+      console.warn(`[WARNING] Version ${version.minecraftVersion} is older than the oldest supported version, ${oldestSupportedVersion}`)
+      console.warn(`[WARNING] The oldest supported version is ${oldestSupportedVersion}`)
+      console.warn(`[WARNING] It is unlikely that flying-squid will work correctly with this version`)
+    } else if (!testedVersions.includes(version.majorVersion)) {
+      console.warn(`[WARNING] Version ${version.minecraftVersion} is not unit tested`)
+      console.warn(`[WARNING] The following versions are unit tested and officially supported:`)
+      console.warn(`[WARNING] ${testedVersions.join(', ')}`)
+      console.warn(`[WARNING] To disable this warning, switch to a tested version`)
     }
 
     this.supportFeature = feature => mcData.supportFeature(feature)
