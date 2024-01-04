@@ -56,11 +56,6 @@ class MCServer extends EventEmitter {
       console.warn(`[WARNING] Version ${version.minecraftVersion} is older than the oldest supported version, ${oldestSupportedVersion}`)
       console.warn(`[WARNING] The oldest supported version is ${oldestSupportedVersion}`)
       console.warn(`[WARNING] It is unlikely that flying-squid will work correctly with this version`)
-    } else if (!testedVersions.includes(version.majorVersion)) {
-      console.warn(`[WARNING] Version ${version.minecraftVersion} is not unit tested`)
-      console.warn(`[WARNING] The following versions are unit tested and officially supported:`)
-      console.warn(`[WARNING] ${testedVersions.join(', ')}`)
-      console.warn(`[WARNING] To disable this warning, switch to a tested version`)
     }
 
     this.supportFeature = feature => mcData.supportFeature(feature)
