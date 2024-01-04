@@ -36,7 +36,7 @@ jobs:
           console.log('matrix='+JSON.stringify({'include': supportedVersions.map(mcVersion => ({mcVersion}))}))
         " >> $GITHUB_OUTPUT
 
-  MinecraftServer:
+  Test:
     needs: PrepareSupportedVersions
     runs-on: ubuntu-latest
     strategy:
