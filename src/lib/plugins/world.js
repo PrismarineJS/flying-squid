@@ -274,6 +274,7 @@ module.exports.player = function (player, serv, settings) {
   }
 
   player._unloadAllChunks = () => {
+    if (!player?.loadedChunks) return
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
       .forEach(([x, z]) => player._unloadChunk(x, z))
