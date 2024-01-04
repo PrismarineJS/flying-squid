@@ -44,13 +44,13 @@ class MCServer extends EventEmitter {
 
   connect (options) {
     const registry = require('prismarine-registry')(options.version)
-    if (!registry?.version) throw new Error(`Server version '${options.version}' is not supported, no data for version`)
+    if (!registry?.version) throw new Error(`Server version '${registry?.version}' is not supported, no data for version`)
 
     const versionData = registry.version
     if (versionData['>'](latestSupportedVersion)) {
-      throw new Error(`Server version '${serverPingVersion}' is not supported. Latest supported version is '${latestSupportedVersion}'.`)
+      throw new Error(`Server version '${registry?.version}' is not supported. Latest supported version is '${latestSupportedVersion}'.`)
     } else if (versionData['<'](oldestSupportedVersion)) {
-      throw new Error(`Server version '${serverPingVersion}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
+      throw new Error(`Server version '${registry?.version}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
     }
 
     this.commands = new Command({})
