@@ -21,7 +21,7 @@ module.exports.server = (serv, { version }) => {
     const block = mcData.blocksByName[item.name]
     if (!block) return {}
     if (block.states?.length > 0) return { id: block.id, data: serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, data.properties) }
-    return { id: item.type, data: item.metadata ?? 0 }
+    return { id: block.id, data: item.metadata ?? 0 }
   }
 
   /**
