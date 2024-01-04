@@ -6,7 +6,7 @@ const Vec3 = require('vec3').Vec3
 const plugins = require('./index')
 
 module.exports.server = function (serv, options) {
-  const version = options.version
+  const { version } = options
 
   const Entity = require('prismarine-entity')(version)
   const mcData = require('minecraft-data')(version)
@@ -220,17 +220,17 @@ module.exports.server = function (serv, options) {
   })
 }
 
-module.exports.player = function (player, serv, options) {
-  const version = options.version
+module.exports.player = function (player, serv, { version }) {
   const Item = require('prismarine-item')(version)
+  const mcData = require('minecraft-data')(version)
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
-    if (serv.supportFeature('entityMetadataSentSeparately')) {
+    if (mcData.supportFeature('entityMetadataSentSeparately')) {
       entity.sendMetadata(entity.metadata)
     }
     if (typeof entity.itemId !== 'undefined') {
-      if (serv.supportFeature('theFlattening')) {
+      if (mcData.supportFeature('theFlattening')) {
         entity.sendMetadata([{
           key: 6,
           type: 6,
@@ -252,7 +252,7 @@ module.exports.player = function (player, serv, options) {
         }])
       }
     }
-    if (serv.supportFeature('allEntityEquipmentInOne')) {
+    if (mcData.supportFeature('allEntityEquipmentInOne')) {
       const equipments = []
       entity.equipment.forEach((equipment, slot) => {
         if (equipment !== undefined) {
@@ -283,7 +283,9 @@ module.exports.player = function (player, serv, options) {
   }
 }
 
-module.exports.entity = function (entity, serv) {
+module.exports.entity = function (entity, serv, { version }) {
+  const mcData = require('minecraft-data')(version)
+  
   entity.initEntity = (type, entityType, world, position) => {
     entity.type = type
     entity.spawnPacketName = ''
@@ -305,15 +307,15 @@ module.exports.entity = function (entity, serv) {
 
   entity.getSpawnPacket = () => {
     let scaledVelocity = entity.velocity.scaled(8000 / 20) // from fixed-position/second to unit => 1/8000 blocks per tick
-    if (serv.supportFeature('fixedPointPosition')) {
+    if (mcData.supportFeature('fixedPointPosition')) {
       scaledVelocity = scaledVelocity.scaled(1 / 32)
     }
     scaledVelocity = scaledVelocity.floored()
 
     let entityPosition
-    if (serv.supportFeature('fixedPointPosition')) {
+    if (mcData.supportFeature('fixedPointPosition')) {
       entityPosition = entity.position.scaled(32).floored()
-    } else if (serv.supportFeature('doublePosition')) {
+    } else if (mcData.supportFeature('doublePosition')) {
       entityPosition = entity.position
     }
 
@@ -393,7 +395,7 @@ module.exports.entity = function (entity, serv) {
   }
 
   entity.attach = (attachedEntity, leash = false) => {
-    if (serv.supportFeature('attachStackEntity') || (serv.supportFeature('setPassengerStackEntity') && leash)) {
+    if (mcData.supportFeature('attachStackEntity') || (mcData.supportFeature('setPassengerStackEntity') && leash)) {
       const p = {
         entityId: attachedEntity.id,
         vehicleId: entity.id,
@@ -402,7 +404,7 @@ module.exports.entity = function (entity, serv) {
       if (entity.type === 'player') { entity._client.write('attach_entity', p) }
       entity._writeOthersNearby('attach_entity', p)
     }
-    if (serv.supportFeature('setPassengerStackEntity')) {
+    if (mcData.supportFeature('setPassengerStackEntity')) {
       const p = {
         entityId: entity.id,
         passengers: [attachedEntity.id]

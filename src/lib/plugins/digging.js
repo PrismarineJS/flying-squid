@@ -106,7 +106,7 @@ module.exports.player = function (player, serv, { version }) {
         })
       }
     }
-    if (serv.supportFeature('acknowledgePlayerDigging')) {
+    if (mcData.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -123,7 +123,7 @@ module.exports.player = function (player, serv, { version }) {
       location,
       destroyStage: -1
     })
-    if (serv.supportFeature('acknowledgePlayerDigging')) {
+    if (mcData.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -157,7 +157,7 @@ module.exports.player = function (player, serv, { version }) {
         drops.push({
           ...dropBase,
           blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: serv.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
+          blockDropId: mcData.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
         })
       } else {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
@@ -185,7 +185,7 @@ module.exports.player = function (player, serv, { version }) {
         if (data.dropBlock) {
           drops.forEach(drop => dropBlock(drop))
         }
-        if (serv.supportFeature('acknowledgePlayerDigging')) {
+        if (mcData.supportFeature('acknowledgePlayerDigging')) {
           player._client.write('acknowledge_player_digging', {
             location,
             block: 0,
@@ -199,7 +199,7 @@ module.exports.player = function (player, serv, { version }) {
         location,
         type: currentlyDugBlock.type << 4
       })
-      if (serv.supportFeature('acknowledgePlayerDigging')) {
+      if (mcData.supportFeature('acknowledgePlayerDigging')) {
         player._client.write('acknowledge_player_digging', {
           location,
           block: currentlyDugBlock.stateId,

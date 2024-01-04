@@ -92,7 +92,7 @@ module.exports.player = async function (player, serv, settings) {
       worldNames: Object.values(serv.dimensionNames),
       dimensionCodec: mcData.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
-      dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIaAWorld')) ? mcData.loginPacket.dimension : 0,
+      dimension: (mcData.supportFeature('dimensionIsAString') || mcData.supportFeature('dimensionIaAWorld')) ? mcData.loginPacket.dimension : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
@@ -102,7 +102,7 @@ module.exports.player = async function (player, serv, settings) {
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
     })
-    if (serv.supportFeature('difficultySentSeparately')) {
+    if (mcData.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
         difficulty: serv.difficulty,
         difficultyLocked: false
@@ -113,7 +113,7 @@ module.exports.player = async function (player, serv, settings) {
   function sendChunkWhenMove () {
     player.on('move', () => {
       if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
-      if (!serv.supportFeature('updateViewPosition')) {
+      if (!mcData.supportFeature('updateViewPosition')) {
         return
       }
       const chunkX = Math.floor(player.position.x / 16)

@@ -80,7 +80,7 @@ module.exports.server = async function (serv, options = {}) {
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
-  if (serv.supportFeature('theFlattening')) {
+  if (mcData.supportFeature('theFlattening')) {
     serv.setBlockType = async (world, position, id) => {
       serv.setBlock(world, position, mcData.blocks[id].minStateId)
     }
@@ -150,14 +150,16 @@ module.exports.server = async function (serv, options = {}) {
 }
 
 module.exports.player = function (player, serv, settings) {
+  const mcData = require('minecraft-data')(settings.version)
+
   player.save = async () => {
-    await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
+    await playerDat.save(player, settings.worldFolder, mcData.supportFeature('attributeSnakeCase'), mcData.supportFeature('theFlattening'))
   }
 
   player._unloadChunk = (chunkX, chunkZ) => {
     serv._unloadPlayerChunk(chunkX, chunkZ, player)
 
-    if (serv.supportFeature('unloadChunkByEmptyChunk')) {
+    if (mcData.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
         x: chunkX,
         z: chunkZ,
@@ -165,7 +167,7 @@ module.exports.player = function (player, serv, settings) {
         bitMap: 0x0000,
         chunkData: Buffer.alloc(0)
       })
-    } else if (serv.supportFeature('unloadChunkDirect')) {
+    } else if (mcData.supportFeature('unloadChunkDirect')) {
       player._client.write('unload_chunk', {
         chunkX,
         chunkZ
@@ -196,7 +198,7 @@ module.exports.player = function (player, serv, settings) {
         chunkData: chunk.dump(),
         blockEntities: []
       })
-      if (serv.supportFeature('lightSentSeparately')) {
+      if (mcData.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
           chunkZ: z,
@@ -291,7 +293,7 @@ module.exports.player = function (player, serv, settings) {
     }
     player._client.write('respawn', {
       previousGameMode: player.prevGameMode,
-      dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      dimension: (mcData.supportFeature('dimensionIsAString') || mcData.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
       hashedSeed: serv.hashedSeed,

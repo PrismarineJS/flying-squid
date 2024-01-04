@@ -60,7 +60,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
       }
 
       serv = squid.createMCServer(options)
-      if (serv.supportFeature('entityCamelCase')) {
+      if (mcData.supportFeature('entityCamelCase')) {
         entityName = 'EnderDragon'
       } else {
         entityName = 'ender_dragon'

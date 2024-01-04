@@ -55,7 +55,6 @@ class MCServer extends EventEmitter {
       throw new Error(`Server version '${serverPingVersion}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
     }
 
-    this.supportFeature = feature => mcData.supportFeature(feature)
     this.commands = new Command({})
     this._server = createServer(options)
 

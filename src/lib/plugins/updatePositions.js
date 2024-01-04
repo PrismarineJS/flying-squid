@@ -81,7 +81,9 @@ module.exports.player = function (player) {
   }
 }
 
-module.exports.entity = function (entity, serv) {
+module.exports.entity = function (entity, serv, { version }) {
+  const mcData = require('minecraft-data')(version)
+
   entity.sendPosition = (position, onGround, teleport = false) => {
     if (typeof position === 'undefined') throw new Error('undef')
     if (entity.position.equals(position) && entity.onGround === onGround) return Promise.resolve()
@@ -99,18 +101,18 @@ module.exports.entity = function (entity, serv) {
       const diff = position.minus(entity.knownPosition)
 
       let maxDelta
-      if (serv.supportFeature('fixedPointDelta')) {
+      if (mcData.supportFeature('fixedPointDelta')) {
         maxDelta = 3
-      } else if (serv.supportFeature('fixedPointDelta128')) {
+      } else if (mcData.supportFeature('fixedPointDelta128')) {
         maxDelta = 7
       }
 
       if (diff.abs().x > maxDelta || diff.abs().y > maxDelta || diff.abs().z > maxDelta) {
         let entityPosition
 
-        if (serv.supportFeature('fixedPointPosition')) {
+        if (mcData.supportFeature('fixedPointPosition')) {
           entityPosition = position.scaled(32).floored()
-        } else if (serv.supportFeature('doublePosition')) {
+        } else if (mcData.supportFeature('doublePosition')) {
           entityPosition = position
         }
         entity._writeOthersNearby('entity_teleport', {
@@ -125,10 +127,10 @@ module.exports.entity = function (entity, serv) {
         entity.knownPosition = position
       } else if (diff.distanceTo(new Vec3(0, 0, 0)) !== 0) {
         let delta
-        if (serv.supportFeature('fixedPointDelta')) {
+        if (mcData.supportFeature('fixedPointDelta')) {
           delta = diff.scaled(32).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32))
-        } else if (serv.supportFeature('fixedPointDelta128')) {
+        } else if (mcData.supportFeature('fixedPointDelta128')) {
           delta = diff.scaled(32).scaled(128).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32 / 128))
         }

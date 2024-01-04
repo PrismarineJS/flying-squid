@@ -5,7 +5,7 @@ module.exports.player = function (player, serv, { version }) {
   const mcData = require('minecraft-data')(version)
 
   const obsidianType = mcData.blocksByName.obsidian.id
-  const portalType = serv.supportFeature('theFlattening') ? mcData.blocksByName.nether_portal.id : mcData.blocksByName.portal.id
+  const portalType = mcData.supportFeature('theFlattening') ? mcData.blocksByName.nether_portal.id : mcData.blocksByName.portal.id
 
   player.on('dug', ({ position, block }) => {
     function destroyPortal (portal, positionAlreadyDone = null) {
@@ -39,7 +39,7 @@ module.exports.server = function (serv, { version }) {
 
   let portalX
   let portalZ
-  if (serv.supportFeature('theFlattening')) {
+  if (mcData.supportFeature('theFlattening')) {
     const portalBlock = mcData.blocksByName.nether_portal
     portalX = portalBlock.minStateId
     portalZ = portalBlock.minStateId + 1

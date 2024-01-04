@@ -63,9 +63,9 @@ class ChunkUpdates {
 }
 
 module.exports.server = (serv, { version }) => {
-  multiBlockChangeHasTrustEdges = serv.supportFeature('multiBlockChangeHasTrustEdges')
-
   const mcData = require('minecraft-data')(version)
+
+  multiBlockChangeHasTrustEdges = mcData.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
 

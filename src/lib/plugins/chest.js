@@ -11,7 +11,7 @@ module.exports.server = function (serv, { version }) {
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
     let blockShulkerBox = []
-    if (serv.supportFeature('theShulkerBoxes')) {
+    if (mcData.supportFeature('theShulkerBoxes')) {
       blockShulkerBox = [mcData.blocksByName.shulker_box.id, mcData.blocksByName.red_shulker_box.id,
         mcData.blocksByName.orange_shulker_box.id, mcData.blocksByName.yellow_shulker_box.id, mcData.blocksByName.lime_shulker_box.id,
         mcData.blocksByName.green_shulker_box.id, mcData.blocksByName.light_blue_shulker_box.id, mcData.blocksByName.cyan_shulker_box.id,
@@ -99,7 +99,7 @@ module.exports.server = function (serv, { version }) {
     serv.onBlockInteraction(mcData.blocksByName.ender_chest.name, containerBlockInteractionHandler)
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
-    if (serv.supportFeature('theShulkerBoxes')) {
+    if (mcData.supportFeature('theShulkerBoxes')) {
       for (const currentShulkerBoxID of blockShulkerBox) {
         serv.onBlockInteraction(mcData.blocks[currentShulkerBoxID].name, containerBlockInteractionHandler)
       }

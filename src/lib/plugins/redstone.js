@@ -7,7 +7,7 @@ module.exports.server = function (serv, { version }) {
   const redstoneTorchType = mcData.blocksByName.redstone_torch.id
 
   let poweredRepeaterType, unpoweredRepeaterType, unlitRedstoneTorchType, repeaterType
-  if (!serv.supportFeature('theFlattening')) {
+  if (!mcData.supportFeature('theFlattening')) {
     unlitRedstoneTorchType = mcData.blocksByName.unlit_redstone_torch.id
     poweredRepeaterType = mcData.blocksByName.powered_repeater.id
     unpoweredRepeaterType = mcData.blocksByName.unpowered_repeater.id
@@ -15,7 +15,7 @@ module.exports.server = function (serv, { version }) {
   const powerLevel = (block, dir) => {
     if (block.type === redstoneWireType) return block.metadata
     if (block.type === redstoneTorchType) return 15
-    if (serv.supportFeature('theFlattening')) {
+    if (mcData.supportFeature('theFlattening')) {
       // to do
     } else {
       // the if below is missing a check whether repeater is powered or not
@@ -37,7 +37,7 @@ module.exports.server = function (serv, { version }) {
     if (block.type === redstoneWireType) {
       if (dir.y === 1 || await isWireDirectedIn(world, pos, dir.scaled(-1))) { return block.metadata }
     }
-    if (serv.supportFeature('theFlattening')) {
+    if (mcData.supportFeature('theFlattening')) {
       // to-do
     } else {
       if (block.type === poweredRepeaterType) {
@@ -75,7 +75,7 @@ module.exports.server = function (serv, { version }) {
   }
 
   const isDirectedRepeater = (block, dir, powered = false) => {
-    if (serv.supportFeature('theFlattening')) {
+    if (mcData.supportFeature('theFlattening')) {
       // TO-DO
       return false
     } else {
@@ -138,7 +138,7 @@ module.exports.server = function (serv, { version }) {
       player.setBlock(block.position, block.type, data)
       return true
     }
-    if (!serv.supportFeature('theFlattening')) {
+    if (!mcData.supportFeature('theFlattening')) {
       serv.onBlockInteraction('powered_repeater', repeaterInteraction)
       serv.onBlockInteraction('unpowered_repeater', repeaterInteraction)
     }
@@ -188,7 +188,7 @@ module.exports.server = function (serv, { version }) {
 
       return changed
     }
-    if (!serv.supportFeature('theFlattening')) {
+    if (!mcData.supportFeature('theFlattening')) {
       serv.onBlockUpdate('unlit_redstone_torch', updateRedstoneTorch)
     }
     serv.onBlockUpdate('redstone_torch', updateRedstoneTorch)
@@ -235,10 +235,10 @@ module.exports.server = function (serv, { version }) {
 
       let changed = false
       if ((block.type === poweredRepeaterType || block.type === repeaterType) && p === 0) {
-        if (serv.supportFeature('theFlattening')) { block.metadata.powered = false } else { await world.setBlockType(pos, unpoweredRepeaterType) }
+        if (mcData.supportFeature('theFlattening')) { block.metadata.powered = false } else { await world.setBlockType(pos, unpoweredRepeaterType) }
         changed = true
       } else if ((block.type === unpoweredRepeaterType || block.type === repeaterType) && p !== 0) {
-        if (serv.supportFeature('theFlattening')) { block.metadata.powered = true } else { await world.setBlockType(pos, poweredRepeaterType) }
+        if (mcData.supportFeature('theFlattening')) { block.metadata.powered = true } else { await world.setBlockType(pos, poweredRepeaterType) }
         changed = true
       }
 
@@ -250,7 +250,7 @@ module.exports.server = function (serv, { version }) {
 
       return changed
     }
-    if (!serv.supportFeature('theFlattening')) {
+    if (!mcData.supportFeature('theFlattening')) {
       serv.onBlockUpdate('powered_repeater', updateRepeater)
       serv.onBlockUpdate('unpowered_repeater', updateRepeater)
     }
