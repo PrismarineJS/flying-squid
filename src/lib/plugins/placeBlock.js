@@ -16,7 +16,14 @@ module.exports.server = (serv, { version }) => {
   const itemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
     const handler = itemPlaceHandlers.get(data.item.type)
-    return handler ? handler(data) : (serv.supportFeature('theFlattening') ? {} : { id: data.item.type, data: data.item.metadata })
+    return handler
+      ? handler(data)
+      : {
+          id: data.item.type,
+          data: serv.supportFeature('theFlattening')
+            ? (mcData.blocks[data.item.type].states.length > 0 ? serv.setBlockDataProperties(mcData.blocks[data.item.type].defaultState - mcData.blocks[data.item.type].minStateId, mcData.blocks[data.item.type].states, data) : 0)
+            : data.item.metadata
+        }
   }
 
   /**
@@ -59,23 +66,6 @@ module.exports.server = (serv, { version }) => {
         offset *= prop.num_values
       }
       return data
-    }
-
-    // Register default handlers for item -> block conversion
-    for (const name of Object.keys(mcData.itemsByName)) {
-      const block = mcData.blocksByName[name]
-      if (block) {
-        if (block.states.length > 0) {
-          serv.onItemPlace(name, ({ properties }) => {
-            const data = block.defaultState - block.minStateId
-            return { id: block.id, data: serv.setBlockDataProperties(data, block.states, properties) }
-          })
-        } else {
-          serv.onItemPlace(name, () => {
-            return { id: block.id, data: 0 }
-          })
-        }
-      }
     }
   }
 
