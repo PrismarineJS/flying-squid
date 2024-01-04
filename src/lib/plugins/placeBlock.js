@@ -66,7 +66,7 @@ module.exports.server = (serv, { version }) => {
   for (const name of Object.keys(mcData.itemsByName)) {
     const block = mcData.blocksByName[name]
     if (block) {
-      let item = mcData.itemsByName[name] ?? block
+      const item = mcData.itemsByName[name] ?? block
       if (block?.states?.length > 0) {
         defaultItemPlaceHandlers.set(item.id, ({ properties }) => {
           const data = block.defaultState - block.minStateId
