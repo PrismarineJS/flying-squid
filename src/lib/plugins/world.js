@@ -293,7 +293,7 @@ module.exports.player = function (player, serv, settings) {
     }
     player._client.write('respawn', {
       previousGameMode: player.prevGameMode,
-      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
       hashedSeed: serv.hashedSeed,

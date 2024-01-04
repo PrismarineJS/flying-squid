@@ -14,7 +14,7 @@ module.exports.player = function (player, serv, { version }) {
       player.behavior('requestRespawn', {}, () => {
         player._client.write('respawn', {
           previousGameMode: player.prevGameMode,
-          dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIaAWorld')) ? serv.dimensionNames[0] : 0,
+          dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[0] : 0,
           worldName: serv.dimensionNames[0],
           difficulty: serv.difficulty,
           hashedSeed: serv.hashedSeed,
