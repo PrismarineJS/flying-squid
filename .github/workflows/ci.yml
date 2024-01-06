@@ -18,7 +18,7 @@ jobs:
         node-version: 18.x
     - run: npm i && npm run lint
   
-  PrepareSupportedVersions:
+  PrepareTestedVersions:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -32,15 +32,15 @@ jobs:
     - id: set-matrix
       run: |
         node -e "
-          const supportedVersions = require('./src/lib/version').supportedVersions;
-          console.log('matrix='+JSON.stringify({'include': supportedVersions.map(mcVersion => ({mcVersion}))}))
+          const { testedVersions } = require('./src/lib/version');
+          console.log('matrix='+JSON.stringify({'include': testedVersions.map(mcVersion => ({mcVersion}))}))
         " >> $GITHUB_OUTPUT
 
   Test:
-    needs: PrepareSupportedVersions
+    needs: PrepareTestedVersions
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.PrepareSupportedVersions.outputs.matrix)}}
+      matrix: ${{fromJson(needs.PrepareTestedVersions.outputs.matrix)}}
       fail-fast: false
 
     steps:

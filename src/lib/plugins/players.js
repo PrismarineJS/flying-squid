@@ -3,7 +3,7 @@ const { skipMcPrefix } = require('../utils')
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
   const Item = require('prismarine-item')(version)
   serv.entityMaxId = 0
   serv.players = []
@@ -118,7 +118,7 @@ module.exports.server = function (serv, { version }) {
       }
     },
     action ({ players, item, count }) {
-      const itemData = isNaN(+item) ? mcData.itemsByName[skipMcPrefix(item)] : mcData.items[+item]
+      const itemData = isNaN(+item) ? registry.itemsByName[skipMcPrefix(item)] : registry.items[+item]
 
       if (!itemData) throw new UserError(`Unknown item '${item}'`)
       const newItem = new Item(itemData.id, count)
@@ -151,7 +151,7 @@ module.exports.server = function (serv, { version }) {
     parse (args, ctx) {
       args = args.split(' ')
       if (args[0] === '') return false
-      const enchantment = mcData.enchantmentsByName[skipMcPrefix(args[1])]
+      const enchantment = registry.enchantmentsByName[skipMcPrefix(args[1])]
       if (!enchantment) throw new UserError('No such enchantment')
       if (args[2] && (parseInt(args[2]) > enchantment.maxLevel || parseInt(args[2]) < 1)) throw new UserError(`Level ${args[2]} is not supported by that enchantment`)
       const players = serv.getPlayers(args[0], ctx.player)

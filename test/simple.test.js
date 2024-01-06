@@ -5,11 +5,11 @@ const squid = require('flying-squid')
 
 const settings = require('../config/default-settings')
 
-squid.supportedVersions.forEach((supportedVersion, i) => {
-  const mcData = require('minecraft-data')(supportedVersion)
-  const version = mcData.version
+squid.testedVersions.forEach((testedVersion, i) => {
+  const registry = require('prismarine-registry')(testedVersion)
+  const version = registry.version
 
-  describe(`simple server  ${supportedVersion}v`, () => {
+  describe(`simple server  ${testedVersion}v`, () => {
     let serv
 
     before(done => {

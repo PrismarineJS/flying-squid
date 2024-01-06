@@ -5,8 +5,8 @@ const range = require('range').range
 module.exports = (version) => {
   const World = require('prismarine-world')(version)
   const Chunk = require('prismarine-chunk')(version)
-  const mcData = require('minecraft-data')(version)
-  const obsidianType = mcData.blocksByName.obsidian.id
+  const registry = require('prismarine-registry')(version)
+  const obsidianType = registry.blocksByName.obsidian.id
 
   async function findLineInDirection (world, startingPoint, type, direction, directionV) {
     const line = []

@@ -3,9 +3,9 @@
 const squid = require('flying-squid')
 const expect = require('expect').default
 
-squid.supportedVersions.forEach((supportedVersion, i) => {
-  const mcData = require('minecraft-data')(supportedVersion)
-  const version = mcData.version
+squid.testedVersions.forEach((testedVersion, i) => {
+  const registry = require('prismarine-registry')(testedVersion)
+  const version = registry.version
 
   const {
     detectFrame,
@@ -19,7 +19,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
 
   const { Vec3 } = require('vec3')
 
-  describe('generate portal ' + supportedVersion + 'v', () => {
+  describe('generate portal ' + testedVersion + 'v', () => {
     it('generate a line', () => {
       expect(generateLine(new Vec3(3, 1, 1), new Vec3(1, 0, 0), 2)).toEqual([new Vec3(3, 1, 1), new Vec3(4, 1, 1)])
     })
