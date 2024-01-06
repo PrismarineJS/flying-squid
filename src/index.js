@@ -8,15 +8,13 @@ if (typeof process !== 'undefined' && !process.browser && process.platform !== '
 const { createServer } = require('minecraft-protocol')
 
 const EventEmitter = require('events').EventEmitter
-const supportedVersions = require('./lib/version').supportedVersions
+const { testedVersions, latestSupportedVersion, oldestSupportedVersion } = require('./lib/version')
 const Command = require('./lib/command')
 const plugins = require('./lib/plugins')
 require('emit-then').register()
 if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
 }
-
-const supportFeature = require('./lib/supportFeature')
 
 module.exports = {
   createMCServer,
@@ -26,7 +24,7 @@ module.exports = {
   experience: require('./lib/experience'),
   UserError: require('./lib/user_error'),
   portal_detector: require('./lib/portal_detector'),
-  supportedVersions
+  testedVersions
 }
 
 function createMCServer (options) {
@@ -45,11 +43,16 @@ class MCServer extends EventEmitter {
   }
 
   connect (options) {
-    const version = require('minecraft-data')(options.version).version
-    if (!supportedVersions.some(v => v.includes(version.majorVersion))) {
-      throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+    const registry = require('prismarine-registry')(options.version)
+    if (!registry?.version) throw new Error(`Server version '${registry?.version}' is not supported, no data for version`)
+
+    const versionData = registry.version
+    if (versionData['>'](latestSupportedVersion)) {
+      throw new Error(`Server version '${registry?.version}' is not supported. Latest supported version is '${latestSupportedVersion}'.`)
+    } else if (versionData['<'](oldestSupportedVersion)) {
+      throw new Error(`Server version '${registry?.version}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
     }
-    this.supportFeature = feature => supportFeature(feature, version.majorVersion)
+
     this.commands = new Command({})
     this._server = createServer(options)
 

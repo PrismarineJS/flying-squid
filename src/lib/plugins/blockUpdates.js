@@ -1,5 +1,6 @@
 const { performance } = require('perf_hooks')
 
+let multiBlockChangeHasTrustEdges
 class ChunkUpdates {
   constructor () {
     this.chunks = new Map()
@@ -7,10 +8,11 @@ class ChunkUpdates {
 
   add (pos) {
     const chunkX = Math.floor(pos.x / 16)
+    const chunkY = Math.floor(pos.y / 16)
     const chunkZ = Math.floor(pos.z / 16)
-    const key = `${chunkX},${chunkZ}`
+    const key = `${chunkX},${chunkY},${chunkZ}`
     if (!this.chunks.has(key)) {
-      this.chunks.set(key, { chunkX, chunkZ, updates: new Set() })
+      this.chunks.set(key, { chunkX, chunkZ, chunkY, updates: new Set() })
     }
     this.chunks.get(key).updates.add(pos)
   }
@@ -25,24 +27,45 @@ class ChunkUpdates {
 
   async getMultiBlockPackets (world) {
     const packets = []
-    for (const { chunkX, chunkZ, updates } of this.chunks.values()) {
+
+    for (const { chunkX, chunkZ, chunkY, updates } of this.chunks.values()) {
       const records = []
       for (const p of updates.values()) {
         const state = await world.getBlockStateId(p)
+
+        if (multiBlockChangeHasTrustEdges) {
+          records.push(state << 12 | (p.x << 8 | p.z << 4 | p.y))
+          continue
+        }
+
         records.push({
           horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
           y: p.y,
           blockId: state
         })
       }
-      packets.push({ chunkX, chunkZ, records })
+
+      if (multiBlockChangeHasTrustEdges) {
+        packets.push({
+          chunkCoordinates: {
+            x: chunkX,
+            y: chunkY, // TODO:
+            z: chunkZ
+          },
+          notTrustEdges: false, // Update light's "Trust Edges" is always true
+          records
+        })
+      } else packets.push({ chunkX, chunkZ, records })
     }
+
     return packets
   }
 }
 
 module.exports.server = (serv, { version }) => {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
+
+  multiBlockChangeHasTrustEdges = registry.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
 
@@ -109,7 +132,7 @@ module.exports.server = (serv, { version }) => {
    * It should return true if the block changed its state
    */
   serv.onBlockUpdate = (name, handler) => {
-    const block = mcData.blocksByName[name]
+    const block = registry.blocksByName[name]
     if (updateHandlers.has(block.id)) {
       serv.warn(`onBlockUpdate handler was registered twice for ${name}`)
     }

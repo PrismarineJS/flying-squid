@@ -37,5 +37,6 @@ module.exports.player = function (player, serv, { worldFolder }) {
     }
 
     player.save()
+    player._client.socket?.destroy()
   })
 }

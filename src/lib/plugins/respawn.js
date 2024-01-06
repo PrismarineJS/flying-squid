@@ -1,10 +1,12 @@
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, { version }) {
+  const registry = require('prismarine-registry')(version)
+
   player._client.on('client_command', (data) => {
     let actionId
 
-    if (serv.supportFeature('respawnIsPayload')) {
+    if (registry.supportFeature('respawnIsPayload')) {
       actionId = data.payload
-    } else if (serv.supportFeature('respawnIsActionId')) {
+    } else if (registry.supportFeature('respawnIsActionId')) {
       actionId = data.actionId
     }
 
@@ -12,7 +14,7 @@ module.exports.player = function (player, serv) {
       player.behavior('requestRespawn', {}, () => {
         player._client.write('respawn', {
           previousGameMode: player.prevGameMode,
-          dimension: serv.supportFeature('dimensionIsAString') ? serv.dimensionNames[0] : 0,
+          dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[0] : 0,
           worldName: serv.dimensionNames[0],
           difficulty: serv.difficulty,
           hashedSeed: serv.hashedSeed,

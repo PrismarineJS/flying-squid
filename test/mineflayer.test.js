@@ -12,19 +12,13 @@ function assertPosEqual (actual, expected, precision = 1) {
 
 const once = require('event-promise')
 
-const { firstVersion, lastVersion } = require('./common/parallel')
+squid.testedVersions.forEach((testedVersion, i) => {
+  const registry = require('prismarine-registry')(testedVersion)
+  const version = registry.version
 
-squid.supportedVersions.forEach((supportedVersion, i) => {
-  if (!(i >= firstVersion && i <= lastVersion)) {
-    return
-  }
+  const Item = require('prismarine-item')(testedVersion)
 
-  const mcData = require('minecraft-data')(supportedVersion)
-  const version = mcData.version
-
-  const Item = require('prismarine-item')(supportedVersion)
-
-  describe('server with mineflayer connection ' + version.minecraftVersion, () => {
+  describe('server with mineflayer connection ' + testedVersion + 'v', () => {
     /** @type {import('mineflayer').Bot} */
     let bot
     /** @type {import('mineflayer').Bot} */
@@ -66,7 +60,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       }
 
       serv = squid.createMCServer(options)
-      if (serv.supportFeature('entityCamelCase')) {
+      if (registry.supportFeature('entityCamelCase')) {
         entityName = 'EnderDragon'
       } else {
         entityName = 'ender_dragon'
@@ -153,7 +147,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       it('can open and close a chest', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot), waitSpawnZone(bot2, 2), onGround(bot2)])
 
-        const chestId = mcData.blocksByName.chest.id
+        const chestId = registry.blocksByName.chest.id
         const [x, y, z] = [1, 2, 3]
 
         const states = {
@@ -273,7 +267,7 @@ squid.supportedVersions.forEach((supportedVersion, i) => {
       })
       it('can use /setblock', async () => {
         await Promise.all([waitSpawnZone(bot, 2), onGround(bot)])
-        const chestId = mcData.blocksByName.chest.id
+        const chestId = registry.blocksByName.chest.id
         const p = once(bot, 'blockUpdate:' + new Vec3(1, 2, 3), { array: true })
         bot.chat(`/setblock 1 2 3 ${chestId} 0`)
         const [, newBlock] = await p

@@ -7,11 +7,11 @@ function randomInt (low, high) {
 module.exports.server = function (serv, settings) {
   serv.gameMode = settings.gameMode
   serv.difficulty = settings.difficulty
-  const mcData = require('minecraft-data')(settings.version)
+  const registry = require('prismarine-registry')(settings.version)
 
-  const waterBlocks = new Set([mcData.blocksByName.water.id])
-  if (mcData.blocksByName.flowing_water !== undefined) {
-    waterBlocks.add(mcData.blocksByName.flowing_water.id)
+  const waterBlocks = new Set([registry.blocksByName.water.id])
+  if (registry.blocksByName.flowing_water !== undefined) {
+    waterBlocks.add(registry.blocksByName.flowing_water.id)
   }
 
   async function findSpawnZone (world, initialPoint) {

@@ -2,7 +2,7 @@ const { skipMcPrefix } = require('../utils')
 
 const Vec3 = require('vec3').Vec3
 
-module.exports.player = function (player, serv) {
+module.exports.player = function (player, serv, { version }) {
   player.changeBlock = async (position, blockType, blockData) => {
     serv.players
       .filter(p => p.world === player.world && player !== p)
@@ -52,8 +52,8 @@ module.exports.player = function (player, serv) {
 }
 
 module.exports.server = function (serv, { version }) {
-  const mcData = require('minecraft-data')(version)
-  const blocks = mcData.blocks
+  const registry = require('prismarine-registry')(version)
+  const blocks = registry.blocks
 
   serv.commands.add({
     base: 'setblock',
@@ -72,9 +72,9 @@ module.exports.server = function (serv, { version }) {
       else res = res.map((val, i) => serv.posFromString(val, new Vec3(0, 128, 0)[['x', 'y', 'z'][i]]))
 
       const blockParam = params[4]
-      const id = isNaN(+blockParam) ? mcData.blocksByName[skipMcPrefix(blockParam)]?.id : +blockParam
+      const id = isNaN(+blockParam) ? registry.blocksByName[skipMcPrefix(blockParam)]?.id : +blockParam
       const data = parseInt(params[5] || 0, 10)
-      const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+      const stateId = registry.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
 
       if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), stateId)
       else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), stateId)
