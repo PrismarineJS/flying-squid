@@ -1,3 +1,8 @@
+## 1.8.0
+* [Add 1.16.5 support and future-proof version system (#645)](https://github.com/PrismarineJS/flying-squid/commit/f776de84b0570d0107efe9a889b32bb9b151d494) (thanks @Pandapip1)
+* [Improve per version CI following mineflayer example. (#646)](https://github.com/PrismarineJS/flying-squid/commit/98fc4546f3d785fbdb230998018e978993575d43) (thanks @rom1504)
+* [Update npm-publish.yml](https://github.com/PrismarineJS/flying-squid/commit/05de798772c74ef4841e09a723652f95b3b773e9) (thanks @rom1504)
+
 ## 1.7.0
 * [Refactor: allow usage in browser (#633)](https://github.com/PrismarineJS/flying-squid/commit/768b69b5cdd3569d31a6ab1b1c00f5d41f69b897) (thanks @zardoy)
 
