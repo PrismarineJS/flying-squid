@@ -22,10 +22,10 @@ mcServer.createMCServer({
   modpe: false,
   'view-distance': 10,
   'player-list-text': {
-    "header":{"text": "Flying squid"},
-    "footer":{"text": "Test server"}
+    header: { text: 'Flying squid' },
+    footer: { text: 'Test server' }
   },
   'everybody-op': true,
-  'max-entities':100,
+  'max-entities': 100,
   version: '1.16.5'
 })
