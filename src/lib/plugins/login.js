@@ -88,7 +88,7 @@ module.exports.player = async function (player, serv, settings) {
       entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,
-      previousGameMode: player.prevGameMode ?? registry.loginPacket?.previousGameMode ?? 0,
+      previousGameMode: registry.loginPacket?.previousGameMode ?? 0,
       worldNames: Object.values(serv.dimensionNames),
       dimensionCodec: registry.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
