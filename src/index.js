@@ -27,8 +27,16 @@ module.exports = {
   testedVersions
 }
 
-function createMCServer (options) {
-  options = options || {}
+function createMCServer (options = {}) {
+  options.version = options.version ?? false
+  options.host = options.host ?? '0.0.0.0'
+  options.port = options.port ?? 25565
+  options.brand = options.brand ?? 'vanilla'
+
+  if (!options.version) {
+    options.version = latestSupportedVersion
+  }
+
   const mcServer = new MCServer()
   mcServer.connect(options)
   return mcServer

@@ -84,15 +84,15 @@ module.exports.player = async function (player, serv, settings) {
 
   function sendLogin () {
     // send init data so client will start rendering world
-    player._client.write('login', {
+    const loginPacket = {
       entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,
-      previousGameMode: player.prevGameMode,
+      previousGameMode: player.prevGameMode ?? registry.loginPacket?.previousGameMode ?? 0,
       worldNames: Object.values(serv.dimensionNames),
       dimensionCodec: registry.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
-      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? registry.loginPacket.dimension : 0,
+      dimension: (registry.supportFeature('dimensionIsAWorld') || registry.supportFeature('dimensionIsAString')) ? registry.loginPacket.dimension : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
@@ -101,7 +101,8 @@ module.exports.player = async function (player, serv, settings) {
       enableRespawnScreen: true,
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
-    })
+    }
+    player._client.write('login', loginPacket)
     if (registry.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
         difficulty: serv.difficulty,

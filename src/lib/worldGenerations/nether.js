@@ -1,13 +1,15 @@
 const Vec3 = require('vec3').Vec3
 const rand = require('random-seed')
+const emptyGen = require('./empty')
 
 function generation ({ version, seed, level = 50 } = {}) {
-  const Chunk = require('prismarine-chunk')(version)
   const registry = require('prismarine-registry')(version)
+
+  const generateEmptyChunk = emptyGen({ version })
 
   function generateChunk (chunkX, chunkZ) {
     const seedRand = rand.create(seed + ':' + chunkX + ':' + chunkZ)
-    const chunk = new Chunk()
+    const chunk = generateEmptyChunk()
     for (let x = 0; x < 16; x++) {
       for (let z = 0; z < 16; z++) {
         const bedrockheighttop = 1 + seedRand(4)
