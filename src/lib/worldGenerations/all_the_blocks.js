@@ -1,12 +1,11 @@
 const Vec3 = require('vec3').Vec3
-const emptyGen = require('./empty')
 
 function generation ({ version }) {
-  const registry = require('prismarine-registry')(version)
-  const generateEmptyChunk = emptyGen({ version })
+  const Chunk = require('prismarine-chunk')(version)
+  const { blocks } = require('prismarine-registry')(version)
 
   function generateSimpleChunk () {
-    const chunk = generateEmptyChunk()
+    const chunk = new Chunk()
 
     let i = 2
     for (let x = 0; x < 16; x++) {
@@ -14,7 +13,7 @@ function generation ({ version }) {
         let y
         for (y = 47; y <= 50; y++) {
           chunk.setBlockType(new Vec3(x, y, z), i)
-          i = (i + 1) % Object.keys(registry.blocks).length
+          i = (i + 1) % Object.keys(blocks).length
         }
         for (y = 0; y < 256; y++) {
           chunk.setSkyLight(new Vec3(x, y, z), 15)

@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
-const emptyGen = require('./empty')
 
 function generation (options = {}) {
+  const Chunk = require('prismarine-chunk')(options.version)
   const registry = require('prismarine-registry')(options.version)
   const theFlattening = registry.supportFeature('theFlattening')
 
@@ -12,15 +12,13 @@ function generation (options = {}) {
   const middleThickness = options.middleThickness || 3
   const debug = options.debug || false
 
-  const generateEmptyChunk = emptyGen({ version: options.version })
-
   function generateChunk () {
-    const chunk = generateEmptyChunk()
+    const chunk = new Chunk()
     const height = middleThickness + 1
     const DEBUG_POINTS = [new Vec3(0, height, 0), new Vec3(15, height, 0), new Vec3(0, height, 15), new Vec3(15, height, 15)]
     for (let x = 0; x < 16; x++) {
       for (let z = 0; z < 16; z++) {
-        for (let y = chunk.minY ?? 0; y < chunk.worldHeight ?? 256; y++) {
+        for (let y = 0; y < 256; y++) {
           const currentVec = new Vec3(x, y, z)
           if (y === 0) {
             chunk.setBlockType(currentVec, bottomId)
