@@ -9,7 +9,8 @@
         "module": "CommonJS",
         "declaration": true,
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "rootDir": "src"
     },
     "include": [
         "src"
