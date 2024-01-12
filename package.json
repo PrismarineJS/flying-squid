@@ -31,7 +31,7 @@
   "dependencies": {
     "change-case": "^4.1.2",
     "colors": "1.4.0",
-    "diamond-square": "^1.2.0",
+    "diamond-square": "^1.5.0",
     "emit-then": "^2.0.0",
     "event-promise": "^0.0.1",
     "exit-hook": "^2.2.1",
