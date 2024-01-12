@@ -8,8 +8,9 @@
   "difficulty": 1,
   "worldFolder":"world",
   "generation": {
-    "name": "all_the_blocks",
+    "name": "diamond_square",
     "options": {
+      "worldHeight": 80
     }
   },
   "kickTimeout": 10000,
