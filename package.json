@@ -45,7 +45,7 @@
     "prismarine-entity": "^2.4.0",
     "prismarine-item": "^1.14.0",
     "prismarine-nbt": "^2.5.0",
-    "prismarine-provider-anvil": "^2.7.0",
+    "prismarine-provider-anvil": "PrismarineJS/prismarine-provider-anvil#optional_palette_1_14",
     "prismarine-registry": "^1.7.0",
     "prismarine-windows": "^2.8.0",
     "prismarine-world": "^3.6.2",
