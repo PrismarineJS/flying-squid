@@ -59,7 +59,12 @@ declare global {
     '_writeArray': (packetName: any, packetFields: any, players: any) => void
     /** @internal */
     '_writeNearby': (packetName: any, packetFields: any, loc: { world: Player['world'], position: Vec3, radius?: number }) => void
-    /** Returns array of players within loc. loc is a required paramater. The object contains:,    * ,    * * world: World position is in,    * * position: Center position,    * * radius: Distance from position    */
+    /** Returns array of players within loc. loc is a required paramater. The object contains:
+     *
+     * * world: World position is in
+     * * position: Center position
+     * * radius: Distance from position
+     */
     'getNearby': (params: { world: Player['world'], position: Vec3, radius?: number }) => Player[]
     /** @internal */
     'getNearbyEntities': (params: { world: Player['world'], position: Vec3, radius?: number }) => Entity[]
@@ -72,6 +77,7 @@ declare global {
     /**
      * Get every other entity other than self
      * Should not be used repeatedly as it is a slow operation
+
      */
     'getOthers': () => Server['entities']
     /** Gets all nearby players regardless of what client thinks */

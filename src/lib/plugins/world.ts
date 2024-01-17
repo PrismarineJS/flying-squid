@@ -383,7 +383,15 @@ declare global {
     world: CustomWorld
     /** @internal */
     'flying': number
-    /** If `worldFolder` option is set, save player's data into `<worldFolder>/playerdata/<UUID>.dat`. Returns promise.,    * Example: save all players data to disk:,    * ,    * ```js,    * for (const player of serv.players) {,    *   player.save(),    * },    * ```    */
+    /** If `worldFolder` option is set, save player's data into `<worldFolder>/playerdata/<UUID>.dat`. Returns promise.
+     * Example: save all players data to disk:
+     *
+     * ```js
+     * for (const player of serv.players) {
+     *   player.save()
+     * }
+     * ```
+     */
     'save': () => Promise<any>
     /** @internal */
     '_unloadChunk': (chunkX: any, chunkZ: any) => void
@@ -399,7 +407,12 @@ declare global {
     'sendSpawnPosition': () => void
     /** @internal */
     '_unloadAllChunks': () => void
-    /** The world object which the player is in (use serv.overworld, serv.netherworld, serv.endworld, or a custom world). Options:,    * ,    * - gamemode: Gamemode of the world (Default is player gamemode),    * - difficulty: Difficulty of world. Default is 0 (easiest),    * - dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)    */
+    /** The world object which the player is in (use serv.overworld, serv.netherworld, serv.endworld, or a custom world). Options:
+     *
+     * - gamemode: Gamemode of the world (Default is player gamemode)
+     * - difficulty: Difficulty of world. Default is 0 (easiest)
+     * - dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)
+     */
     'changeWorld': (world: any, opt: any) => Promise<void>
   }
 }

@@ -88,7 +88,10 @@ declare global {
   interface Entity {
     /** @internal */
     'pluginData': {}
-    /** Gets object that stores data, personalized per plugin. Returns null if plugin does not exist.,    * ,    * Shortcut for: entity.pluginData[pluginName];    */
+    /** Gets object that stores data, personalized per plugin. Returns null if plugin does not exist.
+     *
+     * Shortcut for: entity.pluginData[pluginName];
+     */
     'getData': (pluginName: any) => any
   }
 }
