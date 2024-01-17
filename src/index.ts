@@ -2,11 +2,11 @@ import { createServer, Server as ProtocolServer } from 'minecraft-protocol'
 
 import { testedVersions, latestSupportedVersion, oldestSupportedVersion } from './lib/version'
 import Command from './lib/command'
-import * as plugins from './lib/modules'
+import * as plugins from './lib/plugins'
 import { EventEmitter } from 'events'
 
 import { IndexedData } from 'minecraft-data'
-import './types' // include Server declarations from all modules
+import './types' // include Server declarations from all plugins
 import './modules'
 
 if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
