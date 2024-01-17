@@ -9,6 +9,7 @@ import { IndexedData } from 'minecraft-data'
 import './types' // include Server declarations from all plugins
 import './modules'
 
+// #region RUNTIME PREPARE
 if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
   console.error('[\x1b[31mCRITICAL\x1b[0m] Node.JS 18 or newer is required')
   console.error('[\x1b[31mCRITICAL\x1b[0m] You can download the new version from https://nodejs.org/')
@@ -20,10 +21,19 @@ require('emit-then').register()
 if (process.env.NODE_ENV === 'dev') {
   require('longjohn')
 }
+// #endregion
 
-type InputOptions = Partial<Options> & Pick<Options, 'version'>
+// types
 
-export function createMCServer (options: InputOptions) {
+export interface FullServer extends Server { }
+export interface FullPlayer extends Player { }
+export interface FullEntity extends Entity { }
+export interface ServerEventsMap extends ServerEvents { }
+export interface PlayerEventsMap extends PlayerEvents { }
+// export interface EntityEventsMap extends ServerEvents {}
+export type InputOptions = Partial<Options> & Pick<Options, 'version'>
+
+export function createMCServer (options: InputOptions): FullServer {
   const mcServer = new MCServer()
   mcServer.connect({
     // defaults
