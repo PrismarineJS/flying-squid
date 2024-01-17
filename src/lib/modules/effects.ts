@@ -110,12 +110,12 @@ declare global {
     /** @internal */
     "effects": {}
     /** @internal */
-    "sendEffect": (effectId: any, { amplifier, duration, particles, whitelist, blacklist }?: { amplifier?: number | undefined; duration?: number | undefined; particles?: boolean | undefined; whitelist?: any; blacklist?: any[] | undefined }) => void
+    "sendEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
     /** @internal */
-    "sendRemoveEffect": (effectId: any, { whitelist, blacklist }?: { whitelist?: any; blacklist?: any[] | undefined }) => void
+    "sendRemoveEffect": (effectId: any, opt?: { whitelist?: any; blacklist?: any[] | undefined }) => void
     /** @internal */
-    "addEffect": (effectId: any, opt?: {}) => boolean
+    "addEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => boolean
     /** @internal */
-    removeEffect: (effectId: any, opt?: any) => void
+    removeEffect: (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
   }
 }

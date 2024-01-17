@@ -10,7 +10,8 @@
         "declaration": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "rootDir": "src"
+        "rootDir": "src",
+        "stripInternal": true
     },
     "include": [
         "src"

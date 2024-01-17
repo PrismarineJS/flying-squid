@@ -170,13 +170,45 @@ export const player = function (player: Player, serv: Server) {
 declare global {
   interface Server {
     /** Broadcasts `message` to all the players with the optional `color`. */
-    "broadcast": (message: any, { whitelist, blacklist, system }?: { whitelist?: any; blacklist?: any[] | undefined; system?: boolean | undefined }) => void
+    "broadcast": (message: any, opt?: { whitelist?: any; blacklist?: any[]; system?: boolean }) => void
     /** @internal */
-    "color": { black: string; dark_blue: string; dark_green: string; dark_cyan: string; dark_red: string; purple: string; dark_purple: string; gold: string; gray: string; grey: string; dark_gray: string; dark_grey: string; blue: string; green: string; aqua: string; cyan: string; red: string; pink: string; light_purple: string; yellow: string; white: string; random: string; obfuscated: string; bold: string; strikethrough: string; underlined: string; underline: string; italic: string; italics: string; reset: string }
+    "color": {
+      black: string;
+      dark_blue: string;
+      dark_green: string;
+      dark_cyan: string;
+      dark_red: string;
+      purple: string;
+      dark_purple: string;
+      gold: string;
+      gray: string;
+      grey: string;
+      dark_gray: string;
+      dark_grey: string;
+      blue: string;
+      green: string;
+      aqua: string;
+      cyan: string;
+      red: string;
+      pink: string;
+      light_purple: string;
+      yellow: string;
+      white: string;
+      random: string;
+      obfuscated: string;
+      bold: string;
+      strikethrough: string;
+      underlined: string;
+      underline: string;
+      italic: string;
+      italics: string;
+      reset: string
+    }
     /** @internal */
-    "parseClassic": (message: any) => any
+    "parseClassic": (message: string) => any
   }
   interface Player {
+    // todo better type
     /** sends `message` to the player */
     "chat": (message: any) => void
     /** @internal */

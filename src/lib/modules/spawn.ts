@@ -446,11 +446,11 @@ declare global {
     /** @internal */
     spawnPacketName: string
     /** Numerical type of the entity. */
-    entityType: any // cleanup!
+    entityType: number
     /** @internal */
     lastPositionPlayersUpdated: Vec3
     /** List of entities that the entity believes is nearby. */
-    nearbyEntities: any[]
+    nearbyEntities: Entity[]
     /** How far away entities are loaded/unloaded (used for players ATM) */
     viewDistance: number
     /** @internal */
@@ -462,7 +462,7 @@ declare global {
     /** @internal */
     data: any
     /** Pitch of entity's head */
-    headPitch: any
+    headPitch: number
     /** @internal */
     despawnEntities: (arg0: any[]) => void
     /** @internal */

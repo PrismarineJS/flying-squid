@@ -9,7 +9,7 @@ declare global {
     loadingStatus: (status: string) => void
     connected: () => void
     spawned: () => void
-    disconnected: (reason: string) => void
+    disconnected: (reason?: string) => void
     kicked: (kicker: Player, reason: string) => void
     move: () => void
     change_world: () => void

@@ -7,10 +7,9 @@ import fs from 'fs'
 import { level, Anvil as AnvilLoader } from 'prismarine-provider-anvil'
 
 import * as playerDat from '../playerDat'
-import { generateSpiralMatrix } from '../../utils'
 import { Chunk, World } from 'prismarine-world/types/world'
 import WorldLoader from 'prismarine-world'
-import DataLoader from 'minecraft-data'
+import RegistryLoader from 'prismarine-registry'
 import { LevelDatFull } from 'prismarine-provider-anvil/src/level'
 import generations from '../generations'
 import { Vec3 } from 'vec3'
@@ -20,9 +19,9 @@ const fsMkdir = promisify(fs.mkdir)
 
 export const server = async function (serv: Server, options: Options) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
-  const World = require('prismarine-world')(version)
-  const mcData = require('minecraft-data')(version)
-  const Anvil = require('prismarine-provider-anvil').Anvil(version)
+  const World = WorldLoader(version)
+  const registry = RegistryLoader(version)
+  const Anvil = AnvilLoader.Anvil(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
@@ -94,7 +93,7 @@ export const server = async function (serv: Server, options: Options) {
 
   if (registry.supportFeature('theFlattening')) {
     serv.setBlockType = async (world, position, id) => {
-      serv.setBlock(world, position, mcData.blocks[id].minStateId)
+      serv.setBlock(world, position, registry.blocks[id].minStateId!)
     }
   } else {
     serv.setBlockType = async (world, position, id) => {
@@ -165,6 +164,7 @@ export const server = async function (serv: Server, options: Options) {
     // if we ever support level.dat saving this function needs to be changed i guess
     const levelDatContent = await fs.promises.readFile(worldFolder + '/level.dat')
     const { parsed } = await nbt.parse(levelDatContent)
+    //@ts-ignore
     parsed.value.Data.value.Player = savedData
     const newDataCompressed = await gzip(nbt.writeUncompressed(parsed))
     await fs.promises.writeFile(worldFolder + '/level.dat', newDataCompressed)
@@ -173,7 +173,9 @@ export const server = async function (serv: Server, options: Options) {
   }
 }
 
-module.exports.player = function (player, serv, settings) {
+const player = function (player: Player, serv: Server, settings: Options) {
+  const registry = RegistryLoader(settings.version)
+
   player.flying = 0
   player._client.on('abilities', ({ flags }) => {
     // todo check can fly!!
@@ -242,7 +244,7 @@ module.exports.player = function (player, serv, settings) {
     })
   }
 
-  player.sendNearbyChunks = (viewDistance, group) => {
+  player.sendNearbyChunks = (view, group) => {
     player.lastPositionChunkUpdated = player.position
     const playerChunkX = Math.floor(player.position.x / 16)
     const playerChunkZ = Math.floor(player.position.z / 16)
@@ -252,7 +254,7 @@ module.exports.player = function (player, serv, settings) {
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
       .forEach(([x, z]) => player._unloadChunk(x, z))
 
-    return spiral([view * 2, view * 2])
+    return spiralloop([view * 2, view * 2])
       .map(t => ({
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
@@ -273,20 +275,14 @@ module.exports.player = function (player, serv, settings) {
 
   player.sendMap = () => {
     return player.sendNearbyChunks(settings['view-distance'])
-      .catch((err) => setTimeout(() => { throw err }), 0)
+      .catch((err) => setTimeout(() => { throw err }))
   }
 
-  // todo remove
-  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
-    player.view = newDistance
-    if (unloadFirst) player._unloadAllChunks()
-    player.sendRestMap()
-  })
   player.sendRestMap = () => {
     player.sendingChunks = true
-    player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)
+    player.sendNearbyChunks(Math.min(player.view, settings['view-distance'] ?? 3), true)
       .then(() => { player.sendingChunks = false })
-      .catch((err) => setTimeout(() => { throw err }, 0))
+      .catch((err) => setTimeout(() => { throw err }))
   }
 
   player.sendSpawnPosition = () => {

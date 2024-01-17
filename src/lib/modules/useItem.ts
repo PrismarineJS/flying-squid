@@ -1,6 +1,6 @@
 export const server = (serv: Server, { version }: Options) => {
-  const mcData = require('minecraft-data')(version)
-  const mobs = mcData.mobs
+  const registry = require('prismarine-registry')(version)
+  const { mobs } = registry
 
   function getEntID (entName) {
     let foundID = ''
@@ -17,7 +17,7 @@ export const server = (serv: Server, { version }: Options) => {
 
   serv.on('asap', () => { // On server ready
     if (registry.supportFeature('theFlattening')) { // >1.12 support
-      for (const mob of Object.values(mobs)) {
+      for (const mob of Object.values(mobs) as Array<{ id: string, name: string }>) {
         const spawnEgg = registry.itemsByName[mob.name + '_spawn_egg']
         if (spawnEgg) {
           serv.onItemPlace(spawnEgg.name, ({ player, placedPosition }) => {

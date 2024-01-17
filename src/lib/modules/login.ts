@@ -72,9 +72,9 @@ export const player = async function (player: Player, serv: Server, settings: Op
   function updateInventory () {
     playerData.inventory.forEach((item) => {
       const itemValue: string | number = item.id.value
-      const itemName = typeof itemValue === 'string' ? skipMcPrefix(itemValue) : mcData.itemsArray.find(item => item.id === itemValue)?.name
+      const itemName = typeof itemValue === 'string' ? skipMcPrefix(itemValue) : registry.itemsArray.find(item => item.id === itemValue)?.name
       // todo how it can be block?
-      const theItem = mcData.itemsByName[itemName] || mcData.blocksByName[itemName]
+      const theItem = registry.itemsByName[itemName] || registry.blocksByName[itemName]
       // todo test with undefined values (need to preserve!)
       if (!theItem) {
         console.warn(`Unknown item ${itemName} (id in player ${player.username} inventory ${itemValue})`)

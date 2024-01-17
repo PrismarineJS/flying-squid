@@ -11,7 +11,7 @@ export const server = (serv: Server, { version }: Options) => {
     const blockEnderChest = registry.blocksByName.ender_chest
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
-    let blockShulkerBox = []
+    let blockShulkerBox: string[] = []
     if (registry.supportFeature('theShulkerBoxes')) {
       blockShulkerBox = [registry.blocksByName.shulker_box.id, registry.blocksByName.red_shulker_box.id,
         registry.blocksByName.orange_shulker_box.id, registry.blocksByName.yellow_shulker_box.id, registry.blocksByName.lime_shulker_box.id,

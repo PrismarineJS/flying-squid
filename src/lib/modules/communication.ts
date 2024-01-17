@@ -1,3 +1,5 @@
+import { Vec3 } from 'vec3'
+
 export const server = function (serv: Server) {
   serv._writeAll = (packetName, packetFields) =>
     serv.players.forEach((player) => player._client.write(packetName, packetFields))
@@ -32,14 +34,13 @@ export const entity = function (entity: Entity, serv: Server) {
 
   entity.getOtherPlayers = () => serv.players.filter((p) => p !== entity)
 
-  // warning: might be slow
   entity.getOthers = () => Object.fromEntries(Object.entries(serv.entities).filter(([id]) => id !== entity.id))
 
   entity.getNearbyPlayers = (radius = entity.viewDistance) => entity.getNearby()
-    .filter((e) => e.type === 'player')
+    .filter((e) => e.type === 'player' && entity.position.distanceTo(entity.position) <= radius) as Player[]
 
   entity.nearbyPlayers = (radius = entity.viewDistance) => entity.nearbyEntities
-    .filter(e => e.type === 'player')
+    .filter(e => e.type === 'player' && entity.position.distanceTo(entity.position) <= radius) as Player[]
 
   entity._writeOthers = (packetName, packetFields) =>
     serv._writeArray(packetName, packetFields, entity.getOtherPlayers())
@@ -48,37 +49,40 @@ export const entity = function (entity: Entity, serv: Server) {
     serv._writeArray(packetName, packetFields, entity.getNearbyPlayers())
 
   entity._writeNearby = (packetName, packetFields) =>
-    serv._writeArray(packetName, packetFields, entity.getNearbyPlayers().concat(entity.type === 'player' ? [entity] : []))
+    serv._writeArray(packetName, packetFields, [...entity.getNearbyPlayers(), ...entity.type === 'player' ? [entity] : []])
 }
 declare global {
   interface Server {
     /** @internal */
-    "_writeAll": (packetName: any, packetFields: any) => any
+    "_writeAll": (packetName: any, packetFields: any) => void
     /** @internal */
-    "_writeArray": (packetName: any, packetFields: any, players: any) => any
+    "_writeArray": (packetName: any, packetFields: any, players: any) => void
     /** @internal */
-    "_writeNearby": (packetName: any, packetFields: any, loc: any) => any
+    "_writeNearby": (packetName: any, packetFields: any, loc: { world: Player['world']; position: Vec3; radius?: number }) => void
     /** Returns array of players within loc. loc is a required paramater. The object contains:,    * ,    * * world: World position is in,    * * position: Center position,    * * radius: Distance from position    */
-    "getNearby": ({ world, position, radius }: { world: any; position: any; radius?: number | undefined }) => any
+    "getNearby": (params: { world: Player['world']; position: Vec3; radius?: number }) => Player[]
     /** @internal */
-    "getNearbyEntities": ({ world, position, radius }: { world: any; position: any; radius?: number | undefined }) => any[]
+    "getNearbyEntities": (params: { world: Player['world']; position: Vec3; radius?: number }) => Entity[]
   }
   interface Entity {
     /** Gets all entities nearby (within entity.viewDistance) */
-    "getNearby": () => any
+    "getNearby": () => Entity[]
     /** Gets every player other than self (all players if entity is not a player) */
-    "getOtherPlayers": () => any
-    /** Get every other entity other than self */
-    "getOthers": () => any
+    "getOtherPlayers": () => Player[]
+    /**
+     * Get every other entity other than self
+     * Should not be used repeatedly as it is a slow operation
+     */
+    "getOthers": () => Server['entities']
     /** Gets all nearby players regardless of what client thinks */
-    "getNearbyPlayers": (radius?: any) => any
+    "getNearbyPlayers": (radius?: number) => Player[]
     /** Gets all nearby players that client can see */
-    "nearbyPlayers": (radius?: any) => any
+    "nearbyPlayers": (radius?: number) => Player[]
     /** @internal */
-    "_writeOthers": (packetName: any, packetFields: any) => any
+    "_writeOthers": (packetName: any, packetFields: any) => void
     /** @internal */
-    "_writeOthersNearby": (packetName: any, packetFields: any) => any
+    "_writeOthersNearby": (packetName: any, packetFields: any) => void
     /** @internal */
-    "_writeNearby": (packetName: any, packetFields: any) => any
+    "_writeNearby": (packetName: any, packetFields: any) => void
   }
 }

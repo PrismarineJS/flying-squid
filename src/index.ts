@@ -34,11 +34,11 @@ export function createMCServer (options: InputOptions) {
 }
 
 class MCServer extends EventEmitter {
+  pluginsReady = false
+  _server: ProtocolServer = null!
   constructor () {
     plugins.initPlugins()
     super()
-    this._server = null
-    this.pluginsReady = false
   }
 
   connect (options) {
@@ -55,7 +55,6 @@ class MCServer extends EventEmitter {
 
     server.commands = new Command({})
     server._server = createServer(options)
-    server.mcData = mcData
 
     const promises: Promise<any>[] = []
     for (const plugin of plugins.builtinPlugins) {
@@ -71,6 +70,7 @@ class MCServer extends EventEmitter {
       server.emit('error', error);
     })
     server._server.on('listening', () => {
+      //@ts-ignore dont remember the right cast
       server.emit('listening', server._server.socketServer.address().port);
     })
     server.emit('asap')
@@ -79,7 +79,6 @@ class MCServer extends EventEmitter {
 
 declare global {
   interface Server {
-    mcData: IndexedData
     commands: Command
     pluginsReady: boolean
     _server: ProtocolServer
@@ -88,13 +87,12 @@ declare global {
 }
 
 export {
-  createMCServer,
   testedVersions
 }
 
 export * as Behavior from './lib/behavior';
 export * as Command from './lib/command';
-export * as generations from './lib/generations';
+export {default as generations} from './lib/generations';
 export * as experience from './lib/experience';
 export * as UserError from './lib/user_error';
-export * as portal_detector from './lib/portal_detector';
+export {default as portal_detector} from './lib/portal_detector';

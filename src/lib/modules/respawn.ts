@@ -1,4 +1,4 @@
-export const player = function (player: Player, serv, { version }: Server) {
+export const player = function (player: Player, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
   player._client.on('client_command', (data) => {

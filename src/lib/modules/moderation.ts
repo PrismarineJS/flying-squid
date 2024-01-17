@@ -260,7 +260,7 @@ export const server = function (serv: Server, settings: Options) {
       if (!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(argv[0])) throw new UserError('IP is not correct')
 
       return {
-        IP: argv.shift(),
+        IP: argv.shift()!,
         reason: argv.shift()
       }
     },
@@ -319,7 +319,7 @@ export const server = function (serv: Server, settings: Options) {
     info: 'to pardon a player by ip',
     usage: '/pardon-ip <ip>',
     op: true,
-    action (IP, ctx) {
+    action (IP: string, ctx) {
       serv.pardonIP(IP)
         .then(result => {
           if (result) {
@@ -389,7 +389,7 @@ export const player = function (player: Player, serv: Server) {
   player.banIP = reason => {
     reason = reason || 'You were IP banned!'
     player.kick(reason)
-    return serv.banIP(player._client.socket?.remoteAddress)
+    return serv.banIP(player._client.socket?.remoteAddress!, reason)
   }
 
   // I think it doesn't do anything but ok well...
@@ -399,38 +399,41 @@ export const player = function (player: Player, serv: Server) {
 declare global {
   interface Server {
     /** Ban player given a uuid. If the player is online, using `player.ban()`. Bans with reason or `You are banned!`. */
-    "ban": (uuid: any, reason?: string) => Promise<boolean>
+    "ban": (uuid: string, reason?: string) => Promise<boolean>
     /** @internal */
-    "banIP": (IP: any, reason?: string) => Promise<boolean>
+    "banIP": (IP: string, reason?: string) => Promise<boolean>
     /** Gets UUID from username. Since it needs to fetch from mojang servers, it is not immediate.,    * ,    * Arguments in format: `callback(uuid)`. `uuid` is null if no such username exists.    */
-    "getUUIDFromUsername": (username: any) => Promise<unknown>
+    "getUUIDFromUsername": (username: string) => Promise<string>
     /** Bans players given a username. Mainly used if player is not online, otherwise use `player.ban()`. */
-    "banUsername": (username: any, reason: any) => Promise<any>
+    "banUsername": (username: string, reason: string) => Promise<boolean>
     /** @internal */
-    "banUUID": (username: any, reason: any) => Promise<any>
+    "banUUID": (username: string, reason: string) => Promise<boolean>
     /** Pardons a player given a username. */
-    "pardonUsername": (username: any) => Promise<boolean>
+    "pardonUsername": (username: string) => Promise<boolean>
     /** @internal */
-    "pardonUUID": (username: any) => Promise<any>
+    "pardonUUID": (username: string) => Promise<boolean>
     /** @internal */
-    "pardonIP": (IP: any) => Promise<boolean>
+    "pardonIP": (IP: string) => Promise<boolean>
     /** Object of players that are banned, key is their uuid. Use `serv.getUUIDFromUsername()` if you only have their username.,    * ,    * Example player:,    * ```,    * {,    *     time: <time in epoch>,,    *     reason: <reason given>,    * },    * ```    */
     "bannedPlayers": {}
     /** @internal */
-    "bannedIPs": {}
+    "bannedIPs": Record<string, {
+      time: number,
+      reason: string
+    }>
   }
   interface Player {
     /** kicks player with `reason` */
     "kick": (reason?: string) => void
     /** @internal */
-    "banUUID": (reason: any) => any
+    "banUUID": (reason: any) => Promise<boolean>
     /** @internal */
-    "banUsername": (reason: any) => any
+    "banUsername": (reason: any) => Promise<boolean>
     /** @internal */
-    "banIP": (reason: any) => any
+    "banIP": (reason: any) => Promise<boolean>
     /** @internal */
-    "pardonUUID": () => any
+    "pardonUUID": () => Promise<boolean>
     /** @internal */
-    "pardonUsername": () => any
+    "pardonUsername": () => Promise<boolean>
   }
 }
