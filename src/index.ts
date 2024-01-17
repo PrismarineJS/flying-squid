@@ -1,10 +1,10 @@
-import { createServer } from 'minecraft-protocol'
+import { createServer, Server as ProtocolServer } from 'minecraft-protocol'
 
 import { testedVersions, latestSupportedVersion, oldestSupportedVersion } from './lib/version'
 import Command from './lib/command'
 import * as plugins from './lib/modules'
 import { EventEmitter } from 'events'
-import { Server as ProtocolServer } from 'minecraft-protocol'
+
 import { IndexedData } from 'minecraft-data'
 import './types' // include Server declarations from all modules
 import './modules'
@@ -27,7 +27,7 @@ export function createMCServer (options: InputOptions) {
   const mcServer = new MCServer()
   mcServer.connect({
     // defaults
-    "max-entities": 100,
+    'max-entities': 100,
     ...options
   })
   return mcServer as unknown as Server
@@ -56,7 +56,7 @@ class MCServer extends EventEmitter {
     server.commands = new Command({})
     server._server = createServer(options)
 
-    const promises: Promise<any>[] = []
+    const promises: Array<Promise<any>> = []
     for (const plugin of plugins.builtinPlugins) {
       promises.push(plugin.server?.(server, options))
     }
@@ -67,11 +67,11 @@ class MCServer extends EventEmitter {
 
     if (options.logging === true) server.createLog()
     server._server.on('error', error => {
-      server.emit('error', error);
+      server.emit('error', error)
     })
     server._server.on('listening', () => {
-      //@ts-ignore dont remember the right cast
-      server.emit('listening', server._server.socketServer.address().port);
+      // @ts-expect-error dont remember the right cast
+      server.emit('listening', server._server.socketServer.address().port)
     })
     server.emit('asap')
   }
@@ -90,9 +90,9 @@ export {
   testedVersions
 }
 
-export * as Behavior from './lib/behavior';
-export * as Command from './lib/command';
-export {default as generations} from './lib/generations';
-export * as experience from './lib/experience';
-export * as UserError from './lib/user_error';
-export {default as portal_detector} from './lib/portal_detector';
+export * as Behavior from './lib/behavior'
+export * as Command from './lib/command'
+export { default as generations } from './lib/generations'
+export * as experience from './lib/experience'
+export * as UserError from './lib/user_error'
+export { default as portal_detector } from './lib/portal_detector'

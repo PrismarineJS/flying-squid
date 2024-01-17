@@ -10,8 +10,8 @@ export const entity = function (entity: Entity, serv: Server) {
 
   entity.sendEffect = (effectId, { amplifier = 0, duration = 30 * 20, particles = true, whitelist, blacklist = [] } = {}) => {
     if (!whitelist) whitelist = serv.getNearby(entity)
-    if (entity.type === 'player' && [1].indexOf(effectId) !== -1) (entity as Player).sendAbilities()
-    const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
+    if (entity.type === 'player' && [1].includes(effectId)) (entity as Player).sendAbilities()
+    const sendTo = whitelist.filter(p => !blacklist.includes(p))
     const data = {
       entityId: entity.id,
       effectId,
@@ -24,7 +24,7 @@ export const entity = function (entity: Entity, serv: Server) {
 
   entity.sendRemoveEffect = (effectId, { whitelist, blacklist = [] } = {}) => {
     if (!whitelist) whitelist = serv.getNearby(entity)
-    const sendTo = whitelist.filter(p => blacklist.indexOf(p) === -1)
+    const sendTo = whitelist.filter(p => !blacklist.includes(p))
     serv._writeArray('remove_entity_effect', {
       entityId: entity.id,
       effectId
@@ -61,7 +61,7 @@ export const server = function (serv: Server, options: Options) {
     tab: ['player', 'effect', 'number', 'number', 'boolean'],
     onlyPlayer: true,
     parse (str) {
-      return str.match(/(.+?) ([\d\w_]+)(?: (\d+|))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
+      return (str.match(/(.+?) ([\d\w_]+)(?: (\d+|))?(?: (\d+))?(?: (true|false))?|.*? clear/) != null) || false
     },
     action (params, ctx) {
       const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
@@ -108,14 +108,14 @@ export const server = function (serv: Server, options: Options) {
 declare global {
   interface Entity {
     /** @internal */
-    "effects": {}
+    'effects': {}
     /** @internal */
-    "sendEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
+    'sendEffect': (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => void
     /** @internal */
-    "sendRemoveEffect": (effectId: any, opt?: { whitelist?: any; blacklist?: any[] | undefined }) => void
+    'sendRemoveEffect': (effectId: any, opt?: { whitelist?: any, blacklist?: any[] | undefined }) => void
     /** @internal */
-    "addEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => boolean
+    'addEffect': (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => boolean
     /** @internal */
-    removeEffect: (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
+    removeEffect: (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => void
   }
 }

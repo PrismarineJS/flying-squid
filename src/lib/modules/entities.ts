@@ -15,7 +15,7 @@ export const server = function (serv: Server) {
             position: entity.position,
             radius: 1.75 // Seems good for now
           })
-          if (players.length) {
+          if (players.length > 0) {
             players[0].collect(entity)
           }
         }
@@ -60,8 +60,8 @@ declare global {
     /** Either "player", "mob", or "object" (currently) */
     type: string
     /** @internal */
-    "sendMetadata": (data: any) => void
+    'sendMetadata': (data: any) => void
     /** @internal */
-    "setAndUpdateMetadata": (data: any) => void
+    'setAndUpdateMetadata': (data: any) => void
   }
 }

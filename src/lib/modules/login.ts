@@ -201,9 +201,9 @@ export const player = async function (player: Player, serv: Server, settings: Op
     player.emit('connected')
   }
 
-  player.waitPlayerLogin = () => {
+  player.waitPlayerLogin = async () => {
     const events = ['flying', 'look']
-    return new Promise<void>(function (resolve) {
+    return await new Promise<void>(function (resolve) {
       const listener = () => {
         events.map(event => player._client.removeListener(event, listener))
         resolve()
@@ -254,7 +254,7 @@ export const player = async function (player: Player, serv: Server, settings: Op
 declare global {
   interface Server {
     /** @internal */
-    "hashedSeed": number[]
+    'hashedSeed': number[]
   }
   interface Player {
     /** @internal */
@@ -268,12 +268,12 @@ declare global {
     /** The username of the player */
     username: string
     /** @internal */
-    "setLoadingStatus": (text: any) => void
+    'setLoadingStatus': (text: any) => void
     /** set player gameMode to `gameMode` */
-    "setGameMode": (gameMode: any) => void
+    'setGameMode': (gameMode: any) => void
     /** @internal */
-    "waitPlayerLogin": () => Promise<unknown>
+    'waitPlayerLogin': () => Promise<unknown>
     /** login */
-    "login": () => Promise<void>
+    'login': () => Promise<void>
   }
 }

@@ -28,7 +28,7 @@ export const server = function (serv: Server, settings: Options) {
   }
 
   serv.getSpawnPoint = async (world) => {
-    return findSpawnZone(world, new Vec3(randomInt(0, 30), 81, randomInt(0, 30)))
+    return await findSpawnZone(world, new Vec3(randomInt(0, 30), 81, randomInt(0, 30)))
   }
 }
 
@@ -46,11 +46,11 @@ export const player = function (player: Player, serv: Server) {
 declare global {
   interface Server {
     /** @internal */
-    "gameMode": any
+    'gameMode': any
     /** @internal */
-    "difficulty": any
+    'difficulty': any
     /** @internal */
-    "getSpawnPoint": (world: any) => Promise<any>
+    'getSpawnPoint': (world: any) => Promise<any>
   }
   interface Player {
     /** @internal */
@@ -58,10 +58,10 @@ declare global {
     /** The view size of the player, for example 8 for 16x16 */
     view: number
     /** @internal */
-    "prevGameMode": number
+    'prevGameMode': number
     /** @internal */
-    "gameMode": any
+    'gameMode': any
     /** @internal */
-    "findSpawnPoint": () => Promise<void>
+    'findSpawnPoint': () => Promise<void>
   }
 }

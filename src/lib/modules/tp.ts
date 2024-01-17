@@ -9,11 +9,11 @@ export const server = (serv: Server) => {
     usage: '/teleport [target player] <destination player or x> [y] [z]',
     op: true,
     parse (str) {
-      return str.match(/^(((.* )?~?-?\d* ~?-?\d* ~?-?\d*)|(.+ .+))$/) ? str.split(' ') : false
+      return (str.match(/^(((.* )?~?-?\d* ~?-?\d* ~?-?\d*)|(.+ .+))$/) != null) ? str.split(' ') : false
     },
     action (args, ctx) {
       // todo use position of command block
-      const selectorString = ctx.player ? ctx.player.selectorString : serv.selectorString
+      const selectorString = (ctx.player != null) ? ctx.player.selectorString : serv.selectorString
       if (args.length === 2) {
         const entitiesFrom = selectorString(args[0])
         const entityTo = selectorString(args[1])[0]
@@ -21,7 +21,7 @@ export const server = (serv: Server) => {
 
         entitiesFrom.forEach(e => e.teleport(entityTo.position))
       } else if (args.length === 3 || args.length === 4) {
-        if (args.length === 3 && !ctx.player) throw new UserError('Only player can execute command with 3 arguments')
+        if (args.length === 3 && (ctx.player == null)) throw new UserError('Only player can execute command with 3 arguments')
         const entitiesFrom = args.length === 3 ? [ctx.player!] : selectorString(args[0])
         const posArgs = args.length === 3 ? args : args.slice(1)
         for (const e of entitiesFrom) {
@@ -39,9 +39,9 @@ export const server = (serv: Server) => {
 
           // Vanilla behavior: teleport to center of block if decimal not specified
 
-          if (args[0].indexOf('.') === -1) x += 0.5
-          if (args[1].indexOf('.') === -1) y += 0.5
-          if (args[2].indexOf('.') === -1) z += 0.5
+          if (!args[0].includes('.')) x += 0.5
+          if (!args[1].includes('.')) y += 0.5
+          if (!args[2].includes('.')) z += 0.5
           e.teleport(new Vec3(x, y, z))
         }
       }

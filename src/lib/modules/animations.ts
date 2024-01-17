@@ -1,6 +1,6 @@
 export const player = function (player: Player) {
-  player._client.on('arm_animation', () =>
-    player.behavior('punch', {}, () => {
+  player._client.on('arm_animation', async () =>
+    await player.behavior('punch', {}, () => {
       player._writeOthersNearby('animation', {
         entityId: player.id,
         animation: 0

@@ -47,8 +47,8 @@ declare global {
     levelName?: string
     motd?: string
     port?: number
-    "max-players"?: number
-    "online-mode"?: boolean
+    'max-players'?: number
+    'online-mode'?: boolean
     logging?: boolean
     gameMode?: number
     difficulty?: number
@@ -64,8 +64,8 @@ declare global {
     kickTimeout?: number
     plugins?: Record<string, any>
     modpe?: boolean
-    "view-distance"?: number
-    "player-list-text"?: {
+    'view-distance'?: number
+    'player-list-text'?: {
       header: {
         text: string
       }
@@ -73,8 +73,8 @@ declare global {
         text: string
       }
     }
-    "everybody-op"?: boolean
-    "max-entities": number
+    'everybody-op'?: boolean
+    'max-entities': number
     noConsoleOutput?: boolean
     savingInterval?: number | false
   }

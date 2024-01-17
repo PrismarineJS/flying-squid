@@ -9,7 +9,7 @@ export const server = function (serv: Server) {
       if (args.length !== 1) { return false }
 
       const condition = args[0]
-      if (['clear', 'rain'].indexOf(condition) === -1) { return false }
+      if (!['clear', 'rain'].includes(condition)) { return false }
 
       return { condition }
     },

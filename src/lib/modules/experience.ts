@@ -39,25 +39,25 @@ export const server = function (serv: Server) {
     usage: '/xp <amount> [player] OR /xp <amount>L [player]',
     op: true,
     parse (str) {
-      return str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) || false
+      return (str.match(/(-?\d+)(L)? ?([a-zA-Z0-9_]+)?/) != null) || false
     },
     action (args, ctx) {
       const isLevel = !!args[2]
       const amt = parseInt(args[1])
-      if (!ctx.player && !args[3]) throw new UserError('Console can\'t give itself experience.')
+      if ((ctx.player == null) && !args[3]) throw new UserError('Console can\'t give itself experience.')
       const user = args[3] ? serv.getPlayer(args[3]) : ctx.player
       if (!user) throw new UserError(args[3] + ' is not on this server!')
 
       if (!isLevel) {
         user.setXp(user.xp + amt)
-        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
+        if (ctx.player != null) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' xp')
         else serv.info('Gave ' + user.username + ' ' + amt + ' xp')
       } else {
         const currLevel = getXpLevel(user.xp)
         const baseCurrLevel = getBaseXpFromLevel(currLevel)
         const extraXp = user.xp - baseCurrLevel
         user.setXp(getBaseXpFromLevel(currLevel + amt) + extraXp)
-        if (ctx.player) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
+        if (ctx.player != null) ctx.player.chat('Gave ' + user.username + ' ' + amt + ' levels')
         else serv.info('Gave ' + user.username + ' ' + amt + ' levels')
       }
     }
@@ -68,18 +68,18 @@ declare global {
     /** @internal */
     level: number
     /** Total experience the player has (int). Set this using player.setXp() */
-    "xp": number
+    'xp': number
     /** Number from 0 to 1.0 representing the progress bar at the bottom of the player's screen. Set this with player.setDisplayXp() */
-    "displayXp": number
+    'displayXp': number
     /** Level of xp the player has. Set this with player.setXpLevel() */
-    "xpLevel": number
+    'xpLevel': number
     /** Updates the player's xp based on player.xp, player.displayXp, and player.xpLevel */
-    "sendXp": () => void
+    'sendXp': () => void
     /** Sets and sends the player's new level */
-    "setXpLevel": (level: any) => void
+    'setXpLevel': (level: any) => void
     /** Sets and sends the player's new display amount. num should be from 0 to 1.0 */
-    "setDisplayXp": () => void
+    'setDisplayXp': () => void
     /** Sets the player's XP level. Options:,    * - setLevel: Calculate and set player.level (default: true),    * - setDisplay: Calculate and set player.displayXp (default: true),    * - send: Send xp packet (default: true)    */
-    "setXp": (xp: any, { setLevel, setDisplay, send }?: { setLevel?: boolean | undefined; setDisplay?: boolean | undefined; send?: boolean | undefined }) => void
+    'setXp': (xp: any, { setLevel, setDisplay, send }?: { setLevel?: boolean | undefined, setDisplay?: boolean | undefined, send?: boolean | undefined }) => void
   }
 }

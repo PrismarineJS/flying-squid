@@ -13,7 +13,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
     }
   }
 }
-function changeType<T>(arg): asserts arg is T { }
+function changeType<T> (arg): asserts arg is T { }
 
 export const entity = function (entity: Entity, serv: Server) {
   entity.selectorString = (str) => serv.selectorString(str, entity.position, entity.world)
@@ -34,13 +34,13 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'ping',
     info: 'to pong!',
     usage: '/ping [number]',
-    action(params, ctx) {
+    action (params, ctx) {
       const num = params[0] * 1 + 1
 
       let str = 'pong'
       if (!isNaN(num)) str += ' [' + num + ']'
 
-      if (ctx.player) ctx.player.chat(str + '!')
+      if (ctx.player != null) ctx.player.chat(str + '!')
       else serv.info(str + '!')
     }
   })
@@ -50,9 +50,9 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'for modpe commands',
     usage: '/modpe <params>',
     onlyPlayer: true,
-    parse(str) { return str || false },
-    action(str, ctx) {
-      ctx.player!.emit('modpe', str)
+    parse (str) { return str || false },
+    action (str, ctx) {
+      ctx.player.emit('modpe', str)
     }
   })
 
@@ -60,7 +60,7 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'version',
     info: 'to get version of the server',
     usage: '/version',
-    action() {
+    action () {
       return 'This server is running flying-squid version ' + version
     }
   })
@@ -69,7 +69,7 @@ export const server = function (serv: Server, { version }: Options) {
     base: 'bug',
     info: 'to bug report',
     usage: '/bug',
-    action() {
+    action () {
       return 'Report bugs or issues here: https://github.com/PrismarineJS/flying-squid/issues'
     }
   })
@@ -79,12 +79,12 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Get entities id from selector like @a',
     usage: '/selector <selector>',
     op: true,
-    parse(str) {
+    parse (str) {
       return str || false
     },
-    action(sel, ctx) {
-      const arr = ctx.player ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
-      if (ctx.player) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
+    action (sel, ctx) {
+      const arr = (ctx.player != null) ? serv.selectorString(sel, ctx.player.position, ctx.player.world) : serv.selectorString(sel)
+      if (ctx.player != null) ctx.player.chat(JSON.stringify(arr.map(a => a.id)))
       else serv.info(JSON.stringify(arr.map(a => a.id)))
     }
   })
@@ -95,7 +95,7 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'to show all commands',
     usage: '/help [command]',
     tab: ['command'],
-    parse(str) {
+    parse (str) {
       const params = str.split(' ')
       const page = parseInt(params[params.length - 1])
       if (page) {
@@ -104,7 +104,7 @@ export const server = function (serv: Server, { version }: Options) {
       const search = params.join(' ')
       return { search, page: (page && page - 1) || 0 }
     },
-    action({ search, page }, ctx) {
+    action ({ search, page }, ctx) {
       if (page < 0) return 'Page # must be >= 1'
       const hash = serv.commands.uniqueHash
 
@@ -118,18 +118,18 @@ export const server = function (serv: Server, { version }: Options) {
         const cmd = hash[found[0]]
         const usage = (cmd.params && cmd.params.usage) || cmd.base
         const info = (cmd.params && cmd.params.info) || 'No info'
-        if (ctx.player) ctx.player.chat(usage + ': ' + info)
+        if (ctx.player != null) ctx.player.chat(usage + ': ' + info)
         else serv.info(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
         const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
         if (page >= totalPages) return 'There are only ' + totalPages + ' help pages'
         found = found.sort()
-        if (found.indexOf('search') !== -1) {
+        if (found.includes('search')) {
           const baseCmd = hash[search]
-          if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          if (ctx.player != null) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
           else serv.info(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
-          if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
+          if (ctx.player != null) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
           else serv.info(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(String(page + 1)) + colors.green(' of ') + colors.white(String(totalPages)) + colors.green(' ]=--'))
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
@@ -137,7 +137,7 @@ export const server = function (serv: Server, { version }: Options) {
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
+          if (ctx.player != null) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
           else serv.info(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
         }
       }
@@ -149,7 +149,7 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Stop the server',
     usage: '/stop',
     op: true,
-    action() {
+    action () {
       serv.quit('Server closed')
       process.exit()
     }
@@ -160,11 +160,11 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Broadcast a message',
     usage: '/say <message>',
     op: true,
-    parse(params) {
+    parse (params) {
       return params || false
     },
-    action(params, ctx) {
-      const who = ctx.player ? ctx.player.username : 'Server'
+    action (params, ctx) {
+      const who = (ctx.player != null) ? ctx.player.username : 'Server'
       serv.broadcast(`[${who}] ` + params)
       serv.info(`[CHAT]: [${who}] ` + params)
     }
@@ -175,17 +175,17 @@ export const server = function (serv: Server, { version }: Options) {
     info: 'Displays a message about yourself',
     usage: '/me <message>',
     op: false,
-    parse(params) {
+    parse (params) {
       return params || false
     },
-    action(params, ctx) {
-      const who = ctx.player ? ctx.player.username : 'Server'
+    action (params, ctx) {
+      const who = (ctx.player != null) ? ctx.player.username : 'Server'
       serv.broadcast(`* ${who} ` + params)
       serv.info(`* ${who} ` + params)
     }
   })
 
-  function shuffleArray(array) {
+  function shuffleArray (array) {
     let currentIndex = array.length
     let temporaryValue
     let randomIndex
@@ -208,7 +208,7 @@ export const server = function (serv: Server, { version }: Options) {
   const notudf = i => typeof i !== 'undefined'
 
   serv.selector = (type, opt, selfEntityId) => {
-    if (['all', 'random', 'self', 'near', 'entity'].indexOf(type) === -1) { throw new UserError('serv.selector(): type must be either [all, random, self, near, or entity]') }
+    if (!['all', 'random', 'self', 'near', 'entity'].includes(type)) { throw new UserError('serv.selector(): type must be either [all, random, self, near, or entity]') }
 
     const count = opt.count !== undefined
       ? opt.count
@@ -292,13 +292,13 @@ export const server = function (serv: Server, { version }: Options) {
   }
 
   serv.selectorString = (str, pos, world, allowUser = true, ctxEntityId?) => {
-    if (pos) pos = pos.clone()
+    if (pos != null) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
     if (match === null) throw new UserError('Invalid selector format')
-    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
+    if (match[1] === 'r' && (pos == null)) throw new UserError('Can\'t find nearest players')
     const typeConversion = {
       a: 'all',
       r: 'random',
@@ -335,7 +335,7 @@ export const server = function (serv: Server, { version }: Options) {
     const convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym']
 
     const data = {
-      pos: pos || '',
+      pos: (pos != null) || '',
       world,
       scores: [],
       minScores: []
@@ -343,11 +343,11 @@ export const server = function (serv: Server, { version }: Options) {
 
     optPair.forEach(({ key, val }) => {
       // todo
-      if (['x', 'y', 'z'].indexOf(key) !== -1 && pos) pos[key] = val
+      if (['x', 'y', 'z'].includes(key) && (pos != null)) pos[key] = val
       else if (!optConversion[key]) {
         data[key] = val
       } else {
-        if (convertInt.indexOf(key) !== -1) val = parseInt(val)
+        if (convertInt.includes(key)) val = parseInt(val)
         data[optConversion[key]] = val
       }
     })
@@ -356,8 +356,8 @@ export const server = function (serv: Server, { version }: Options) {
   }
 
   serv.posFromString = (str, pos) => {
-    if (str.indexOf('~') === -1) return parseFloat(str)
-    if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos
+    if (!str.includes('~')) return parseFloat(str)
+    if (str.match(/~-?\d+/) != null) return parseFloat(str.slice(1)) + pos
     else if (str === '~') return pos
     else throw new UserError('Invalid position')
   }
@@ -365,20 +365,20 @@ export const server = function (serv: Server, { version }: Options) {
 declare global {
   interface Player {
     /** handle `command` */
-    "handleCommand": (str: string) => Promise<void>
+    'handleCommand': (str: string) => Promise<void>
   }
   interface Entity {
     /** @internal */
-    "selectorString": (str: string) => Entity[]
+    'selectorString': (str: string) => Entity[]
   }
   interface Server {
     /** @internal */
-    "handleCommand": (str: string) => Promise<void>
+    'handleCommand': (str: string) => Promise<void>
     /** @internal */
-    "selector": (type: any, opt: any, selfEntityId: any) => Entity[]
+    'selector': (type: any, opt: any, selfEntityId: any) => Entity[]
     /** Returns an array of entities that satisfies the given command selector string `str`, execution position `pos`, execution world `world`, and the ID of the entity that initiated the execution `ctxEntityId`.,    * ,    * Valid selector string values are names of online players and [valid target selector variables](https://minecraft.fandom.com/wiki/Target_selectors#Target_selector_variables).,    * ,    * Setting `allowUser` to `true` (default value) enables players to be included in the returned array, disables otherwise.    */
-    "selectorString": (str: string, pos?: Vec3, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => Entity[]
+    'selectorString': (str: string, pos?: Vec3, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => Entity[]
     /** @internal */
-    "posFromString": (str: string, pos: number) => any
+    'posFromString': (str: string, pos: number) => any
   }
 }

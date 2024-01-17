@@ -120,7 +120,7 @@ export const server = (serv: Server, { version }: Options) => {
         const block = await player.world.getBlock(pos)
         if (block?.type !== thisBlock.type) return
         const props = {
-          ...block.getProperties(),
+          ...block.getProperties()
         }
         props.open = !props.open
         const newBlock = PrismarineBlock.fromProperties(block.type, props, block.biome.id)
@@ -161,7 +161,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
     const referencePosition = new Vec3(location.x, location.y, location.z)
     const block = await player.world.getBlock(referencePosition)
     block.position = referencePosition
-    //@ts-ignore TODO
+    // @ts-expect-error TODO
     block.direction = direction
     if (await serv.interactWithBlock({ block, player })) return
     if (player.gameMode >= 2) return
@@ -229,12 +229,12 @@ declare global {
     /** @internal */
     setBlockDataProperties: (baseData: any, states: any, properties: any) => number
     /** @internal */
-    "placeItem": (data: any) => any
+    'placeItem': (data: any) => any
     /** Register a handler that will be called when an item of type `name` is called to place a block.,    * ,    * The argument given to the handler is an object containing the held item that triggered the event, the direction (face) on which the player clicked, the angle of the player around the placed block. It should return an object containing the id and data of the block to place.    */
-    "onItemPlace": (name: any, handler: any, warn?: boolean) => void
+    'onItemPlace': (name: any, handler: any, warn?: boolean) => void
     /** @internal */
-    "interactWithBlock": (data: any) => Promise<any>
+    'interactWithBlock': (data: any) => Promise<any>
     /** Register a handler that will be called when a player interact with a block of type `name`.,    * ,    * The argument given to the handler is an object containing the clicked block and the player. It should return true if the block interaction occurred and the block placement should be cancelled.    */
-    "onBlockInteraction": (name: any, handler: any) => void
+    'onBlockInteraction': (name: any, handler: any) => void
   }
 }

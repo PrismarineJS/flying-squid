@@ -1,4 +1,3 @@
-const spiralloop = require('spiralloop')
 import { gzip } from 'node-gzip'
 import nbt from 'prismarine-nbt'
 
@@ -13,6 +12,7 @@ import RegistryLoader from 'prismarine-registry'
 import { LevelDatFull } from 'prismarine-provider-anvil/src/level'
 import generations from '../generations'
 import { Vec3 } from 'vec3'
+import spiralloop from 'spiralloop'
 
 const fsStat = promisify(fs.stat)
 const fsMkdir = promisify(fs.mkdir)
@@ -44,14 +44,14 @@ export const server = async function (serv: Server, options: Options) {
         Version: { Name: options.version },
         generatorName: generation.name === 'superflat' ? 'flat' : generation.name === 'diamond_square' ? 'default' : 'customized',
         LevelName: options.levelName,
-        allowCommands: true,
+        allowCommands: true
       })
     }
   } else { seed = newSeed }
   const generationOptions = {
     ...generation.options,
     seed,
-    version,
+    version
   }
   serv.emit('seed', generationOptions.seed)
   const generationModule: (options) => any = generations[generation.name] ? generations[generation.name] : require(generation.name)
@@ -72,14 +72,14 @@ export const server = async function (serv: Server, options: Options) {
   serv.netherworld.portals = []
   /// ///////////
 
-  serv.pregenWorld = (world, size = 3) => {
-    const promises: Promise<Chunk>[] = []
+  serv.pregenWorld = async (world, size = 3) => {
+    const promises: Array<Promise<Chunk>> = []
     for (let x = -size; x < size; x++) {
       for (let z = -size; z < size; z++) {
         promises.push(world.getColumn(x, z))
       }
     }
-    return Promise.all(promises)
+    return await Promise.all(promises)
   }
 
   serv.setBlock = async (world, position, stateId) => {
@@ -107,7 +107,7 @@ export const server = async function (serv: Server, options: Options) {
 
     serv.players
       .filter(p => p.world === world)
-      .forEach(player => player.sendBlockAction(position, actionId, actionParam, blockType))
+      .forEach(async player => await player.sendBlockAction(position, actionId, actionParam, blockType))
   }
 
   serv.reloadChunks = (world, chunks) => {
@@ -164,12 +164,12 @@ export const server = async function (serv: Server, options: Options) {
     // if we ever support level.dat saving this function needs to be changed i guess
     const levelDatContent = await fs.promises.readFile(worldFolder + '/level.dat')
     const { parsed } = await nbt.parse(levelDatContent)
-    //@ts-ignore
+    // @ts-expect-error
     parsed.value.Data.value.Player = savedData
     const newDataCompressed = await gzip(nbt.writeUncompressed(parsed))
     await fs.promises.writeFile(worldFolder + '/level.dat', newDataCompressed)
 
-    await Promise.all(serv.players.slice(1).map(async player => player.save()))
+    await Promise.all(serv.players.slice(1).map(async player => await player.save()))
   }
 }
 
@@ -205,12 +205,12 @@ const player = function (player: Player, serv: Server, settings: Options) {
     }
   }
 
-  player.sendChunk = (chunkX, chunkZ, column) => {
-    return player.behavior('sendChunk', {
+  player.sendChunk = async (chunkX, chunkZ, column) => {
+    return await player.behavior('sendChunk', {
       x: chunkX,
       z: chunkZ,
       chunk: column
-    }, ({ x, z, chunk }) => {
+    }, async ({ x, z, chunk }) => {
       player._client.write('map_chunk', {
         x,
         z,
@@ -240,7 +240,7 @@ const player = function (player: Player, serv: Server, settings: Options) {
           data: chunk.dumpLight()
         })
       }
-      return Promise.resolve()
+      return await Promise.resolve()
     })
   }
 
@@ -262,19 +262,19 @@ const player = function (player: Player, serv: Server, settings: Options) {
       .filter(({ chunkX, chunkZ }) => serv._loadPlayerChunk(chunkX, chunkZ, player))
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
-          .then(() => player.world.getColumn(chunkX, chunkZ))
-          .then((column) => player.sendChunk(chunkX, chunkZ, column))
-        return group ? p.then(() => sleep(5)) : p
+          .then(async () => await player.world.getColumn(chunkX, chunkZ))
+          .then(async (column) => await player.sendChunk(chunkX, chunkZ, column))
+        return group ? p.then(async () => await sleep(5)) : p
       }
       , Promise.resolve())
   }
 
-  function sleep (ms = 0) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+  async function sleep (ms = 0) {
+    return await new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  player.sendMap = () => {
-    return player.sendNearbyChunks(settings['view-distance'])
+  player.sendMap = async () => {
+    return await player.sendNearbyChunks(settings['view-distance'])
       .catch((err) => setTimeout(() => { throw err }))
   }
 
@@ -299,7 +299,7 @@ const player = function (player: Player, serv: Server, settings: Options) {
   }
 
   player.changeWorld = async (world, opt) => {
-    if (player.world === world) return Promise.resolve()
+    if (player.world === world) return await Promise.resolve()
     opt = opt || {}
     player.world = world
     player._unloadAllChunks()
@@ -350,29 +350,29 @@ declare global {
     /** @internal */
     levelData: LevelDatFull
     /** Contains the overworld world. This is where the default spawn point is */
-    "overworld": CustomWorld
+    'overworld': CustomWorld
     /** Contains the nether world. This **WILL** be used when a player travels through a portal if they are in the overworld! */
-    "netherworld": CustomWorld
+    'netherworld': CustomWorld
     /** @internal */
-    "dimensionNames": { '-1': string; 0: string }
+    'dimensionNames': { '-1': string, 0: string }
     /** @internal */
-    "pregenWorld": (world: CustomWorld, size?: number) => Promise<Chunk[]>
+    'pregenWorld': (world: CustomWorld, size?: number) => Promise<Chunk[]>
     /** Saves block in world and sends block update to all players of the same world. */
-    "setBlock": (world: CustomWorld, position: Vec3, stateId: number) => Promise<void>
+    'setBlock': (world: CustomWorld, position: Vec3, stateId: number) => Promise<void>
     /** @internal */
-    "setBlockType": (world: CustomWorld, position: Vec3, id: number) => Promise<void>
+    'setBlockType': (world: CustomWorld, position: Vec3, id: number) => Promise<void>
     /** Sends a block action to all players of the same world. */
-    "setBlockAction": (world: CustomWorld, position: Vec3, actionId: number, actionParam: any) => Promise<void>
+    'setBlockAction': (world: CustomWorld, position: Vec3, actionId: number, actionParam: any) => Promise<void>
     /** @internal */
-    "reloadChunks": (world: CustomWorld, chunks: any) => void
+    'reloadChunks': (world: CustomWorld, chunks: any) => void
     /** @internal */
-    "chunksUsed": {}
+    'chunksUsed': {}
     /** @internal */
-    "_loadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
+    '_loadPlayerChunk': (chunkX: number, chunkZ: number, player: Player) => boolean
     /** @internal */
-    "_unloadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
+    '_unloadPlayerChunk': (chunkX: number, chunkZ: number, player: Player) => boolean
     /** @internal */
-    "savePlayersSingleplayer": () => Promise<void>
+    'savePlayersSingleplayer': () => Promise<void>
   }
   interface Player {
     /** @internal */
@@ -382,24 +382,24 @@ declare global {
     /** @internal */
     world: CustomWorld
     /** @internal */
-    "flying": number
+    'flying': number
     /** If `worldFolder` option is set, save player's data into `<worldFolder>/playerdata/<UUID>.dat`. Returns promise.,    * Example: save all players data to disk:,    * ,    * ```js,    * for (const player of serv.players) {,    *   player.save(),    * },    * ```    */
-    "save": () => Promise<any>
+    'save': () => Promise<any>
     /** @internal */
-    "_unloadChunk": (chunkX: any, chunkZ: any) => void
+    '_unloadChunk': (chunkX: any, chunkZ: any) => void
     /** @internal */
-    "sendChunk": (chunkX: any, chunkZ: any, column: any) => Promise<void>
+    'sendChunk': (chunkX: any, chunkZ: any, column: any) => Promise<void>
     /** @internal */
-    "sendNearbyChunks": (viewDistance: any, group?) => Promise<any>
+    'sendNearbyChunks': (viewDistance: any, group?) => Promise<any>
     /** @internal */
-    "sendMap": () => any
+    'sendMap': () => any
     /** @internal */
-    "sendRestMap": () => void
+    'sendRestMap': () => void
     /** @internal */
-    "sendSpawnPosition": () => void
+    'sendSpawnPosition': () => void
     /** @internal */
-    "_unloadAllChunks": () => void
+    '_unloadAllChunks': () => void
     /** The world object which the player is in (use serv.overworld, serv.netherworld, serv.endworld, or a custom world). Options:,    * ,    * - gamemode: Gamemode of the world (Default is player gamemode),    * - difficulty: Difficulty of world. Default is 0 (easiest),    * - dimension: Dimension of world. 0 is Overworld, -1 is Nether, 1 is End (Default is 0)    */
-    "changeWorld": (world: any, opt: any) => Promise<void>
+    'changeWorld': (world: any, opt: any) => Promise<void>
   }
 }

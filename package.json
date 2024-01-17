@@ -14,10 +14,10 @@
   "scripts": {
     "start": "tsc && node dist/app.js",
     "build": "tsc && node scripts/genTypes.mjs",
-    "prepare": "pnpm build",
+    "prepare": "npm run build",
     "prepublishOnly": "cp docs/README.md README.md",
-    "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
-    "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
+    "lint": "ts-standard test/*.test.js src/ examples/ *.js",
+    "fix": "ts-standard --fix test/*.test.js src/ examples/ *.js",
     "mocha_test": "mocha --reporter spec --timeout 3000 --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint"
@@ -75,6 +75,7 @@
     "minecraft-wrap": "^1.2.3",
     "mineflayer": "^4.17.0",
     "mocha": "^10.0.0",
-    "standard": "^17.0.0"
+    "standard": "^17.0.0",
+    "ts-standard": "^12.0.2"
   }
 }

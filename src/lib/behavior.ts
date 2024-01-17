@@ -1,5 +1,5 @@
 export default (obj) => {
-  return async (eventName: string, data?: any, func?: Function, cancelFunc?: Function) => {
+  return async (eventName: string, data?: any, func: Function = (() => { }), cancelFunc?: Function) => {
     let hiddenCancelled = false
     let cancelled = false
     let cancelCount = 0
@@ -13,9 +13,7 @@ export default (obj) => {
       defaultCancel = dC
     }
 
-    let resp
-
-    func = func || (() => { })
+    let resp!: boolean | Promise<any>
 
     await obj.emitThen(eventName + '_cancel', data, cancel).catch((err) => setTimeout(() => { throw err }, 0))
     await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err) => setTimeout(() => { throw err }, 0))
@@ -24,7 +22,7 @@ export default (obj) => {
       resp = func(data)
       if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
       if (typeof resp === 'undefined') resp = true
-    } else if (cancelFunc && defaultCancel) {
+    } else if ((cancelFunc != null) && defaultCancel) {
       resp = cancelFunc(data)
       if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
       if (typeof resp === 'undefined') resp = false

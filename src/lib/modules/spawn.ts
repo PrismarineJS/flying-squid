@@ -208,9 +208,9 @@ export const server = function (serv: Server, options: Options) {
       const args = str.split(' ')
       if (args.length !== 2) { return false }
 
-      const carrier = ctx.player ? ctx.player.selectorString(args[0]) : serv.selectorString(args[0])
+      const carrier = (ctx.player != null) ? ctx.player.selectorString(args[0]) : serv.selectorString(args[0])
       if (carrier.length === 0) throw new UserError('one carrier')
-      const attached = ctx.player ? ctx.player.selectorString(args[1]) : serv.selectorString(args[1])
+      const attached = (ctx.player != null) ? ctx.player.selectorString(args[1]) : serv.selectorString(args[1])
       if (attached.length === 0) throw new UserError('one attached')
 
       return { carrier: carrier[0], attached: attached[0] }
@@ -369,8 +369,8 @@ export const entity = function (entity: Entity, serv: Server, { version }: Optio
 
   entity.updateAndSpawn = () => {
     const updatedEntities = entity.getNearby()
-    const entitiesToAdd = updatedEntities.filter(e => entity.nearbyEntities.indexOf(e) === -1)
-    const entitiesToRemove = entity.nearbyEntities.filter(e => updatedEntities.indexOf(e) === -1)
+    const entitiesToAdd = updatedEntities.filter(e => !entity.nearbyEntities.includes(e))
+    const entitiesToRemove = entity.nearbyEntities.filter(e => !updatedEntities.includes(e))
     if (entity.type === 'player') {
       entity.despawnEntities(entitiesToRemove)
       entitiesToAdd.forEach(entity.spawnEntity)
@@ -419,17 +419,17 @@ export const entity = function (entity: Entity, serv: Server, { version }: Optio
 declare global {
   interface Server {
     /** @internal */
-    "initEntity": <T extends string>(type: T, entityType: any, world: CustomWorld, position: Vec3) => T extends 'player' ? Player : Entity
+    'initEntity': <T extends string>(type: T, entityType: any, world: CustomWorld, position: Vec3) => T extends 'player' ? Player : Entity
     /** @internal */
-    "spawnObject": (type: any, world: any, position: any, { pitch, yaw, velocity, data, itemId, itemDamage, itemCount, pickupTime, deathTime }: { pitch?: number | undefined; yaw?: number | undefined; velocity?: any; data?: number | undefined; itemId?: any; itemDamage?: number | undefined; itemCount?: number | undefined; pickupTime?: number; deathTime?: number }) => any
+    'spawnObject': (type: any, world: any, position: any, { pitch, yaw, velocity, data, itemId, itemDamage, itemCount, pickupTime, deathTime }: { pitch?: number | undefined, yaw?: number | undefined, velocity?: any, data?: number | undefined, itemId?: any, itemDamage?: number | undefined, itemCount?: number | undefined, pickupTime?: number, deathTime?: number }) => any
     /** @internal */
-    "spawnMob": (type: any, world: any, position: any, { pitch, yaw, headPitch, velocity, metadata }?: { pitch?: number | undefined; yaw?: number | undefined; headPitch?: number | undefined; velocity?: any; metadata?: any[] | undefined }) => any
+    'spawnMob': (type: any, world: any, position: any, { pitch, yaw, headPitch, velocity, metadata }?: { pitch?: number | undefined, yaw?: number | undefined, headPitch?: number | undefined, velocity?: any, metadata?: any[] | undefined }) => any
     /** @internal */
-    "destroyEntity": (entity: any) => void
+    'destroyEntity': (entity: any) => void
   }
   interface Player {
     /** @internal */
-    "spawnEntity": (entity: any) => void
+    'spawnEntity': (entity: any) => void
   }
   interface Entity {
     /** Only applies to gravity, really. You can still apply a velocity larger than terminal velocity. */
@@ -468,14 +468,14 @@ declare global {
     /** @internal */
     spawnEntity: any
     /** @internal */
-    "initEntity": (type: any, entityType: any, world: any, position: any) => void
+    'initEntity': (type: any, entityType: any, world: any, position: any) => void
     /** @internal */
-    "getSpawnPacket": () => { entityId: any; playerUUID: any; x: any; y: any; z: any; yaw: any; pitch: any; currentItem: number; metadata: any; objectUUID?: any; type?: any; objectData?: any; velocityX?: any; velocityY?: any; velocityZ?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; objectUUID: any; type: any; x: any; y: any; z: any; pitch: any; yaw: any; objectData: any; velocityX: any; velocityY: any; velocityZ: any; playerUUID?: any; currentItem?: any; metadata?: any; entityUUID?: any; headPitch?: undefined } | { entityId: any; entityUUID: any; type: any; x: any; y: any; z: any; yaw: any; pitch: any; headPitch: any; velocityX: any; velocityY: any; velocityZ: any; metadata: any; playerUUID?: any; currentItem?: any; objectUUID?: any; objectData?: undefined } | undefined
+    'getSpawnPacket': () => { entityId: any, playerUUID: any, x: any, y: any, z: any, yaw: any, pitch: any, currentItem: number, metadata: any, objectUUID?: any, type?: any, objectData?: any, velocityX?: any, velocityY?: any, velocityZ?: any, entityUUID?: any, headPitch?: undefined } | { entityId: any, objectUUID: any, type: any, x: any, y: any, z: any, pitch: any, yaw: any, objectData: any, velocityX: any, velocityY: any, velocityZ: any, playerUUID?: any, currentItem?: any, metadata?: any, entityUUID?: any, headPitch?: undefined } | { entityId: any, entityUUID: any, type: any, x: any, y: any, z: any, yaw: any, pitch: any, headPitch: any, velocityX: any, velocityY: any, velocityZ: any, metadata: any, playerUUID?: any, currentItem?: any, objectUUID?: any, objectData?: undefined } | undefined
     /** @internal */
-    "updateAndSpawn": () => void
+    'updateAndSpawn': () => void
     /** @internal */
-    "destroy": () => void
+    'destroy': () => void
     /** @internal */
-    "attach": (attachedEntity: any, leash?: boolean) => void
+    'attach': (attachedEntity: any, leash?: boolean) => void
   }
 }

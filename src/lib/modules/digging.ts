@@ -142,7 +142,7 @@ export const player = function (player: Player, serv: Server, { version }: Optio
         stop: true,
         start: startDiggingTime,
         time: diggingTime
-        //@ts-ignore todo
+        // @ts-expect-error todo
       }).stop
     }
     if (!stop) {

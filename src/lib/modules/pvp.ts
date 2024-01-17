@@ -7,7 +7,7 @@ export const player = function (player: Player, serv: Server) {
   function attackEntity (entityId) {
     const attackedEntity = serv.entities[entityId]
     const attackedPlayer = attackedEntity.type === 'player' ? attackedEntity as Player : undefined
-    if (!attackedEntity || (attackedPlayer && attackedPlayer.gameMode !== 0)) return
+    if (!attackedEntity || ((attackedPlayer != null) && attackedPlayer.gameMode !== 0)) return
 
     player.behavior('attack', {
       attackedEntity,
@@ -80,7 +80,7 @@ export const server = function (serv: Server) {
           })
         }
       } else {
-        if (ctx.player) ctx.player.takeDamage({ damage: 20 })
+        if (ctx.player != null) ctx.player.takeDamage({ damage: 20 })
         else serv.err('Can\'t kill console')
       }
     }
@@ -93,8 +93,8 @@ declare global {
     /** @internal */
     updateHealth: (health: number) => void
     /** * sound: Sound to play (default is game.player.hurt),    * * damage: Damage to deal (default is based off player's weapon, player's potions, attackEntity's potions, and attackedEntity armor),    * * velocity: Which way should attackedEntity move when hit,    * * maxVelocity: maxVelocity from consecutive hits,    * * animation: Play death/hit animation    */
-    "takeDamage": ({ sound, damage, velocity, maxVelocity, animation }: { sound?: string | undefined; damage?: number | undefined; velocity?: any; maxVelocity?: any; animation?: boolean | undefined }) => void
+    'takeDamage': ({ sound, damage, velocity, maxVelocity, animation }: { sound?: string | undefined, damage?: number | undefined, velocity?: any, maxVelocity?: any, animation?: boolean | undefined }) => void
     /** @internal */
-    "kill": (options?: {}) => void
+    'kill': (options?: {}) => void
   }
 }

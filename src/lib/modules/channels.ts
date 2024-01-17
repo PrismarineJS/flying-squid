@@ -21,6 +21,6 @@ export const player = (player: Player) => {
 declare global {
   interface Player {
     /** Send the specified `brand` to the player or `flying-squid` by default */
-    "sendBrand": (brand?: string) => Promise<void>
+    'sendBrand': (brand?: string) => Promise<void>
   }
 }
