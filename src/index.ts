@@ -5,8 +5,6 @@ import Command from './lib/command'
 import * as plugins from './lib/plugins'
 import { EventEmitter } from 'events'
 
-import { IndexedData } from 'minecraft-data'
-import './types' // include Server declarations from all plugins
 import './modules'
 
 // #region RUNTIME PREPARE
