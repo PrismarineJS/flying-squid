@@ -88,28 +88,28 @@ export const player = function (player: Player, serv: Server) {
     serv.playSound(sound, player.world, null, { ...opt, whitelist: player })
   }
 
-  player.on('placeBlock_cancel', async ({ reference }, cancel) => {
-    if (player.crouching) return
-    const id = await player.world.getBlockType(reference)
-    if (id !== 25) return
-    cancel(false)
-    if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {}
-    const data = player.world.blockEntityData[reference.toString()]
-    if (typeof data.note === 'undefined') data.note = -1
-    data.note++
-    data.note %= 25
-    serv.playNoteBlock(data.note, player.world, reference)
-  })
+  // player.on('placeBlock_cancel', async ({ reference }, cancel) => {
+  //   if (player.crouching) return
+  //   const id = await player.world.getBlockType(reference)
+  //   if (id !== 25) return
+  //   cancel(false)
+  //   if (!player.world.blockEntityData[reference.toString()]) player.world.blockEntityData[reference.toString()] = {}
+  //   const data = player.world.blockEntityData[reference.toString()]
+  //   if (typeof data.note === 'undefined') data.note = -1
+  //   data.note++
+  //   data.note %= 25
+  //   serv.playNoteBlock(data.note, player.world, reference)
+  // })
 
-  player.on('dig_cancel', async ({ position }, cancel) => {
-    const id = await player.world.getBlockType(position)
-    if (id !== 25) return
-    cancel(false)
-    if (!player.world.blockEntityData[position.toString()]) player.world.blockEntityData[position.toString()] = {}
-    const data = player.world.blockEntityData[position.toString()]
-    if (typeof data.note === 'undefined') data.note = 0
-    serv.playNoteBlock(data.note, player.world, position)
-  })
+  // player.on('dig_cancel', async ({ position }, cancel) => {
+  //   const id = await player.world.getBlockType(position)
+  //   if (id !== 25) return
+  //   cancel(false)
+  //   if (!player.world.blockEntityData[position.toString()]) player.world.blockEntityData[position.toString()] = {}
+  //   const data = player.world.blockEntityData[position.toString()]
+  //   if (typeof data.note === 'undefined') data.note = 0
+  //   serv.playNoteBlock(data.note, player.world, position)
+  // })
 }
 
 export const entity = function (entity: Entity, serv: Server) {

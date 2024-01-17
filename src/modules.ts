@@ -1,9 +1,41 @@
-import { EventEmitter } from 'events'
 import { Client } from 'minecraft-protocol'
+import TypedEmitter from 'typed-emitter'
+import EventEmitter from 'events'
 
+// all is coherent and stays in the same place
 declare global {
-  interface Server extends EventEmitter { }
-  interface Player extends EventEmitter, Entity {
+  interface PlayerEvents {
+    asap: () => void
+    loadingStatus: (status: string) => void
+    connected: () => void
+    spawned: () => void
+    disconnected: (reason: string) => void
+    kicked: (kicker: Player, reason: string) => void
+    move: () => void
+    change_world: () => void
+    modpe: (data: string) => void
+  }
+
+  interface ServerEvents {
+    error: (error: Error) => void
+    listening: (port: number) => void
+    pluginsReady: () => void
+    /** This event is emitted once all plugins are initialized. Use this event for working with properties / methods of other plugins. */
+    asap: () => void
+    unhandledRejectionWarning: () => void
+    crash: () => void
+    clientError: (client: Client, error: Error) => void
+    newPlayer: (player: Player) => void
+    banned: (player: Pick<Player, 'username'>, username: string, reason: string) => void
+    newEntity: (entity: Entity) => void
+    tick: (delta: number, tickCount: number) => void
+    /** Emit seed once the world is loaded */
+    seed: (seed: number) => void
+  }
+
+  interface Server extends TypedEmitter<ServerEvents> { }
+  // Omit is to allow inheritance of Entity
+  interface Player extends Omit<Entity, keyof TypedEmitter<{}>>, TypedEmitter<PlayerEvents> {
     _client: Client
   }
   interface Entity extends EventEmitter {

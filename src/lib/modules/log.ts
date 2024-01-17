@@ -114,7 +114,7 @@ export const player = function (player: Player, serv: Server) {
   player.on('connected', () => serv.info(player.username + ' (' + player._client.socket?.remoteAddress + ') connected'))
   player.on('spawned', () => serv.info('Position written, spawning player...'))
   player.on('disconnected', (reason) => serv.info(player.username + ' disconnected. Reason: ' + reason))
-  player.on('chat', ({ message }) => serv.info('<' + player.username + '>' + ' ' + message))
+  // player.on('chat', ({ message }) => serv.info('<' + player.username + '>' + ' ' + message))
   player.on('kicked', (kicker, reason) => serv.info(kicker.username + ' kicked ' + player.username + (reason ? ' (' + reason + ')' : '')))
 }
 declare global {

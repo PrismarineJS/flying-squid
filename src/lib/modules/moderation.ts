@@ -174,7 +174,7 @@ export const server = function (serv: Server, settings: Options) {
       if (!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/)) { return false }
       const parts = str.split(' ')
       return {
-        username: parts.shift(),
+        username: parts.shift()!,
         reason: parts.join(' ')
       }
     },
