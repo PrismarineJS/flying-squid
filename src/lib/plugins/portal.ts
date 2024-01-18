@@ -1,6 +1,5 @@
 import { Vec3 } from 'vec3'
 import UserError from '../user_error'
-import MinecraftData from 'minecraft-data'
 import portalDetector from '../portal_detector'
 
 export const player = function (player: Player, serv: Server, { version }: Options) {

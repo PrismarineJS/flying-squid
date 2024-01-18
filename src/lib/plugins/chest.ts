@@ -1,4 +1,3 @@
-import MinecraftData from 'minecraft-data'
 import { Vec3 } from 'vec3'
 
 export const server = (serv: Server, { version }: Options) => {
