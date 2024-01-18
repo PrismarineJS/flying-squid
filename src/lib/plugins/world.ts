@@ -1,6 +1,3 @@
-import { gzip } from 'node-gzip'
-import nbt from 'prismarine-nbt'
-
 import { promisify } from 'util'
 import fs from 'fs'
 import { level, Anvil as AnvilLoader } from 'prismarine-provider-anvil'
@@ -21,7 +18,7 @@ export const server = async function (serv: Server, options: Options) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const World = WorldLoader(version)
   const registry = RegistryLoader(version)
-  const Anvil = AnvilLoader.Anvil(version)
+  const Anvil = AnvilLoader(version)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
@@ -160,7 +157,7 @@ export const server = async function (serv: Server, options: Options) {
   })
 }
 
-const player = function (player: Player, serv: Server, settings: Options) {
+export const player = function (player: Player, serv: Server, settings: Options) {
   const registry = RegistryLoader(settings.version)
 
   player.flying = 0
@@ -231,6 +228,14 @@ const player = function (player: Player, serv: Server, settings: Options) {
     })
   }
 
+  function spiral (arr) {
+    const t = [] as any[]
+    spiralloop(arr, (x, z) => {
+      t.push([x, z])
+    })
+    return t
+  }
+
   player.sendNearbyChunks = (view, group) => {
     player.lastPositionChunkUpdated = player.position
     const playerChunkX = Math.floor(player.position.x / 16)
@@ -241,7 +246,7 @@ const player = function (player: Player, serv: Server, settings: Options) {
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
       .forEach(([x, z]) => player._unloadChunk(x, z))
 
-    return spiralloop([view * 2, view * 2])
+    return spiral([view * 2, view * 2])
       .map(t => ({
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view

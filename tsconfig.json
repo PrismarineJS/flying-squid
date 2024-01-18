@@ -11,7 +11,9 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "rootDir": "src",
-        "stripInternal": true
+        "stripInternal": true,
+        "noImplicitUseStrict": true,
+        "ignoreDeprecations": "5.0"
     },
     "include": [
         "src"
