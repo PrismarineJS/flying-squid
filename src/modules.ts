@@ -1,10 +1,13 @@
 import { Client } from 'minecraft-protocol'
 import TypedEmitter from 'typed-emitter'
 import EventEmitter from 'events'
+import { Vec3 } from 'vec3';
+import { Block } from 'prismarine-block'
 
 // all is coherent and stays in the same place
 declare global {
   interface PlayerEvents {
+    dug: (params: { block: Block; position: Vec3 }) => void
     asap: () => void
     loadingStatus: (status: string) => void
     connected: () => void

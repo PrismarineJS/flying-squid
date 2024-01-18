@@ -158,19 +158,6 @@ export const server = async function (serv: Server, options: Options) {
       if (world === 'overworld') ctx.player.changeWorld(serv.overworld, { dimension: 0 })
     }
   })
-
-  serv.savePlayersSingleplayer = async () => {
-    const savedData = await serv.players[0].save()
-    // if we ever support level.dat saving this function needs to be changed i guess
-    const levelDatContent = await fs.promises.readFile(worldFolder + '/level.dat')
-    const { parsed } = await nbt.parse(levelDatContent)
-    // @ts-expect-error
-    parsed.value.Data.value.Player = savedData
-    const newDataCompressed = await gzip(nbt.writeUncompressed(parsed))
-    await fs.promises.writeFile(worldFolder + '/level.dat', newDataCompressed)
-
-    await Promise.all(serv.players.slice(1).map(async player => player.save()))
-  }
 }
 
 const player = function (player: Player, serv: Server, settings: Options) {
@@ -371,8 +358,6 @@ declare global {
     "_loadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
     /** @internal */
     "_unloadPlayerChunk": (chunkX: number, chunkZ: number, player: Player) => boolean
-    /** @internal */
-    "savePlayersSingleplayer": () => Promise<void>
   }
   interface Player {
     /** @internal */

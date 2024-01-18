@@ -3,7 +3,7 @@
   "description": "A minecraft server written in node.js",
   "version": "1.8.0",
   "main": "dist/index.js",
-  "bin": "dist/app.js",
+  "bin": "app.js",
   "author": "mhsjlw <mhsjlw@users.noreply.github.com>",
   "contributors": [
     {
@@ -12,9 +12,9 @@
     }
   ],
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "tsc && node app.js",
     "build": "tsc && node scripts/genTypes.mjs",
-    "prepare": "pnpm build",
+    "prepare": "npm run build",
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",
     "fix": "standard --fix test/*.test.js src/**/*.js src/**/**/*.js src/*.js examples/*.js *.js",

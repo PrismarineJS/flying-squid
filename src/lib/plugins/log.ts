@@ -72,15 +72,15 @@ export const server = function (serv: Server, settings: Options) {
       const orig = console.log
       return function () {
         readline.cursorTo(process.stdout, 0)
-        // let tmp
-        // try {
-        //   tmp = process.stdout
-        //   // @ts-ignore
-        //   process.stdout = process.stderr
-        //   orig.apply(console, arguments)
-        // } finally {
-        //   process.stdout = tmp
-        // }
+        let tmp
+        try {
+          tmp = process.stdout
+          // @ts-ignore
+          process.stdout = process.stderr
+          orig.apply(console, arguments)
+        } finally {
+          process.stdout = tmp
+        }
         orig.apply(console, arguments)
         rl.prompt(true)
       }

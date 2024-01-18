@@ -8,27 +8,27 @@ export const player = function (player: Player, serv: Server, { version }: Optio
   const obsidianType = registry.blocksByName.obsidian.id
   const portalType = registry.supportFeature('theFlattening') ? registry.blocksByName.nether_portal.id : registry.blocksByName.portal.id
 
-  // player.on('dug', ({ position, block }) => {
-  //   function destroyPortal (portal, positionAlreadyDone = null) {
-  //     player.world.portals = player.world.portals.splice(player.world.portals.indexOf(portal), 1)
-  //     portal
-  //       .air
-  //       .filter(ap => positionAlreadyDone === null || !ap.equals(positionAlreadyDone))
-  //       .forEach(ap => serv.setBlock(player.world, ap, 0))
-  //   }
+  player.on('dug', ({ position, block }) => {
+    function destroyPortal (portal, positionAlreadyDone?: Vec3) {
+      player.world.portals = player.world.portals.splice(player.world.portals.indexOf(portal), 1)
+      portal
+        .air
+        .filter(ap => !positionAlreadyDone || !ap.equals(positionAlreadyDone))
+        .forEach(ap => serv.setBlock(player.world, ap, 0))
+    }
 
-  //   if (block.type === obsidianType) {
-  //     const p = player.world.portals.filter(({ bottom, top, left, right }) =>
-  //       [...bottom, ...left, ...right, ...top]
-  //         .reduce((acc, pos) => acc || pos.equals(position), false))
-  //     p.forEach(portal => destroyPortal(portal, position))
-  //   }
+    if (block.type === obsidianType) {
+      const p = player.world.portals.filter(({ bottom, top, left, right }) =>
+        [...bottom, ...left, ...right, ...top]
+          .reduce((acc, pos) => acc || pos.equals(position), false))
+      p.forEach(portal => destroyPortal(portal, position))
+    }
 
-  //   if (block.type === portalType) {
-  //     const p = player.world.portals.filter(({ air }) => air.reduce((acc, pos) => acc || pos.equals(position), false))
-  //     p.forEach(portal => destroyPortal(portal, position))
-  //   }
-  // })
+    if (block.type === portalType) {
+      const p = player.world.portals.filter(({ air }) => air.reduce((acc, pos) => acc || pos.equals(position), false))
+      p.forEach(portal => destroyPortal(portal, position))
+    }
+  })
 }
 
 export const server = function (serv: Server, { version }: Options) {
