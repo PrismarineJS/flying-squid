@@ -1,7 +1,19 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "strictNullChecks": true
+        "resolveJsonModule": true,
+        "strictNullChecks": true,
+        "outDir": "dist",
+        "sourceMap": true,
+        "target": "ESNext",
+        "module": "CommonJS",
+        "declaration": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "rootDir": "src",
+        "stripInternal": true,
+        "noImplicitUseStrict": true,
+        "ignoreDeprecations": "5.0"
     },
     "include": [
         "src"
