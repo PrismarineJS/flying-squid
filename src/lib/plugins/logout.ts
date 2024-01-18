@@ -42,7 +42,9 @@ export const player = function (player: Player, serv: Server, { worldFolder }: O
 }
 declare global {
   interface Server {
-    /** @internal */
+    /**
+     * Quits the server
+     */
     'quit': (reason?: string) => Promise<void>
   }
   interface Player {

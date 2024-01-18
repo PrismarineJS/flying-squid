@@ -41,7 +41,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   let portalX: number
   let portalZ: number
-  if (serv.supportFeature('theFlattening')) {
+  if (registry.supportFeature('theFlattening')) {
     const portalBlock = registry.blocksByName.nether_portal
     portalX = portalBlock.minStateId
     portalZ = portalBlock.minStateId + 1

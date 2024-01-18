@@ -23,6 +23,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
     let bot
     /** @type {import('mineflayer').Bot} */
     let bot2
+    /** @type {import('flying-squid').FullServer} */
     let serv
     let entityName
 

@@ -1,10 +1,11 @@
 import { snakeCase } from 'change-case'
 
 export const player = function (player: Player, serv: Server, options: Options) {
+  const registry = require('prismarine-registry')(options.version)
   const sendTabComplete = (allMatches, existingContent) => {
     const matches = allMatches.filter((match) => match.startsWith(existingContent))
     player._client.write('tab_complete', {
-      matches: !serv.supportFeature('tabCompleteHasAToolTip')
+      matches: !registry.supportFeature('tabCompleteHasAToolTip')
         ? matches
         : matches.map((match) => {
           return {
