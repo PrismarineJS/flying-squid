@@ -45,15 +45,15 @@ export const server = function (serv: Server) {
 
   serv.parseClassic = (message) => {
     if (typeof message === 'object') return message
-    const messageList: Array<{
-      text
-      color
-      bold
-      italic
-      underlined
-      strikethrough
+    const messageList: {
+      text,
+      color,
+      bold,
+      italic,
+      underlined,
+      strikethrough,
       obfuscated
-    }> = []
+    }[] = []
     let text = ''
     let nextChanged = false
     let color = 'white'
@@ -130,7 +130,7 @@ export const server = function (serv: Server) {
 export const player = function (player: Player, serv: Server) {
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
-      player.behavior('command', { command: message.slice(1) }, async ({ command }) => await player.handleCommand(command))
+      player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
       serv.info(`${player.username} issued command: ${message.split(' ')[0]}`)
     } else {
       player.behavior('chat', {
@@ -170,50 +170,50 @@ export const player = function (player: Player, serv: Server) {
 declare global {
   interface Server {
     /** Broadcasts `message` to all the players with the optional `color`. */
-    'broadcast': (message: any, opt?: { whitelist?: any, blacklist?: any[], system?: boolean }) => void
+    "broadcast": (message: any, opt?: { whitelist?: any; blacklist?: any[]; system?: boolean }) => void
     /** @internal */
-    'color': {
-      black: string
-      dark_blue: string
-      dark_green: string
-      dark_cyan: string
-      dark_red: string
-      purple: string
-      dark_purple: string
-      gold: string
-      gray: string
-      grey: string
-      dark_gray: string
-      dark_grey: string
-      blue: string
-      green: string
-      aqua: string
-      cyan: string
-      red: string
-      pink: string
-      light_purple: string
-      yellow: string
-      white: string
-      random: string
-      obfuscated: string
-      bold: string
-      strikethrough: string
-      underlined: string
-      underline: string
-      italic: string
-      italics: string
+    "color": {
+      black: string;
+      dark_blue: string;
+      dark_green: string;
+      dark_cyan: string;
+      dark_red: string;
+      purple: string;
+      dark_purple: string;
+      gold: string;
+      gray: string;
+      grey: string;
+      dark_gray: string;
+      dark_grey: string;
+      blue: string;
+      green: string;
+      aqua: string;
+      cyan: string;
+      red: string;
+      pink: string;
+      light_purple: string;
+      yellow: string;
+      white: string;
+      random: string;
+      obfuscated: string;
+      bold: string;
+      strikethrough: string;
+      underlined: string;
+      underline: string;
+      italic: string;
+      italics: string;
       reset: string
     }
     /** @internal */
-    'parseClassic': (message: string) => any
+    "parseClassic": (message: string) => any
   }
   interface Player {
     // todo better type
     /** sends `message` to the player */
-    'chat': (message: any) => void
+    "chat": (message: any) => void
     /** @internal */
-    'emptyChat': (count?: number) => void
+    "emptyChat": (count?: number) => void
     /** @internal */
-    'system': (message: any) => void
+    "system": (message: any) => void
   }
 }

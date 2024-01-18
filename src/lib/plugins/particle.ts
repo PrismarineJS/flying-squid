@@ -33,7 +33,7 @@ export const server = function (serv: Server) {
     op: true,
     parse (str) {
       const results = str.match(/(\d+)(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?(?: (\d+))?/)
-      if (results == null) return false
+      if (!results) return false
       return {
         particle: parseInt(results[1]),
         amount: results[2] ? parseInt(results[2]) : 1,
@@ -62,6 +62,6 @@ declare global {
      * - size: vec3 of the size. (0,0,0) will be at an exact position, (10,10,10) will be very spread out (particles less dense)
      * - count: Number of particles. 100,000,000+ will crash the client. Try not to go over 100,000 (sincerely, minecraft clients)
      */
-    'emitParticle': (particle: any, world: any, position: any, { whitelist, blacklist, radius, longDistance, size, count }?: { whitelist?: any, blacklist?: any[] | undefined, radius?: number | undefined, longDistance?: boolean | undefined, size?: any, count?: number | undefined }) => void
+    'emitParticle': (particle: any, world: any, position: any, { whitelist, blacklist, radius, longDistance, size, count }?: { whitelist?: Player[], blacklist?: Player[], radius?: number, longDistance?: boolean, size?: any, count?: number }) => void
   }
 }

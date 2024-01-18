@@ -17,7 +17,6 @@ export const server = (serv: Server, { version }: Options) => {
 
   serv.on('asap', () => { // On server ready
     if (registry.supportFeature('theFlattening')) { // >1.12 support
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       for (const mob of Object.values(mobs) as Array<{ id: string, name: string }>) {
         const spawnEgg = registry.itemsByName[mob.name + '_spawn_egg']
         if (spawnEgg) {

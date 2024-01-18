@@ -40,7 +40,7 @@ export const server = function (serv: Server, { version }: Options) {
       let str = 'pong'
       if (!isNaN(num)) str += ' [' + num + ']'
 
-      if (ctx.player != null) ctx.player.chat(str + '!')
+      if (ctx.player) ctx.player.chat(str + '!')
       else serv.info(str + '!')
     }
   })
@@ -118,7 +118,7 @@ export const server = function (serv: Server, { version }: Options) {
         const cmd = hash[found[0]]
         const usage = (cmd.params && cmd.params.usage) || cmd.base
         const info = (cmd.params && cmd.params.info) || 'No info'
-        if (ctx.player != null) ctx.player.chat(usage + ': ' + info)
+        if (ctx.player) ctx.player.chat(usage + ': ' + info)
         else serv.info(usage + ': ' + info)
       } else { // Multiple commands found, give list with pages
         const totalPages = Math.ceil((found.length - 1) / PAGE_LENGTH)
@@ -126,10 +126,10 @@ export const server = function (serv: Server, { version }: Options) {
         found = found.sort()
         if (found.includes('search')) {
           const baseCmd = hash[search]
-          if (ctx.player != null) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
+          if (ctx.player) ctx.player.chat(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
           else serv.info(baseCmd.base + ' -' + ((baseCmd.params && baseCmd.params.info && ' ' + baseCmd.params.info) || '=-=-=-=-=-=-=-=-'))
         } else {
-          if (ctx.player != null) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
+          if (ctx.player) ctx.player.chat('&2--=[ &fHelp&2, page &f' + (page + 1) + ' &2of &f' + totalPages + ' &2]=--')
           else serv.info(colors.green('--=[ ') + colors.white('Help') + colors.green(', page ') + colors.white(String(page + 1)) + colors.green(' of ') + colors.white(String(totalPages)) + colors.green(' ]=--'))
         }
         for (let i = PAGE_LENGTH * page; i < Math.min(PAGE_LENGTH * (page + 1), found.length); i++) {
@@ -137,7 +137,7 @@ export const server = function (serv: Server, { version }: Options) {
           const cmd = hash[found[i]]
           const usage = (cmd.params && cmd.params.usage) || cmd.base
           const info = (cmd.params && cmd.params.info) || 'No info'
-          if (ctx.player != null) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
+          if (ctx.player) ctx.player.chat(usage + ': ' + info + ' ' + (cmd.params.onlyPlayer ? ('| &aPlayer only') : (cmd.params.onlyConsole ? ('| &cConsole only') : '')))
           else serv.info(colors.yellow(usage) + ': ' + info + ' ' + (cmd.params.onlyPlayer ? (colors.bgRed(colors.black('Player only'))) : (cmd.params.onlyConsole ? colors.bgGreen(colors.black('Console only')) : '')))
         }
       }
@@ -292,13 +292,13 @@ export const server = function (serv: Server, { version }: Options) {
   }
 
   serv.selectorString = (str, pos, world, allowUser = true, ctxEntityId?) => {
-    if (pos != null) pos = pos.clone()
+    if (pos) pos = pos.clone()
     const player = serv.getPlayer(str)
     if (!player && str[0] !== '@') return []
     else if (player) return allowUser ? [player] : []
     const match = str.match(/^@([arspe])(?:\[([^\]]+)\])?$/)
     if (match === null) throw new UserError('Invalid selector format')
-    if (match[1] === 'r' && (pos == null)) throw new UserError('Can\'t find nearest players')
+    if (match[1] === 'r' && !pos) throw new UserError('Can\'t find nearest players')
     const typeConversion = {
       a: 'all',
       r: 'random',
@@ -335,7 +335,7 @@ export const server = function (serv: Server, { version }: Options) {
     const convertInt = ['r', 'rm', 'm', 'c', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym']
 
     const data = {
-      pos: (pos != null) || '',
+      pos: pos || '',
       world,
       scores: [],
       minScores: []
@@ -357,7 +357,7 @@ export const server = function (serv: Server, { version }: Options) {
 
   serv.posFromString = (str, pos) => {
     if (!str.includes('~')) return parseFloat(str)
-    if (str.match(/~-?\d+/) != null) return parseFloat(str.slice(1)) + pos
+    if (str.match(/~-?\d+/)) return parseFloat(str.slice(1)) + pos
     else if (str === '~') return pos
     else throw new UserError('Invalid position')
   }
@@ -365,15 +365,15 @@ export const server = function (serv: Server, { version }: Options) {
 declare global {
   interface Player {
     /** handle `command` */
-    'handleCommand': (str: string) => Promise<void>
+    "handleCommand": (str: string) => Promise<void>
   }
   interface Entity {
     /** @internal */
-    'selectorString': (str: string) => Entity[]
+    "selectorString": (str: string) => Entity[]
   }
   interface Server {
     /** @internal */
-    'handleCommand': (str: string) => Promise<void>
+    "handleCommand": (str: string) => Promise<void>
     /** @internal */
     'selector': (type: any, opt: any, selfEntityId: any) => Entity[]
     /** Returns an array of entities that satisfies the given command selector string `str`, execution position `pos`, execution world `world`, and the ID of the entity that initiated the execution `ctxEntityId`.
@@ -384,6 +384,6 @@ declare global {
      */
     'selectorString': (str: string, pos?: Vec3, world?: any, allowUser?: boolean | undefined, ctxEntityId?: any) => Entity[]
     /** @internal */
-    'posFromString': (str: string, pos: number) => any
+    "posFromString": (str: string, pos: number) => any
   }
 }

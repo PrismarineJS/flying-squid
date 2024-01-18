@@ -32,10 +32,10 @@ declare global {
     foodSaturation: number
 
     /** Updates the player's health and sends the relevant packet. */
-    'updateHealth': (health: number) => void
+    "updateHealth": (health: number) => void
     /** Updates the player's food and sends the relevant packet. */
-    'updateFood': (food: number) => void
+    "updateFood": (food: number) => void
     /** Updates the player's food saturation and sends the relevant packet. */
-    'updateFoodSaturation': (foodSaturation: number) => void
+    "updateFoodSaturation": (foodSaturation: number) => void
   }
 }

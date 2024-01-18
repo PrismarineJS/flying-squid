@@ -7,12 +7,10 @@ export const player = function (player: Player, serv: Server, options: Options) 
     player._client.write('tab_complete', {
       matches: !registry.supportFeature('tabCompleteHasAToolTip')
         ? matches
-        : matches.map((match) => {
-          return {
-            match,
-            tooltip: ''
-          }
-        })
+        : matches.map((match) => ({
+          match,
+          tooltip: ''
+        }))
     })
   }
 

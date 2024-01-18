@@ -22,7 +22,7 @@ export default (obj) => {
       resp = func(data)
       if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
       if (typeof resp === 'undefined') resp = true
-    } else if ((cancelFunc != null) && defaultCancel) {
+    } else if (cancelFunc && defaultCancel) {
       resp = cancelFunc(data)
       if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
       if (typeof resp === 'undefined') resp = false

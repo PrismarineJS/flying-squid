@@ -3,7 +3,7 @@ import { performance } from 'perf_hooks'
 let multiBlockChangeHasTrustEdges
 class ChunkUpdates {
   chunks: Map<string, { chunkX, chunkZ, chunkY, updates }>
-  constructor () {
+  constructor() {
     this.chunks = new Map()
   }
 
@@ -191,11 +191,11 @@ export const server = (serv: Server, { version }: Options) => {
 declare global {
   interface Server {
     /** @internal */
-    'MAX_UPDATES_PER_TICK': number
+    "MAX_UPDATES_PER_TICK": number
     /** Trigger a block update for the block in `world` at `pos`. `fromTick` is the current server tick `serv.tickCount`, `tick` is the future server tick when the update should be executed. When `forceNotify` is true, the block update will always trigger an update on the 6 direct neighbors, even when no handler is registered for this block type. `data` is an optional object that will be given to the handler. */
-    'updateBlock': (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
+    "updateBlock": (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
     /** Similar to `serv.updateBlock` but will trigger an update on the 6 direct neighbors of `pos` but not on the block itself. */
-    'notifyNeighborsOfStateChange': (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
+    "notifyNeighborsOfStateChange": (world: any, pos: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
     /** Similar to `serv.updateBlock` but will trigger an update on 5 of the direct neighbors of `pos.plus(dir)`, but not on the block at `pos` or `pos.plus(dir)`. */
     'notifyNeighborsOfStateChangeDirectional': (world: any, pos: any, dir: any, fromTick: any, tick: any, forceNotify?: boolean, data?: null) => void
     /** Register a handler that will be called when a block of the type `name` is updated. It should verify that the block state is still correct according to the game's rules. It is triggered when a neighboring block has been modified.

@@ -10,8 +10,8 @@ const isInNode = typeof process !== 'undefined' && !process.browser && process.p
 
 const _servers: Server[] = []
 
-let readline: typeof import('readline')
-let rl: import('readline').Interface
+let readline: typeof import("readline")
+let rl: import("readline").Interface
 if (isInNode) {
   import(/* webpackIgnore: true */ 'exit-hook').then((hook) => {
     hook.default(() => {
@@ -51,7 +51,7 @@ export const server = function (serv: Server, settings: Options) {
     if (!settings.noConsoleOutput) console.log(message)
     if (!settings.logging) return
     fs.appendFile(logFile, message + '\n', (err) => {
-      if (err != null) console.log(err)
+      if (err) console.log(err)
     })
   }
 
@@ -92,14 +92,14 @@ export const server = function (serv: Server, settings: Options) {
     fs.mkdir('logs', {
       recursive: true
     }, (err) => {
-      if (err != null) {
+      if (err) {
         console.log(err)
         return
       }
 
       fs.writeFile(logFile, '[INFO]: Started logging...\n',
         (err) => {
-          if (err != null) console.log(err)
+          if (err) console.log(err)
         })
     })
   }
@@ -122,14 +122,14 @@ declare global {
     /** You can override this function so you can process the message before sending it to the console. */
     formatMessage (message: any): any
     /** Logs a `message` */
-    'log': (message: any) => void
+    "log": (message: any) => void
     /** Logs a `message` as info */
-    'info': (message: any) => void
+    "info": (message: any) => void
     /** Logs a `message` as error */
-    'err': (message: any) => void
+    "err": (message: any) => void
     /** Logs a `message` as warning */
-    'warn': (message: any) => void
+    "warn": (message: any) => void
     /** Creates the log file */
-    'createLog': () => void
+    "createLog": () => void
   }
 }

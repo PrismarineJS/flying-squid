@@ -31,15 +31,15 @@ export const server = function (serv: Server, { version }: Options) {
       if (paramsSplit[0] === '') {
         return false
       }
-      if (paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/) == null) {
+      if (!paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)) {
         throw new UserError(`The gamemode you have entered (${paramsSplit[0]}) is not valid, it must be survival, creative, adventure, spectator, or a number from 0-3`)
       }
       if (!paramsSplit[1]) {
-        if (ctx.player != null) return paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)
+        if (ctx.player) return paramsSplit[0].match(/^(survival|creative|adventure|spectator|[0-3])$/)
         else throw new UserError('Console cannot set gamemode itself')
       }
 
-      return (str.match(/^(survival|creative|adventure|spectator|[0-3])( @[arspe](?:\[([^\]]+)\])?| \w+)?$/) != null) || false
+      return str.match(/^(survival|creative|adventure|spectator|[0-3])( @[arspe](?:\[([^\]]+)\])?| \w+)?$/) || false
       // return params || false
     },
     action (str, ctx) {
@@ -54,7 +54,7 @@ export const server = function (serv: Server, { version }: Options) {
       const gamemode = parseInt(str[1], 10) || gamemodes[str[1]]
       const mode = !isNaN(parseInt(str[1], 10)) ? gamemodesReverse[parseInt(str[1], 10)] : str[1]
       const plyrs = serv.getPlayers(target ?? '@s', ctx.player)
-      if (ctx.player != null) {
+      if (ctx.player) {
         if (plyrs.length > 0) {
           plyrs.forEach(plyr => plyr.setGameMode(gamemode))
           if (plyrs.length === 1) {
@@ -90,7 +90,7 @@ export const server = function (serv: Server, { version }: Options) {
     usage: '/difficulty <difficulty>',
     op: true,
     parse (str) {
-      if (str.match(/^([0-3])$/) == null) { return false }
+      if (!str.match(/^([0-3])$/)) { return false }
       return parseInt(str)
     },
     action (diff) {
@@ -110,7 +110,7 @@ export const server = function (serv: Server, { version }: Options) {
       if (args[0] === '') return false
       const players = serv.getPlayers(args[0], ctx.player)
       if (players.length < 1) throw new UserError('Player not found')
-      if (args[2] && (args[2].match(/\d/) == null)) throw new UserError('Count must be numerical')
+      if (args[2] && !args[2].match(/\d/)) throw new UserError('Count must be numerical')
       return {
         players,
         item: skipMcPrefix(args[1]),
@@ -176,16 +176,16 @@ export const server = function (serv: Server, { version }: Options) {
 declare global {
   interface Server {
     /** The current maximum ID (i.e. the last entity that was spawned has that id) */
-    'entityMaxId': number
+    "entityMaxId": number
     /** An array of players currently logged in */
-    'players': Player[]
+    "players": Player[]
     /** Object for converting UUIDs to players */
-    'uuidToPlayer': {}
+    "uuidToPlayer": {}
     /** All of the entities */
-    'entities': Record<string, Entity>
+    "entities": Record<string, Entity>
     /** Returns player object with that username or, if no such player is on the server, null. */
-    'getPlayer': (username: any) => any
+    "getPlayer": (username: any) => any
     /** @internal */
-    'getPlayers': (selector: any, ctxPlayer: any) => any
+    "getPlayers": (selector: any, ctxPlayer: any) => any
   }
 }

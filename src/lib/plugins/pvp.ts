@@ -7,7 +7,7 @@ export const player = function (player: Player, serv: Server) {
   function attackEntity (entityId) {
     const attackedEntity = serv.entities[entityId]
     const attackedPlayer = attackedEntity.type === 'player' ? attackedEntity as Player : undefined
-    if (!attackedEntity || ((attackedPlayer != null) && attackedPlayer.gameMode !== 0)) return
+    if (!attackedEntity || (attackedPlayer && attackedPlayer.gameMode !== 0)) return
 
     player.behavior('attack', {
       attackedEntity,
@@ -80,7 +80,7 @@ export const server = function (serv: Server) {
           })
         }
       } else {
-        if (ctx.player != null) ctx.player.takeDamage({ damage: 20 })
+        if (ctx.player) ctx.player.takeDamage({ damage: 20 })
         else serv.err('Can\'t kill console')
       }
     }
@@ -100,6 +100,6 @@ declare global {
      */
     'takeDamage': ({ sound, damage, velocity, maxVelocity, animation }: { sound?: string | undefined, damage?: number | undefined, velocity?: any, maxVelocity?: any, animation?: boolean | undefined }) => void
     /** @internal */
-    'kill': (options?: {}) => void
+    "kill": (options?: {}) => void
   }
 }

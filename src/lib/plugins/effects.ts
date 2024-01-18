@@ -61,7 +61,7 @@ export const server = function (serv: Server, options: Options) {
     tab: ['player', 'effect', 'number', 'number', 'boolean'],
     onlyPlayer: true,
     parse (str) {
-      return (str.match(/(.+?) ([\d\w_]+)(?: (\d+|))?(?: (\d+))?(?: (true|false))?|.*? clear/) != null) || false
+      return str.match(/(.+?) ([\d\w_]+)(?: (\d+|))?(?: (\d+))?(?: (true|false))?|.*? clear/) || false
     },
     action (params, ctx) {
       const targets = ctx.player ? ctx.player.selectorString(params[1]) : serv.selectorString(params[1])
@@ -108,14 +108,14 @@ export const server = function (serv: Server, options: Options) {
 declare global {
   interface Entity {
     /** @internal */
-    'effects': {}
+    "effects": {}
     /** @internal */
-    'sendEffect': (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => void
+    "sendEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
     /** @internal */
-    'sendRemoveEffect': (effectId: any, opt?: { whitelist?: any, blacklist?: any[] | undefined }) => void
+    "sendRemoveEffect": (effectId: any, opt?: { whitelist?: any; blacklist?: any[] | undefined }) => void
     /** @internal */
-    'addEffect': (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => boolean
+    "addEffect": (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => boolean
     /** @internal */
-    removeEffect: (effectId: any, opt?: { amplifier?: number, duration?: number, particles?: boolean, whitelist?: any, blacklist?: any[] }) => void
+    removeEffect: (effectId: any, opt?: { amplifier?: number; duration?: number; particles?: boolean; whitelist?: any; blacklist?: any[] }) => void
   }
 }

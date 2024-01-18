@@ -249,12 +249,12 @@ declare global {
     /** @internal */
     setEquipment: (slot: number, item: any) => void
     /** @internal */
-    'heldItemSlot': number
+    "heldItemSlot": number
     /** @internal */
-    'heldItem': any
+    "heldItem": any
     /** @internal */
-    'inventory': any
+    "inventory": any
     /** @internal */
-    'collect': (collectEntity: any) => void
+    "collect": (collectEntity: any) => void
   }
 }

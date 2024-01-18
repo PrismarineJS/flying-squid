@@ -84,10 +84,10 @@ export const player = function (player: Player) {
 export const entity = function (entity: Entity, serv: Server, { version }: Options) {
   const registry = require('prismarine-registry')(version)
 
-  entity.sendPosition = async (position, onGround, teleport = false) => {
+  entity.sendPosition = (position, onGround, teleport = false) => {
     if (typeof position === 'undefined') throw new Error('undef')
-    if (entity.position.equals(position) && entity.onGround === onGround) return await Promise.resolve()
-    return await entity.behavior('move', {
+    if (entity.position.equals(position) && entity.onGround === onGround) return Promise.resolve()
+    return entity.behavior('move', {
       position,
       onGround,
       teleport
@@ -157,9 +157,9 @@ export const entity = function (entity: Entity, serv: Server, { version }: Optio
 declare global {
   interface Player {
     /** @internal */
-    'teleport': (position: any) => Promise<void>
+    "teleport": (position: any) => Promise<void>
     /** @internal */
-    'sendAbilities': () => void
+    "sendAbilities": () => void
   }
   interface Entity {
     /** ID of entity on server */
@@ -181,10 +181,10 @@ declare global {
     /** @internal */
     onGround: boolean
     /** @internal */
-    'sendSelfPosition': () => void
+    "sendSelfPosition": () => void
     /** @internal */
-    'sendPosition': (position: Vec3, onGround: boolean, teleport?: boolean) => any
+    "sendPosition": (position: Vec3, onGround: boolean, teleport?: boolean) => any
     /** @internal */
-    'teleport': (pos: Vec3) => void
+    "teleport": (pos: Vec3) => void
   }
 }

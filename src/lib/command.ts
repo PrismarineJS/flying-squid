@@ -8,11 +8,11 @@ type Ctx<P extends boolean> = P extends true ? {
 
 type NonFalsey<T> = T extends false ? never : NonNullable<T>
 
-interface AddParams<T, P extends boolean = false> {
-  base: string
-  aliases?: string[]
-  info: string
-  usage: string
+type AddParams<T, P extends boolean = false> = {
+  base: string,
+  aliases?: string[],
+  info: string,
+  usage: string,
   onlyPlayer?: P
   op?: boolean
   parse?: (string: string, ctx: Ctx<P>) => T
@@ -47,18 +47,18 @@ class Command {
   async use (command, ctx: Ctx<false> = {}, op = true) {
     const resultsFound = this.find(command)
     let parsedResponse
-    if (resultsFound != null) {
+    if (resultsFound) {
       const wantedCommand = resultsFound[0]
       const passedArgs = resultsFound[1]
-      if (wantedCommand.params.onlyConsole && (ctx.player != null)) return 'This command is console only'
-      if (wantedCommand.params.onlyPlayer && (ctx.player == null)) throw new UserError('This command is player only')
+      if (wantedCommand.params.onlyConsole && ctx.player) return 'This command is console only'
+      if (wantedCommand.params.onlyPlayer && !ctx.player) throw new UserError('This command is player only')
       if (wantedCommand.params.op && !op) return 'You do not have permission to use this command'
       const customArgsParser = wantedCommand.params.parse
       if (customArgsParser) {
         if (typeof customArgsParser === 'function') {
           parsedResponse = customArgsParser(passedArgs, ctx)
           if (parsedResponse === false) {
-            if (ctx.player != null) return wantedCommand.params.usage ? 'Usage: ' + wantedCommand.params.usage : 'Bad syntax'
+            if (ctx.player) return wantedCommand.params.usage ? 'Usage: ' + wantedCommand.params.usage : 'Bad syntax'
             else throw new UserError(wantedCommand.params.usage ? 'Usage: ' + wantedCommand.params.usage : 'Bad syntax')
           }
         } else {
@@ -70,7 +70,7 @@ class Command {
       else output = await wantedCommand.params.action(resultsFound[1], ctx) // just give back the passed arg
       if (output) return '' + output
     } else {
-      if (ctx.player != null) return 'Command not found'
+      if (ctx.player) return 'Command not found'
       else throw new UserError('Command not found')
     }
   }

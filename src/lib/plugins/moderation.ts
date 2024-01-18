@@ -43,11 +43,11 @@ export const server = function (serv: Server, settings: Options) {
   }
 
   serv.banUsername = async (username, reason) => {
-    return await serv.ban(username, reason)
+    return serv.ban(username, reason)
   }
 
   serv.banUUID = async (username, reason) => {
-    return await serv.getUUIDFromUsername(username).then(async uuid => await serv.ban(uuid, reason))
+    return serv.getUUIDFromUsername(username).then(uuid => serv.ban(uuid, reason))
   }
 
   serv.pardonUsername = async (username) => {
@@ -55,7 +55,7 @@ export const server = function (serv: Server, settings: Options) {
   }
 
   serv.pardonUUID = async (username) => {
-    return await serv.getUUIDFromUsername(username)
+    return serv.getUUIDFromUsername(username)
       .then(pardon)
   }
 
@@ -80,7 +80,7 @@ export const server = function (serv: Server, settings: Options) {
     usage: '/op <player>',
     op: true,
     parse (params) {
-      if (params.match(/([a-zA-Z0-9_]+)/) == null) return false
+      if (!params.match(/([a-zA-Z0-9_]+)/)) return false
       return params
     },
     action (params) {
@@ -114,7 +114,7 @@ export const server = function (serv: Server, settings: Options) {
     usage: '/deop <player>',
     op: true,
     parse (params) {
-      if (params.match(/([a-zA-Z0-9_]+)/) == null) return false
+      if (!params.match(/([a-zA-Z0-9_]+)/)) return false
       return params.split(' ')
     },
     action (params) {
@@ -146,7 +146,7 @@ export const server = function (serv: Server, settings: Options) {
     usage: '/kick <player> [reason]',
     op: true,
     parse (str) {
-      if (str.match(/([a-zA-Z0-9_]+)(?: (.*))?/) == null) { return false }
+      if (!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/)) { return false }
       const parts = str.split(' ')
       return {
         username: parts.shift(),
@@ -156,11 +156,11 @@ export const server = function (serv: Server, settings: Options) {
     action ({ username, reason }, ctx) {
       const kickPlayer = serv.getPlayer(username)
       if (!kickPlayer) {
-        if (ctx.player != null) ctx.player.chat(username + ' is not on this server!')
+        if (ctx.player) ctx.player.chat(username + ' is not on this server!')
         else throw new UserError(username + ' is not on this server!')
       } else {
         kickPlayer.kick(reason)
-        kickPlayer.emit('kicked', (ctx.player != null) ? ctx.player : { username: '[@]' }, reason)
+        kickPlayer.emit('kicked', ctx.player ? ctx.player : { username: '[@]' }, reason)
       }
     }
   })
@@ -171,7 +171,7 @@ export const server = function (serv: Server, settings: Options) {
     usage: '/ban <player> [reason]',
     op: true,
     parse (str) {
-      if (str.match(/([a-zA-Z0-9_]+)(?: (.*))?/) == null) { return false }
+      if (!str.match(/([a-zA-Z0-9_]+)(?: (.*))?/)) { return false }
       const parts = str.split(' ')
       return {
         username: parts.shift()!,
@@ -186,17 +186,17 @@ export const server = function (serv: Server, settings: Options) {
           serv.banUUID(username, reason)
             .then(result => {
               if (result) {
-                serv.emit('banned', (ctx.player != null) ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player != null) ctx.player.chat(username + ' was banned')
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
                 else serv.info(username + ' was banned')
               } else {
-                if (ctx.player != null) ctx.player.chat(username + ' is banned!')
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
                 else serv.err(username + ' is banned!')
               }
             })
             .catch(err => {
               if (err) { // This tricks eslint
-                if (ctx.player != null) ctx.player.chat(username + ' is not a valid player!')
+                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
                 else serv.err(username + ' is not a valid player!')
               }
             })
@@ -204,17 +204,17 @@ export const server = function (serv: Server, settings: Options) {
           serv.banUsername(username, reason)
             .then(result => {
               if (result) {
-                serv.emit('banned', (ctx.player != null) ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player != null) ctx.player.chat(username + ' was banned')
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
                 else serv.info(username + ' was banned')
               } else {
-                if (ctx.player != null) ctx.player.chat(username + ' is banned!')
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
                 else serv.err(username + ' is banned!')
               }
             })
             .catch(err => {
               if (err) { // This tricks eslint
-                if (ctx.player != null) ctx.player.chat(username + ' is not a valid player!')
+                if (ctx.player) ctx.player.chat(username + ' is not a valid player!')
                 else serv.err(username + ' is not a valid player!')
               }
             })
@@ -224,11 +224,11 @@ export const server = function (serv: Server, settings: Options) {
           banPlayer.banUUID(reason)
             .then(result => {
               if (result) {
-                serv.emit('banned', (ctx.player != null) ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player != null) ctx.player.chat(username + ' was banned')
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
                 else serv.info(username + ' was banned')
               } else {
-                if (ctx.player != null) ctx.player.chat(username + ' is banned!')
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
                 else serv.err(username + ' is banned!')
               }
             })
@@ -236,11 +236,11 @@ export const server = function (serv: Server, settings: Options) {
           banPlayer.banUsername(reason)
             .then(result => {
               if (result) {
-                serv.emit('banned', (ctx.player != null) ? ctx.player : { username: '[@]' }, username, reason)
-                if (ctx.player != null) ctx.player.chat(username + ' was banned')
+                serv.emit('banned', ctx.player ? ctx.player : { username: '[@]' }, username, reason)
+                if (ctx.player) ctx.player.chat(username + ' was banned')
                 else serv.info(username + ' was banned')
               } else {
-                if (ctx.player != null) ctx.player.chat(username + ' is banned!')
+                if (ctx.player) ctx.player.chat(username + ' is banned!')
                 else serv.err(username + ' is banned!')
               }
             })
@@ -268,10 +268,10 @@ export const server = function (serv: Server, settings: Options) {
       serv.banIP(IP, reason)
         .then(result => {
           if (result) {
-            if (ctx.player != null) ctx.player.chat(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
+            if (ctx.player) ctx.player.chat(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
             else serv.info(`IP ${IP} was banned ${reason ? '(' + reason + ')' : ''}`)
           } else {
-            if (ctx.player != null) ctx.player.chat(`IP ${IP} is banned!`)
+            if (ctx.player) ctx.player.chat(`IP ${IP} is banned!`)
             else serv.err(`IP ${IP} is banned!`)
           }
         })
@@ -287,7 +287,7 @@ export const server = function (serv: Server, settings: Options) {
       const pllist = Object.keys(serv.bannedPlayers)
       const iplist = Object.keys(serv.bannedIPs)
       if (v !== 'ips') {
-        if (ctx.player != null) {
+        if (ctx.player) {
           ctx.player.chat(`There are ${pllist.length} total banned players${pllist.length > 0 ? ':' : ''}`)
           pllist.forEach(e => {
             ctx.player!.chat(e)
@@ -299,7 +299,7 @@ export const server = function (serv: Server, settings: Options) {
           })
         }
       } else {
-        if (ctx.player != null) {
+        if (ctx.player) {
           ctx.player.chat(`There are ${iplist.length} total banned IP addresses${iplist.length > 0 ? ':' : ''}`)
           iplist.forEach(e => {
             ctx.player!.chat(e)
@@ -323,10 +323,10 @@ export const server = function (serv: Server, settings: Options) {
       serv.pardonIP(IP)
         .then(result => {
           if (result) {
-            if (ctx.player != null) ctx.player.chat(`IP ${IP} was pardoned`)
+            if (ctx.player) ctx.player.chat(`IP ${IP} was pardoned`)
             else serv.info(`IP ${IP} was pardoned`)
           } else {
-            if (ctx.player != null) ctx.player.chat(`IP ${IP} is not banned`)
+            if (ctx.player) ctx.player.chat(`IP ${IP} is not banned`)
             else serv.err(`IP ${IP} is not banned`)
           }
         })
@@ -339,7 +339,7 @@ export const server = function (serv: Server, settings: Options) {
     usage: '/pardon <player>',
     op: true,
     parse (str) {
-      if (str.match(/([a-zA-Z0-9_]+)/) == null) { return false }
+      if (!str.match(/([a-zA-Z0-9_]+)/)) { return false }
       return str
     },
     action (nick, ctx) {
@@ -347,10 +347,10 @@ export const server = function (serv: Server, settings: Options) {
         serv.pardonUUID(nick)
           .then((result) => {
             if (result) {
-              if (ctx.player != null) ctx.player.chat(nick + ' is unbanned')
+              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
               else serv.info(nick + ' is unbanned')
             } else {
-              if (ctx.player != null) ctx.player.chat(nick + ' is not banned')
+              if (ctx.player) ctx.player.chat(nick + ' is not banned')
               else serv.err(nick + ' is not banned')
             }
           })
@@ -358,10 +358,10 @@ export const server = function (serv: Server, settings: Options) {
         serv.pardonUsername(nick)
           .then((result) => {
             if (result) {
-              if (ctx.player != null) ctx.player.chat(nick + ' is unbanned')
+              if (ctx.player) ctx.player.chat(nick + ' is unbanned')
               else serv.info(nick + ' is unbanned')
             } else {
-              if (ctx.player != null) ctx.player.chat(nick + ' is not banned')
+              if (ctx.player) ctx.player.chat(nick + ' is not banned')
               else serv.err(nick + ' is not banned')
             }
           })
@@ -374,32 +374,32 @@ export const player = function (player: Player, serv: Server) {
   player.kick = (reason = 'You were kicked!') =>
     player._client.end(reason)
 
-  player.banUUID = async reason => {
+  player.banUUID = reason => {
     reason = reason || 'You were banned!'
     player.kick(reason)
     const uuid = player.uuid
-    return await serv.ban(uuid, reason)
+    return serv.ban(uuid, reason)
   }
-  player.banUsername = async reason => {
+  player.banUsername = reason => {
     reason = reason || 'You were banned!'
     player.kick(reason)
     const nick = player.username
-    return await serv.banUsername(nick, reason)
+    return serv.banUsername(nick, reason)
   }
-  player.banIP = async reason => {
+  player.banIP = reason => {
     reason = reason || 'You were IP banned!'
     player.kick(reason)
-    return await serv.banIP(player._client.socket?.remoteAddress!, reason)
+    return serv.banIP(player._client.socket?.remoteAddress!, reason)
   }
 
   // I think it doesn't do anything but ok well...
-  player.pardonUUID = async () => await serv.pardonUsername(player.uuid)
-  player.pardonUsername = async () => await serv.pardonUsername(player.username)
+  player.pardonUUID = () => serv.pardonUsername(player.uuid)
+  player.pardonUsername = () => serv.pardonUsername(player.username)
 }
 declare global {
   interface Server {
     /** Ban player given a uuid. If the player is online, using `player.ban()`. Bans with reason or `You are banned!`. */
-    'ban': (uuid: string, reason?: string) => Promise<boolean>
+    "ban": (uuid: string, reason?: string) => Promise<boolean>
     /** @internal */
     'banIP': (IP: string, reason?: string) => Promise<boolean>
     /** Gets UUID from username. Since it needs to fetch from mojang servers, it is not immediate.
@@ -408,13 +408,13 @@ declare global {
      */
     'getUUIDFromUsername': (username: string) => Promise<string>
     /** Bans players given a username. Mainly used if player is not online, otherwise use `player.ban()`. */
-    'banUsername': (username: string, reason: string) => Promise<boolean>
+    "banUsername": (username: string, reason: string) => Promise<boolean>
     /** @internal */
-    'banUUID': (username: string, reason: string) => Promise<boolean>
+    "banUUID": (username: string, reason: string) => Promise<boolean>
     /** Pardons a player given a username. */
-    'pardonUsername': (username: string) => Promise<boolean>
+    "pardonUsername": (username: string) => Promise<boolean>
     /** @internal */
-    'pardonUUID': (username: string) => Promise<boolean>
+    "pardonUUID": (username: string) => Promise<boolean>
     /** @internal */
     'pardonIP': (IP: string) => Promise<boolean>
     /** Object of players that are banned, key is their uuid. Use `serv.getUUIDFromUsername()` if you only have their username.
@@ -429,23 +429,23 @@ declare global {
      */
     'bannedPlayers': {}
     /** @internal */
-    'bannedIPs': Record<string, {
-      time: number
+    "bannedIPs": Record<string, {
+      time: number,
       reason: string
     }>
   }
   interface Player {
     /** kicks player with `reason` */
-    'kick': (reason?: string) => void
+    "kick": (reason?: string) => void
     /** @internal */
-    'banUUID': (reason: any) => Promise<boolean>
+    "banUUID": (reason: any) => Promise<boolean>
     /** @internal */
-    'banUsername': (reason: any) => Promise<boolean>
+    "banUsername": (reason: any) => Promise<boolean>
     /** @internal */
-    'banIP': (reason: any) => Promise<boolean>
+    "banIP": (reason: any) => Promise<boolean>
     /** @internal */
-    'pardonUUID': () => Promise<boolean>
+    "pardonUUID": () => Promise<boolean>
     /** @internal */
-    'pardonUsername': () => Promise<boolean>
+    "pardonUsername": () => Promise<boolean>
   }
 }

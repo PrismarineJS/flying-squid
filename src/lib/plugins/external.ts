@@ -77,13 +77,13 @@ export const entity = function (entity: Entity, serv: Server) {
 declare global {
   interface Server {
     /** List of all plugins. Use serv.plugins[pluginName] to get a plugin's object and data. */
-    'plugins': {}
+    "plugins": {}
     /** @internal */
-    'pluginCount': number
+    "pluginCount": number
     /** @internal */
-    'externalPluginsLoaded': boolean
+    "externalPluginsLoaded": boolean
     /** @internal */
-    'addPlugin': (name: any, plugin: any, set: any) => void
+    "addPlugin": (name: any, plugin: any, set: any) => void
   }
   interface Entity {
     /** @internal */

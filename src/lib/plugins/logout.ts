@@ -49,6 +49,6 @@ declare global {
   }
   interface Player {
     /** @internal */
-    'despawnEntities': (entities: any) => void
+    "despawnEntities": (entities: any) => void
   }
 }

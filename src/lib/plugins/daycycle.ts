@@ -29,8 +29,8 @@ export const server = function (serv: Server) {
     usage: '/night',
     tab: [],
     op: true,
-    async action () {
-      return await serv.handleCommand('time set night')
+    action () {
+      return serv.handleCommand('time set night')
     }
   })
 
@@ -42,7 +42,7 @@ export const server = function (serv: Server) {
     op: true,
     parse (str) {
       const data = str.match(/^(add|query|set)(?: ([0-9]+|day|night))?/)
-      if (data == null) return false
+      if (!data) return false
       return {
         action: data[1],
         value: data[2] === 'day' ? 1000 : (data[2] === 'night' ? 13000 : parseInt(data[2]))
@@ -50,7 +50,7 @@ export const server = function (serv: Server) {
     },
     action ({ action, value }, ctx) {
       if (action === 'query') {
-        if (ctx.player != null) ctx.player.chat('It is ' + serv.time)
+        if (ctx.player) ctx.player.chat('It is ' + serv.time)
         else serv.info('It is ' + serv.time)
       } else {
         if (isNaN(value)) {
@@ -64,7 +64,7 @@ export const server = function (serv: Server) {
             newTime = value + serv.time
           }
 
-          if (ctx.player != null) ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
+          if (ctx.player) ctx.player.chat('Time was changed from ' + serv.time + ' to ' + newTime)
           else serv.info('Time was changed from ' + serv.time + ' to ' + newTime)
           serv.setTime(newTime)
         }
@@ -78,15 +78,15 @@ export const server = function (serv: Server) {
     usage: '/day',
     tab: [],
     op: true,
-    async action () {
-      return await serv.handleCommand('time set day')
+    action () {
+      return serv.handleCommand('time set day')
     }
   })
 }
 declare global {
   interface Server {
     /** Set daylight cycle time in ticks. See `serv.time` for more info. */
-    'setTime': (time: any) => void
+    "setTime": (time: any) => void
     /** Default `true`. If false, time will not automatically pass. */
     'doDaylightCycle': boolean
     /** Current daylight cycle time in ticks. Morning is 0, noon is 6000, evening is 12000, and night is 18000.

@@ -38,6 +38,6 @@ declare global {
      */
     'setTickInterval': (ticksPerSecond: any) => void
     /** @internal */
-    'stopTickInterval': () => void
+    "stopTickInterval": () => void
   }
 }

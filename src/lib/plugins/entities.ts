@@ -60,8 +60,8 @@ declare global {
     /** Either "player", "mob", or "object" (currently) */
     type: string
     /** @internal */
-    'sendMetadata': (data: any) => void
+    "sendMetadata": (data: any) => void
     /** @internal */
-    'setAndUpdateMetadata': (data: any) => void
+    "setAndUpdateMetadata": (data: any) => void
   }
 }

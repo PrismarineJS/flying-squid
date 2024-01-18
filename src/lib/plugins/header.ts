@@ -5,13 +5,13 @@ export const player = function (player: Player, serv: Server, settings: Options)
       footer: JSON.stringify(footer)
     })
 
-  if (settings['player-list-text'] != null) {
+  if (settings['player-list-text']) {
     player.playerlistUpdateText(settings['player-list-text'].header || { text: '' }, settings['player-list-text'].footer || { text: '' })
   }
 }
 declare global {
   interface Player {
     /** @internal */
-    'playerlistUpdateText': (header: any, footer: any) => void
+    "playerlistUpdateText": (header: any, footer: any) => void
   }
 }
