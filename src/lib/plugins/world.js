@@ -192,13 +192,20 @@ module.exports.player = function (player, serv, settings) {
           type: 'compound',
           name: '',
           value: {
-            MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+            MOTION_BLOCKING: { type: 'longArray', value: new Array(37).fill([0, 0]) }
           }
         }, // FIXME: fake heightmap
         chunkData: chunk.dump(),
         blockEntities: []
       })
-      if (registry.supportFeature('lightSentSeparately')) {
+      if (registry.supportFeature('dimensionDataIsAvailable')) {
+        player._client.write('update_light', {
+          chunkX: x,
+          chunkZ: z,
+          trustEdges: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
+          ...chunk.dumpLight()
+        })
+      } else if (registry.supportFeature('lightSentSeparately')) {
         player._client.write('update_light', {
           chunkX: x,
           chunkZ: z,
