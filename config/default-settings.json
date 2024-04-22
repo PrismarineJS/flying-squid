@@ -9,7 +9,7 @@
   "worldFolder":"world",
   "generation": {
     "name": "diamond_square",
-    "options":{
+    "options": {
       "worldHeight": 80
     }
   },
@@ -20,10 +20,14 @@
   "modpe": false,
   "view-distance": 10,
   "player-list-text": {
-    "header":{"text": "Flying squid"},
-    "footer":{"text": "Test server"}
+    "header": {
+      "text": "Flying squid"
+    },
+    "footer": {
+      "text": "Test server"
+    }
   },
   "everybody-op": false,
-  "max-entities":100,
-  "version": "1.16.5"
+  "max-entities": 100,
+  "version": "1.17.1"
 }
