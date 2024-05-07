@@ -50,18 +50,45 @@ module.exports.server = function (serv, { version }) {
   }
 
   serv.on('asap', () => {
-    serv.onItemPlace('flint_and_steel', async ({ player, referencePosition, directionVector }) => {
-      const block = await player.world.getBlock(referencePosition)
-      if (block.type === obsidianType) {
-        const frames = await detectFrame(player.world, referencePosition, directionVector)
-        if (frames.length !== 0) {
-          const air = frames[0].air
-          const stateId = (frames[0].bottom[0].x - frames[0].bottom[1].x) !== 0 ? portalX : portalZ
-          air.forEach(pos => {
-            player.setBlock(pos, stateId)
-          })
-          player.world.portals.push(frames[0])
-          return { id: -1, data: 0 }
+    serv.onItemPlace('flint_and_steel', async ({ player, placedPosition }) => {
+      const blocks = []
+
+      const placedPositionMinusX = placedPosition.clone()
+      placedPositionMinusX.x--
+      blocks.push(await player.world.getBlock(placedPositionMinusX))
+
+      const placedPositionPlusX = placedPosition.clone()
+      placedPositionPlusX.x++
+      blocks.push(await player.world.getBlock(placedPositionPlusX))
+
+      const placedPositionMinusY = placedPosition.clone()
+      placedPositionMinusY.y--
+      blocks.push(await player.world.getBlock(placedPositionMinusY))
+
+      const placedPositionPlusY = placedPosition.clone()
+      placedPositionPlusY.y++
+      blocks.push(await player.world.getBlock(placedPositionPlusY))
+
+      const placedPositionMinusZ = placedPosition.clone()
+      placedPositionMinusZ.z--
+      blocks.push(await player.world.getBlock(placedPositionMinusZ))
+
+      const placedPositionPlusZ = placedPosition.clone()
+      placedPositionPlusZ.z++
+      blocks.push(await player.world.getBlock(placedPositionPlusZ))
+
+      for (const i in blocks) {
+        if (blocks[i].type === obsidianType) {
+          const frames = await detectFrame(player.world, blocks[i].position, placedPosition.minus(blocks[i].position))
+          if (frames.length !== 0) {
+            const air = frames[0].air
+            const stateId = (frames[0].bottom[0].x - frames[0].bottom[1].x) !== 0 ? portalX : portalZ
+            air.forEach(pos => {
+              player.setBlock(pos, stateId)
+            })
+            player.world.portals.push(frames[0])
+            return { id: -1, data: 0 }
+          }
         }
       }
       return { id: fireType, data: 0 }
