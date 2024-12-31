@@ -1,5 +1,5 @@
-function generation ({ version }) {
-  const Chunk = require('prismarine-chunk')(version)
+function generation ({ registry }) {
+  const Chunk = require('prismarine-chunk')(registry)
   return () => new Chunk()
 }
 

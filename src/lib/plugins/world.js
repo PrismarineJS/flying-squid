@@ -7,8 +7,9 @@ const { level } = require('prismarine-provider-anvil')
 
 module.exports.server = async function (serv, options = {}) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
-  const World = require('prismarine-world')(serv.registry)
-  const Anvil = require('prismarine-provider-anvil').Anvil(serv.registry)
+  const { registry } = serv
+  const World = require('prismarine-world')(registry)
+  const Anvil = require('prismarine-provider-anvil').Anvil(registry)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
@@ -39,8 +40,9 @@ module.exports.server = async function (serv, options = {}) {
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
-  serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
-  serv.netherworld = new World(generations.nether(generation.options))
+  const genOpts = { ...generation.options, registry }
+  serv.overworld = new World(generationModule(genOpts), regionFolder === undefined ? null : new Anvil(regionFolder))
+  serv.netherworld = new World(generations.nether(genOpts))
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {

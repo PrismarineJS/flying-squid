@@ -3,7 +3,7 @@ const { skipMcPrefix } = require('../utils')
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, { version }) {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
   serv.playSound = (sound, world, position, { whitelist, blacklist = [], radius = 32, volume = 1.0, pitch = 1.0, soundCategory = 0 } = {}) => {
     const players = (typeof whitelist !== 'undefined'
       ? (typeof whitelist instanceof Array ? whitelist : [whitelist])

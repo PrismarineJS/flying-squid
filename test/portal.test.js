@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 const squid = require('flying-squid')
+const PortalDetector = require('../src/lib/portal_detector')
 const expect = require('expect').default
 
 squid.testedVersions.forEach((testedVersion, i) => {
@@ -15,7 +16,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
     generateLine,
     generatePortal,
     makeWorldWithPortal
-  } = squid.portal_detector(version.minecraftVersion)
+  } = PortalDetector(registry)
 
   const { Vec3 } = require('vec3')
 

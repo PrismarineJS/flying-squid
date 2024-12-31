@@ -81,11 +81,9 @@ module.exports.player = function (player) {
   }
 }
 
-module.exports.entity = function (entity, serv, { version }) {
-  const registry = require('prismarine-registry')(version)
-
+module.exports.entity = function (entity, serv) {
   entity.sendPosition = (position, onGround, teleport = false) => {
-    if (typeof position === 'undefined') throw new Error('undef')
+    if (typeof position === 'undefined') throw new Error('Undefined position')
     if (entity.position.equals(position) && entity.onGround === onGround) return Promise.resolve()
     return entity.behavior('move', {
       position,
@@ -101,18 +99,18 @@ module.exports.entity = function (entity, serv, { version }) {
       const diff = position.minus(entity.knownPosition)
 
       let maxDelta
-      if (registry.supportFeature('fixedPointDelta')) {
+      if (serv.supportFeature('fixedPointDelta')) {
         maxDelta = 3
-      } else if (registry.supportFeature('fixedPointDelta128')) {
+      } else if (serv.supportFeature('fixedPointDelta128')) {
         maxDelta = 7
       }
 
       if (diff.abs().x > maxDelta || diff.abs().y > maxDelta || diff.abs().z > maxDelta) {
         let entityPosition
 
-        if (registry.supportFeature('fixedPointPosition')) {
+        if (serv.supportFeature('fixedPointPosition')) {
           entityPosition = position.scaled(32).floored()
-        } else if (registry.supportFeature('doublePosition')) {
+        } else if (serv.supportFeature('doublePosition')) {
           entityPosition = position
         }
         entity._writeOthersNearby('entity_teleport', {
@@ -127,10 +125,10 @@ module.exports.entity = function (entity, serv, { version }) {
         entity.knownPosition = position
       } else if (diff.distanceTo(new Vec3(0, 0, 0)) !== 0) {
         let delta
-        if (registry.supportFeature('fixedPointDelta')) {
+        if (serv.supportFeature('fixedPointDelta')) {
           delta = diff.scaled(32).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32))
-        } else if (registry.supportFeature('fixedPointDelta128')) {
+        } else if (serv.supportFeature('fixedPointDelta128')) {
           delta = diff.scaled(32).scaled(128).floored()
           entity.knownPosition = entity.knownPosition.plus(delta.scaled(1 / 32 / 128))
         }

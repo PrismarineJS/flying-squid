@@ -5,9 +5,9 @@ function randomInt (low, high) {
 }
 
 module.exports.server = function (serv, settings) {
+  const { registry } = serv
   serv.gameMode = settings.gameMode
   serv.difficulty = settings.difficulty
-  const registry = require('prismarine-registry')(settings.version)
 
   const waterBlocks = new Set([registry.blocksByName.water.id])
   if (registry.blocksByName.flowing_water !== undefined) {

@@ -1,5 +1,5 @@
 module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
   const mobs = registry.mobs
 
   function getEntID (entName) {
@@ -16,7 +16,7 @@ module.exports.server = (serv, { version }) => {
   }
 
   serv.on('asap', () => { // On server ready
-    if (registry.supportFeature('theFlattening')) { // >1.12 support
+    if (serv.supportFeature('theFlattening')) { // >1.12 support
       for (const mob of Object.values(mobs)) {
         const spawnEgg = registry.itemsByName[mob.name + '_spawn_egg']
         if (spawnEgg) {
@@ -27,13 +27,13 @@ module.exports.server = (serv, { version }) => {
         }
       }
     } else {
-      if (registry.supportFeature('entityMCPrefixed')) { // 1.12 support
+      if (serv.supportFeature('entityMCPrefixed')) { // 1.12 support
         serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
           serv.spawnMob(getEntID(item.nbt.value.EntityTag.value.id.value), player.world, placedPosition)
           return { id: -1, data: 0 }
         })
       } else {
-        if (registry.supportFeature('nbtOnMetadata')) { // 1.8 support
+        if (serv.supportFeature('nbtOnMetadata')) { // 1.8 support
           serv.onItemPlace('spawn_egg', ({ item, player, placedPosition }) => {
             serv.spawnMob(item.metadata, player.world, placedPosition)
             return { id: -1, data: 0 }

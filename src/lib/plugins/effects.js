@@ -73,9 +73,8 @@ module.exports.server = function (serv, options) {
         targets.forEach(e => {
           let effId = parseInt(params[2])
           if (isNaN(effId)) {
-            const registry = require('prismarine-registry')(options.version)
             const effectNamePascal = pascalCase(skipMcPrefix(params[2]))
-            const effect = registry.effectsByName[effectNamePascal]
+            const effect = serv.registry.effectsByName[effectNamePascal]
             if (!effect) throw new UserError(`Unknown effect ${params[2]}}`)
             effId = effect.id
           }

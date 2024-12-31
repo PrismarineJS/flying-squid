@@ -1,11 +1,11 @@
 module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
 
-  const oakSign = registry.supportFeature('theFlattening') ? registry.blocksByName.oak_sign : registry.blocksByName.standing_sign
+  const oakSign = serv.supportFeature('theFlattening') ? registry.blocksByName.oak_sign : registry.blocksByName.standing_sign
   const oakWallSign = registry.blocksByName.wall_sign
 
   serv.on('asap', () => {
-    if (registry.supportFeature('theFlattening')) {
+    if (serv.supportFeature('theFlattening')) {
       const placeHandler = ({ player, placedPosition, direction, properties }) => {
         if (direction === 0) return { id: -1, data: 0 }
         let block = oakSign
@@ -21,7 +21,7 @@ module.exports.server = (serv, { version }) => {
         const data = serv.setBlockDataProperties(block.defaultState - block.minStateId, block.states, properties)
         return { id: block.id, data }
       }
-      if (registry.supportFeature('multiTypeSigns')) {
+      if (serv.supportFeature('multiTypeSigns')) {
         const signTypes = ['oak_sign', 'spruce_sign', 'birch_sign', 'acacia_sign', 'jungle_sign', 'dark_oak_sign']
         signTypes.forEach(type => serv.onItemPlace(type, placeHandler))
       } else {

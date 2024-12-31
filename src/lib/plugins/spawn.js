@@ -6,10 +6,9 @@ const Vec3 = require('vec3').Vec3
 const plugins = require('./index')
 
 module.exports.server = function (serv, options) {
-  const { version } = options
+  const { registry } = serv
+  const Entity = require('prismarine-entity')(registry)
 
-  const Entity = require('prismarine-entity')(version)
-  const registry = require('prismarine-registry')(version)
   const mobsById = registry.mobs
   const objectsById = registry.objects
 
@@ -103,7 +102,7 @@ module.exports.server = function (serv, options) {
     delete serv.entities[entity.id]
   }
 
-  const entitiesByName = require('prismarine-registry')(version).entitiesByName
+  const entitiesByName = serv.registry.entitiesByName
 
   serv.commands.add({
     base: 'summon',
@@ -221,16 +220,16 @@ module.exports.server = function (serv, options) {
 }
 
 module.exports.player = function (player, serv, { version }) {
-  const Item = require('prismarine-item')(version)
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
+  const Item = require('prismarine-item')(registry)
 
   player.spawnEntity = entity => {
     player._client.write(entity.spawnPacketName, entity.getSpawnPacket())
-    if (registry.supportFeature('entityMetadataSentSeparately')) {
+    if (serv.supportFeature('entityMetadataSentSeparately')) {
       entity.sendMetadata(entity.metadata)
     }
     if (typeof entity.itemId !== 'undefined') {
-      if (registry.supportFeature('theFlattening')) {
+      if (serv.supportFeature('theFlattening')) {
         entity.sendMetadata([{
           key: 6,
           type: 6,
@@ -252,7 +251,7 @@ module.exports.player = function (player, serv, { version }) {
         }])
       }
     }
-    if (registry.supportFeature('allEntityEquipmentInOne')) {
+    if (serv.supportFeature('allEntityEquipmentInOne')) {
       const equipments = []
       entity.equipment.forEach((equipment, slot) => {
         if (equipment !== undefined) {
@@ -283,9 +282,7 @@ module.exports.player = function (player, serv, { version }) {
   }
 }
 
-module.exports.entity = function (entity, serv, { version }) {
-  const registry = require('prismarine-registry')(version)
-
+module.exports.entity = function (entity, serv) {
   entity.initEntity = (type, entityType, world, position) => {
     entity.type = type
     entity.spawnPacketName = ''
@@ -307,15 +304,15 @@ module.exports.entity = function (entity, serv, { version }) {
 
   entity.getSpawnPacket = () => {
     let scaledVelocity = entity.velocity.scaled(8000 / 20) // from fixed-position/second to unit => 1/8000 blocks per tick
-    if (registry.supportFeature('fixedPointPosition')) {
+    if (serv.supportFeature('fixedPointPosition')) {
       scaledVelocity = scaledVelocity.scaled(1 / 32)
     }
     scaledVelocity = scaledVelocity.floored()
 
     let entityPosition
-    if (registry.supportFeature('fixedPointPosition')) {
+    if (serv.supportFeature('fixedPointPosition')) {
       entityPosition = entity.position.scaled(32).floored()
-    } else if (registry.supportFeature('doublePosition')) {
+    } else if (serv.supportFeature('doublePosition')) {
       entityPosition = entity.position
     }
 
@@ -395,7 +392,7 @@ module.exports.entity = function (entity, serv, { version }) {
   }
 
   entity.attach = (attachedEntity, leash = false) => {
-    if (registry.supportFeature('attachStackEntity') || (registry.supportFeature('setPassengerStackEntity') && leash)) {
+    if (serv.supportFeature('attachStackEntity') || (serv.supportFeature('setPassengerStackEntity') && leash)) {
       const p = {
         entityId: attachedEntity.id,
         vehicleId: entity.id,
@@ -404,7 +401,7 @@ module.exports.entity = function (entity, serv, { version }) {
       if (entity.type === 'player') { entity._client.write('attach_entity', p) }
       entity._writeOthersNearby('attach_entity', p)
     }
-    if (registry.supportFeature('setPassengerStackEntity')) {
+    if (serv.supportFeature('setPassengerStackEntity')) {
       const p = {
         entityId: entity.id,
         passengers: [attachedEntity.id]

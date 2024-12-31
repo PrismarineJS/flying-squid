@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv, { version }) {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv.registry
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }
@@ -106,7 +106,7 @@ module.exports.player = function (player, serv, { version }) {
         })
       }
     }
-    if (registry.supportFeature('acknowledgePlayerDigging')) {
+    if (serv.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -123,7 +123,7 @@ module.exports.player = function (player, serv, { version }) {
       location,
       destroyStage: -1
     })
-    if (registry.supportFeature('acknowledgePlayerDigging')) {
+    if (serv.supportFeature('acknowledgePlayerDigging')) {
       player._client.write('acknowledge_player_digging', {
         location,
         block: currentlyDugBlock.stateId,
@@ -157,7 +157,7 @@ module.exports.player = function (player, serv, { version }) {
         drops.push({
           ...dropBase,
           blockDropVelocity: new Vec3(Math.random() * 4 - 2, Math.random() * 2 + 2, Math.random() * 4 - 2),
-          blockDropId: registry.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
+          blockDropId: serv.supportFeature('theFlattening') ? currentlyDugBlock.drops[0] : currentlyDugBlock.type
         })
       } else {
         const heldItem = player.inventory.slots[36 + player.heldItemSlot]
@@ -185,7 +185,7 @@ module.exports.player = function (player, serv, { version }) {
         if (data.dropBlock) {
           drops.forEach(drop => dropBlock(drop))
         }
-        if (registry.supportFeature('acknowledgePlayerDigging')) {
+        if (serv.supportFeature('acknowledgePlayerDigging')) {
           player._client.write('acknowledge_player_digging', {
             location,
             block: 0,
@@ -199,7 +199,7 @@ module.exports.player = function (player, serv, { version }) {
         location,
         type: currentlyDugBlock.type << 4
       })
-      if (registry.supportFeature('acknowledgePlayerDigging')) {
+      if (serv.supportFeature('acknowledgePlayerDigging')) {
         player._client.write('acknowledge_player_digging', {
           location,
           block: currentlyDugBlock.stateId,

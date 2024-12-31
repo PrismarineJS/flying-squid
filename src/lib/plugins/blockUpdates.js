@@ -63,9 +63,7 @@ class ChunkUpdates {
 }
 
 module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
-
-  multiBlockChangeHasTrustEdges = registry.supportFeature('multiBlockChangeHasTrustEdges')
+  multiBlockChangeHasTrustEdges = serv.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
 
@@ -132,7 +130,7 @@ module.exports.server = (serv, { version }) => {
    * It should return true if the block changed its state
    */
   serv.onBlockUpdate = (name, handler) => {
-    const block = registry.blocksByName[name]
+    const block = serv.registry.blocksByName[name]
     if (updateHandlers.has(block.id)) {
       serv.warn(`onBlockUpdate handler was registered twice for ${name}`)
     }

@@ -1,5 +1,5 @@
 const Vec3 = require('vec3').Vec3
-const UserError = require('flying-squid').UserError
+const UserError = require('../user_error')
 const colors = require('colors')
 
 module.exports.player = function (player, serv) {
