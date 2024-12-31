@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// process.env.DEBUG = 'minecraft-protocol'
+Error.stackTraceLimit = 1000
 
 const argv = require('yargs/yargs')(process.argv.slice(2))
   .usage('Usage: $0 <command> [options]')
@@ -42,7 +44,13 @@ if (argv.offline) settings['online-mode'] = false
 if (argv.log) settings.logging = true
 if (argv.op) settings['everybody-op'] = true
 
-module.exports = mcServer.createMCServer(settings)
+module.exports = mcServer.createMCServer({
+  ...settings,
+  // Create a separate world folder for each version as the world format changes between versions
+  // and we don't actually support upgrading worlds between versions
+  worldFolder: 'world/' + settings.version,
+  debug: console.log
+})
 
 process.on('unhandledRejection', err => {
   console.log(err.stack)

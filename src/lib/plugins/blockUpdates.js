@@ -182,7 +182,7 @@ module.exports.server = (serv, { version }) => {
         const time = performance.now() - start
         const fraction = (time * 100 / 50).toFixed(2)
         const sentUpdates = chunkUpdates.updateCount()
-        serv.info(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
+        serv.debug?.(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
       }
     }
   })

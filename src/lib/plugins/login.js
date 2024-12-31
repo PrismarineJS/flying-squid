@@ -1,21 +1,20 @@
-/* global BigInt */
 const Vec3 = require('vec3').Vec3
-
 const crypto = require('crypto')
 const playerDat = require('../playerDat')
 const convertInventorySlotId = require('../convertInventorySlotId')
 const plugins = require('./index')
 
 module.exports.server = function (serv, options) {
-  serv._server.on('connection', client =>
-    client.on('error', error => serv.emit('clientError', client, error)))
+  serv._server.on('connection', (client) => {
+    client.on('error', error => serv.emit('clientError', client, error))
+  })
 
   serv._server.on('login', async (client) => {
-    if (client.socket?.listeners('end').length === 0) return // TODO: should be fixed properly in nmp instead
     if (!serv.pluginsReady) {
       client.end('Server is still starting! Please wait before reconnecting.')
       return
     }
+    serv.debug?.(`[login] ${client.socket?.remoteAddress} - ${client.username} (${client.uuid}) connected`, client.version, client.protocolVersion)
     try {
       const player = serv.initEntity('player', null, serv.overworld, new Vec3(0, 0, 0))
       player._client = client
@@ -42,8 +41,7 @@ module.exports.server = function (serv, options) {
 }
 
 module.exports.player = async function (player, serv, settings) {
-  const Item = require('prismarine-item')(settings.version)
-  const registry = require('prismarine-registry')(settings.version)
+  const Item = require('prismarine-item')(serv.registry)
 
   let playerData
 
@@ -67,10 +65,10 @@ module.exports.player = async function (player, serv, settings) {
   function updateInventory () {
     playerData.inventory.forEach((item) => {
       const itemName = item.id.value.slice(10) // skip game brand prefix
-      const theItem = registry.itemsByName[itemName] || registry.blocksByName[itemName]
+      const theItem = serv.registry.itemsByName[itemName] || serv.registry.blocksByName[itemName]
 
       let newItem
-      if (registry.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
+      if (serv.registry.version['<']('1.13')) newItem = new Item(theItem.id, item.Count.value, item.Damage.value)
       else if (item.tag) newItem = new Item(theItem.id, item.Count.value, item.tag)
       else newItem = new Item(theItem.id, item.Count.value)
 
@@ -85,14 +83,15 @@ module.exports.player = async function (player, serv, settings) {
   function sendLogin () {
     // send init data so client will start rendering world
     player._client.write('login', {
+      ...serv.registry.loginPacket,
       entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,
       previousGameMode: player.prevGameMode,
       worldNames: Object.values(serv.dimensionNames),
-      dimensionCodec: registry.loginPacket?.dimensionCodec,
+      dimensionCodec: serv.registry.loginPacket?.dimensionCodec,
       worldName: serv.dimensionNames[0],
-      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? registry.loginPacket.dimension : 0,
+      dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIsAWorld')) ? serv.registry.loginPacket.dimension : 0,
       hashedSeed: serv.hashedSeed,
       difficulty: serv.difficulty,
       viewDistance: settings['view-distance'],
@@ -102,7 +101,7 @@ module.exports.player = async function (player, serv, settings) {
       isDebug: false,
       isFlat: settings.generation?.name === 'superflat'
     })
-    if (registry.supportFeature('difficultySentSeparately')) {
+    if (serv.supportFeature('difficultySentSeparately')) {
       player._client.write('difficulty', {
         difficulty: serv.difficulty,
         difficultyLocked: false
@@ -112,8 +111,8 @@ module.exports.player = async function (player, serv, settings) {
 
   function sendChunkWhenMove () {
     player.on('move', () => {
-      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.sendRestMap() }
-      if (!registry.supportFeature('updateViewPosition')) {
+      if (!player.sendingChunks && player.position.distanceTo(player.lastPositionChunkUpdated) > 16) { player.worldSendRestOfChunks() }
+      if (!serv.supportFeature('updateViewPosition')) {
         return
       }
       const chunkX = Math.floor(player.position.x / 16)
@@ -200,6 +199,18 @@ module.exports.player = async function (player, serv, settings) {
     })
   }
 
+  function sendStatus () {
+    player._client.write('held_item_slot', { slot: 0 })
+    player._client.write('entity_status', {
+      entityId: player.id,
+      entityStatus: 23
+    })
+    player._client.write('entity_status', {
+      entityId: player.id,
+      entityStatus: 24
+    })
+  }
+
   player.login = async () => {
     if (serv.uuidToPlayer[player.uuid]) {
       player.kick('You are already connected')
@@ -216,10 +227,11 @@ module.exports.player = async function (player, serv, settings) {
 
     await addPlayer()
     sendLogin()
+    sendStatus()
     player.sendSpawnPosition()
     player.sendSelfPosition()
     player.sendAbilities()
-    await player.sendMap()
+    await player.worldSendInitialChunks()
     player.setXp(player.xp)
     updateInventory()
 
@@ -233,7 +245,7 @@ module.exports.player = async function (player, serv, settings) {
     player.emit('spawned')
 
     await player.waitPlayerLogin()
-    player.sendRestMap()
+    player.worldSendRestOfChunks()
     sendChunkWhenMove()
 
     player.save()

@@ -1,36 +1,28 @@
-module.exports = (obj) => {
-  return async (eventName, data, func, cancelFunc) => {
-    let hiddenCancelled = false
-    let cancelled = false
+const { emitAsync } = require('./utils')
+module.exports = function createBehavior (entity) {
+  return async function (eventName, data, onSuccess, onCancel) {
+    let isCancelled = false
+    let runOnCancelCb = true
+    let hideCancel = false
     let cancelCount = 0
-    let defaultCancel = true
-    const cancel = (dC = true, hidden = false) => { // Hidden shouldn't be used often but it's not hard to implement so meh
-      if (hidden) hiddenCancelled = true
-      else {
-        cancelled = true
-        cancelCount++
+    function cancel (triggerCancelBehavior = true, hideFromPlugins = false) {
+      runOnCancelCb = triggerCancelBehavior
+      hideCancel = hideFromPlugins
+      isCancelled = true
+      cancelCount++
+    }
+    await emitAsync(entity, `${eventName}_cancel`, data, cancel)
+    await emitAsync(entity, `${eventName}`, data, hideCancel ? false : isCancelled, hideCancel ? 0 : cancelCount)
+    let resp = false
+    if (isCancelled) {
+      if (runOnCancelCb) {
+        resp = await onCancel?.(data)
       }
-      defaultCancel = dC
+    } else {
+      resp = await onSuccess?.(data)
+      resp ??= true
     }
-
-    let resp
-
-    func = func || (() => {})
-
-    await obj.emitThen(eventName + '_cancel', data, cancel).catch((err) => setTimeout(() => { throw err }, 0))
-    await obj.emitThen(eventName, data, cancelled, cancelCount).catch((err) => setTimeout(() => { throw err }, 0))
-
-    if (!hiddenCancelled && !cancelled) {
-      resp = func(data)
-      if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
-      if (typeof resp === 'undefined') resp = true
-    } else if (cancelFunc && defaultCancel) {
-      resp = cancelFunc(data)
-      if (resp instanceof Promise) resp = await resp.catch((err) => setTimeout(() => { throw err }, 0))
-      if (typeof resp === 'undefined') resp = false
-    }
-    await obj.emitThen(eventName + '_done', data, cancelled).catch((err) => setTimeout(() => { throw err }, 0))
-
+    await emitAsync(entity, `${eventName}_done`, data, hideCancel ? false : isCancelled)
     return resp
   }
 }

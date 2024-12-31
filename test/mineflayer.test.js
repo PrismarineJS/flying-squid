@@ -10,7 +10,7 @@ function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
 }
 
-const once = require('event-promise')
+const { once } = require('events')
 
 squid.testedVersions.forEach((testedVersion, i) => {
   const registry = require('prismarine-registry')(testedVersion)
