@@ -195,7 +195,15 @@ module.exports.player = function (player, serv, settings) {
         chunkData: chunk.dump(),
         blockEntities: []
       })
-      if (serv.supportFeature('lightSentSeparately')) {
+
+      if (serv.supportFeature('newLightingDataFormat')) { // 1.17+
+        player._client.write('update_light', {
+          chunkX: x,
+          chunkZ: z,
+          trustEdges: true, // trust edges for lighting updates
+          ...chunk.dumpLight()
+        })
+      } else if (serv.supportFeature('lightSentSeparately')) { // -1.16.5
         player._client.write('update_light', {
           chunkX: x,
           chunkZ: z,

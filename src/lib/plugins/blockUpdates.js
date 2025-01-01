@@ -33,16 +33,15 @@ class ChunkUpdates {
       for (const p of updates.values()) {
         const state = await world.getBlockStateId(p)
 
-        if (multiBlockChangeHasTrustEdges) {
+        if (multiBlockChangeHasTrustEdges) { // 1.16.5+ - block IDs are now embedded in the record
           records.push(state << 12 | (p.x << 8 | p.z << 4 | p.y))
-          continue
+        } else {
+          records.push({
+            horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
+            y: p.y,
+            blockId: state
+          })
         }
-
-        records.push({
-          horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
-          y: p.y,
-          blockId: state
-        })
       }
 
       if (multiBlockChangeHasTrustEdges) {
@@ -55,14 +54,16 @@ class ChunkUpdates {
           notTrustEdges: false, // Update light's "Trust Edges" is always true
           records
         })
-      } else packets.push({ chunkX, chunkZ, records })
+      } else {
+        packets.push({ chunkX, chunkZ, records })
+      }
     }
 
     return packets
   }
 }
 
-module.exports.server = (serv, { version }) => {
+module.exports.server = (serv) => {
   multiBlockChangeHasTrustEdges = serv.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
