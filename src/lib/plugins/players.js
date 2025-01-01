@@ -3,8 +3,8 @@ const { skipMcPrefix } = require('../utils')
 const UserError = require('flying-squid').UserError
 
 module.exports.server = function (serv, { version }) {
-  const registry = require('prismarine-registry')(version)
-  const Item = require('prismarine-item')(version)
+  const { registry } = serv
+  const Item = require('prismarine-item')(registry)
   serv.entityMaxId = 0
   serv.players = []
   serv.uuidToPlayer = {}

@@ -4,10 +4,8 @@ Some blocks have a different id than the item they are spawned from or have a me
 
 ```javascript
 module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
-
-  const oakSignType = registry.blocksByName.standing_sign.id
-  const oakWallSignType = registry.blocksByName.wall_sign.id
+  const oakSignType = serv.registry.blocksByName.standing_sign.id
+  const oakWallSignType = serv.registry.blocksByName.wall_sign.id
 
   serv.on('asap', () => {
     serv.onItemPlace('sign', ({ item, direction, angle }) => {

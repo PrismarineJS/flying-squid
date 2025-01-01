@@ -1,51 +1,48 @@
-const spiralloop = require('spiralloop')
-const Vec3 = require('vec3').Vec3
-
-const generations = require('flying-squid').generations
-const { promisify } = require('util')
 const fs = require('fs')
-const { level } = require('prismarine-provider-anvil')
-
+const { Vec3 } = require('vec3')
+const generations = require('../generations')
 const playerDat = require('../playerDat')
-
-const fsStat = promisify(fs.stat)
-const fsMkdir = promisify(fs.mkdir)
+const spiralloop = require('spiralloop')
+const { level } = require('prismarine-provider-anvil')
 
 module.exports.server = async function (serv, options = {}) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
-  const World = require('prismarine-world')(version)
-  const registry = require('prismarine-registry')(version)
-  const Anvil = require('prismarine-provider-anvil').Anvil(version)
+  const { registry } = serv
+  const World = require('prismarine-world')(registry)
+  const Anvil = require('prismarine-provider-anvil').Anvil(registry)
 
   const newSeed = generation.options.seed || Math.floor(Math.random() * Math.pow(2, 31))
   let seed
   let regionFolder
   if (worldFolder) {
     regionFolder = worldFolder + '/region'
-    try {
-      await fsStat(regionFolder)
-    } catch (err) {
-      await fsMkdir(regionFolder, { recursive: true })
+    if (!fs.existsSync(regionFolder)) {
+      fs.mkdirSync(regionFolder, { recursive: true })
     }
 
     try {
       const levelData = await level.readLevel(worldFolder + '/level.dat')
       seed = levelData.RandomSeed[0]
     } catch (err) {
+      serv.debug?.(err)
+      serv.debug?.('Creating new level.dat')
       seed = newSeed
       await level.writeLevel(worldFolder + '/level.dat', {
         RandomSeed: [seed, 0],
         Version: { Name: options.version },
-        generatorName: generation.name === 'superflat' ? 'flat' : generation.name === 'diamond_square' ? 'default' : 'customized'
+        generatorName: { superfalt: 'flat', diamond_square: 'default' }[generation.name] || 'customized'
       })
     }
-  } else { seed = newSeed }
+  } else {
+    seed = newSeed
+  }
   generation.options.seed = seed
   generation.options.version = version
   serv.emit('seed', generation.options.seed)
   const generationModule = generations[generation.name] ? generations[generation.name] : require(generation.name)
-  serv.overworld = new World(generationModule(generation.options), regionFolder === undefined ? null : new Anvil(regionFolder))
-  serv.netherworld = new World(generations.nether(generation.options))
+  const genOpts = { ...generation.options, registry }
+  serv.overworld = new World(generationModule(genOpts), regionFolder === undefined ? null : new Anvil(regionFolder))
+  serv.netherworld = new World(generations.nether(genOpts))
   // serv.endworld = new World(generations["end"]({}));
 
   serv.dimensionNames = {
@@ -70,6 +67,8 @@ module.exports.server = async function (serv, options = {}) {
     }
     return Promise.all(promises)
   }
+  // serv.pregenWorld(serv.overworld).then(() => serv.info('Pre-Generated Overworld'));
+  // serv.pregenWorld(serv.netherworld).then(() => serv.info('Pre-Generated Nether'));
 
   serv.setBlock = async (world, position, stateId) => {
     serv.players
@@ -80,9 +79,9 @@ module.exports.server = async function (serv, options = {}) {
     else serv.updateBlock(world, position, serv.tickCount, serv.tickCount, true)
   }
 
-  if (registry.supportFeature('theFlattening')) {
+  if (serv.supportFeature('theFlattening')) {
     serv.setBlockType = async (world, position, id) => {
-      serv.setBlock(world, position, registry.blocks[id].minStateId)
+      serv.setBlock(world, position, serv.registry.blocks[id].minStateId)
     }
   } else {
     serv.setBlockType = async (world, position, id) => {
@@ -110,32 +109,30 @@ module.exports.server = async function (serv, options = {}) {
       })
   }
 
-  serv.chunksUsed = {}
-  serv._loadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv._worldChunksUsed = {}
+  serv._worldLoadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
-    if (!serv.chunksUsed[id]) {
-      serv.chunksUsed[id] = 0
+    if (!serv._worldChunksUsed[id]) {
+      serv._worldChunksUsed[id] = 0
     }
-    serv.chunksUsed[id]++
+    serv._worldChunksUsed[id]++
     const loaded = player.loadedChunks[id]
     if (!loaded) player.loadedChunks[id] = 1
     return !loaded
   }
-  serv._unloadPlayerChunk = (chunkX, chunkZ, player) => {
+  serv._worldUnloadPlayerChunk = (chunkX, chunkZ, player) => {
     const id = chunkX + ',' + chunkZ
     delete player.loadedChunks[id]
-    if (serv.chunksUsed[id] > 0) {
-      serv.chunksUsed[id]--
+    if (serv._worldChunksUsed[id] > 0) {
+      serv._worldChunksUsed[id]--
     }
-    if (!serv.chunksUsed[id]) {
+    if (!serv._worldChunksUsed[id]) {
       player.world.unloadColumn(chunkX, chunkZ)
       return true
     }
     return false
   }
 
-  // serv.pregenWorld(serv.overworld).then(() => serv.info('Pre-Generated Overworld'));
-  // serv.pregenWorld(serv.netherworld).then(() => serv.info('Pre-Generated Nether'));
   serv.commands.add({
     base: 'changeworld',
     info: 'to change world',
@@ -150,16 +147,14 @@ module.exports.server = async function (serv, options = {}) {
 }
 
 module.exports.player = function (player, serv, settings) {
-  const registry = require('prismarine-registry')(settings.version)
-
   player.save = async () => {
-    await playerDat.save(player, settings.worldFolder, registry.supportFeature('attributeSnakeCase'), registry.supportFeature('theFlattening'))
+    await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
   }
 
   player._unloadChunk = (chunkX, chunkZ) => {
-    serv._unloadPlayerChunk(chunkX, chunkZ, player)
+    serv._worldUnloadPlayerChunk(chunkX, chunkZ, player)
 
-    if (registry.supportFeature('unloadChunkByEmptyChunk')) {
+    if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
         x: chunkX,
         z: chunkZ,
@@ -167,7 +162,7 @@ module.exports.player = function (player, serv, settings) {
         bitMap: 0x0000,
         chunkData: Buffer.alloc(0)
       })
-    } else if (registry.supportFeature('unloadChunkDirect')) {
+    } else if (serv.supportFeature('unloadChunkDirect')) {
       player._client.write('unload_chunk', {
         chunkX,
         chunkZ
@@ -175,7 +170,9 @@ module.exports.player = function (player, serv, settings) {
     }
   }
 
+  // let chunkSendCtr = 0
   player.sendChunk = (chunkX, chunkZ, column) => {
+    // console.log(chunkSendCtr++, 'Sending chunk at', chunkX, chunkZ, 'to', player.username, chunkX * 16, chunkZ * 16)
     return player.behavior('sendChunk', {
       x: chunkX,
       z: chunkZ,
@@ -198,7 +195,15 @@ module.exports.player = function (player, serv, settings) {
         chunkData: chunk.dump(),
         blockEntities: []
       })
-      if (registry.supportFeature('lightSentSeparately')) {
+
+      if (serv.supportFeature('newLightingDataFormat')) { // 1.17+
+        player._client.write('update_light', {
+          chunkX: x,
+          chunkZ: z,
+          trustEdges: true, // trust edges for lighting updates
+          ...chunk.dumpLight()
+        })
+      } else if (serv.supportFeature('lightSentSeparately')) { // -1.16.5
         player._client.write('update_light', {
           chunkX: x,
           chunkZ: z,
@@ -222,7 +227,7 @@ module.exports.player = function (player, serv, settings) {
     return t
   }
 
-  player.sendNearbyChunks = (view, group) => {
+  async function sendNearbyChunks (view, group) {
     player.lastPositionChunkUpdated = player.position
     const playerChunkX = Math.floor(player.position.x / 16)
     const playerChunkZ = Math.floor(player.position.z / 16)
@@ -237,7 +242,7 @@ module.exports.player = function (player, serv, settings) {
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
-      .filter(({ chunkX, chunkZ }) => serv._loadPlayerChunk(chunkX, chunkZ, player))
+      .filter(({ chunkX, chunkZ }) => serv._worldLoadPlayerChunk(chunkX, chunkZ, player))
       .reduce((acc, { chunkX, chunkZ }) => {
         const p = acc
           .then(() => player.world.getColumn(chunkX, chunkZ))
@@ -251,29 +256,29 @@ module.exports.player = function (player, serv, settings) {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  player.sendMap = () => {
-    return player.sendNearbyChunks(Math.min(3, settings['view-distance']))
-      .catch((err) => setTimeout(() => { throw err }), 0)
+  player.worldSendInitialChunks = () => {
+    return sendNearbyChunks(Math.min(3, settings['view-distance']))
   }
 
-  // todo as I understand need to handle difficulty packet instead?
-  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
-    player.view = newDistance
-    if (unloadFirst) player._unloadAllChunks()
-    player.sendRestMap()
-  })
-  player.sendRestMap = () => {
+  player.worldSendRestOfChunks = async () => {
     player.sendingChunks = true
-    player.sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)
-      .then(() => { player.sendingChunks = false })
-      .catch((err) => setTimeout(() => { throw err }, 0))
+    await sendNearbyChunks(Math.min(player.view, settings['view-distance']), true)
+    player.sendingChunks = false
   }
+
+  player.worldSendAllChunks = player.worldSendRestOfChunks
 
   player.sendSpawnPosition = () => {
     player._client.write('spawn_position', {
       location: player.spawnPoint
     })
   }
+
+  player.on('playerChangeRenderDistance', (newDistance = player.view, unloadFirst = false) => {
+    player.view = newDistance
+    if (unloadFirst) player._unloadAllChunks()
+    player.worldSendRestOfChunks()
+  })
 
   player._unloadAllChunks = () => {
     if (!player?.loadedChunks) return
@@ -293,7 +298,7 @@ module.exports.player = function (player, serv, settings) {
     }
     player._client.write('respawn', {
       previousGameMode: player.prevGameMode,
-      dimension: (registry.supportFeature('dimensionIsAString') || registry.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
       hashedSeed: serv.hashedSeed,
@@ -308,12 +313,12 @@ module.exports.player = function (player, serv, settings) {
     player.sendSpawnPosition()
     player.updateAndSpawn()
 
-    await player.sendMap()
+    await player.worldSendInitialChunks()
 
     player.sendSelfPosition()
     player.emit('change_world')
 
     await player.waitPlayerLogin()
-    player.sendRestMap()
+    player.worldSendRestOfChunks()
   }
 }

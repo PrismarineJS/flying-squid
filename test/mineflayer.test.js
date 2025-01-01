@@ -10,7 +10,7 @@ function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
 }
 
-const once = require('event-promise')
+const { once } = require('events')
 
 squid.testedVersions.forEach((testedVersion, i) => {
   const registry = require('prismarine-registry')(testedVersion)
@@ -39,7 +39,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
     }
 
     async function waitMessage (bot, message) {
-      const msg1 = await once(bot, 'message')
+      const [msg1] = await once(bot, 'message')
       expect(msg1.extra[0].text).toEqual(message)
     }
 
@@ -222,7 +222,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
         bot.chat('/summon ' + entityName)
         await waitDragon()
         bot.chat('/kill @e[type=' + entityName + ']')
-        const entity = await once(bot, 'entityDead')
+        const [entity] = await once(bot, 'entityDead')
         expect(entity.name).toEqual(entityName)
       })
       describe('can use /tp', () => {

@@ -1,4 +1,4 @@
-const once = require('event-promise')
+const { once } = require('events')
 
 module.exports.server = function (serv) {
   serv.quit = async (reason = 'Server closed') => {

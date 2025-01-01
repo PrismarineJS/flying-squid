@@ -1,9 +1,9 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.server = function (serv, { version }) {
+  const { registry } = serv
+
   serv.once('asap', () => {
-    // Importing necessary libraries
-    const registry = require('prismarine-registry')(version)
     // Getting ALL supported blocks
     // Chests
     const blockChest = registry.blocksByName.chest
@@ -11,7 +11,7 @@ module.exports.server = function (serv, { version }) {
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
     let blockShulkerBox = []
-    if (registry.supportFeature('theShulkerBoxes')) {
+    if (serv.supportFeature('theShulkerBoxes')) {
       blockShulkerBox = [registry.blocksByName.shulker_box.id, registry.blocksByName.red_shulker_box.id,
         registry.blocksByName.orange_shulker_box.id, registry.blocksByName.yellow_shulker_box.id, registry.blocksByName.lime_shulker_box.id,
         registry.blocksByName.green_shulker_box.id, registry.blocksByName.light_blue_shulker_box.id, registry.blocksByName.cyan_shulker_box.id,
@@ -99,7 +99,7 @@ module.exports.server = function (serv, { version }) {
     serv.onBlockInteraction(registry.blocksByName.ender_chest.name, containerBlockInteractionHandler)
     // TODO: Large chest (NOT IMPLEMENTED)
     // Shulker boxes
-    if (registry.supportFeature('theShulkerBoxes')) {
+    if (serv.supportFeature('theShulkerBoxes')) {
       for (const currentShulkerBoxID of blockShulkerBox) {
         serv.onBlockInteraction(registry.blocks[currentShulkerBoxID].name, containerBlockInteractionHandler)
       }

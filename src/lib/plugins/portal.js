@@ -2,7 +2,7 @@ const Vec3 = require('vec3').Vec3
 const UserError = require('flying-squid').UserError
 
 module.exports.player = function (player, serv, { version }) {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
 
   const obsidianType = registry.blocksByName.obsidian.id
   const portalType = registry.supportFeature('theFlattening') ? registry.blocksByName.nether_portal.id : registry.blocksByName.portal.id
@@ -31,8 +31,8 @@ module.exports.player = function (player, serv, { version }) {
 }
 
 module.exports.server = function (serv, { version }) {
-  const { generatePortal, addPortalToWorld, detectFrame } = require('flying-squid').portal_detector(version)
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
+  const { generatePortal, addPortalToWorld, detectFrame } = require('../portal_detector')(registry)
 
   const obsidianType = registry.blocksByName.obsidian.id
   const fireType = registry.blocksByName.fire.id

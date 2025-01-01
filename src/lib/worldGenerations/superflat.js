@@ -1,8 +1,8 @@
 const Vec3 = require('vec3').Vec3
 
-function generation (options = {}) {
-  const Chunk = require('prismarine-chunk')(options.version)
-  const registry = require('prismarine-registry')(options.version)
+function generation (options) {
+  const { registry } = options
+  const Chunk = require('prismarine-chunk')(registry)
   const theFlattening = registry.supportFeature('theFlattening')
 
   const bottomId = options.bottomId || registry.blocksByName.bedrock.id

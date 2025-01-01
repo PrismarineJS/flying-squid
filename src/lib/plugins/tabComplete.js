@@ -1,6 +1,7 @@
 const { snakeCase } = require('change-case')
 
 module.exports.player = function (player, serv, options) {
+  const { registry } = serv
   const sendTabComplete = (matches, existingContent) => {
     player._client.write('tab_complete', {
       matches: matches.filter((match) => match.startsWith(existingContent))
@@ -52,22 +53,18 @@ module.exports.player = function (player, serv, options) {
   })
 
   serv.tabComplete.add('item', () => {
-    const registry = require('prismarine-registry')(options.version)
     return registry.itemsArray.map(item => item.name)
   })
 
   serv.tabComplete.add('block', () => {
-    const registry = require('prismarine-registry')(options.version)
     return registry.blocksArray.map(item => item.name)
   })
 
   serv.tabComplete.add('entity', () => {
-    const registry = require('prismarine-registry')(options.version)
     return registry.entitiesArray.map(item => item.name)
   })
 
   serv.tabComplete.add('effect', () => {
-    const registry = require('prismarine-registry')(options.version)
     return registry.effectsArray.map(item => snakeCase(item.name))
   })
 

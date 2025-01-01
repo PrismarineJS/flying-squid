@@ -52,7 +52,7 @@ module.exports.player = function (player, serv, { version }) {
 }
 
 module.exports.server = function (serv, { version }) {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
   const blocks = registry.blocks
 
   serv.commands.add({
@@ -74,7 +74,7 @@ module.exports.server = function (serv, { version }) {
       const blockParam = params[4]
       const id = isNaN(+blockParam) ? registry.blocksByName[skipMcPrefix(blockParam)]?.id : +blockParam
       const data = parseInt(params[5] || 0, 10)
-      const stateId = registry.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+      const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
 
       if (ctx.player) ctx.player.setBlock(new Vec3(res[0], res[1], res[2]).floored(), stateId)
       else serv.setBlock(serv.overworld, new Vec3(res[0], res[1], res[2]).floored(), stateId)

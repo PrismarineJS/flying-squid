@@ -1,8 +1,8 @@
 const Vec3 = require('vec3').Vec3
 
-function generation ({ version }) {
-  const Chunk = require('prismarine-chunk')(version)
-  const { blocks } = require('prismarine-registry')(version)
+function generation ({ registry }) {
+  const Chunk = require('prismarine-chunk')(registry)
+  const { blocks } = registry
 
   function generateSimpleChunk () {
     const chunk = new Chunk()

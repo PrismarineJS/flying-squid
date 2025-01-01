@@ -372,8 +372,10 @@ module.exports.server = function (serv, settings) {
 }
 
 module.exports.player = function (player, serv) {
-  player.kick = (reason = 'You were kicked!') =>
+  player.kick = (reason = 'You were kicked!') => {
+    serv.log(`Kicking ${player.username} for '${reason}'`)
     player._client.end(reason)
+  }
 
   player.banUUID = reason => {
     reason = reason || 'You were banned!'

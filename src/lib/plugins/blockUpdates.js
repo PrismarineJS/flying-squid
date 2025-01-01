@@ -33,16 +33,15 @@ class ChunkUpdates {
       for (const p of updates.values()) {
         const state = await world.getBlockStateId(p)
 
-        if (multiBlockChangeHasTrustEdges) {
+        if (multiBlockChangeHasTrustEdges) { // 1.16.5+ - block IDs are now embedded in the record
           records.push(state << 12 | (p.x << 8 | p.z << 4 | p.y))
-          continue
+        } else {
+          records.push({
+            horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
+            y: p.y,
+            blockId: state
+          })
         }
-
-        records.push({
-          horizontalPos: ((p.x & 0xF) << 4) | (p.z & 0xF),
-          y: p.y,
-          blockId: state
-        })
       }
 
       if (multiBlockChangeHasTrustEdges) {
@@ -55,17 +54,17 @@ class ChunkUpdates {
           notTrustEdges: false, // Update light's "Trust Edges" is always true
           records
         })
-      } else packets.push({ chunkX, chunkZ, records })
+      } else {
+        packets.push({ chunkX, chunkZ, records })
+      }
     }
 
     return packets
   }
 }
 
-module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
-
-  multiBlockChangeHasTrustEdges = registry.supportFeature('multiBlockChangeHasTrustEdges')
+module.exports.server = (serv) => {
+  multiBlockChangeHasTrustEdges = serv.supportFeature('multiBlockChangeHasTrustEdges')
 
   serv.MAX_UPDATES_PER_TICK = 10000
 
@@ -132,7 +131,7 @@ module.exports.server = (serv, { version }) => {
    * It should return true if the block changed its state
    */
   serv.onBlockUpdate = (name, handler) => {
-    const block = registry.blocksByName[name]
+    const block = serv.registry.blocksByName[name]
     if (updateHandlers.has(block.id)) {
       serv.warn(`onBlockUpdate handler was registered twice for ${name}`)
     }
@@ -182,7 +181,7 @@ module.exports.server = (serv, { version }) => {
         const time = performance.now() - start
         const fraction = (time * 100 / 50).toFixed(2)
         const sentUpdates = chunkUpdates.updateCount()
-        serv.info(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
+        serv.debug?.(`[Block Update] Made ${updatesCount} (${sentUpdates}) updates, ${updateQueue.length} remainings (${fraction}% of tickTime)`)
       }
     }
   })

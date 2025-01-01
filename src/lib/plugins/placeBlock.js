@@ -11,7 +11,7 @@ const materialToSound = {
 }
 
 module.exports.server = (serv, { version }) => {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
 
   const itemPlaceHandlers = new Map()
   serv.placeItem = (data) => {
@@ -39,7 +39,7 @@ module.exports.server = (serv, { version }) => {
     itemPlaceHandlers.set(item.id, handler)
   }
 
-  if (registry.supportFeature('theFlattening')) {
+  if (serv.supportFeature('theFlattening')) {
     const parseValue = (value, state) => {
       if (state.type === 'enum') {
         return state.values.indexOf(value)
@@ -89,7 +89,7 @@ module.exports.server = (serv, { version }) => {
 }
 
 module.exports.player = function (player, serv, { version }) {
-  const registry = require('prismarine-registry')(version)
+  const { registry } = serv
   const blocks = registry.blocks
 
   player._client.on('block_place', async ({ direction, location, cursorY } = {}) => {
@@ -110,7 +110,7 @@ module.exports.player = function (player, serv, { version }) {
     const dz = player.position.z - (placedPosition.z + 0.5)
     const angle = Math.atan2(dx, -dz) * 180 / Math.PI + 180 // Convert to [0,360[
 
-    if (registry.supportFeature('blockPlaceHasIntCursor')) cursorY /= 16
+    if (serv.supportFeature('blockPlaceHasIntCursor')) cursorY /= 16
 
     let half = cursorY > 0.5 ? 'top' : 'bottom'
     if (direction === 0) half = 'top'
@@ -149,7 +149,7 @@ module.exports.player = function (player, serv, { version }) {
       }
     }
 
-    const stateId = registry.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
+    const stateId = serv.supportFeature('theFlattening') ? (blocks[id].minStateId + data) : (id << 4 | data)
     player.setBlock(placedPosition, stateId)
   })
 }
