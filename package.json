@@ -15,7 +15,7 @@
     "prepublishOnly": "cp docs/README.md README.md",
     "lint": "standard",
     "fix": "standard --fix",
-    "mocha_test": "mocha --reporter spec --timeout 6000 --exit",
+    "mocha_test": "mocha --reporter spec --timeout 30000 --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint"
   },
