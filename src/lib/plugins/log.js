@@ -41,6 +41,12 @@ module.exports.server = function (serv, settings) {
     serv.info(banner.username + ' banned ' + bannedUsername + (reason ? ' (' + reason + ')' : '')))
   serv.on('seed', (seed) => serv.info('World seed: ' + seed))
 
+  serv._server.on('close', function () {
+    serv.info('Server is closed.')
+    // Remove server from managed list so GC can clean it up
+    _servers.splice(_servers.indexOf(serv), 1)
+  })
+
   const logFile = path.join('logs', timeStarted + '.log')
 
   serv.log = message => {
@@ -69,7 +75,7 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
 
-  if (isInNode) {
+  if (isInNode && !process.env.CI) {
     console.log = (function () {
       const orig = console.log
       return function () {
