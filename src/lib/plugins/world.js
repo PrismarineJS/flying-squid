@@ -6,6 +6,10 @@ const spiralloop = require('spiralloop')
 const { level } = require('prismarine-provider-anvil')
 const nbt = require('prismarine-nbt')
 
+function sleep (ms = 0) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 module.exports.server = async function (serv, options = {}) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
   const { registry } = serv
@@ -236,7 +240,7 @@ module.exports.player = function (player, serv, settings) {
     return t
   }
 
-  async function sendNearbyChunks (view) {
+  async function sendNearbyChunks (view, group) {
     player.lastPositionChunkUpdated = player.position
     const playerChunkX = Math.floor(player.position.x / 16)
     const playerChunkZ = Math.floor(player.position.z / 16)
@@ -246,17 +250,18 @@ module.exports.player = function (player, serv, settings) {
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
       .forEach(([x, z]) => player._unloadChunk(x, z))
 
-    const promises = []
-    spiral([view * 2, view * 2])
+    return spiral([view * 2, view * 2])
       .map(t => ({
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
       .filter(({ chunkX, chunkZ }) => serv._worldLoadPlayerChunk(chunkX, chunkZ, player))
-      .forEach(({ chunkX, chunkZ }) => {
-        promises.push(player.world.getColumn(chunkX, chunkZ).then((column) => player.sendChunk(chunkX, chunkZ, column)))
-      })
-    return Promise.all(promises)
+      .reduce((acc, { chunkX, chunkZ }) => {
+        const p = acc
+          .then(() => player.world.getColumn(chunkX, chunkZ))
+          .then((column) => player.sendChunk(chunkX, chunkZ, column))
+        return group ? p.then(() => sleep(5)) : p
+      }, Promise.resolve())
   }
 
   player.worldSendInitialChunks = () => {
