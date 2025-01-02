@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-
+globalThis.isMocha = true
 const squid = require('flying-squid')
 const PortalDetector = require('../src/lib/portal_detector')
 const expect = require('expect').default

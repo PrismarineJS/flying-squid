@@ -189,7 +189,7 @@ module.exports.player = function (player, serv, settings) {
           heightmaps,
           chunkData: chunk.dump(),
           blockEntities: [],
-          trustEdges, 
+          trustEdges,
           ...chunk.dumpLight()
         })
       } else {

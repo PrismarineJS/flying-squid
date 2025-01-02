@@ -4,12 +4,13 @@ function emitAsync (listener, event, ...args) {
   return Promise.all(listeners.map(listener => listener(...args)))
 }
 
-function onceWithTimeout (emitter, event, timeout = 10000) {
+function onceWithTimeout (emitter, event, timeout = 10000, checkCondition) {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       reject(new Error(`Timeout waiting for '${event}' event`))
     }, timeout)
     emitter.once(event, (data) => {
+      if (checkCondition && !checkCondition(data)) return
       clearTimeout(timeoutId)
       resolve(data)
     })

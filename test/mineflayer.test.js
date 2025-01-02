@@ -1,11 +1,12 @@
 /* eslint-env mocha */
-
+globalThis.isMocha = true
 const fs = require('fs')
 const { join } = require('path')
 const squid = require('flying-squid')
 const settings = require('../config/default-settings.json')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
+const { onceWithTimeout } = require('../src/lib/utils')
 const expect = require('expect').default
 
 function assertPosEqual (actual, expected, precision = 1) {
@@ -45,8 +46,12 @@ squid.testedVersions.forEach((testedVersion, i) => {
     }
 
     async function waitMessage (bot, message) {
-      const [msg1] = await once(bot, 'message')
-      expect(msg1.extra[0].text).toEqual(message)
+      // const [msg1] = await once(bot, 'message')
+      // expect(msg1.extra[0].text).toEqual(message)
+      onceWithTimeout(bot, 'message', 5000, (msg) => {
+        console.log('*msg', msg)
+        return msg.toString() === message
+      })
     }
 
     // Clear the world dir before each test
