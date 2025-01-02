@@ -46,13 +46,15 @@ class MCServer extends EventEmitter {
 
     const versionData = registry.version
     if (versionData['>'](latestSupportedVersion)) {
-      throw new Error(`Server version '${registry?.version}' is not supported. Latest supported version is '${latestSupportedVersion}'.`)
+      throw new Error(`Server version '${options.version}' is not supported. Latest supported version is '${latestSupportedVersion}'.`)
     } else if (versionData['<'](oldestSupportedVersion)) {
-      throw new Error(`Server version '${registry?.version}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
+      throw new Error(`Server version '${options.version}' is not supported. Oldest supported version is '${oldestSupportedVersion}'.`)
     }
 
+    // internal features until merged into minecraft-data
+    const customFeatures = {}
     this.registry = registry
-    this.supportFeature = registry.supportFeature
+    this.supportFeature = feature => customFeatures[feature] ?? registry.supportFeature(feature)
 
     const promises = []
     for (const plugin of plugins.builtinPlugins) {

@@ -194,6 +194,7 @@ module.exports.player = function (player, serv, settings) {
           chunkData: chunk.dump(),
           blockEntities: [],
           trustEdges,
+          suppressLightUpdates: trustEdges, // 1.19.2
           ...chunk.dumpLight()
         })
       } else {
@@ -306,7 +307,7 @@ module.exports.player = function (player, serv, settings) {
     }
     player._client.write('respawn', {
       previousGameMode: player.prevGameMode,
-      dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[opt.dimension || 0] : opt.dimension || 0,
+      dimension: serv.registry.loginPacket?.dimension || 0,
       worldName: serv.dimensionNames[opt.dimension || 0],
       difficulty: opt.difficulty || serv.difficulty,
       hashedSeed: serv.hashedSeed,

@@ -16,16 +16,34 @@ module.exports.server = function (serv, { version }) {
       .forEach(player => {
         const iniPos = position ? position.scaled(1 / 32) : player.position.scaled(1 / 32)
         const pos = iniPos.scaled(8).floored()
+        if (serv.supportFeature('removedNamedSoundEffectPacket')) { // 1.19.3 removes named_sound_effect
+          player._client.write('sound_effect', {
+            soundId: 0,
+            soundEvent: {
+              resource: sound,
+              range: undefined
+            },
+            soundCategory,
+            x: pos.x,
+            y: pos.y,
+            z: pos.z,
+            volume,
+            pitch: Math.round(pitch * 63),
+            seed: 0
+          })
+        } else {
         // only packet still in fixed position in all versions
-        player._client.write('named_sound_effect', {
-          soundName: sound,
-          soundCategory,
-          x: pos.x,
-          y: pos.y,
-          z: pos.z,
-          volume,
-          pitch: Math.round(pitch * 63)
-        })
+          player._client.write('named_sound_effect', {
+            soundName: sound,
+            soundCategory,
+            x: pos.x,
+            y: pos.y,
+            z: pos.z,
+            volume,
+            pitch: Math.round(pitch * 63),
+            seed: 0
+          })
+        }
       })
   }
 
@@ -49,7 +67,8 @@ module.exports.server = function (serv, { version }) {
           y: pos.y,
           z: pos.z,
           volume,
-          pitch: Math.round(pitch * 63)
+          pitch: Math.round(pitch * 63),
+          seed: 0
         })
       })
   }
