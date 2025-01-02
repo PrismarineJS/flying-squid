@@ -103,7 +103,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
         version: version.minecraftVersion
       })
 
-      await Promise.all([once(bot, 'login'), once(bot2, 'login'), waitForReady(bot), waitForReady(bot2)])
+      await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn'), waitForReady(bot), waitForReady(bot2)])
       bot.entity.onGround = false
       bot2.entity.onGround = false
 
