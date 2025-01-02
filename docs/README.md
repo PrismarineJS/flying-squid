@@ -139,7 +139,7 @@ mcServer.createMCServer({
   },
   'everybody-op': true,
   'max-entities': 100,
-  'version': '1.17.1'
+  'version': '1.18'
 })
 ```
 

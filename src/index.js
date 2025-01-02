@@ -11,6 +11,7 @@ const { EventEmitter } = require('events')
 const { testedVersions, latestSupportedVersion, oldestSupportedVersion } = require('./lib/version')
 const Command = require('./lib/command')
 const plugins = require('./lib/plugins')
+const { onceWithTimeout } = require('./lib/utils')
 
 module.exports = {
   createMCServer,
@@ -60,7 +61,13 @@ class MCServer extends EventEmitter {
     Promise.all(promises).then(() => {
       this.emit('pluginsReady')
       this.pluginsReady = true
+      this.debug?.('Loaded plugins')
     })
+
+    this.waitForReady = (timeout) => {
+      if (this.pluginsReady) return Promise.resolve()
+      return onceWithTimeout(this, 'pluginsReady', timeout)
+    }
 
     if (options.logging === true) this.createLog()
     this._server.on('error', error => this.emit('error', error))

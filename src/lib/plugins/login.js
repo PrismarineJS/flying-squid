@@ -12,6 +12,7 @@ module.exports.server = function (serv, options) {
   serv._server.on('login', async (client) => {
     if (!serv.pluginsReady) {
       client.end('Server is still starting! Please wait before reconnecting.')
+      serv.info(`[${client.socket.remoteAddress}] ${client.username} (${client.uuid}) disconnected as server is still starting`)
       return
     }
     serv.debug?.(`[login] ${client.socket?.remoteAddress} - ${client.username} (${client.uuid}) connected`, client.version, client.protocolVersion)

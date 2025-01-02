@@ -4,9 +4,22 @@ function emitAsync (listener, event, ...args) {
   return Promise.all(listeners.map(listener => listener(...args)))
 }
 
+function onceWithTimeout (emitter, event, timeout = 10000) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Timeout waiting for '${event}' event`))
+    }, timeout)
+    emitter.once(event, (data) => {
+      clearTimeout(timeoutId)
+      resolve(data)
+    })
+  })
+}
+
 const skipMcPrefix = (name) => typeof name === 'string' ? name.replace(/^minecraft:/, '') : name
 
 module.exports = {
+  onceWithTimeout,
   skipMcPrefix,
   emitAsync
 }

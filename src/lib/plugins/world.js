@@ -4,6 +4,7 @@ const generations = require('../generations')
 const playerDat = require('../playerDat')
 const spiralloop = require('spiralloop')
 const { level } = require('prismarine-provider-anvil')
+const nbt = require('prismarine-nbt')
 
 module.exports.server = async function (serv, options = {}) {
   const { version, worldFolder, generation = { name: 'diamond_square', options: { worldHeight: 80 } } } = options
@@ -30,7 +31,7 @@ module.exports.server = async function (serv, options = {}) {
       await level.writeLevel(worldFolder + '/level.dat', {
         RandomSeed: [seed, 0],
         Version: { Name: options.version },
-        generatorName: { superfalt: 'flat', diamond_square: 'default' }[generation.name] || 'customized'
+        generatorName: { superflat: 'flat', diamond_square: 'default' }[generation.name] || 'customized'
       })
     }
   } else {
@@ -170,52 +171,60 @@ module.exports.player = function (player, serv, settings) {
     }
   }
 
-  // let chunkSendCtr = 0
   player.sendChunk = (chunkX, chunkZ, column) => {
-    // console.log(chunkSendCtr++, 'Sending chunk at', chunkX, chunkZ, 'to', player.username, chunkX * 16, chunkZ * 16)
     return player.behavior('sendChunk', {
       x: chunkX,
       z: chunkZ,
       chunk: column
     }, ({ x, z, chunk }) => {
-      player._client.write('map_chunk', {
-        x,
-        z,
-        groundUp: true,
-        bitMap: chunk.getMask(),
-        biomes: chunk.dumpBiomes(),
-        ignoreOldData: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
-        heightmaps: {
-          type: 'compound',
-          name: '',
-          value: {
-            MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
-          }
-        }, // FIXME: fake heightmap
-        chunkData: chunk.dump(),
-        blockEntities: []
+      // FIXME: fake heightmap
+      const heightmaps = nbt.comp({
+        MOTION_BLOCKING: nbt.longArray(new Array(36).fill([0, 0]))
       })
-
-      if (serv.supportFeature('newLightingDataFormat')) { // 1.17+
-        player._client.write('update_light', {
-          chunkX: x,
-          chunkZ: z,
-          trustEdges: true, // trust edges for lighting updates
+      const trustEdges = true // trust edges for lighting updates - should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
+      if (serv.supportFeature('tallWorld')) { // 1.18+ - merged chunk and light data
+        player._client.write('map_chunk', {
+          x,
+          z,
+          heightmaps,
+          chunkData: chunk.dump(),
+          blockEntities: [],
+          trustEdges, 
           ...chunk.dumpLight()
         })
-      } else if (serv.supportFeature('lightSentSeparately')) { // -1.16.5
-        player._client.write('update_light', {
-          chunkX: x,
-          chunkZ: z,
-          trustEdges: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
-          skyLightMask: chunk.skyLightMask,
-          blockLightMask: chunk.blockLightMask,
-          emptySkyLightMask: 0,
-          emptyBlockLightMask: 0,
-          data: chunk.dumpLight()
+      } else {
+        player._client.write('map_chunk', {
+          x,
+          z,
+          groundUp: true,
+          bitMap: chunk.getMask(),
+          biomes: chunk.dumpBiomes(),
+          ignoreOldData: true, // should be false when a chunk section is updated instead of the whole chunk being overwritten, do we ever do that?
+          heightmaps,
+          chunkData: chunk.dump(),
+          blockEntities: []
         })
+
+        if (serv.supportFeature('newLightingDataFormat')) { // 1.17+
+          player._client.write('update_light', {
+            chunkX: x,
+            chunkZ: z,
+            trustEdges,
+            ...chunk.dumpLight()
+          })
+        } else if (serv.supportFeature('lightSentSeparately')) { // -1.16.5
+          player._client.write('update_light', {
+            chunkX: x,
+            chunkZ: z,
+            trustEdges,
+            skyLightMask: chunk.skyLightMask,
+            blockLightMask: chunk.blockLightMask,
+            emptySkyLightMask: 0,
+            emptyBlockLightMask: 0,
+            data: chunk.dumpLight()
+          })
+        }
       }
-      return Promise.resolve()
     })
   }
 
@@ -227,7 +236,7 @@ module.exports.player = function (player, serv, settings) {
     return t
   }
 
-  async function sendNearbyChunks (view, group) {
+  async function sendNearbyChunks (view) {
     player.lastPositionChunkUpdated = player.position
     const playerChunkX = Math.floor(player.position.x / 16)
     const playerChunkZ = Math.floor(player.position.z / 16)
@@ -237,23 +246,17 @@ module.exports.player = function (player, serv, settings) {
       .filter(([x, z]) => Math.abs(x - playerChunkX) > view || Math.abs(z - playerChunkZ) > view)
       .forEach(([x, z]) => player._unloadChunk(x, z))
 
-    return spiral([view * 2, view * 2])
+    const promises = []
+    spiral([view * 2, view * 2])
       .map(t => ({
         chunkX: playerChunkX + t[0] - view,
         chunkZ: playerChunkZ + t[1] - view
       }))
       .filter(({ chunkX, chunkZ }) => serv._worldLoadPlayerChunk(chunkX, chunkZ, player))
-      .reduce((acc, { chunkX, chunkZ }) => {
-        const p = acc
-          .then(() => player.world.getColumn(chunkX, chunkZ))
-          .then((column) => player.sendChunk(chunkX, chunkZ, column))
-        return group ? p.then(() => sleep(5)) : p
-      }
-      , Promise.resolve())
-  }
-
-  function sleep (ms = 0) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+      .forEach(({ chunkX, chunkZ }) => {
+        promises.push(player.world.getColumn(chunkX, chunkZ).then((column) => player.sendChunk(chunkX, chunkZ, column)))
+      })
+    return Promise.all(promises)
   }
 
   player.worldSendInitialChunks = () => {
