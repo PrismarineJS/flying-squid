@@ -141,7 +141,9 @@ module.exports.player = function (player, serv) {
   })
   player._client.on('chat_command', (data) => {
     const command = data.command
-    player.behavior('command', { command }, ({ command }) => player.handleCommand(command))
+    player.behavior('command', { command }, ({ command }) => {
+      player.handleCommand(command)
+    })
   })
 
   player._client.on('chat', ({ message } = {}) => {

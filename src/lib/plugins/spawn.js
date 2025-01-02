@@ -300,7 +300,7 @@ module.exports.entity = function (entity, serv) {
     if (entity.type === 'player') entity.spawnPacketName = 'named_entity_spawn'
     else if (entity.type === 'object') entity.spawnPacketName = 'spawn_entity'
     else if (entity.type === 'mob') {
-      if (serv.supportFeature('consolidatedEntitySpawnPacket')) entity.spawnPacketName = 'named_entity_spawn'
+      if (serv.supportFeature('consolidatedEntitySpawnPacket')) entity.spawnPacketName = 'spawn_entity'
       else entity.spawnPacketName = 'spawn_entity_living'
     }
   }
