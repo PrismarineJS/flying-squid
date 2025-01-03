@@ -124,7 +124,6 @@ module.exports.player = function (player, serv) {
   function handleChatMessage (data) {
     const fmtMessage = `<${player.username}> ${data.message}`
     serv.broadcast(fmtMessage, { whitelist: serv.players, blacklist: [] })
-    // broadcast(fmtMessage, null, player.username)
   }
 
   player._client.on('chat_message', (data) => {
@@ -204,32 +203,4 @@ module.exports.player = function (player, serv) {
       })
     }
   }
-
-  // const nbt = require('prismarine-nbt')
-  // function sendBroadcastMessage (server, clients, message, sender) {
-  //   function chatText (text) {
-  //     return serv.supportFeature('chatPacketsUseNbtComponents')
-  //       ? nbt.comp({ text: nbt.string(text) })
-  //       : JSON.stringify({ text })
-  //   }
-  //   console.log('sendBroadcastMessage', message, sender, chatText(message))
-  //   server.writeToClients(clients, 'player_chat', {
-  //     plainMessage: message,
-  //     signedChatContent: '{"text":""}',
-  //     //unsignedChatContent: chatText(message),
-  //     type: 0,
-  //     senderUuid: 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43', // random
-  //     senderName: JSON.stringify({ text: 'x' }),
-  //     senderTeam: undefined,
-  //     timestamp: Date.now(),
-  //     salt: 0n,
-  //     signature: serv.supportFeature('useChatSessions') ? undefined : Buffer.alloc(0),
-  //     previousMessages: [],
-  //     filterType: 0,
-  //     networkName: JSON.stringify({ text: 'v' })
-  //   })
-  // }
-  // function broadcast (message, exclude, username) {
-  //   sendBroadcastMessage(serv._server, Object.values(serv._server.clients).filter(client => client !== exclude), message, username)
-  // }
 }

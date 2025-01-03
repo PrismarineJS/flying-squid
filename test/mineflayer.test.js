@@ -244,12 +244,11 @@ squid.testedVersions.forEach((testedVersion, i) => {
       })
       it('can use /playsound', async () => {
         bot.chat('/playsound ambient.weather.rain')
-        // TODO: why are there two events for this as opposed to one with extra fields?
-        if (serv.supportFeature('removedNamedSoundEffectPacket')) { // 1.19.3+
-          await once(bot, 'hardcodedSoundEffectHeard')
-        } else {
-          await once(bot, 'soundEffectHeard')
-        }
+        // TODO: why are there 2 mineflayer events for this as opposed to one with extra fields?
+        await once(bot, serv.supportFeature('removedNamedSoundEffectPacket')
+          ? 'hardcodedSoundEffectHeard' // 1.19.3+
+          : 'soundEffectHeard'
+        )
       })
 
       function waitDragon () {
