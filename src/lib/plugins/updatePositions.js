@@ -46,7 +46,8 @@ module.exports.player = function (player) {
     sendLook(yaw, pitch, onGround)
   })
 
-  player.sendSelfPosition = () => {
+  player.sendSelfPosition = (newPosition) => {
+    if (newPosition) player.position = newPosition
     // double position in all versions
     player._client.write('position', {
       x: player.position.x,

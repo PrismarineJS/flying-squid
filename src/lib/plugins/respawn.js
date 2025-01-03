@@ -10,18 +10,7 @@ module.exports.player = function (player, serv, { version }) {
 
     if (actionId === 0) {
       player.behavior('requestRespawn', {}, () => {
-        player._client.write('respawn', {
-          previousGameMode: player.prevGameMode,
-          dimension: (serv.supportFeature('dimensionIsAString') || serv.supportFeature('dimensionIsAWorld')) ? serv.dimensionNames[0] : 0,
-          worldName: serv.dimensionNames[0],
-          difficulty: serv.difficulty,
-          hashedSeed: serv.hashedSeed,
-          gamemode: player.gameMode,
-          levelType: 'default',
-          isDebug: false,
-          isFlat: false,
-          copyMetadata: false
-        })
+        player._sendRespawn()
         player.sendSelfPosition()
         player.updateHealth(20)
         player.nearbyEntities = []
@@ -29,4 +18,20 @@ module.exports.player = function (player, serv, { version }) {
       })
     }
   })
+
+  player._sendRespawn = function (newDifficulty, newGameMode, newDimension) {
+    player._client.write('respawn', {
+      previousGameMode: player.prevGameMode,
+      dimension: serv.registry.loginPacket?.dimension || 0,
+      worldName: serv.dimensionNames[newDimension || 0],
+      difficulty: newDifficulty ?? serv.difficulty,
+      hashedSeed: serv.hashedSeed,
+      gamemode: newGameMode ?? player.gameMode,
+      levelType: 'default',
+      isDebug: false,
+      isFlat: false,
+      copyMetadata: false,
+      portalCooldown: 0 // 1.20
+    })
+  }
 }

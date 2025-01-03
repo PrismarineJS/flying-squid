@@ -147,9 +147,9 @@ module.exports.server = function (serv, { version }) {
     info: 'Stop the server',
     usage: '/stop',
     op: true,
-    action () {
-      serv.quit('Server closed')
-      process.exit()
+    async action () {
+      await serv.quit('Server closed')
+      process.exit(0)
     }
   })
 

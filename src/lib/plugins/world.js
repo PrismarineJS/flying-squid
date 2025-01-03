@@ -305,18 +305,7 @@ module.exports.player = function (player, serv, settings) {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode
     }
-    player._client.write('respawn', {
-      previousGameMode: player.prevGameMode,
-      dimension: serv.registry.loginPacket?.dimension || 0,
-      worldName: serv.dimensionNames[opt.dimension || 0],
-      difficulty: opt.difficulty || serv.difficulty,
-      hashedSeed: serv.hashedSeed,
-      gamemode: opt.gamemode || player.gameMode,
-      levelType: 'default',
-      isDebug: false,
-      isFlat: false,
-      copyMetadata: true
-    })
+    player._sendRespawn(opt.difficulty, opt.gamemode, opt.dimension)
     await player.findSpawnPoint()
     player.position = player.spawnPoint
     player.sendSpawnPosition()
@@ -329,5 +318,7 @@ module.exports.player = function (player, serv, settings) {
 
     await player.waitPlayerLogin()
     player.worldSendRestOfChunks()
+    // Prevent player from falling through the world
+    player.sendSelfPosition(player.spawnPoint)
   }
 }
