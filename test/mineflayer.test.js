@@ -244,7 +244,12 @@ squid.testedVersions.forEach((testedVersion, i) => {
       })
       it('can use /playsound', async () => {
         bot.chat('/playsound ambient.weather.rain')
-        await once(bot, 'soundEffectHeard')
+        // TODO: why are there two events for this as opposed to one with extra fields?
+        if (serv.supportFeature('removedNamedSoundEffectPacket')) { // 1.19.3+
+          await once(bot, 'hardcodedSoundEffectHeard')
+        } else {
+          await once(bot, 'soundEffectHeard')
+        }
       })
 
       function waitDragon () {

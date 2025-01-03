@@ -20,12 +20,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
     if (player && player.username) {
       player._unloadAllChunks()
       serv.broadcast(serv.color.yellow + player.username + ' left the game.')
-      player._writeOthers('player_info', {
-        action: 4,
-        data: [{
-          UUID: player.uuid
-        }]
-      })
+      serv._sendPlayerEventLeave(player)
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]))
       delete serv.entities[player.id]
       player.emit('disconnected')

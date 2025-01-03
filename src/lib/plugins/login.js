@@ -136,13 +136,24 @@ module.exports.player = async function (player, serv, settings) {
     })
   }
 
-  player.setGameMode = (gameMode) => {
-    if (gameMode !== player.gameMode) player.prevGameMode = player.gameMode
-    player.gameMode = gameMode
-    player._client.write('game_state_change', {
-      reason: 3,
-      gameMode: player.gameMode
+  // TODO: The structure of player_info changes alot between versions and is messy
+  // https://github.com/PrismarineJS/minecraft-data/pull/948 will fix some of it but
+  // merging that will also require updating mineflayer. In the meantime we can skip this
+  // packet in 1.19+ as it also requires some chat signing key logic to be implemented
+
+  serv._sendPlayerEventLeave = function (player) {
+    if (serv.registry.version['>=']('1.19')) return
+    player._writeOthers('player_info', {
+      action: 4,
+      data: [{
+        UUID: player.uuid,
+        uuid: player.uuid // 1.19.3+
+      }]
     })
+  }
+
+  serv._sendPlayerEventUpdateGameMode = function (player) {
+    if (serv.registry.version['>=']('1.19')) return
     serv._writeAll('player_info', {
       action: 1,
       data: [{
@@ -150,67 +161,49 @@ module.exports.player = async function (player, serv, settings) {
         gamemode: player.gameMode
       }]
     })
+  }
+
+  player.setGameMode = (gameMode) => {
+    if (gameMode !== player.gameMode) player.prevGameMode = player.gameMode
+    player.gameMode = gameMode
+    player._client.write('game_state_change', {
+      reason: 3,
+      gameMode: player.gameMode
+    })
+    serv._sendPlayerEventUpdateGameMode(player)
     player.sendAbilities()
   }
 
-  function fillTabList () {
-    if (serv.registry.version['>=']('1.19')) {
-      // TODO: The structure of player_info changes alot between versions and is messy
-      // https://github.com/PrismarineJS/minecraft-data/pull/948 will fix some of it but
-      // merging that will also require updating mineflayer. In the meantime we can skip this
-      // packet in 1.19+ as it also requires some chat signing key logic to be implemented
-      return
-    }
+  serv._sendPlayerEventNewJoin = function (player) {
+    if (serv.registry.version['>=']('1.19')) return
     player._writeOthers('player_info', {
       action: 0,
       data: [{
-        // uuid: player.uuid,
         UUID: player.uuid,
         name: player.username,
         properties: player.profileProperties,
-        // chatSession: undefined, // this was renamed from crypto in 1.19.3 but not applied to old versions
-        // player: {
-        //   name: player.username,
-        //   properties: player.profileProperties
-        // },
         gamemode: player.gameMode,
         ping: player._client.latency
-        // crypto: { // 1.19
-        //   timestamp: Date.now(),
-        //   publicKey: player._client.profileKeys?.public ?? Buffer.from([0]),
-        //   signature: Buffer.from([0])
-        // }
       }]
     })
+  }
 
-    player._client.write('player_info', {
+  serv._sendPlayerList = function (toPlayer) {
+    if (serv.registry.version['>=']('1.19')) return
+    toPlayer._writeOthers('player_info', {
       action: 0,
       data: serv.players.map((otherPlayer) => ({
-        // uuid: otherPlayer.uuid,
         UUID: otherPlayer.uuid,
         name: otherPlayer.username,
         properties: otherPlayer.profileProperties,
         gamemode: otherPlayer.gameMode,
-        // chatSession: undefined,
-        // player: {
-        //   name: otherPlayer.username,
-        //   properties: otherPlayer.profileProperties
-        // },
         ping: otherPlayer._client.latency
-        // crypto: {
-        //   timestamp: Date.now(),
-        //   publicKey: Buffer.from([0]),
-        //   signature: Buffer.from([0])
-        // }
       }))
     })
-    setInterval(() => player._client.write('player_info', {
-      action: 2,
-      data: serv.players.map(otherPlayer => ({
-        UUID: otherPlayer.uuid,
-        ping: otherPlayer._client.latency
-      }))
-    }), 5000)
+  }
+
+  function fillTabList () {
+    serv._sendPlayerList(player)
   }
 
   function announceJoin () {
