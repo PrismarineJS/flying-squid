@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-
+globalThis.isMocha = true
 const net = require('net')
 const squid = require('flying-squid')
 

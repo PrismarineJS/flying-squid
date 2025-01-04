@@ -1,7 +1,7 @@
 const Vec3 = require('vec3').Vec3
 
 module.exports.player = function (player, serv, { version }) {
-  const { registry } = serv.registry
+  const { registry } = serv
   function cancelDig ({ position, block }) {
     player.sendBlock(position, block.type)
   }

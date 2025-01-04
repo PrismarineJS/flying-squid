@@ -1,4 +1,5 @@
 module.exports.player = async function (player, serv) {
+  if (globalThis.isMocha || serv.debug) return // Don't eat errors when debugging
   function unhandledRejection (promise) {
     serv.warn('-------------------------------')
     serv.warn('Please report this error to flying-squid! This is can be bug')
