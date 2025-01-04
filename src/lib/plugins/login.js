@@ -204,6 +204,15 @@ module.exports.player = async function (player, serv, settings) {
 
   function fillTabList () {
     serv._sendPlayerList(player)
+    if (serv.registry.version['<=']('1.18')) {
+      setInterval(() => player._client.write('player_info', {
+        action: 2,
+        data: serv.players.map(otherPlayer => ({
+          UUID: otherPlayer.uuid,
+          ping: otherPlayer._client.latency
+        }))
+      }), 5000)
+    }
   }
 
   function announceJoin () {
