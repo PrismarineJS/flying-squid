@@ -6,15 +6,29 @@ const squid = require('flying-squid')
 const settings = require('../config/default-settings.json')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
-const { onceWithTimeout } = require('../src/lib/utils')
+const { sleep, onceWithTimeout } = require('../src/lib/utils')
 const expect = require('expect').default
 
 function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
 }
 
-function sleep (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+function waitForPromises (map, timeout) {
+  const promises = Object.entries(map)
+  let count = promises.length
+  console.log('Waiting for', promises.map(([name]) => name))
+  return new Promise((resolve, reject) => {
+    if (timeout) setTimeout(() => reject(new Error('Timeout waiting for promises')), timeout)
+    for (const [name, promise] of promises) {
+      promise.then(() => {
+        count--
+        console.log('Promise', name, 'resolved')
+        if (count === 0) {
+          resolve()
+        }
+      })
+    }
+  })
 }
 
 const { once } = require('events')
@@ -102,7 +116,10 @@ squid.testedVersions.forEach((testedVersion, i) => {
         version: version.minecraftVersion
       })
 
-      await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn')])
+      await waitForPromises({
+        'bot spawn': once(bot, 'spawn'),
+        'bot2 spawn': once(bot2, 'spawn')
+      })
       bot.entity.onGround = false
       bot2.entity.onGround = false
 

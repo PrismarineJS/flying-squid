@@ -17,10 +17,15 @@ function onceWithTimeout (emitter, event, timeout = 10000, checkCondition) {
   })
 }
 
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 const skipMcPrefix = (name) => typeof name === 'string' ? name.replace(/^minecraft:/, '') : name
 
 module.exports = {
   onceWithTimeout,
   skipMcPrefix,
-  emitAsync
+  emitAsync,
+  sleep
 }
