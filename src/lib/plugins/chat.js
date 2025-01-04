@@ -120,6 +120,31 @@ module.exports.server = function (serv) {
 }
 
 module.exports.player = function (player, serv) {
+  // 1.19+ -- from nmp server example - not implementing chat singing yet, so all messages are sent as system_chat
+  function handleChatMessage (data) {
+    const fmtMessage = `<${player.username}> ${data.message}`
+    serv.broadcast(fmtMessage, { whitelist: serv.players, blacklist: [] })
+  }
+
+  player._client.on('chat_message', (data) => {
+    player.behavior('chat', {
+      message: data.message,
+      prefix: '<' + player.username + '> ',
+      text: data.message,
+      whitelist: serv.players,
+      blacklist: [],
+      data
+    }, ({ data }) => {
+      handleChatMessage(data)
+    })
+  })
+  player._client.on('chat_command', (data) => {
+    const command = data.command
+    player.behavior('command', { command }, ({ command }) => {
+      player.handleCommand(command)
+    })
+  })
+
   player._client.on('chat', ({ message } = {}) => {
     if (message[0] === '/') {
       player.behavior('command', { command: message.slice(1) }, ({ command }) => player.handleCommand(command))
@@ -144,8 +169,16 @@ module.exports.player = function (player, serv) {
   })
 
   player.chat = message => {
-    if (typeof message === 'string') message = serv.parseClassic(message)
-    player._client.write('chat', { message: JSON.stringify(message), position: 0, sender: '0' })
+    if (serv.supportFeature('signedChat')) {
+      return player.system(message)
+    } else {
+      const chatComponent = typeof message === 'string' ? serv.parseClassic(message) : message
+      player._client.write('chat', {
+        message: JSON.stringify(chatComponent),
+        position: 0,
+        sender: '0'
+      })
+    }
   }
 
   player.emptyChat = (count = 1) => {
@@ -155,7 +188,19 @@ module.exports.player = function (player, serv) {
   }
 
   player.system = message => {
-    if (typeof message === 'string') message = serv.parseClassic(message)
-    player._client.write('chat', { message: JSON.stringify(message), position: 2, sender: '0' })
+    const chatComponent = typeof message === 'string' ? serv.parseClassic(message) : message
+    if (serv.supportFeature('signedChat')) {
+      player._client.write('system_chat', {
+        content: JSON.stringify(chatComponent),
+        type: 1, // chat
+        isActionBar: false
+      })
+    } else {
+      player._client.write('chat', {
+        message: JSON.stringify(chatComponent),
+        position: 2,
+        sender: '0'
+      })
+    }
   }
 }
