@@ -1,3 +1,13 @@
+## 1.9.0
+* [1.19 (#663)](https://github.com/PrismarineJS/flying-squid/commit/c11dff3b2a9fe4bbe5f85c54e07c2e9ae7a8c288) (thanks @extremeheat)
+* [1.18 and 1.18.2 support (#662)](https://github.com/PrismarineJS/flying-squid/commit/acbee303ba3798962508e713e1c26f368152f393) (thanks @extremeheat)
+* [Bump mocha from 10.8.2 to 11.0.1 (#659)](https://github.com/PrismarineJS/flying-squid/commit/6f47f7209fdc680eabbbeb3112ca4f2e4e32d5bc) (thanks @dependabot[bot])
+* [Increase test timeout](https://github.com/PrismarineJS/flying-squid/commit/dc3091c7bdd30d779ebafa5c005f3de46f4a64e9) (thanks @rom1504)
+* [Add 1.17 to readme](https://github.com/PrismarineJS/flying-squid/commit/3b2f7e4e236ce92f88541accabe4af85024a226b) (thanks @rom1504)
+* [Fix spawning in 1.16.5 worlds, 1.17 (#660)](https://github.com/PrismarineJS/flying-squid/commit/414d4dcf0f4adcf2a13c8e8a9a314afc0eb0a5d5) (thanks @extremeheat)
+* [fixed gramma (#654)](https://github.com/PrismarineJS/flying-squid/commit/8f29e3a5604b25d8151b85920ecd2b406ede75e0) (thanks @privt00)
+* [Implement an option to send the sound as an ID instead of as a string. (#652)](https://github.com/PrismarineJS/flying-squid/commit/04a8fe7f30146c55161b2043e1a12b298000b6a3) (thanks @wgaylord)
+
 ## 1.8.0
 * [Add 1.16.5 support and future-proof version system (#645)](https://github.com/PrismarineJS/flying-squid/commit/f776de84b0570d0107efe9a889b32bb9b151d494) (thanks @Pandapip1)
 * [Improve per version CI following mineflayer example. (#646)](https://github.com/PrismarineJS/flying-squid/commit/98fc4546f3d785fbdb230998018e978993575d43) (thanks @rom1504)
