@@ -51,7 +51,5 @@ jobs:
           node-version: 18.x
       - name: Install Dependencies
         run: npm install
-      # TODO: Remove this when prismarine-chunk is updated
-      - run: curl "https://raw.githubusercontent.com/PrismarineJS/prismarine-chunk/refs/heads/pc1.18fixes/src/pc/1.18/ChunkColumn.js" -o node_modules/prismarine-chunk/src/pc/1.18/ChunkColumn.js
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
