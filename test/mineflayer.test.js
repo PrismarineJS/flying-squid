@@ -46,8 +46,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
     }
 
     async function waitMessage (bot, message) {
-      // const [msg1] = await once(bot, 'message')
-      // expect(msg1.extra[0].text).toEqual(message)
+      console.log('Waiting for message', [message])
       onceWithTimeout(bot, 'message', 5000, (msg) => {
         console.log('*msg', msg)
         return msg.toString() === message
@@ -103,7 +102,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
         version: version.minecraftVersion
       })
 
-      await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn'), waitForReady(bot), waitForReady(bot2)])
+      await Promise.all([once(bot, 'spawn'), once(bot2, 'spawn')])
       bot.entity.onGround = false
       bot2.entity.onGround = false
 
@@ -114,21 +113,21 @@ squid.testedVersions.forEach((testedVersion, i) => {
       console.log('bot2 is standing on', bot2StandingOn)
     })
 
-    function waitForReady (bot) {
-      const viewDistance = 2
-      const testExpectedNoChunks = (viewDistance * 2) * (viewDistance * 2)
-      return new Promise((resolve) => {
-        let recvChunks = 0
-        function onColumnLoad () {
-          recvChunks++
-          if (recvChunks === testExpectedNoChunks) {
-            bot.removeListener('chunkColumnLoad', onColumnLoad)
-            resolve()
-          }
-        }
-        bot.on('chunkColumnLoad', onColumnLoad)
-      })
-    }
+    // function waitForReady (bot) {
+    //   const viewDistance = 2
+    //   const testExpectedNoChunks = (viewDistance * 2) * (viewDistance * 2)
+    //   return new Promise((resolve) => {
+    //     let recvChunks = 0
+    //     function onColumnLoad () {
+    //       recvChunks++
+    //       if (recvChunks === testExpectedNoChunks) {
+    //         bot.removeListener('chunkColumnLoad', onColumnLoad)
+    //         resolve()
+    //       }
+    //     }
+    //     bot.on('chunkColumnLoad', onColumnLoad)
+    //   })
+    // }
 
     afterEach(async () => {
       console.log('Quitting server...')
