@@ -9,7 +9,7 @@ const { Vec3 } = require('vec3')
 const { onceWithTimeout } = require('../src/lib/utils')
 const expect = require('expect').default
 
-const DEBUG_PACKET_IO = true
+const DEBUG_PACKET_IO = false
 
 function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
@@ -176,12 +176,14 @@ squid.testedVersions.forEach((testedVersion, i) => {
         await once(bot, `blockUpdate:${pos}`, 4000)
         console.log('Block at', pos, bot.blockAt(pos))
 
-        const p = once(bot2, 'blockUpdate')
-        bot.dig(bot.blockAt(pos))
+        const p = onceWithTimeout(bot2, 'blockUpdate', 4000, (old, now) => {
+          return now.type === 0
+        })
+        await bot.dig(bot.blockAt(pos))
         console.log('Digging...')
 
         const [, newBlock] = await p
-        console.log('Dug.')
+        console.log('Dug.', newBlock)
         assertPosEqual(newBlock.position, pos)
         expect(newBlock.type).toEqual(0)
       })
@@ -388,15 +390,18 @@ squid.testedVersions.forEach((testedVersion, i) => {
   }).timeout(100 * 1000)
 })
 
-BigInt.prototype.toJSON = function () {
+BigInt.prototype.toJSON = function () { // eslint-disable-line no-extend-native
   return this.toString()
 }
 const SKIP_PACKETS = ['update_time']
 function logBotEvents (serv, bot, prefix) {
   bot._client.on('packet', (data, meta) => {
     if (serv.isReady && !SKIP_PACKETS.includes(meta.name)) {
-      console.log(prefix, 'Packet', meta.name, JSON.stringify(data)?.slice(0, 60))
+      console.log(prefix, 'Packet', meta, JSON.stringify(data)?.slice(0, 60))
     }
+  })
+  bot._client.on('state', (now, old) => {
+    console.log(prefix, '~ Client State Change', now, old)
   })
   bot.on('kicked', (...a) => {
     console.warn(prefix, '*Bot kicked', a)
@@ -421,6 +426,9 @@ function logBotEvents (serv, bot, prefix) {
 }
 function logClientboundEvents (serv, prefix = '') {
   serv._server.on('connection', (client) => {
+    client.on('state', (now, old) => {
+      console.log(prefix, '~ Server State Change', now, old)
+    })
     const oldWrite = client.write
     client.write = (name, param) => {
       if (SKIP_PACKETS.includes(name)) return
