@@ -133,7 +133,10 @@ module.exports.server = function (serv) {
       tag.toNetworkFormat = () => tag
       return tag
     } else {
-      if (typeof text === 'object') return text
+      if (typeof text === 'object') {
+        text.toNetworkFormat = () => JSON.stringify(text)
+        return text
+      }
       const ret = serv._createJsonChat(text)
       ret.toNetworkFormat = () => JSON.stringify(ret)
       return ret
