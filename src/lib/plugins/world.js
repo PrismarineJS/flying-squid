@@ -156,8 +156,9 @@ module.exports.player = function (player, serv, settings) {
     await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
   }
 
-  player._unloadChunk = (chunkX, chunkZ) => {
+  player._unloadChunk = (chunkX, chunkZ, isBecausePlayerLeft) => {
     serv._worldUnloadPlayerChunk(chunkX, chunkZ, player)
+    if (isBecausePlayerLeft) return
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -289,11 +290,11 @@ module.exports.player = function (player, serv, settings) {
     player.worldSendRestOfChunks()
   })
 
-  player._unloadAllChunks = () => {
+  player._unloadAllChunks = (isBecausePlayerLeft) => {
     if (!player?.loadedChunks) return
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
-      .forEach(([x, z]) => player._unloadChunk(x, z))
+      .forEach(([x, z]) => player._unloadChunk(x, z, isBecausePlayerLeft))
   }
 
   player.changeWorld = async (world, opt) => {
@@ -305,18 +306,7 @@ module.exports.player = function (player, serv, settings) {
       if (opt.gamemode !== player.gameMode) player.prevGameMode = player.gameMode
       player.gameMode = opt.gamemode
     }
-    player._client.write('respawn', {
-      previousGameMode: player.prevGameMode,
-      dimension: serv.registry.loginPacket?.dimension || 0,
-      worldName: serv.dimensionNames[opt.dimension || 0],
-      difficulty: opt.difficulty || serv.difficulty,
-      hashedSeed: serv.hashedSeed,
-      gamemode: opt.gamemode || player.gameMode,
-      levelType: 'default',
-      isDebug: false,
-      isFlat: false,
-      copyMetadata: true
-    })
+    player._sendRespawn(opt.difficulty, opt.gamemode, opt.dimension)
     await player.findSpawnPoint()
     player.position = player.spawnPoint
     player.sendSpawnPosition()
@@ -329,5 +319,7 @@ module.exports.player = function (player, serv, settings) {
 
     await player.waitPlayerLogin()
     player.worldSendRestOfChunks()
+    // Prevent player from falling through the world
+    player.sendSelfPosition(player.spawnPoint)
   }
 }

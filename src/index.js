@@ -56,6 +56,11 @@ class MCServer extends EventEmitter {
     this.registry = registry
     this.supportFeature = feature => customFeatures[feature] ?? registry.supportFeature(feature)
 
+    Promise.all([onceWithTimeout(this, 'pluginsReady', 5000), onceWithTimeout(this._server, 'listening', 5000)]).then(() => {
+      this.isReady = true
+      this.emit('ready')
+    })
+
     const promises = []
     for (const plugin of plugins.builtinPlugins) {
       promises.push(plugin.server?.(this, options))
@@ -66,14 +71,33 @@ class MCServer extends EventEmitter {
       this.debug?.('Loaded plugins')
     })
 
-    this.waitForReady = (timeout) => {
-      if (this.pluginsReady) return Promise.resolve()
-      return onceWithTimeout(this, 'pluginsReady', timeout)
+    this.waitForReady = async function (timeout) {
+      if (this.isReady) return true
+      return onceWithTimeout(this, 'ready', timeout)
     }
 
     if (options.logging === true) this.createLog()
     this._server.on('error', error => this.emit('error', error))
-    this._server.on('listening', () => this.emit('listening', this._server.socketServer.address().port))
+    this._server.on('listening', () => {
+      this.listeningPort = this._server.socketServer.address().port
+      this.emit('listening', this.listeningPort)
+    })
     this.emit('asap')
+  }
+
+  async destroy () {
+    this.isClosed = true
+    this.isReady = false
+    this.pluginsReady = false
+    this.emit('close')
+    for (const player of this.players) {
+      player._client.write = function () {
+        throw new Error('Tried to write to a closed connection')
+      }
+    }
+    if (this._server) {
+      this._server.close()
+      return onceWithTimeout(this._server, 'close', 1000)
+    }
   }
 }

@@ -356,6 +356,10 @@ serv.tabComplete.add('tabId', () => {
 
 ### Events
 
+#### "ready"
+
+Fires when the server is ready to accept connections (after `listening` and `pluginsReady` events).
+
 #### "error" (error)
 
 Fires when there is an error.
@@ -385,6 +389,10 @@ Fires when one tick has passed (default is 50ms). count is the total world ticks
 Emitted when `serv.pluginsReady` is set to `true`.
 
 ### Methods
+
+#### async serv.waitForReady()
+
+Returns a promise that resolves when the server is ready to accept connections.
 
 #### serv.formatMessage(message)
 

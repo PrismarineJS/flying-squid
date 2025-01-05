@@ -9,7 +9,7 @@ module.exports.server = function (serv, options) {
     client.on('error', error => serv.emit('clientError', client, error))
   })
 
-  serv._server.on('login', async (client) => {
+  serv._server.on('playerJoin', async (client) => {
     if (!serv.pluginsReady) {
       client.end('Server is still starting! Please wait before reconnecting.')
       serv.info(`[${client.socket.remoteAddress}] ${client.username} (${client.uuid}) disconnected as server is still starting`)
@@ -44,8 +44,6 @@ module.exports.server = function (serv, options) {
 module.exports.player = async function (player, serv, settings) {
   const Item = require('prismarine-item')(serv.registry)
 
-  let playerData
-
   async function addPlayer () {
     player.type = 'player'
     player.crouching = false // Needs added in prismarine-entity later
@@ -55,8 +53,8 @@ module.exports.player = async function (player, serv, settings) {
 
     await player.findSpawnPoint()
 
-    playerData = await playerDat.read(player.uuid, player.spawnPoint, settings.worldFolder)
-    Object.keys(playerData.player).forEach(k => { player[k] = playerData.player[k] })
+    const playerData = player._playerData = await playerDat.read(player.uuid, player.spawnPoint, settings.worldFolder)
+    for (const key in playerData.player) player[key] = playerData.player[key]
 
     serv.players.push(player)
     serv.uuidToPlayer[player.uuid] = player
@@ -64,7 +62,7 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   function updateInventory () {
-    playerData.inventory.forEach((item) => {
+    player._playerData.inventory.forEach((item) => {
       const itemName = item.id.value.slice(10) // skip game brand prefix
       const theItem = serv.registry.itemsByName[itemName] || serv.registry.blocksByName[itemName]
 
@@ -258,6 +256,7 @@ module.exports.player = async function (player, serv, settings) {
     }
 
     await addPlayer()
+    const pos = player.position
     sendLogin()
     sendStatus()
     player.sendSpawnPosition()
@@ -280,6 +279,8 @@ module.exports.player = async function (player, serv, settings) {
     player.worldSendRestOfChunks()
     sendChunkWhenMove()
 
-    player.save()
+    // Prevent player from sometimes falling through the world on login by resending their login position
+    player.sendSelfPosition(pos)
+    await player.save()
   }
 }

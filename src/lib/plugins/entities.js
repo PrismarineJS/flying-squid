@@ -36,8 +36,12 @@ module.exports.server = function (serv) {
   })
 }
 
-module.exports.entity = function (entity) {
+module.exports.entity = function (entity, serv) {
   entity.sendMetadata = (data) => {
+    if (serv.registry.version['>=']('1.20.2')) {
+      // todo: fix in mcdata
+      return
+    }
     entity._writeOthersNearby('entity_metadata', {
       entityId: entity.id,
       metadata: data

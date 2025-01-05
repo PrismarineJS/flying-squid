@@ -9,12 +9,18 @@ function onceWithTimeout (emitter, event, timeout = 10000, checkCondition) {
     const timeoutId = setTimeout(() => {
       reject(new Error(`Timeout waiting for '${event}' event`))
     }, timeout)
-    emitter.once(event, (data) => {
-      if (checkCondition && !checkCondition(data)) return
+    function onEvent (...data) {
+      if (checkCondition && !checkCondition(...data)) return
       clearTimeout(timeoutId)
-      resolve(data)
-    })
+      resolve([...data])
+      emitter.off(event, onEvent)
+    }
+    emitter.on(event, onEvent)
   })
+}
+
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 const skipMcPrefix = (name) => typeof name === 'string' ? name.replace(/^minecraft:/, '') : name
@@ -22,5 +28,6 @@ const skipMcPrefix = (name) => typeof name === 'string' ? name.replace(/^minecra
 module.exports = {
   onceWithTimeout,
   skipMcPrefix,
-  emitAsync
+  emitAsync,
+  sleep
 }
