@@ -51,7 +51,7 @@ module.exports.server = function (serv, { version }) {
       player._client.write('open_window', {
         windowId: player.windowId,
         inventoryType: invType,
-        windowTitle: JSON.stringify(title)
+        windowTitle: serv._createChatComponent(title).toNetworkFormat()
       })
       // Sending container content
       player._client.write('window_items', {

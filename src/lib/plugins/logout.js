@@ -16,9 +16,9 @@ module.exports.player = function (player, serv, { worldFolder }) {
   })
 
   player._client.on('end', async () => {
-    if (player && player.username) {
+    if (!player.disconnected) {
       player._unloadAllChunks(true /* becasuePlayerLeft */)
-      serv.broadcast(serv.color.yellow + player.username + ' left the game.')
+      if (player.username) serv.broadcast(serv.color.yellow + player.username + ' left the game.')
       serv._sendPlayerEventLeave(player)
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]))
       delete serv.entities[player.id]
@@ -28,6 +28,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
         serv.players.splice(index, 1)
       }
       delete serv.uuidToPlayer[player.uuid]
+      player.disconnected = true
     }
 
     player.save()
