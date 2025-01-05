@@ -156,8 +156,9 @@ module.exports.player = function (player, serv, settings) {
     await playerDat.save(player, settings.worldFolder, serv.supportFeature('attributeSnakeCase'), serv.supportFeature('theFlattening'))
   }
 
-  player._unloadChunk = (chunkX, chunkZ) => {
+  player._unloadChunk = (chunkX, chunkZ, isBecausePlayerLeft) => {
     serv._worldUnloadPlayerChunk(chunkX, chunkZ, player)
+    if (isBecausePlayerLeft) return
 
     if (serv.supportFeature('unloadChunkByEmptyChunk')) {
       player._client.write('map_chunk', {
@@ -289,11 +290,11 @@ module.exports.player = function (player, serv, settings) {
     player.worldSendRestOfChunks()
   })
 
-  player._unloadAllChunks = () => {
+  player._unloadAllChunks = (isBecausePlayerLeft) => {
     if (!player?.loadedChunks) return
     Object.keys(player.loadedChunks)
       .map((key) => key.split(',').map(a => parseInt(a)))
-      .forEach(([x, z]) => player._unloadChunk(x, z))
+      .forEach(([x, z]) => player._unloadChunk(x, z, isBecausePlayerLeft))
   }
 
   player.changeWorld = async (world, opt) => {

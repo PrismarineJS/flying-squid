@@ -17,7 +17,7 @@ module.exports.player = function (player, serv, { worldFolder }) {
 
   player._client.on('end', async () => {
     if (player && player.username) {
-      player._unloadAllChunks()
+      player._unloadAllChunks(true /* becasuePlayerLeft */)
       serv.broadcast(serv.color.yellow + player.username + ' left the game.')
       serv._sendPlayerEventLeave(player)
       player.nearbyPlayers().forEach(otherPlayer => otherPlayer.despawnEntities([player]))

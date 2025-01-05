@@ -18,13 +18,13 @@ function assertPosEqual (actual, expected, precision = 1) {
 function waitForPromises (map, timeout) {
   const promises = Object.entries(map)
   let count = promises.length
-  console.log('Waiting for', promises.map(([name]) => name))
+  console.log('🤚 Waiting for', promises.map(([name]) => name))
   return new Promise((resolve, reject) => {
     if (timeout) setTimeout(() => reject(new Error('Timeout waiting for promises')), timeout)
     for (const [name, promise] of promises) {
       promise.then(() => {
         count--
-        console.log('Promise', name, 'resolved')
+        console.log('👍 Promise', name, 'resolved')
         if (count === 0) {
           resolve()
         }
