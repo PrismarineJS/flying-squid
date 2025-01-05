@@ -84,4 +84,20 @@ class MCServer extends EventEmitter {
     })
     this.emit('asap')
   }
+
+  async destroy () {
+    this.isClosed = true
+    this.isReady = false
+    this.pluginsReady = false
+    this.emit('close')
+    for (const player of this.players) {
+      player._client.write = function () {
+        throw new Error('Tried to write to a closed connection')
+      }
+    }
+    if (this._server) {
+      this._server.close()
+      return onceWithTimeout(this._server, 'close', 1000)
+    }
+  }
 }

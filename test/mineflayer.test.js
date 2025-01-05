@@ -6,8 +6,10 @@ const squid = require('flying-squid')
 const settings = require('../config/default-settings.json')
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
-const { sleep, onceWithTimeout } = require('../src/lib/utils')
+const { onceWithTimeout } = require('../src/lib/utils')
 const expect = require('expect').default
+
+const DEBUG_PACKET_IO = true
 
 function assertPosEqual (actual, expected, precision = 1) {
   expect(actual.distanceTo(expected)).toBeLessThan(precision)
@@ -103,6 +105,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
       const [port] = await once(serv, 'listening')
       await serv.waitForReady()
       console.log('[test] Server is started on', port, version.minecraftVersion)
+
       bot = mineflayer.createBot({
         host: 'localhost',
         port,
@@ -116,9 +119,17 @@ squid.testedVersions.forEach((testedVersion, i) => {
         version: version.minecraftVersion
       })
 
+      if (DEBUG_PACKET_IO) {
+        logClientboundEvents(serv, '')
+        logBotEvents(serv, bot, 1)
+        logBotEvents(serv, bot2, 2)
+      }
+
       await waitForPromises({
         'bot spawn': once(bot, 'spawn'),
-        'bot2 spawn': once(bot2, 'spawn')
+        'bot2 spawn': once(bot2, 'spawn'),
+        'bot chunks': waitForReady(bot),
+        'bot2 chunks': waitForReady(bot2)
       })
       bot.entity.onGround = false
       bot2.entity.onGround = false
@@ -130,21 +141,21 @@ squid.testedVersions.forEach((testedVersion, i) => {
       console.log('bot2 is standing on', bot2StandingOn)
     })
 
-    // function waitForReady (bot) {
-    //   const viewDistance = 2
-    //   const testExpectedNoChunks = (viewDistance * 2) * (viewDistance * 2)
-    //   return new Promise((resolve) => {
-    //     let recvChunks = 0
-    //     function onColumnLoad () {
-    //       recvChunks++
-    //       if (recvChunks === testExpectedNoChunks) {
-    //         bot.removeListener('chunkColumnLoad', onColumnLoad)
-    //         resolve()
-    //       }
-    //     }
-    //     bot.on('chunkColumnLoad', onColumnLoad)
-    //   })
-    // }
+    function waitForReady (bot) {
+      const viewDistance = 2
+      const testExpectedNoChunks = (viewDistance * 2) * (viewDistance * 2)
+      return new Promise((resolve) => {
+        let recvChunks = 0
+        function onColumnLoad () {
+          recvChunks++
+          if (recvChunks === testExpectedNoChunks) {
+            bot.removeListener('chunkColumnLoad', onColumnLoad)
+            resolve()
+          }
+        }
+        bot.on('chunkColumnLoad', onColumnLoad)
+      })
+    }
 
     afterEach(async () => {
       console.log('Quitting server...')
@@ -162,8 +173,8 @@ squid.testedVersions.forEach((testedVersion, i) => {
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         // Set a dirt block below the bot so we can easily dig
         bot.chat(`/setblock ${pos.x} ${pos.y} ${pos.z} dirt`)
-        await sleep(1000)
-        console.log('Block at', bot.entity.position, bot.blockAt(pos))
+        await once(bot, `blockUpdate:${pos}`, 4000)
+        console.log('Block at', pos, bot.blockAt(pos))
 
         const p = once(bot2, 'blockUpdate')
         bot.dig(bot.blockAt(pos))
@@ -376,3 +387,45 @@ squid.testedVersions.forEach((testedVersion, i) => {
     }).timeout(120 * 1000)
   }).timeout(100 * 1000)
 })
+
+BigInt.prototype.toJSON = function () {
+  return this.toString()
+}
+const SKIP_PACKETS = ['update_time']
+function logBotEvents (serv, bot, prefix) {
+  bot._client.on('packet', (data, meta) => {
+    if (serv.isReady && !SKIP_PACKETS.includes(meta.name)) {
+      console.log(prefix, 'Packet', meta.name, JSON.stringify(data)?.slice(0, 60))
+    }
+  })
+  bot.on('kicked', (...a) => {
+    console.warn(prefix, '*Bot kicked', a)
+  })
+  bot.on('error', (err) => {
+    console.error(prefix, '*Bot error', err)
+    process.exit(1)
+  })
+  bot._client.socket.on('error', (err) => {
+    console.error(prefix, '*SOCKET Bot error', err)
+    process.exit(1)
+  })
+  bot.on('end', (reason) => {
+    console.log(prefix, '*Bot END', reason)
+  })
+  const oldWrite = bot._client.write
+  bot._client.write = (name, payload) => {
+    if (SKIP_PACKETS.includes(name)) return
+    console.log(prefix, 'C->S', [name], JSON.stringify(payload)?.slice(0, 60))
+    return oldWrite.call(bot._client, name, payload)
+  }
+}
+function logClientboundEvents (serv, prefix = '') {
+  serv._server.on('connection', (client) => {
+    const oldWrite = client.write
+    client.write = (name, param) => {
+      if (SKIP_PACKETS.includes(name)) return
+      console.log(prefix, 'S->C', client.username, [name], JSON.stringify(param)?.slice(0, 60))
+      return oldWrite.call(client, name, param)
+    }
+  })
+}

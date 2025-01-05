@@ -6,8 +6,7 @@ module.exports.server = function (serv) {
       player.kick(reason)
       return once(player, 'disconnected')
     }))
-    serv._server.close()
-    await once(serv._server, 'close')
+    await serv.destroy()
   }
 }
 

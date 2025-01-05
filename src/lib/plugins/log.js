@@ -75,7 +75,7 @@ module.exports.server = function (serv, settings) {
     serv.log('[' + colors.yellow('WARN') + ']: ' + message)
   }
 
-  if (isInNode && !process.env.CI) {
+  if (isInNode && !process.env.CI && process.stdout.isTTY) {
     console.log = (function () {
       const orig = console.log
       return function () {
