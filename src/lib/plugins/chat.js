@@ -1,9 +1,8 @@
+const nbt = require('prismarine-nbt')
+
 module.exports.server = function (serv) {
   serv.broadcast = (message, { whitelist = serv.players, blacklist = [], system = false } = {}) => {
     if (whitelist.type === 'player') whitelist = [whitelist]
-
-    if (typeof message === 'string') message = serv.parseClassic(message)
-
     whitelist.filter(w => blacklist.indexOf(w) === -1).forEach(player => {
       if (!system) player.chat(message)
       else player.system(message)
@@ -43,7 +42,8 @@ module.exports.server = function (serv) {
     reset: '&r'
   }
 
-  serv.parseClassic = (message) => {
+  // TODO: update and use prismarine-chat (doesn't yet support NBT chat components beyond decoding them)
+  serv._createJsonChat = (message) => {
     if (typeof message === 'object') return message
     const messageList = []
     let text = ''
@@ -117,6 +117,32 @@ module.exports.server = function (serv) {
       }
     } else return { text: '' }
   }
+
+  serv._createChatComponent = (text) => {
+    if (serv.supportFeature('chatPacketsUseNbtComponents')) {
+      if (typeof text !== 'string') {
+        if (text.text) text = text.text
+        else {
+          serv.debug?.('Cannot yet convert JSON chat messages to NBT ; re-call in plaintext: ' + JSON.stringify(text))
+          text = JSON.stringify(text)
+        }
+      }
+      const tag = nbt.comp({
+        text: nbt.string(text)
+      })
+      tag.toNetworkFormat = () => tag
+      return tag
+    } else {
+      if (typeof text === 'object') {
+        text.toNetworkFormat = () => JSON.stringify(text)
+        return text
+      }
+      const ret = serv._createJsonChat(text)
+      ret.toNetworkFormat = () => JSON.stringify(ret)
+      return ret
+    }
+  }
+  serv._createNetworkEncodedChatComponent = (val) => serv._createChatComponent(val).toNetworkFormat()
 }
 
 module.exports.player = function (player, serv) {
@@ -157,9 +183,9 @@ module.exports.player = function (player, serv) {
         whitelist: serv.players,
         blacklist: []
       }, ({ prefix, text, whitelist, blacklist }) => {
-        const obj = serv.parseClassic(prefix)
+        const obj = serv._createJsonChat(prefix)
         if (!obj.extra) obj.extra = []
-        obj.extra.push(serv.parseClassic(text))
+        obj.extra.push(serv._createJsonChat(text))
         serv.broadcast(obj, {
           whitelist,
           blacklist
@@ -172,7 +198,7 @@ module.exports.player = function (player, serv) {
     if (serv.supportFeature('signedChat')) {
       return player.system(message)
     } else {
-      const chatComponent = typeof message === 'string' ? serv.parseClassic(message) : message
+      const chatComponent = serv._createJsonChat(message)
       player._client.write('chat', {
         message: JSON.stringify(chatComponent),
         position: 0,
@@ -188,16 +214,17 @@ module.exports.player = function (player, serv) {
   }
 
   player.system = message => {
-    const chatComponent = typeof message === 'string' ? serv.parseClassic(message) : message
+    const chatComponent = serv._createChatComponent(message)
     if (serv.supportFeature('signedChat')) {
       player._client.write('system_chat', {
-        content: JSON.stringify(chatComponent),
+        // 1.20.3+ writes NBT in chat packets ; below is stringified JSON chat components
+        content: chatComponent.toNetworkFormat(),
         type: 1, // chat
         isActionBar: false
       })
     } else {
       player._client.write('chat', {
-        message: JSON.stringify(chatComponent),
+        message: chatComponent.toNetworkFormat(),
         position: 2,
         sender: '0'
       })

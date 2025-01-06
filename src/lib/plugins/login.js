@@ -7,6 +7,12 @@ const plugins = require('./index')
 module.exports.server = function (serv, options) {
   serv._server.on('connection', (client) => {
     client.on('error', error => serv.emit('clientError', client, error))
+    client.on('state', (now) => {
+      if (now === 'configuration') {
+        client.write('feature_flags', { features: ['minecraft:vanilla'] })
+        client.write('select_known_packs', { packs: [] })
+      }
+    })
   })
 
   serv._server.on('playerJoin', async (client) => {
@@ -56,7 +62,10 @@ module.exports.player = async function (player, serv, settings) {
     const playerData = player._playerData = await playerDat.read(player.uuid, player.spawnPoint, settings.worldFolder)
     for (const key in playerData.player) player[key] = playerData.player[key]
 
-    serv.players.push(player)
+    if (!player.disconnected) {
+      // it's possible player gets kicked during login process ; don't add them to the server
+      serv.players.push(player)
+    }
     serv.uuidToPlayer[player.uuid] = player
     player.loadedChunks = {}
   }
@@ -83,6 +92,7 @@ module.exports.player = async function (player, serv, settings) {
     // send init data so client will start rendering world
     player._client.write('login', {
       ...serv.registry.loginPacket,
+      enforcesSecureChat: serv._server.options.enforcesSecureChat,
       entityId: player.id,
       levelType: 'default',
       gameMode: player.gameMode,

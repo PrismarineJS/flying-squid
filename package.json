@@ -35,7 +35,7 @@
     "exit-hook": "^2.2.1",
     "flatmap": "^0.0.3",
     "long": "^5.1.0",
-    "minecraft-protocol": "^1.44.0",
+    "minecraft-protocol": "^1.50.0",
     "moment": "^2.10.6",
     "needle": "^2.5.0",
     "node-gzip": "^1.1.2",

@@ -21,7 +21,13 @@ module.exports.server = function (serv) {
       offsetZ: size.z,
       particleData: 1.0,
       particles: count,
-      data: []
+      amount: count, // 1.20.5+
+      data: [],
+      velocityOffset: 0, // 1.20.5+
+      particle: {
+        type: 'bubble',
+        data: null
+      }
     }, players.filter(p => blacklist.indexOf(p) === -1))
   }
 

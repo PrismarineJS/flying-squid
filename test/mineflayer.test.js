@@ -365,7 +365,8 @@ squid.testedVersions.forEach((testedVersion, i) => {
       function waitMessagePromise (message) {
         return new Promise((resolve) => {
           const listener = (msg) => {
-            if (msg.extra[0].text === message) {
+            const text = msg.extra?.[0].text ?? msg.text
+            if (text === message) {
               bot.removeListener('message', listener)
               resolve()
             }
