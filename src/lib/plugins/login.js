@@ -10,7 +10,9 @@ module.exports.server = function (serv, options) {
     client.on('state', (now) => {
       if (now === 'configuration') {
         client.write('feature_flags', { features: ['minecraft:vanilla'] })
-        client.write('select_known_packs', { packs: [] })
+        // Should this be put into loginPacket.json.. or figure out how to generate it inside flying-squid/what parts we really need
+        // to send.
+        client.write('tags', require('./loginTags.json'))
       }
     })
   })
