@@ -66,7 +66,7 @@
     "expect": "^29.1.2",
     "flying-squid": "file:.",
     "minecraft-wrap": "^1.2.3",
-    "mineflayer": "github:prismarinejs/mineflayer#1.21.3",
+    "mineflayer": "^4.24.0",
     "mocha": "^11.0.1",
     "standard": "^17.0.0"
   }
