@@ -1,3 +1,6 @@
+## 1.11.0
+* [1.21.4 (#672)](https://github.com/PrismarineJS/flying-squid/commit/3408d2543eba3c7461d0bbdfc90e422ee0abe2dc) (thanks @extremeheat)
+
 ## 1.10.0
 * [1.21.3 (#670)](https://github.com/PrismarineJS/flying-squid/commit/02245a47cbf07b708bc4f531223481b35a875c87) (thanks @extremeheat)
 * [Add 1.21 to README.md](https://github.com/PrismarineJS/flying-squid/commit/529d5a1a847fcde9343aa14d36ababccf60ba068) (thanks @rom1504)
