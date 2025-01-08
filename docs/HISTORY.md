@@ -1,3 +1,9 @@
+## 1.10.0
+* [1.21.3 (#670)](https://github.com/PrismarineJS/flying-squid/commit/02245a47cbf07b708bc4f531223481b35a875c87) (thanks @extremeheat)
+* [Add 1.21 to README.md](https://github.com/PrismarineJS/flying-squid/commit/529d5a1a847fcde9343aa14d36ababccf60ba068) (thanks @rom1504)
+* [1.20.3, 1.20.5 and 1.21.1 support (#669)](https://github.com/PrismarineJS/flying-squid/commit/7857fac3dbf342ab829b8ff013d58e3e6074e6a8) (thanks @extremeheat)
+* [1.20.2 support (#667)](https://github.com/PrismarineJS/flying-squid/commit/15ebc0094e953830ec9fe3d3f7b32559c3b9ebe4) (thanks @extremeheat)
+
 ## 1.9.0
 * [1.19 (#663)](https://github.com/PrismarineJS/flying-squid/commit/c11dff3b2a9fe4bbe5f85c54e07c2e9ae7a8c288) (thanks @extremeheat)
 * [1.18 and 1.18.2 support (#662)](https://github.com/PrismarineJS/flying-squid/commit/acbee303ba3798962508e713e1c26f368152f393) (thanks @extremeheat)
