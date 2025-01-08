@@ -35,7 +35,7 @@
     "exit-hook": "^2.2.1",
     "flatmap": "^0.0.3",
     "long": "^5.1.0",
-    "minecraft-protocol": "extremeheat/node-minecraft-protocol#1.21.4",
+    "minecraft-protocol": "^1.53.0",
     "moment": "^2.10.6",
     "needle": "^2.5.0",
     "node-gzip": "^1.1.2",
