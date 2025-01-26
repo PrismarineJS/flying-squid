@@ -173,7 +173,7 @@ squid.testedVersions.forEach((testedVersion, i) => {
         const pos = bot.entity.position.offset(0, -1, 0).floored()
         // Set a dirt block below the bot so we can easily dig
         bot.chat(`/setblock ${pos.x} ${pos.y} ${pos.z} dirt`)
-        await once(bot, `blockUpdate:${pos}`, 4000)
+        await onceWithTimeout(bot, `blockUpdate:${pos}`, 4000)
         console.log('Block at', pos, bot.blockAt(pos))
 
         const p = onceWithTimeout(bot2, 'blockUpdate', 4000, (old, now) => {
