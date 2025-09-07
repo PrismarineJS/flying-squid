@@ -110,6 +110,9 @@ For development see the [API documentation](API.md), [CONTRIBUTE.md](CONTRIBUTE.
 flying-squid is also a server lib. Here is a basic example of usage:
 
 ```js
+import {createRequire} from "node:module";
+const require = createRequire(import.meta.url);
+
 const mcServer = require('flying-squid')
 
 mcServer.createMCServer({
