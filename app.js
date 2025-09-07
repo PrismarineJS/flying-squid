@@ -1,3 +1,7 @@
+// global dependancies
+import {createRequire} from "node:module";
+const require = createRequire(import.meta.url);
+
 #!/usr/bin/env node
 // process.env.DEBUG = 'minecraft-protocol'
 Error.stackTraceLimit = 1000
