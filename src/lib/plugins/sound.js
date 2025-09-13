@@ -21,8 +21,7 @@ module.exports.server = function (serv, { version }) {
           player._client.write('sound_effect', {
             sound: {
               data: {
-                soundName: sound,
-                range: undefined
+                soundName: sound
               }
             },
             soundCategory,

@@ -180,7 +180,7 @@ module.exports.player = async function (player, serv, settings) {
       })
     } else {
       serv._writeAll('player_info', {
-        action: 'update_gamemode',
+        action: 'update_game_mode',
         data: [{
           uuid: player.uuid,
           gamemode: player.gameMode
