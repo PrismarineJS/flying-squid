@@ -12,7 +12,6 @@ jobs:
   copilot-setup-steps:
     name: Install
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     permissions:
       contents: write
       actions: write
