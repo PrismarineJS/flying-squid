@@ -152,25 +152,41 @@ module.exports.player = async function (player, serv, settings) {
   // packet in 1.19+ as it also requires some chat signing key logic to be implemented
 
   serv._sendPlayerEventLeave = function (player) {
-    if (serv.registry.version['>=']('1.19')) return
-    player._writeOthers('player_info', {
-      action: 4,
-      data: [{
-        UUID: player.uuid,
-        uuid: player.uuid // 1.19.3+
-      }]
-    })
+    if (serv.supportFeature('playerInfoActionIsBitfield')) {
+      player._writeOthers('player_info', {
+        action: { remove_player: true },
+        data: [{
+          uuid: player.uuid
+        }]
+      })
+    } else {
+      player._writeOthers('player_info', {
+        action: 'remove_player',
+        data: [{
+          uuid: player.uuid
+        }]
+      })
+    }
   }
 
   serv._sendPlayerEventUpdateGameMode = function (player) {
-    if (serv.registry.version['>=']('1.19')) return
-    serv._writeAll('player_info', {
-      action: 1,
-      data: [{
-        UUID: player.uuid,
-        gamemode: player.gameMode
-      }]
-    })
+    if (serv.supportFeature('playerInfoActionIsBitfield')) {
+      serv._writeAll('player_info', {
+        action: { update_game_mode: true },
+        data: [{
+          uuid: player.uuid,
+          gamemode: player.gameMode
+        }]
+      })
+    } else {
+      serv._writeAll('player_info', {
+        action: 'update_gamemode',
+        data: [{
+          uuid: player.uuid,
+          gamemode: player.gameMode
+        }]
+      })
+    }
   }
 
   player.setGameMode = (gameMode) => {
@@ -185,31 +201,59 @@ module.exports.player = async function (player, serv, settings) {
   }
 
   serv._sendPlayerEventNewJoin = function (player) {
-    if (serv.registry.version['>=']('1.19')) return
-    player._writeOthers('player_info', {
-      action: 0,
-      data: [{
-        UUID: player.uuid,
-        name: player.username,
-        properties: player.profileProperties,
-        gamemode: player.gameMode,
-        ping: player._client.latency
-      }]
-    })
+    if (serv.supportFeature('playerInfoActionIsBitfield')) {
+      player._writeOthers('player_info', {
+        action: { add_player: true },
+        data: [{
+          uuid: player.uuid,
+          player: {
+            name: player.username,
+            properties: player.profileProperties
+          },
+          gamemode: player.gameMode,
+          latency: player._client.latency
+        }]
+      })
+    } else {
+      player._writeOthers('player_info', {
+        action: 'add_player',
+        data: [{
+          uuid: player.uuid,
+          name: player.username,
+          properties: player.profileProperties,
+          gamemode: player.gameMode,
+          ping: player._client.latency
+        }]
+      })
+    }
   }
 
   serv._sendPlayerList = function (toPlayer) {
-    if (serv.registry.version['>=']('1.19')) return
-    toPlayer._writeOthers('player_info', {
-      action: 0,
-      data: serv.players.map((otherPlayer) => ({
-        UUID: otherPlayer.uuid,
-        name: otherPlayer.username,
-        properties: otherPlayer.profileProperties,
-        gamemode: otherPlayer.gameMode,
-        ping: otherPlayer._client.latency
-      }))
-    })
+    if (serv.supportFeature('playerInfoActionIsBitfield')) {
+      toPlayer._writeOthers('player_info', {
+        action: { add_player: true },
+        data: serv.players.map((otherPlayer) => ({
+          uuid: otherPlayer.uuid,
+          player: {
+            name: otherPlayer.username,
+            properties: otherPlayer.profileProperties
+          },
+          gamemode: otherPlayer.gameMode,
+          latency: otherPlayer._client.latency
+        }))
+      })
+    } else {
+      toPlayer._writeOthers('player_info', {
+        action: 'add_player',
+        data: serv.players.map((otherPlayer) => ({
+          uuid: otherPlayer.uuid,
+          name: otherPlayer.username,
+          properties: otherPlayer.profileProperties,
+          gamemode: otherPlayer.gameMode,
+          ping: otherPlayer._client.latency
+        }))
+      })
+    }
   }
 
   function fillTabList () {
@@ -219,6 +263,22 @@ module.exports.player = async function (player, serv, settings) {
         action: 2,
         data: serv.players.map(otherPlayer => ({
           UUID: otherPlayer.uuid,
+          ping: otherPlayer._client.latency
+        }))
+      }), 5000)
+    } else if (serv.supportFeature('playerInfoActionIsBitfield')) {
+      setInterval(() => player._client.write('player_info', {
+        action: { update_latency: true },
+        data: serv.players.map(otherPlayer => ({
+          uuid: otherPlayer.uuid,
+          latency: otherPlayer._client.latency
+        }))
+      }), 5000)
+    } else {
+      setInterval(() => player._client.write('player_info', {
+        action: 'update_latency',
+        data: serv.players.map(otherPlayer => ({
+          uuid: otherPlayer.uuid,
           ping: otherPlayer._client.latency
         }))
       }), 5000)
