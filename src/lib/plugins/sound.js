@@ -17,11 +17,12 @@ module.exports.server = function (serv, { version }) {
         const iniPos = position ? position.scaled(1 / 32) : player.position.scaled(1 / 32)
         const pos = iniPos.scaled(8).floored()
         if (serv.supportFeature('removedNamedSoundEffectPacket')) { // 1.19.3 removes named_sound_effect
+          // Use new Holder structure for sound
           player._client.write('sound_effect', {
-            soundId: 0,
-            soundEvent: {
-              resource: sound,
-              range: undefined
+            sound: {
+              data: {
+                soundName: sound
+              }
             },
             soundCategory,
             x: pos.x,
@@ -59,9 +60,11 @@ module.exports.server = function (serv, { version }) {
       .forEach(player => {
         const iniPos = position ? position.scaled(1 / 32) : player.position.scaled(1 / 32)
         const pos = iniPos.scaled(8).floored()
-        // only packet still in fixed position in all versions
+        // Use new Holder structure for sound ID
         player._client.write('sound_effect', {
-          soundId,
+          sound: {
+            soundId
+          },
           soundCategory,
           x: pos.x,
           y: pos.y,
