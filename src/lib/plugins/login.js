@@ -63,7 +63,6 @@ module.exports.player = async function (player, serv, settings) {
   async function addPlayer () {
     player.type = 'player'
     player.crouching = false // Needs added in prismarine-entity later
-    player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
     player.username = player._client.username
     const resolvedUuid = player._client.uuid || getOfflineUuid(player.username)
     player._client.uuid = resolvedUuid
