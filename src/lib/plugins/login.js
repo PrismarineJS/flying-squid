@@ -1,5 +1,6 @@
 const Vec3 = require('vec3').Vec3
 const crypto = require('crypto')
+const UUID = require('uuid-1345')
 const playerDat = require('../playerDat')
 const convertInventorySlotId = require('../convertInventorySlotId')
 const plugins = require('./index')
@@ -52,12 +53,21 @@ module.exports.server = function (serv, options) {
 module.exports.player = async function (player, serv, settings) {
   const Item = require('prismarine-item')(serv.registry)
 
+  function getOfflineUuid (username) {
+    const md5 = crypto.createHash('md5').update(`OfflinePlayer:${username}`, 'utf8').digest()
+    md5[6] = (md5[6] & 0x0f) | 0x30
+    md5[8] = (md5[8] & 0x3f) | 0x80
+    return UUID.stringify(md5)
+  }
+
   async function addPlayer () {
     player.type = 'player'
     player.crouching = false // Needs added in prismarine-entity later
     player.op = settings['everybody-op'] // REMOVE THIS WHEN OUT OF TESTING
     player.username = player._client.username
-    player.uuid = player._client.uuid
+    const resolvedUuid = player._client.uuid || getOfflineUuid(player.username)
+    player._client.uuid = resolvedUuid
+    player.uuid = resolvedUuid
 
     await player.findSpawnPoint()
 
