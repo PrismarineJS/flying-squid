@@ -88,7 +88,7 @@
       - [entity.viewDistance](#entityviewdistance)
       - [entity.health](#entityhealth)
       - [entity.pitch](#entitypitch)
-      - [entity.headPitch](#entityheadpitch)
+      - [entity.headYaw](#entityheadyaw)
       - [entity.yaw](#entityyaw)
       - [entity.gravity](#entitygravity)
       - [entity.terminalvelocity](#entityterminalvelocity)
@@ -608,17 +608,17 @@ How far away entities are loaded/unloaded (used for players ATM)
 
 How many half-hearts an entity has of health (e.g. Player has 20). Not really used for objects, only players and mobs.
 
-#### entity.pitch
-
-Pitch of entity (rotation sideways)
-
-#### entity.headPitch
-
-Pitch of entity's head
-
 #### entity.yaw
 
-Yaw of entity (rotation looking up and down)
+Yaw of entity (rotation sideways)
+
+#### entity.headYaw
+
+Yaw of entity's head
+
+#### entity.pitch
+
+Pitch of entity (rotation looking up and down)
 
 #### entity.gravity
 

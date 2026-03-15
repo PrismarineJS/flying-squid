@@ -76,13 +76,13 @@ module.exports.server = function (serv, options) {
     return object
   }
 
-  serv.spawnMob = (type, world, position, { pitch = 0, yaw = 0, headPitch = 0, velocity = new Vec3(0, 0, 0), metadata = [] } = {}) => {
+  serv.spawnMob = (type, world, position, { pitch = 0, yaw = 0, headYaw = 0, velocity = new Vec3(0, 0, 0), metadata = [] } = {}) => {
     const mob = serv.initEntity('mob', type, world, position)
     mob.uuid = UUID.v4()
     mob.name = mobsById[type].name
     mob.velocity = velocity
     mob.pitch = pitch
-    mob.headPitch = headPitch
+    mob.headYaw = headYaw
     mob.yaw = yaw
     mob.gravity = new Vec3(0, -20, 0)
     mob.terminalvelocity = new Vec3(27, 27, 27)
@@ -331,7 +331,7 @@ module.exports.entity = function (entity, serv) {
       z: entityPosition.z,
       yaw: entity.yaw,
       pitch: entity.pitch,
-      headPitch: entity.headPitch,
+      headYaw: entity.headYaw,
       currentItem: 0,
       objectData: entity.data,
       velocityX: scaledVelocity.x,
