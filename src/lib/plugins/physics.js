@@ -47,6 +47,7 @@ module.exports.entity = function (entity, serv, { version }) {
     scaledVelocity = scaledVelocity.floored()
     entity._writeNearby('entity_velocity', {
       entityId: entity.id,
+      velocity: scaledVelocity,
       velocityX: scaledVelocity.x,
       velocityY: scaledVelocity.y,
       velocityZ: scaledVelocity.z
