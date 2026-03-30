@@ -53,7 +53,7 @@
     "spiralloop": "^1.0.2",
     "uuid-1345": "^1.0.1",
     "vec3": "^0.1.6",
-    "yargs": "^17.0.1"
+    "yargs": "^18.0.0"
   },
   "repository": {
     "type": "git",
