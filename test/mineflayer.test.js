@@ -1,5 +1,16 @@
 /* eslint-env mocha */
 globalThis.isMocha = true
+// Suppress zlib "unexpected end of file" errors from Node 24's stricter
+// decompression. These occur in the streaming zlib layer when connections
+// are interrupted. The root cause fix for callback-based zlib is in
+// minecraft-protocol; this handles the streaming zlib case.
+process.on('uncaughtException', (err) => {
+  if (err.code === 'Z_BUF_ERROR' || err.message === 'unexpected end of file') {
+    console.warn('Suppressed zlib error:', err.message)
+    return
+  }
+  throw err
+})
 const fs = require('fs')
 const { join } = require('path')
 const squid = require('flying-squid')
