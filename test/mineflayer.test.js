@@ -1,16 +1,5 @@
 /* eslint-env mocha */
 globalThis.isMocha = true
-// Node 24's stricter zlib throws uncaught errors from deep in the
-// dependency chain (prismarine-nbt's async gunzip, internal Zlib streams).
-// These occur when world data or compressed packets are truncated during
-// test teardown. Suppress only zlib-specific errors.
-process.on('uncaughtException', (err) => {
-  if (err.message === 'unexpected end of file' || err.code === 'Z_BUF_ERROR') {
-    console.warn('Suppressed zlib error:', err.message)
-    return
-  }
-  throw err
-})
 const fs = require('fs')
 const { join } = require('path')
 const squid = require('flying-squid')
