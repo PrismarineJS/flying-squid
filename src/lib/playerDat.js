@@ -4,9 +4,14 @@ const fs = require('fs')
 const Vec3 = require('vec3').Vec3
 const nbt = require('prismarine-nbt')
 const long = require('long')
-const { gzip } = require('node-gzip')
+const zlib = require('zlib')
 const { promisify } = require('util')
 const convertInventorySlotId = require('./convertInventorySlotId')
+
+const _gzip = promisify(zlib.gzip)
+async function gzip (data) {
+  try { return await _gzip(data) } catch (err) { throw new Error('gzip failed: ' + err.message) }
+}
 
 const nbtParse = promisify(nbt.parse)
 
