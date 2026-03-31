@@ -8,9 +8,8 @@ const zlib = require('zlib')
 const { promisify } = require('util')
 const convertInventorySlotId = require('./convertInventorySlotId')
 
-const _gzip = promisify(zlib.gzip)
-async function gzip (data) {
-  try { return await _gzip(data) } catch (err) { throw new Error('gzip failed: ' + err.message) }
+function gzip (data) {
+  return zlib.gzipSync(data)
 }
 
 const nbtParse = promisify(nbt.parse)
