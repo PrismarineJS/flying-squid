@@ -52,4 +52,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Start Tests
-        run: npm run mocha_test -- --retries 3 -g ${{ matrix.mcVersion }}v
+        run: |
+          for attempt in 1 2 3; do
+            npm run mocha_test -- -g ${{ matrix.mcVersion }}v && exit 0
+            echo "Attempt $attempt failed, retrying..."
+          done
+          exit 1
