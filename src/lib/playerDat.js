@@ -8,7 +8,9 @@ const zlib = require('zlib')
 const { promisify } = require('util')
 const convertInventorySlotId = require('./convertInventorySlotId')
 
-const gzip = promisify(zlib.gzip)
+// Use sync gzip to avoid uncaught async zlib errors during teardown.
+// See nodejs/node#62325, nodejs/node#61202
+const gzip = (data) => Promise.resolve(zlib.gzipSync(data))
 
 const nbtParse = promisify(nbt.parse)
 
