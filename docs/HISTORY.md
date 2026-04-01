@@ -1,3 +1,14 @@
+## 1.12.0
+* [Update CI to Node 24 + fix async zlib crashes (#705)](https://github.com/PrismarineJS/flying-squid/commit/af2d1d188cfef8375272e8f6c13f4d9bf4f23feb) (thanks @rom1504)
+* [Fix publish condition for npm-publish v4 (#704)](https://github.com/PrismarineJS/flying-squid/commit/52787f7f4d9b6cccc5c1a0ff7c5278d2c0629ffe) (thanks @rom1504)
+* [Switch to trusted publishing via OIDC (#703)](https://github.com/PrismarineJS/flying-squid/commit/b677e52fe3c76cdeb1ae0fa962978cc1c0e06799) (thanks @rom1504)
+* [Fix login.js](https://github.com/PrismarineJS/flying-squid/commit/01c645b70bdcd0cf8f557a6fb587c175bf6cc7f5) (thanks @extremeheat)
+* [Fix player_info and sound packets for minecraft-data protocol changes (#691)](https://github.com/PrismarineJS/flying-squid/commit/a4f5971d831cdedd63bee84abba542b2bd22590f) (thanks @Copilot)
+* [copilot: remove timeout](https://github.com/PrismarineJS/flying-squid/commit/971d58e2ba35b96f3aebc22b03b650f103873f57) (thanks @extremeheat)
+* [Add copilot-instructions.md](https://github.com/PrismarineJS/flying-squid/commit/6ffb225ed571559029e92bed96a6ff4ae5a3d325) (thanks @extremeheat)
+* [Add copilot-setup-steps.yml](https://github.com/PrismarineJS/flying-squid/commit/c56bde4da8c69893321c5e0291a432f833f29ef3) (thanks @extremeheat)
+* [Update to node 22 (#674)](https://github.com/PrismarineJS/flying-squid/commit/4241690254b081ace608050da34b11a2a22a50e7) (thanks @rom1504)
+
 ## 1.11.0
 * [1.21.4 (#672)](https://github.com/PrismarineJS/flying-squid/commit/3408d2543eba3c7461d0bbdfc90e422ee0abe2dc) (thanks @extremeheat)
 
