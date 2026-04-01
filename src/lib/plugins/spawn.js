@@ -334,6 +334,7 @@ module.exports.entity = function (entity, serv) {
       headPitch: entity.headPitch,
       currentItem: 0,
       objectData: entity.data,
+      velocity: scaledVelocity,
       velocityX: scaledVelocity.x,
       velocityY: scaledVelocity.y,
       velocityZ: scaledVelocity.z,

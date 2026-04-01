@@ -159,6 +159,14 @@ squid.testedVersions.forEach((testedVersion, i) => {
 
     afterEach(async () => {
       console.log('Quitting server...')
+      // Disconnect bots before stopping the server so the compressed
+      // stream is drained cleanly.  Without this, Node 24's stricter
+      // zlib can throw an uncaught "unexpected end of file" error when
+      // the server force-kicks clients and truncates the compressed data.
+      try { bot?.quit() } catch (e) { /* ignore */ }
+      try { bot2?.quit() } catch (e) { /* ignore */ }
+      // Give bots time to disconnect cleanly
+      await new Promise(resolve => setTimeout(resolve, 500))
       await serv.quit()
       console.log('Quit server!')
     })
