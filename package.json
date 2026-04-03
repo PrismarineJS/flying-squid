@@ -32,7 +32,7 @@
     "change-case": "^4.1.2",
     "colors": "1.4.0",
     "diamond-square": "^1.2.0",
-    "exit-hook": "^2.2.1",
+    "exit-hook": "^5.1.0",
     "flatmap": "^0.0.3",
     "long": "^5.1.0",
     "minecraft-protocol": "^1.66.0",
