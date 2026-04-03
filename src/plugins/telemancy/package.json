@@ -1,0 +1,7 @@
+{
+  "name": "telemancy",
+  "version": "1.0.0",
+  "description": "Teleportation plugin",
+  "main": "index.js",
+  "dependencies": {}
+}
